@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/backend.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/backend.common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway-service/backend.gateway-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway-service/backend.gateway-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/magazine-service/backend.magazine-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/magazine-service/backend.magazine-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/question-service/backend.question-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/question-service/backend.question-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/quiz-service/backend.quiz-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/quiz-service/backend.quiz-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/user-service/backend.user-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/user-service/backend.user-service.main.iml" />
+    </modules>
+  </component>
+</project>

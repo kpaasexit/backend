@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.38/57f8f5e02e92a30fd21b80cbd426a4172b5f8e29/lombok-1.18.38.jar" />
+        </processorPath>
+        <module name="backend.magazine-service.main" />
+        <module name="backend.common.main" />
+        <module name="backend.user-service.main" />
+        <module name="backend.question-service.main" />
+        <module name="backend.quiz-service.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.36/5a30490a6e14977d97d9c73c924c1f1b5311ea95/lombok-1.18.36.jar" />
+        </processorPath>
+        <module name="backend.gateway-service.main" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="17">
+      <module name="gateway" target="17" />
+      <module name="gateway.main" target="17" />
+      <module name="gateway.test" target="17" />
+      <module name="user" target="17" />
+      <module name="user.main" target="17" />
+      <module name="user.test" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="backend.common" options="-parameters" />
+      <module name="backend.common.main" options="-parameters" />
+      <module name="backend.common.test" options="-parameters" />
+      <module name="backend.eureka-service" options="-parameters" />
+      <module name="backend.eureka-service.main" options="-parameters" />
+      <module name="backend.eureka-service.test" options="-parameters" />
+      <module name="backend.gateway-service" options="-parameters" />
+      <module name="backend.gateway-service.main" options="-parameters" />
+      <module name="backend.gateway-service.test" options="-parameters" />
+      <module name="backend.magazine-service" options="-parameters" />
+      <module name="backend.magazine-service.main" options="-parameters" />
+      <module name="backend.magazine-service.test" options="-parameters" />
+      <module name="backend.question-service" options="-parameters" />
+      <module name="backend.question-service.main" options="-parameters" />
+      <module name="backend.question-service.test" options="-parameters" />
+      <module name="backend.quiz-service" options="-parameters" />
+      <module name="backend.quiz-service.main" options="-parameters" />
+      <module name="backend.quiz-service.test" options="-parameters" />
+      <module name="backend.user-service" options="-parameters" />
+      <module name="backend.user-service.main" options="-parameters" />
+      <module name="backend.user-service.test" options="-parameters" />
+      <module name="eureka" options="-parameters" />
+      <module name="eureka-service" options="-parameters" />
+      <module name="eureka.main" options="-parameters" />
+      <module name="eureka.test" options="-parameters" />
+      <module name="gateway" options="-parameters" />
+      <module name="gateway.main" options="-parameters" />
+      <module name="gateway.test" options="-parameters" />
+      <module name="question-service" options="-parameters" />
+      <module name="question.main" options="-parameters" />
+      <module name="question.test" options="-parameters" />
+      <module name="user" options="-parameters" />
+      <module name="user.main" options="-parameters" />
+      <module name="user.test" options="-parameters" />
+    </option>
+  </component>
+</project>
