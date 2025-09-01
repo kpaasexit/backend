@@ -1,0 +1,10 @@
+rootProject.name = 'backend'
+
+include 'gateway-service'
+include 'eureka-service'
+include 'user-service'
+include 'quiz-service'
+include 'question-service'
+include 'magazine-service'
+include 'common'
+
