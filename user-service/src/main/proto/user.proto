@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package com.exit.user;
+
+option java_multiple_files = true;
+option java_package = "com.exit.user.grpc";
+option java_outer_classname = "UserServiceProto";
+
+import "google/protobuf/timestamp.proto";
+
+service UserService {
+  rpc SignUp(SignUpRequest) returns (SignUpResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Refresh(RefreshTokenRequest) returns (RefreshTokenResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+}
+
+// 요청 메시지들
+message SignUpRequest {
+  string name = 1;
+  string nickname = 2;
+  string email = 3;
+  string password = 4;
+  string phone = 5;
+  bytes profileImage = 6;
+  string ipAddress = 7;
+  string userAgent = 8;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message LogoutRequest {
+  int64 user_id = 1;
+}
+
+// 응답 메시지들
+message SignUpResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  UserInfo user_info = 3;
+}
+
+message LoginResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  UserInfo user_info = 3;
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+message LogoutResponse {
+  string message = 1;
+}
+
+message UserInfo {
+  int64 user_id = 1;
+  string email = 2;
+  string name = 3;
+  string phone = 4;
+  string profile_image_url = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
