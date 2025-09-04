@@ -1,14 +1,14 @@
-package com.exit.common.exception.handler;
+package com.exit.common.exception.rest.handler;
 
-import com.exit.common.exception.ExceptionResponseBody;
-import com.exit.common.exception.RestApiException;
-import com.exit.common.response.error.ErrorCode;
+import com.exit.common.exception.rest.ExceptionResponseBody;
+import com.exit.common.exception.rest.RestApiException;
+import com.exit.common.response.error.rest.ErrorCode;
+import net.devh.boot.grpc.server.advice.GrpcAdvice;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+@GrpcAdvice
 @Order(value = Integer.MIN_VALUE)
 public class ApiExceptionHandler {
     @ExceptionHandler(RestApiException.class)

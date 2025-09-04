@@ -28,3 +28,6 @@ replay_pid*
 
 ### build ###
 ./build
+
+### common module secret key ###
+common/src/main/resources/application.yml

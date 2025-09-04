@@ -1,8 +1,8 @@
-package com.exit.common.exception.handler;
+package com.exit.common.exception.rest.handler;
 
-import com.exit.common.exception.ExceptionResponseBody;
-import com.exit.common.response.error.ErrorCode;
-import com.exit.common.response.error.ValidationErrorCode;
+import com.exit.common.exception.rest.ExceptionResponseBody;
+import com.exit.common.response.error.rest.ErrorCode;
+import com.exit.common.response.error.rest.ValidationErrorCode;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import java.util.List;
 
 @RestControllerAdvice
-@Order(value = Integer.MIN_VALUE)
+@Order(value = Integer.MIN_VALUE + 1)
 public class ValidationExceptionHandler {
 
     private final ErrorCode errorCode = ValidationErrorCode.VALIDATION_FAILED;

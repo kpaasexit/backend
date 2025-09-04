@@ -1,4 +1,4 @@
-package com.exit.common.response.error;
+package com.exit.common.response.error.rest;
 
 import org.springframework.http.HttpStatus;
 

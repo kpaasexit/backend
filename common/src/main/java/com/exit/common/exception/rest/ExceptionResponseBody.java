@@ -1,6 +1,6 @@
-package com.exit.common.exception;
+package com.exit.common.exception.rest;
 
-import com.exit.common.response.error.ErrorCode;
+import com.exit.common.response.error.rest.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;

@@ -1,6 +1,6 @@
-package com.exit.common.exception;
+package com.exit.common.exception.rest;
 
-import com.exit.common.response.error.ErrorCode;
+import com.exit.common.response.error.rest.ErrorCode;
 import lombok.Getter;
 
 import java.util.List;
