@@ -10,10 +10,17 @@
         </processorPath>
         <module name="backend.magazine-service.main" />
         <module name="backend.gateway-service.main" />
-        <module name="backend.common.main" />
         <module name="backend.user-service.main" />
         <module name="backend.question-service.main" />
         <module name="backend.quiz-service.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.36/5a30490a6e14977d97d9c73c924c1f1b5311ea95/lombok-1.18.36.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.3.9/dce346a787b9de899bdf667adfaf87ce1bd69627/spring-boot-configuration-processor-3.3.9.jar" />
+        </processorPath>
+        <module name="backend.common.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />
@@ -23,6 +30,9 @@
       <module name="backend.common" options="-parameters" />
       <module name="backend.common.main" options="-parameters" />
       <module name="backend.common.test" options="-parameters" />
+      <module name="backend.config-server" options="-parameters" />
+      <module name="backend.config-server.main" options="-parameters" />
+      <module name="backend.config-server.test" options="-parameters" />
       <module name="backend.eureka-service" options="-parameters" />
       <module name="backend.eureka-service.main" options="-parameters" />
       <module name="backend.eureka-service.test" options="-parameters" />

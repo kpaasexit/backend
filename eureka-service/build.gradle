@@ -34,6 +34,8 @@ dependencies {
 
     // Spring Cloud
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
 
     // DebTools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

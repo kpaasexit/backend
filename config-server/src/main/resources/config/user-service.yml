@@ -1,0 +1,60 @@
+server:
+  port: 0  # 랜덤 포트 (여러 인스턴스 실행 가능)
+
+spring:
+  application:
+    name: user-service
+  profiles:
+    active: dev
+
+  # MySQL 데이터베이스 설정
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/exit_user_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+  data:
+    redis:
+      host: ${redis.host}
+      port: ${redis.port}
+      database: ${redis.database}
+      timeout: ${redis.timeout}
+      lettuce:
+        pool:
+          max-active: ${redis.lettuce.pool.max-active}
+          max-idle: ${redis.lettuce.pool.max-idle}
+          min-idle: ${redis.lettuce.pool.min-idle}
+          max-wait: ${redis.lettuce.pool.max-wait}
+
+# OAuth2 클라이언트 설정 (백엔드에서 직접 API 호출용)
+oauth2:
+  kakao:
+    client-id: ${oauth2.kakao.client-id}
+    client-secret: ${oauth2.kakao.client-secret}
+  naver:
+    client-id: ${oauth2.naver.client-id}
+    client-secret: ${oauth2.naver.client-secret}
+
+# gRPC 서버 설정
+grpc:
+  server:
+    port: 0  # 랜덤 gRPC 포트
+
+# Eureka 클라이언트 설정
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    # gRPC 포트를 메타데이터에 추가
+    metadata-map:
+      grpc-port: ${grpc.server.port}
+      grpc-service: user-service

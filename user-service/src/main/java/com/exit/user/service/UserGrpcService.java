@@ -2,11 +2,10 @@ package com.exit.user.service;
 
 import com.exit.common.auth.jwt.dto.UserIdRequest;
 import com.exit.common.exception.grpc.GrpcException;
-import com.exit.user.controller.dto.request.LoginRequestDto;
+import com.exit.common.grpc.*;
+import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
 import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
-import com.exit.user.controller.dto.request.SignUpRequestDto;
 import com.exit.user.controller.dto.response.LoginSuccessResponse;
-import com.exit.user.grpc.*;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -16,83 +15,55 @@ import net.devh.boot.grpc.server.service.GrpcService;
 @Slf4j
 @GrpcService
 @RequiredArgsConstructor
-public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
+public class UserGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImplBase {
 
     private final UserService userService;
 
-    @Override
-    public void signUp(SignUpRequest request, StreamObserver<SignUpResponse> responseObserver) {
+    public void socialLogin(SocialLoginRequest request,
+                            StreamObserver<SocialLoginResponse> responseObserver) {
         try {
-            log.info("SignUp request received for email: {}", request.getEmail());
+            log.info("Social login with user info request received for provider: {}", request.getProvider());
 
-            // 기존 서비스 호출 (DTO 변환 필요)
-            SignUpRequestDto signUpDto = SignUpRequestDto.from(request);
-
-            LoginSuccessResponse serviceResponse = userService.signUp(signUpDto);
-
-            // gRPC 응답으로 변환
-            SignUpResponse grpcResponse = SignUpResponse.newBuilder()
-                    .setAccessToken(serviceResponse.accessToken())
-                    .setRefreshToken(serviceResponse.refreshToken())
-                    .setUserInfo(buildUserInfo(serviceResponse))
+            // SocialLoginWithUserInfoRequest를 OAuth2UserInfo로 변환
+            OAuth2UserInfoRequestDto oauth2UserInfoRequestDto = OAuth2UserInfoRequestDto.builder()
+                    .socialId(request.getSocialId())
+                    .email(request.getEmail())
+                    .name(request.getName())
+                    .provider(request.getProvider())
                     .build();
+
+            // 소셜 로그인 처리 (회원가입 or 로그인)
+            LoginSuccessResponse loginResponse = userService.socialLogin(oauth2UserInfoRequestDto);
+
+            // gRPC 응답 생성
+            SocialLoginResponse.Builder builder = SocialLoginResponse.newBuilder()
+                    .setAccessToken(loginResponse.accessToken())
+                    .setRefreshToken(loginResponse.refreshToken())
+                    .setUserId(loginResponse.userId())
+                    .setEmail(oauth2UserInfoRequestDto.getEmail())
+                    .setNickname(oauth2UserInfoRequestDto.getName())
+                    .setProvider(oauth2UserInfoRequestDto.getProvider())
+                    .setSocialId(oauth2UserInfoRequestDto.getSocialId());
+
+            if (loginResponse.profileImageUrl() != null) {
+                builder.setProfileImageUrl(loginResponse.profileImageUrl());
+            }
+
+            SocialLoginResponse grpcResponse = builder.build();
 
             responseObserver.onNext(grpcResponse);
             responseObserver.onCompleted();
 
-        } catch (GrpcException e) {
-            log.error("User already exists: {}", request.getEmail());
-            responseObserver.onError(Status.ALREADY_EXISTS
-                    .withDescription("이미 존재하는 사용자입니다")
-                    .asRuntimeException());
         } catch (Exception e) {
-            log.error("SignUp failed", e);
+            log.error("Social login with user info failed", e);
             responseObserver.onError(Status.INTERNAL
-                    .withDescription("회원가입 처리 중 오류가 발생했습니다")
+                    .withDescription("소셜 로그인 처리 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
     }
 
     @Override
-    public void login(LoginRequest request, StreamObserver<LoginResponse> responseObserver) {
-        try {
-            log.info("Login request received for email: {}", request.getEmail());
-
-            // 기존 서비스 호출
-            LoginRequestDto loginDto = LoginRequestDto.from(request);
-
-            LoginSuccessResponse serviceResponse = userService.login(loginDto);
-
-            // gRPC 응답으로 변환
-            LoginResponse grpcResponse = LoginResponse.newBuilder()
-                    .setAccessToken(serviceResponse.accessToken())
-                    .setRefreshToken(serviceResponse.refreshToken())
-                    .setUserInfo(buildUserInfo(serviceResponse))
-                    .build();
-
-            responseObserver.onNext(grpcResponse);
-            responseObserver.onCompleted();
-
-        } catch (GrpcException e) {
-            log.error("User not found: {}", request.getEmail());
-            responseObserver.onError(Status.NOT_FOUND
-                    .withDescription("사용자를 찾을 수 없습니다")
-                    .asRuntimeException());
-        } catch (IllegalAccessError e) {
-            log.error("Invalid password for user: {}", request.getEmail());
-            responseObserver.onError(Status.UNAUTHENTICATED
-                    .withDescription("잘못된 비밀번호입니다")
-                    .asRuntimeException());
-        } catch (Exception e) {
-            log.error("Login failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("로그인 처리 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
-    }
-
-    @Override
-    public void refresh(RefreshTokenRequest request, StreamObserver<RefreshTokenResponse> responseObserver) {
+    public void refreshToken(RefreshTokenRequest request, StreamObserver<RefreshTokenResponse> responseObserver) {
         try {
             log.info("Refresh token request received");
 
@@ -105,6 +76,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             RefreshTokenResponse grpcResponse = RefreshTokenResponse.newBuilder()
                     .setAccessToken(serviceResponse.accessToken())
                     .setRefreshToken(serviceResponse.refreshToken())
+                    .setExpiresIn(3600L) // 1시간
                     .build();
 
             responseObserver.onNext(grpcResponse);
@@ -140,6 +112,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
             // gRPC 응답
             LogoutResponse grpcResponse = LogoutResponse.newBuilder()
+                    .setSuccess(true)
                     .setMessage("로그아웃이 완료되었습니다")
                     .build();
 
@@ -157,30 +130,5 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
                     .withDescription("로그아웃 처리 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
-    }
-
-    // UserInfo 빌더 헬퍼 메서드
-    private UserInfo buildUserInfo(LoginSuccessResponse serviceResponse) {
-        return UserInfo.newBuilder()
-                .setUserId(serviceResponse.userId())
-                .setEmail(serviceResponse.email())
-                .setName(serviceResponse.name())
-                .setPhone(serviceResponse.phone() != null ? serviceResponse.phone() : "")
-                .setProfileImageUrl(serviceResponse.profileImageUrl() != null ? serviceResponse.profileImageUrl() : "")
-                .setCreatedAt(convertToTimestamp(serviceResponse.createdAt()))
-                .build();
-    }
-
-    // 날짜 변환 헬퍼 메서드
-    private com.google.protobuf.Timestamp convertToTimestamp(java.time.LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return com.google.protobuf.Timestamp.getDefaultInstance();
-        }
-
-        java.time.Instant instant = dateTime.atZone(java.time.ZoneId.systemDefault()).toInstant();
-        return com.google.protobuf.Timestamp.newBuilder()
-                .setSeconds(instant.getEpochSecond())
-                .setNanos(instant.getNano())
-                .build();
     }
 }

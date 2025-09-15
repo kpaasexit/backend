@@ -9,10 +9,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum GrpcUserErrorCode implements GrpcErrorCode {
     NULL_USER(Status.Code.UNAUTHENTICATED, "USER_ERR_001"),
-    EXISTING_USER(Status.Code.UNAUTHENTICATED, "USER_ERR_002"),
-    INVALID_TOKEN(Status.Code.UNAUTHENTICATED,"USER_ERR_003"),
-    EXPIRED_TOKEN(Status.Code.FAILED_PRECONDITION, "USER_ERR_004"),
-    INVALID_REDIRECT_URI(Status.Code.UNAUTHENTICATED, "USER_ERR_005");
+    INVALID_TOKEN(Status.Code.UNAUTHENTICATED, "USER_ERR_002"),
+    EXPIRED_TOKEN(Status.Code.FAILED_PRECONDITION, "USER_ERR_003"),
+    USER_NOT_FOUND(Status.Code.NOT_FOUND, "USER_ERR_004"),
+    INVALID_REFRESH_TOKEN(Status.Code.UNAUTHENTICATED, "USER_ERR_005"),
+    LOGOUT_FAILED(Status.Code.INTERNAL, "USER_ERR_006"),
+    SOCIAL_LOGIN_FAILED(Status.Code.INTERNAL, "USER_ERR_007");
 
     private final Status.Code grpcStatusCode;
     private final String developCode;
