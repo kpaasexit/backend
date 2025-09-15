@@ -5,26 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="k8s Repository 분리 관리에 따른 디렉토리 삭제">
-      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/domain/BaseEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/grpc/GrpcException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/grpc/GrpcExceptionResponseBody.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/grpc/handler/GrpcExceptionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/grpc/GrpcErrorCode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/success/AuthSuccessCode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/src/main/resources/application.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/controller/dto/request/LoginRequestDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/controller/dto/request/RefreshTokenRequestDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/controller/dto/request/SignUpRequestDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/controller/dto/response/LoginSuccessResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/Notifications.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/UserInterestCategories.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/Users.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/repository/NotificationRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/repository/UserInterestCategoryRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/repository/UserRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/exception/UserErrorCode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/UserGrpcService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/UserService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config-server/src/main/resources/config/application-secret.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/eureka-service/src/main/resources/bootstrap.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/filter/JwtAuthenticationFilter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/checksums/checksums.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/checksums/md5-checksums.bin" afterDir="false" />
@@ -37,24 +21,41 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/common/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/common/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/auth/jwt/JwtTokenProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/auth/jwt/JwtTokenProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/auth/jwt/dto/UserIdRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/auth/jwt/dto/UserIdRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/ExceptionResponseBody.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/rest/ExceptionResponseBody.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/RestApiException.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/rest/RestApiException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/handler/ApiExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/rest/handler/ApiExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/handler/ValidationExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/exception/rest/handler/ValidationExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/AuthErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/rest/AuthErrorCode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/ErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/rest/ErrorCode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/ValidationErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/rest/ValidationErrorCode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/main/proto/.gitkeep" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/proto/user.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/src/test/java/com/exit/common/CommonApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/test/java/com/exit/common/CommonApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/properties/JwtProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/properties/JwtProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/rest/UserErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/rest/UserErrorCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eureka-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/eureka-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eureka-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/eureka-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eureka-service/src/test/java/com/exit/eureka/EurekaServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/eureka-service/src/test/java/com/exit/eureka/EurekaServiceApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/GatewayApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/GatewayApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/test/java/com/exit/gateway/GatewayApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/test/java/com/exit/gateway/GatewayApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magazine-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/magazine-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/quiz-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/quiz-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/user-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-service/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/settings.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/UserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/config/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/controller/dto/request/LoginRequestDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/controller/dto/request/RefreshTokenRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/controller/dto/request/RefreshTokenRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/controller/dto/request/SignUpRequestDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/controller/dto/response/LoginSuccessResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/controller/dto/response/LoginSuccessResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/RefreshToken.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/Users.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/Users.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/domain/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/exception/GrpcUserErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/exception/GrpcUserErrorCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/UserGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/UserGrpcService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/util/ImageSaveUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/proto/user.proto" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/user-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/test/java/com/exit/user/UserApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/test/java/com/exit/user/UserApplicationTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,6 +130,12 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="backend" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build setup" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="backend" type="f1a62948:ProjectNode" />
                 <item name="user-service" type="2d1252cf:ModuleNode" />
               </path>
               <path>
@@ -181,7 +188,7 @@
   &quot;isMigrated&quot;: true
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
@@ -196,7 +203,9 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Gradle.C:/Users/User/Desktop/exit/backend/user-service [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend [bootJar].executor&quot;: &quot;Run&quot;,
     &quot;Gradle.backend [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend [classes].executor&quot;: &quot;Run&quot;,
     &quot;Gradle.backend [clean].executor&quot;: &quot;Run&quot;,
     &quot;Gradle.backend 빌드.executor&quot;: &quot;Run&quot;,
     &quot;Gradle.backend:common [build].executor&quot;: &quot;Run&quot;,
@@ -220,8 +229,10 @@
     &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
     &quot;Spring Boot.CommonApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.ConfigServerApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.EurekaServiceApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.GatewayApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.MagazineServiceApplication.executor&quot;: &quot;Run&quot;,
@@ -242,6 +253,11 @@
     &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
+    ]
   }
 }</component>
   <component name="ReactorSettings">
@@ -269,7 +285,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.backend [build]">
+  <component name="RunManager" selected="복합.msa">
     <configuration name="msa" type="CompoundRunConfigurationType">
       <toRun name="GatewayApplication" type="SpringBootApplicationConfigurationType" />
       <toRun name="MagazineServiceApplication" type="SpringBootApplicationConfigurationType" />
@@ -290,6 +306,28 @@
         <option name="taskNames">
           <list>
             <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>false</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="backend [bootJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="bootJar" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -322,7 +360,7 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="backend [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="backend [classes]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -333,7 +371,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="clean" />
+            <option value="classes" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -344,32 +382,10 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="backend:common [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="backend [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/common" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="build" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>false</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="backend:common [clean]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/common" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="externalSystemIdString" value="GRADLE" />
         <option name="scriptParameters" />
         <option name="taskDescriptions">
@@ -401,6 +417,13 @@
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="backend.common.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.exit.common.CommonApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ConfigServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="backend.config-server.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.exit.config.ConfigServerApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -460,12 +483,13 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Gradle.backend [bootJar]" />
+      <item itemvalue="Gradle.backend [classes]" />
       <item itemvalue="Gradle.C:/Users/User/Desktop/exit/backend/user-service [build]" />
       <item itemvalue="Gradle.backend [build]" />
       <item itemvalue="Gradle.backend [clean]" />
-      <item itemvalue="Gradle.backend:common [build]" />
-      <item itemvalue="Gradle.backend:common [clean]" />
       <item itemvalue="Spring Boot.UserApplication" />
+      <item itemvalue="Spring Boot.ConfigServerApplication" />
       <item itemvalue="Spring Boot.GatewayApplication" />
       <item itemvalue="Spring Boot.CommonApplication" />
       <item itemvalue="Spring Boot.EurekaServiceApplication" />
@@ -476,11 +500,11 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.backend [build]" />
-        <item itemvalue="Gradle.C:/Users/User/Desktop/exit/backend/user-service [build]" />
         <item itemvalue="Gradle.backend [clean]" />
-        <item itemvalue="Gradle.backend:common [build]" />
-        <item itemvalue="Gradle.backend:common [clean]" />
+        <item itemvalue="Gradle.backend [build]" />
+        <item itemvalue="Gradle.backend [bootJar]" />
+        <item itemvalue="Gradle.backend [classes]" />
+        <item itemvalue="Gradle.C:/Users/User/Desktop/exit/backend/user-service [build]" />
       </list>
     </recent_temporary>
   </component>
@@ -513,6 +537,11 @@
       <workItem from="1756709608100" duration="8091000" />
       <workItem from="1756820336660" duration="5556000" />
       <workItem from="1756871341015" duration="12289000" />
+      <workItem from="1757052122085" duration="1238000" />
+      <workItem from="1757224817498" duration="636000" />
+      <workItem from="1757566875437" duration="26827000" />
+      <workItem from="1757654783750" duration="26109000" />
+      <workItem from="1757905388443" duration="877000" />
     </task>
     <task id="LOCAL-00001" summary="초기 환경 설정 V1">
       <option name="closed" value="true" />
@@ -532,5 +561,54 @@
     <MESSAGE value="초기 환경 설정 V1" />
     <MESSAGE value="k8s Repository 분리 관리에 따른 디렉토리 삭제" />
     <option name="LAST_COMMIT_MESSAGE" value="k8s Repository 분리 관리에 따른 디렉토리 삭제" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/oauth2/KakaoOAuth2UserInfo.java</url>
+          <line>11</line>
+          <properties class="com.exit.gateway.controller.dto.response.oauth2.KakaoOAuth2UserInfo" method="getProviderId">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/oauth2/NaverOAuth2UserInfo.java</url>
+          <line>20</line>
+          <properties class="com.exit.gateway.controller.dto.response.oauth2.NaverOAuth2UserInfo" method="getName">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/handler/OAuth2LoginSuccessHandler.java</url>
+          <line>58</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/handler/OAuth2LoginSuccessHandler.java</url>
+          <line>50</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/filter/JwtAuthenticationFilter.java</url>
+          <line>33</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/filter/JwtAuthenticationFilter.java</url>
+          <line>67</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/filter/JwtAuthenticationFilter.java</url>
+          <line>68</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

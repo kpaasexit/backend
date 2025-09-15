@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package com.exit.common;
+
+option java_multiple_files = true;
+option java_package = "com.exit.common.grpc";
+option java_outer_classname = "SocialAuthServiceProto";
+
+import "google/protobuf/timestamp.proto";
+
+service SocialAuthService {
+  rpc SocialLogin(SocialLoginRequest) returns (SocialLoginResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+}
+
+// 소셜로그인 요청 메시지들
+message SocialLoginRequest {
+  string provider = 1; // "kakao", "naver"
+  string social_id = 2;
+  string email = 3;
+  string name = 4;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message LogoutRequest {
+  int64 user_id = 1;
+  string refresh_token = 2;
+}
+
+// 소셜로그인 응답 메시지들
+message SocialLoginResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 user_id = 3;
+  string email = 4;
+  string nickname = 5;
+  string profile_image_url = 6;
+  string provider = 7;
+  string social_id = 8;
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 expires_in = 3;
+}
+
+message LogoutResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// 공통 사용자 정보 메시지
+message UserProfile {
+  int64 user_id = 1;
+  string email = 2;
+  string nickname = 3;
+  string profile_image_url = 5;
+  string provider = 6;
+  string social_id = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}

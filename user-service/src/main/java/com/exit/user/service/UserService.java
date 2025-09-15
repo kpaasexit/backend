@@ -3,18 +3,14 @@ package com.exit.user.service;
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserIdRequest;
 import com.exit.common.exception.grpc.GrpcException;
-import com.exit.user.domain.RefreshToken;
+import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
+import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
+import com.exit.user.controller.dto.response.LoginSuccessResponse;
+import com.exit.user.domain.JwtToken;
 import com.exit.user.domain.Users;
 import com.exit.user.domain.repository.UserRepository;
-import com.exit.user.controller.dto.request.LoginRequestDto;
-import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
-import com.exit.user.controller.dto.request.SignUpRequestDto;
-import com.exit.user.controller.dto.response.LoginSuccessResponse;
 import com.exit.user.exception.GrpcUserErrorCode;
-import com.exit.user.util.ImageSaveUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,62 +22,108 @@ import java.util.UUID;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
-    private final ImageSaveUtil imageSaveUtil;
-    private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenRedisService jwtTokenRedisService;
 
-    public LoginSuccessResponse signUp(SignUpRequestDto request) {
-        if (userRepository.existsByUserEmail(request.email())) {
-            throw new GrpcException(GrpcUserErrorCode.EXISTING_USER);
+    public LoginSuccessResponse socialLogin(OAuth2UserInfoRequestDto oauth2UserInfoRequestDto) {
+        try {
+            Users user = userRepository.findBySocialIdAndProvider(
+                            oauth2UserInfoRequestDto.getSocialId(),
+                            oauth2UserInfoRequestDto.getProvider()
+                    )
+                    .map(existingUser -> updateExistingUser(existingUser, oauth2UserInfoRequestDto))
+                    .orElseGet(() -> createNewUser(oauth2UserInfoRequestDto));
+
+
+            // JWT 토큰 생성
+            JwtToken jwtToken = createJwtToken(user);
+            jwtTokenRedisService.saveJwtToken(user.getUserId(), jwtToken);
+
+            return new LoginSuccessResponse(
+                    jwtToken.getAccessToken(),
+                    jwtToken.getRefreshToken(),
+                    user.getUserId(),
+                    user.getUserProfileUrl()
+            );
+
+        } catch (Exception e) {
+            throw new GrpcException(GrpcUserErrorCode.SOCIAL_LOGIN_FAILED);
         }
-        // 이미지 마운트 경로를 지정해서 이미지 경로 지정
-        String profileImagePath = null;
-        if (request.profileImage() != null && request.profileImage().length > 0) {
-            profileImagePath = imageSaveUtil.processProfileImage(request.profileImage(), request.email(), request.email());
-        }
-
-        String encodedPassword = passwordEncoder.encode(request.password());
-        Users user = SignUpRequestDto.toUser(request, profileImagePath, encodedPassword);
-        Users savedUser = userRepository.save(user);
-
-        String accessToken = jwtTokenProvider.generateAccessToken(new UserIdRequest(savedUser.getUserId()));
-        RefreshToken tokenInfo = RefreshToken.builder()
-                .userId(user.getUserId())
-                .jti(UUID.randomUUID().toString())
-                .issuedAt(System.currentTimeMillis())
-                .expiresAt(System.currentTimeMillis() + Duration.ofDays(7).toMillis())
-                .deviceId(generateDeviceId(request))
-                .build();
-
-        jwtTokenProvider.generateRefreshToken(new UserIdRequest(savedUser.getUserId()), tokenInfo.getJti());
-
-        return new LoginSuccessResponse(null, null, null, null, null, null, null, null);
     }
-
-
-    public LoginSuccessResponse login(LoginRequestDto request) {
-
-        return new LoginSuccessResponse(null, null, null, null, null, null, null, null);
-    }
-
 
     public LoginSuccessResponse refreshAuthToken(RefreshTokenRequestDto request) {
+        try {
+            // Refresh Token에서 사용자 ID 추출
+            Long userId = jwtTokenProvider.getUserIdFromToken(request.refreshToken());
 
-        return new LoginSuccessResponse(null, null, null, null, null, null, null, null);
+            // JWT 토큰 유효성 검증
+            jwtTokenRedisService.validJwtToken(userId, request.refreshToken());
+
+            // 사용자 정보 조회
+            Users user = userRepository.findById(userId)
+                    .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
+
+            JwtToken newJwtToken = createJwtToken(user);
+            jwtTokenRedisService.saveJwtToken(userId, newJwtToken);
+
+            return new LoginSuccessResponse(
+                    newJwtToken.getAccessToken(),
+                    newJwtToken.getRefreshToken(),
+                    user.getUserId(),
+                    user.getUserProfileUrl()
+            );
+
+        } catch (Exception e) {
+            throw new GrpcException(GrpcUserErrorCode.INVALID_REFRESH_TOKEN);
+        }
     }
-
 
     public LoginSuccessResponse logout(UserIdRequest request) {
+        try {
+            // Redis에서 JWT 토큰 삭제
+            jwtTokenRedisService.deleteJwtToken(request.userId());
 
-        return new LoginSuccessResponse(null, null, null, null, null, null, null, null);
+            return new LoginSuccessResponse(
+                    null,
+                    null,
+                    request.userId(),
+                    null
+            );
+
+        } catch (Exception e) {
+            throw new GrpcException(GrpcUserErrorCode.LOGOUT_FAILED);
+        }
     }
 
-    private String generateDeviceId(SignUpRequestDto request) {
-        String userAgent = request.userAgent() != null ? request.userAgent() : "unknown";
-        String ipAddress = request.ipAddress() != null ? request.ipAddress() : "0.0.0.0";
+    // 헬퍼 메서드들
+    private Users updateExistingUser(Users user, OAuth2UserInfoRequestDto dto) {
+        user.updateProfile(dto.getName(), dto.getProfileImageUrl());
+        return user;
+    }
 
-        String deviceFingerprint = userAgent + ipAddress + request.email();
+    private Users createNewUser(OAuth2UserInfoRequestDto dto) {
+        return userRepository.save(Users.builder()
+                .userEmail(dto.getEmail())
+                .userNickname(dto.getName())
+                .userProfileUrl(dto.getProfileImageUrl())
+                .socialId(dto.getSocialId())
+                .provider(dto.getProvider())
+                .build());
+    }
 
-        return DigestUtils.sha256Hex(deviceFingerprint).substring(0, 16);
+    private JwtToken createJwtToken(Users user) {
+        // JWT 토큰 생성
+        String accessToken = jwtTokenProvider.generateAccessToken(new UserIdRequest(user.getUserId()));
+        String jti = UUID.randomUUID().toString();
+        String refreshToken = jwtTokenProvider.generateRefreshToken(new UserIdRequest(user.getUserId()), jti);
+
+        // JWT 토큰을 Redis에 저장 (1일 만료)
+        return JwtToken.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .userId(user.getUserId())
+                .expiresAt(System.currentTimeMillis() + Duration.ofDays(1).toMillis())
+                .build();
     }
 }
+

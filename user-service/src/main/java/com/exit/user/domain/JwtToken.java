@@ -2,19 +2,19 @@ package com.exit.user.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+import java.io.Serializable;
+
+@Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class RefreshToken {
+public class JwtToken implements Serializable {
+    private String jwtId;
+    private String accessToken;
+    private String refreshToken;
     private Long userId;
-    private String jti;
-    private Long issuedAt;
     private Long expiresAt;
-    private String deviceId;
-    private String ipAddress;
-    private String userAgent;
 }

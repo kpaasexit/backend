@@ -1,6 +1,6 @@
 package com.exit.user.controller.dto.request;
 
-import com.exit.user.grpc.RefreshTokenRequest;
+import com.exit.common.grpc.RefreshTokenRequest;
 import lombok.Builder;
 
 @Builder

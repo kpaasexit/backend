@@ -45,6 +45,8 @@ dependencies {
 
 	// Spring Cloud
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+	implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -55,7 +57,7 @@ dependencies {
 
 	// Database
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	runtimeOnly 'com.h2database:h2'
+	testRuntimeOnly 'com.h2database:h2'
 
 	// Monitoring
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'

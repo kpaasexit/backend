@@ -1,5 +1,6 @@
 rootProject.name = 'backend'
 
+include 'config-server'
 include 'gateway-service'
 include 'eureka-service'
 include 'user-service'

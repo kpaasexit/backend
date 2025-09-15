@@ -1,0 +1,19 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/config/
+
+# Config Server는 Eureka에 등록하지 않음 (순환 의존성 방지)
+eureka:
+  client:
+    register-with-eureka: false  # Eureka에 등록하지 않음
+    fetch-registry: false        # 다른 서비스 정보도 가져오지 않음
