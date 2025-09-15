@@ -1,6 +1,7 @@
 # Compiled class file
 *.class
 
+
 # Log file
 *.log
 
@@ -28,3 +29,13 @@ replay_pid*
 
 ### build ###
 ./build
+
+### common module secret key ###
+common/src/main/resources/application.yml
+
+**/*.md
+
+# Secrets and sensitive configuration
+secrets.yml
+config-server/secrets.yml
+**/*secrets*
