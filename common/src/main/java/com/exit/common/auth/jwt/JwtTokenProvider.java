@@ -1,9 +1,9 @@
 package com.exit.common.auth.jwt;
 
 import com.exit.common.auth.jwt.dto.UserIdRequest;
-import com.exit.common.exception.RestApiException;
+import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.properties.JwtProperties;
-import com.exit.common.response.error.AuthErrorCode;
+import com.exit.common.response.error.rest.UserErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -26,7 +26,7 @@ public class JwtTokenProvider {
     // AccessToken 생성
     public String generateAccessToken(UserIdRequest userDetail) {
         Claims claims = getClaimsFrom(userDetail);
-        return getTokenFrom(claims, jwtProperties.getAccessTokenValidTime() * 1000);
+        return getTokenFrom(claims, jwtProperties.getAccessTokenExpiration() * 1000);
     }
 
     // AccessToken용 Claim 생성
@@ -37,13 +37,13 @@ public class JwtTokenProvider {
     }
 
     // RefrshToken 생성
-    public String generateRefreshToken(@Valid UserIdRequest user, Long tokenId) {
+    public String generateRefreshToken(@Valid UserIdRequest user, String tokenId) {
         Claims claims = getClaimsFrom(user, tokenId);
-        return getTokenFrom(claims, jwtProperties.getRefreshTokenValidTime() * 1000);
+        return getTokenFrom(claims, jwtProperties.getRefreshTokenExpiration() * 1000);
     }
 
     // RefreshToken용 Claim 생성
-    private Claims getClaimsFrom(@Valid UserIdRequest user, Long tokenId) {
+    private Claims getClaimsFrom(@Valid UserIdRequest user, String tokenId) {
         Claims claims = Jwts.claims();
         claims.put("userId", user.userId());
         claims.put("tokenId", tokenId);
@@ -59,7 +59,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + validTime))
                 .signWith(
-                        Keys.hmacShaKeyFor(jwtProperties.getBytesSecretKey()),
+                        Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes()),
                         SignatureAlgorithm.HS256
                 )
                 .compact();
@@ -89,9 +89,9 @@ public class JwtTokenProvider {
             Claims claims = getClaimsByToken(token);
             return claims.get("userId", Long.class);
         } catch (ExpiredJwtException e) {
-            throw new RestApiException(AuthErrorCode.EXPIRED_TOKEN);
+            throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
         } catch (Exception e) {
-            throw new RestApiException(AuthErrorCode.INVALID_TOKEN);
+            throw new RestApiException(UserErrorCode.INVALID_TOKEN);
         }
     }
 
@@ -101,15 +101,15 @@ public class JwtTokenProvider {
             Claims claims = getClaimsByToken(token);
             return Long.parseLong(String.valueOf(claims.get("tokenId")));
         } catch (ExpiredJwtException e) {
-            throw new RestApiException(AuthErrorCode.EXPIRED_TOKEN);
+            throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
         } catch (Exception e) {
-            throw new RestApiException(AuthErrorCode.INVALID_TOKEN);
+            throw new RestApiException(UserErrorCode.INVALID_TOKEN);
         }
     }
 
     private Claims getClaimsByToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(jwtProperties.getBytesSecretKey()))
+                .setSigningKey(Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
