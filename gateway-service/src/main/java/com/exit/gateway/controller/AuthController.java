@@ -66,19 +66,6 @@ public class AuthController {
         }
     }
 
-    private Long getUserIdFromRequest(HttpServletRequest request) {
-        // JWT 토큰에서 사용자 ID를 추출하는 로직
-        // 실제 구현에서는 JWT 파싱 로직이 필요합니다.
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            // JWT 파싱 로직을 통해 userId 추출
-            // 임시로 1L을 반환 (실제로는 JWT에서 추출해야 함)
-            return 1L;
-        }
-        throw new RuntimeException("유효하지 않은 토큰입니다.");
-    }
-
     private String getGrpcErrorMessage(StatusRuntimeException e) {
         Status status = e.getStatus();
         switch (status.getCode()) {
