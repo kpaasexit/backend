@@ -3,6 +3,7 @@ package com.exit.question.domain.response;
 import com.exit.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,4 +31,12 @@ public class ResponseReport extends BaseEntity {
 
     @Column(name = "response_report_writer_id")
     private Long responseReportWriterId;
+
+    @Builder
+    public ResponseReport(Long responseId, String responseReportTitle, String responseReportContent, Long responseReportWriterId) {
+        this.responseId = responseId;
+        this.responseReportTitle = responseReportTitle;
+        this.responseReportContent = responseReportContent;
+        this.responseReportWriterId = responseReportWriterId;
+    }
 }

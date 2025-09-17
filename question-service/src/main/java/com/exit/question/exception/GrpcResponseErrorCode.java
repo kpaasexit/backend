@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum GrpcQuestionErrorCode implements GrpcErrorCode {
-    NULL_RESPONSE(Status.Code.NOT_FOUND, "QUESTION_ERR_001"),
+public enum GrpcResponseErrorCode implements GrpcErrorCode {
+    EXIST_RESPONSE_LIKE(Status.Code.UNAVAILABLE, "RESPONSE_ERR_001"),
     ;
 
     private final Status.Code grpcStatusCode;

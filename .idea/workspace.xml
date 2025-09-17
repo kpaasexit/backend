@@ -5,32 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="feat/ 파일 업로드 유틸리티 구현">
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerAdoptRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerCreateRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerRecommendRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerReportRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/HashtagSuggestionRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/QuestionCreateRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/QuestionReportRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerAdoptResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerCreateResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerRecommendResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerReportResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/CategoryRecommendationResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/HashtagSuggestionResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionCreateResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionListResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionReportResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/SimilarQuestionResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/question/QuestionAnswerType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/question/QuestionCategoryType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/ResponseDisclosureType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/exception/GrpcQuestionErrorCode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magazine-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/magazine-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/QuestionServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/QuestionServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerCreateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerAdoptResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerAdoptResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionCreateResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionCreateResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/Response.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/ResponseImage.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/ResponseImage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/ResponseReference.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/repository/ResponseReferenceRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/exception/GrpcQuestionErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/exception/GrpcQuestionErrorCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/quiz-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/quiz-service/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -175,66 +172,66 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.C:/Users/User/Desktop/exit/backend/user-service [build].executor": "Run",
-    "Gradle.backend [bootJar].executor": "Run",
-    "Gradle.backend [build].executor": "Run",
-    "Gradle.backend [classes].executor": "Run",
-    "Gradle.backend [clean].executor": "Run",
-    "Gradle.backend 빌드.executor": "Run",
-    "Gradle.backend:common [build].executor": "Run",
-    "Gradle.backend:common [clean].executor": "Run",
-    "Gradle.backend:gateway-service [clean].executor": "Run",
-    "Gradle.backend:user-service [buildDependents].executor": "Run",
-    "Gradle.backend:user-service [build].executor": "Run",
-    "Gradle.backend:user-service [classes].executor": "Run",
-    "Gradle.backend:user-service [clean].executor": "Run",
-    "Gradle.backend:user-service [jar].executor": "Run",
-    "Gradle.gateway [build].executor": "Run",
-    "Gradle.gateway [clean].executor": "Run",
-    "Gradle.gateway 빌드.executor": "Run",
-    "Gradle.question 빌드.executor": "Run",
-    "Gradle.user [build].executor": "Run",
-    "Gradle.소스 다운로드.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
-    "Spring Boot.CommonApplication.executor": "Run",
-    "Spring Boot.ConfigServerApplication.executor": "Run",
-    "Spring Boot.EurekaServiceApplication.executor": "Run",
-    "Spring Boot.GatewayApplication.executor": "Run",
-    "Spring Boot.MagazineServiceApplication.executor": "Run",
-    "Spring Boot.QuestionServiceApplication.executor": "Run",
-    "Spring Boot.QuizServiceApplication.executor": "Run",
-    "Spring Boot.UserApplication.executor": "Run",
-    "git-widget-placeholder": "feat/question",
-    "last_opened_file_path": "C:/Users/User/Desktop/exit/backend/user-service",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs.protractor.protractor_package": "",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "모듈",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.20574713",
-    "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.C:/Users/User/Desktop/exit/backend/user-service [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend [bootJar].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend [classes].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend 빌드.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend:common [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend:common [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend:gateway-service [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend:user-service [buildDependents].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend:user-service [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend:user-service [classes].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend:user-service [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.backend:user-service [jar].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.gateway [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.gateway [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.gateway 빌드.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.question 빌드.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.user [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.소스 다운로드.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;Spring Boot.CommonApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.ConfigServerApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.EurekaServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.GatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.MagazineServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.QuestionServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.QuizServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.UserApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/question&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/User/Desktop/exit/backend/user-service&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs.protractor.protractor_package&quot;: &quot;&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;모듈&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.20574713&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mysql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -264,7 +261,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="복합.msa">
+  <component name="RunManager" selected="Gradle.backend [build]">
     <configuration name="msa" type="CompoundRunConfigurationType">
       <toRun name="GatewayApplication" type="SpringBootApplicationConfigurationType" />
       <toRun name="MagazineServiceApplication" type="SpringBootApplicationConfigurationType" />
@@ -479,8 +476,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.backend [clean]" />
         <item itemvalue="Gradle.backend [build]" />
+        <item itemvalue="Gradle.backend [clean]" />
         <item itemvalue="Gradle.backend [bootJar]" />
         <item itemvalue="Gradle.backend [classes]" />
         <item itemvalue="Gradle.C:/Users/User/Desktop/exit/backend/user-service [build]" />

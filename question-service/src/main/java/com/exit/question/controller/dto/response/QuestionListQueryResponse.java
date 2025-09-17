@@ -1,19 +1,19 @@
 package com.exit.question.controller.dto.response;
 
 import com.exit.question.domain.question.QuestionAnswerType;
-import com.exit.question.domain.question.QuestionCategory;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-public record SimilarQuestionResponse(
+public record QuestionListQueryResponse(
         Long questionId,
+        Long questionCategoryId,
+        Long questionWriterId,
         String questionTitle,
         String questionContent,
-        QuestionCategory questionCategory,
         Boolean questionUrgency,
         QuestionAnswerType questionAnswerType,
         Boolean questionAnswerAdopt,
+        Integer answerCount,
         LocalDateTime createdAt
 ) {
 }

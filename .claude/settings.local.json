@@ -14,7 +14,8 @@
       "Bash(del \"C:\\Users\\User\\Desktop\\exit\\backend\\user-service\\src\\main\\proto\\user.proto\")",
       "Bash(cls)",
       "Bash(clear)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(../gradlew:*)"
     ],
     "deny": [],
     "ask": []

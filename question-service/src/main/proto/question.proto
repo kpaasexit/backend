@@ -1,0 +1,165 @@
+syntax = "proto3";
+
+package com.exit.question;
+
+option java_multiple_files = true;
+option java_package = "com.exit.question.grpc";
+option java_outer_classname = "QuestionServiceProto";
+
+import "google/protobuf/timestamp.proto";
+
+service QuestionService {
+  rpc QuestionCreate(QuestionCreateRequest) returns (QuestionCreateResponse);
+  rpc AnswerAdopt(AnswerAdoptRequest) returns (AnswerAdoptResponse);
+  rpc AnswerCreate(AnswerCreateRequest) returns (AnswerCreateResponse);
+  rpc AnswerRecommend(AnswerRecommendRequest) returns (AnswerRecommendResponse);
+  rpc QuestionReport(QuestionReportRequest) returns (QuestionReportResponse);
+  rpc AnswerReport(AnswerReportRequest) returns (AnswerReportResponse);
+  rpc QuestionList(QuestionListRequest) returns (QuestionListResponse);
+  rpc CategoryRecommend(CategoryRecommendRequest) returns (CategoryRecommendationResponse);
+  rpc SimilarQuestion(SimilarQuestionRequest) returns (SimilarQuestionResponse);
+}
+
+// Request messages
+message QuestionCreateRequest {
+  string question_title = 1;
+  string question_content = 2;
+  int64 question_category = 3;
+  string question_urgency = 4;
+  string question_answer_type = 5;
+  string question_disclosure_type = 6;
+  int64 question_writer_id = 7;
+  repeated string images = 8;
+}
+
+message AnswerAdoptRequest {
+  int64 response_id = 1;
+}
+
+message AnswerCreateRequest {
+  int64 question_id = 1;
+  string response_content = 2;
+  string response_disclosure_type = 3;
+  int64 response_writer_id = 4;
+  repeated string images = 5;
+}
+
+message AnswerRecommendRequest {
+  int64 response_id = 1;
+  int64 user_id = 2;
+}
+
+message QuestionReportRequest {
+  int64 question_id = 1;
+  string question_report_title = 2;
+  string question_report_content = 3;
+}
+
+message AnswerReportRequest {
+  int64 response_id = 1;
+  string response_report_title = 2;
+  string response_report_content = 3;
+}
+
+message QuestionListRequest {
+  repeated int64 category_ids = 1;
+  string keyword = 2;
+  int32 page = 3;
+  int32 size = 4;
+}
+
+message CategoryRecommendRequest {
+  string title = 1;
+}
+
+message SimilarQuestionRequest {
+  string title = 1;
+}
+
+// Response messages
+message QuestionCreateResponse {
+  int64 question_id = 1;
+  string question_title = 2;
+  string question_content = 3;
+  int64 question_category = 4;
+  string question_urgency = 5;
+  string question_answer_type = 6;
+  string question_disclosure_type = 7;
+  int64 question_writer_id = 8;
+  repeated string image_urls = 9;
+  google.protobuf.Timestamp created_at = 10;
+}
+
+message AnswerAdoptResponse {
+  int64 response_id = 1;
+  bool response_adopt = 2;
+  google.protobuf.Timestamp updated_at = 3;
+}
+
+message AnswerCreateResponse {
+  int64 response_id = 1;
+  int64 question_id = 2;
+  string response_content = 3;
+  string response_disclosure_type = 4;
+  int64 response_writer_id = 5;
+  repeated string image_urls = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message AnswerRecommendResponse {
+  int32 count = 1;
+  bool is_recommended = 2;
+}
+
+message QuestionReportResponse {
+  int64 question_report_id = 1;
+  int64 question_id = 2;
+  string question_report_title = 3;
+  string question_report_content = 4;
+  int64 question_report_writer_id = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message AnswerReportResponse {
+  int64 response_report_id = 1;
+  int64 response_id = 2;
+  string response_report_title = 3;
+  string response_report_content = 4;
+  int64 response_report_writer_id = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message QuestionListResponse {
+  repeated QuestionListItem questions = 1;
+  bool has_next = 2;
+}
+
+message QuestionListItem {
+  int64 question_id = 1;
+  string question_title = 2;
+  string question_content = 3;
+  int64 question_category = 4;
+  string question_urgency = 5;
+  string question_answer_type = 6;
+  bool question_answer_adopt = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+message CategoryRecommendationResponse {
+  int64 category_id = 1;
+  string category_name = 2;
+  string category_description = 3;
+}
+
+message SimilarQuestionResponse {
+  int64 question_id = 1;
+  string question_title = 2;
+  string question_content = 3;
+  int64 question_category = 4;
+  string question_urgency = 5;
+  string question_answer_type = 6;
+  bool question_answer_adopt = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
