@@ -29,7 +29,7 @@ message QuestionCreateRequest {
   string question_answer_type = 5;
   string question_disclosure_type = 6;
   int64 question_writer_id = 7;
-  repeated string images = 8;
+  repeated bytes images = 8;
 }
 
 message AnswerAdoptRequest {
