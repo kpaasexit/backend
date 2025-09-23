@@ -2,20 +2,15 @@ package com.exit.gateway.controller;
 
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.success.AuthSuccessCode;
-import com.exit.gateway.controller.dto.request.LoginRequestDto;
-import com.exit.gateway.controller.dto.request.RefreshTokenRequestDto;
-import com.exit.gateway.controller.dto.response.AuthResponseDto;
-import com.exit.gateway.controller.dto.response.TokenResponseDto;
+import com.exit.gateway.controller.dto.request.auth.RefreshTokenRequestDto;
+import com.exit.gateway.controller.dto.response.auth.TokenResponseDto;
 import com.exit.gateway.service.UserGrpcClient;
-import com.exit.common.grpc.SocialLoginResponse;
 import com.exit.common.grpc.RefreshTokenResponse;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,19 +59,6 @@ public class AuthController {
             log.error("Logout failed", e);
             throw new RuntimeException("로그아웃에 실패했습니다.");
         }
-    }
-
-    private Long getUserIdFromRequest(HttpServletRequest request) {
-        // JWT 토큰에서 사용자 ID를 추출하는 로직
-        // 실제 구현에서는 JWT 파싱 로직이 필요합니다.
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            // JWT 파싱 로직을 통해 userId 추출
-            // 임시로 1L을 반환 (실제로는 JWT에서 추출해야 함)
-            return 1L;
-        }
-        throw new RuntimeException("유효하지 않은 토큰입니다.");
     }
 
     private String getGrpcErrorMessage(StatusRuntimeException e) {
