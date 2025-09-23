@@ -3,6 +3,8 @@ package com.exit.user.service;
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserIdRequest;
 import com.exit.common.exception.grpc.GrpcException;
+import com.exit.common.grpc.GetUserNamesRequest;
+import com.exit.common.grpc.IncreaseReportCountRequest;
 import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
 import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
 import com.exit.user.controller.dto.response.LoginSuccessResponse;
@@ -124,6 +126,14 @@ public class UserService {
                 .userId(user.getUserId())
                 .expiresAt(System.currentTimeMillis() + Duration.ofDays(1).toMillis())
                 .build();
+    }
+
+    public void increaseReportCount(IncreaseReportCountRequest request) {
+        Users user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
+
+        user.increaseReportCount();
+        userRepository.save(user);
     }
 }
 

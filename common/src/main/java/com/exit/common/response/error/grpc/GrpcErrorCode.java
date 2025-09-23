@@ -4,5 +4,6 @@ import io.grpc.Status;
 
 public interface GrpcErrorCode {
     Status.Code getGrpcStatusCode();
+
     String getDevelopCode();
 }

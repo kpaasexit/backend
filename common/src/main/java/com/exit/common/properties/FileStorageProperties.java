@@ -2,6 +2,7 @@ package com.exit.common.properties;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +11,8 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class FileStorageProperties {
-
-    private String uploadPath = "/mnt/nas/uploads";
+    @Value("${app.file-dir}")
+    private String uploadPath;
     private String baseUrl = "https://your-domain.com/files";
     private Boolean createDirectories = true;
 }

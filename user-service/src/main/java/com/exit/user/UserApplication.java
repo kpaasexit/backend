@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
         "com.exit.common" // JwtTokenProvider가 있는 패키지
 })
 @EnableDiscoveryClient
+@EnableJpaAuditing
 public class UserApplication {
 
     public static void main(String[] args) {

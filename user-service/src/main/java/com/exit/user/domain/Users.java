@@ -55,4 +55,8 @@ public class Users extends BaseEntity {
             this.userProfileUrl = profileImageUrl;
         }
     }
+
+    public void increaseReportCount() {
+        this.userReportCount++;
+    }
 }
