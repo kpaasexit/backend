@@ -1,4 +1,4 @@
-package com.exit.gateway.controller.dto.response.oauth2;
+package com.exit.gateway.controller.dto.response.auth.oauth2;
 
 import java.util.Map;
 

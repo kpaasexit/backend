@@ -1,7 +1,7 @@
 package com.exit.question.domain.response;
 
 import com.exit.common.domain.BaseEntity;
-import com.exit.question.controller.dto.request.AnswerCreateRequest;
+import com.exit.question.controller.dto.request.AnswerCreateRequestDto;
 import com.exit.question.domain.question.QuestionDisclosureType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -31,10 +31,6 @@ public class Response extends BaseEntity {
     @Column(name = "response_content", columnDefinition = "TEXT")
     private String responseContent;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "response_disclosure")
-    private QuestionDisclosureType responseDisclosure;
-
     @Column(name = "response_adopt")
     private Boolean responseAdopt;
 
@@ -42,22 +38,21 @@ public class Response extends BaseEntity {
     private Boolean responseIsAnonymous;
 
     @Builder
-    public Response(Long questionId, Long responseWriterId, String responseContent, QuestionDisclosureType responseDisclosure, Boolean responseAdopt, Boolean responseIsAnonymous) {
+    public Response(Long questionId, Long responseWriterId, String responseContent, Boolean responseAdopt, Boolean responseIsAnonymous) {
         this.questionId = questionId;
         this.responseWriterId = responseWriterId;
         this.responseContent = responseContent;
-        this.responseDisclosure = responseDisclosure;
         this.responseAdopt = responseAdopt;
         this.responseIsAnonymous = responseIsAnonymous;
     }
 
-    public static Response createResponse(AnswerCreateRequest answerCreateRequest) {
+    public static Response createResponse(AnswerCreateRequestDto answerCreateRequestDto) {
         return Response.builder()
-                .questionId(answerCreateRequest.questionId())
-                .responseContent(answerCreateRequest.responseContent())
-                .responseDisclosure(answerCreateRequest.responseDisclosure())
+                .questionId(answerCreateRequestDto.questionId())
+                .responseWriterId(answerCreateRequestDto.responseWriterId())
+                .responseContent(answerCreateRequestDto.responseContent())
                 .responseAdopt(false)
-                .responseIsAnonymous(answerCreateRequest.responseIsAnonymous())
+                .responseIsAnonymous(answerCreateRequestDto.responseIsAnonymous())
                 .build();
     }
 

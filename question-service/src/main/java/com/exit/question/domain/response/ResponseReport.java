@@ -1,6 +1,7 @@
 package com.exit.question.domain.response;
 
 import com.exit.common.domain.BaseEntity;
+import com.exit.question.controller.dto.request.AnswerReportRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,5 +39,14 @@ public class ResponseReport extends BaseEntity {
         this.responseReportTitle = responseReportTitle;
         this.responseReportContent = responseReportContent;
         this.responseReportWriterId = responseReportWriterId;
+    }
+
+    public static ResponseReport from(AnswerReportRequestDto request) {
+        return ResponseReport.builder()
+                .responseId(request.responseId())
+                .responseReportWriterId(request.responseReportWriterId())
+                .responseReportTitle(request.responseReportTitle())
+                .responseReportContent(request.responseReportContent())
+                .build();
     }
 }

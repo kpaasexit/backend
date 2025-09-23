@@ -2,20 +2,15 @@ package com.exit.gateway.controller;
 
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.success.AuthSuccessCode;
-import com.exit.gateway.controller.dto.request.LoginRequestDto;
-import com.exit.gateway.controller.dto.request.RefreshTokenRequestDto;
-import com.exit.gateway.controller.dto.response.AuthResponseDto;
-import com.exit.gateway.controller.dto.response.TokenResponseDto;
+import com.exit.gateway.controller.dto.request.auth.RefreshTokenRequestDto;
+import com.exit.gateway.controller.dto.response.auth.TokenResponseDto;
 import com.exit.gateway.service.UserGrpcClient;
-import com.exit.common.grpc.SocialLoginResponse;
 import com.exit.common.grpc.RefreshTokenResponse;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

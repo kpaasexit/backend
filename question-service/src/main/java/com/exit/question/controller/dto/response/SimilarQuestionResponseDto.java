@@ -4,9 +4,8 @@ import com.exit.question.domain.question.QuestionAnswerType;
 import com.exit.question.domain.question.QuestionCategory;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-public record SimilarQuestionResponse(
+public record SimilarQuestionResponseDto(
         Long questionId,
         String questionTitle,
         String questionContent,
@@ -17,3 +16,4 @@ public record SimilarQuestionResponse(
         LocalDateTime createdAt
 ) {
 }
+

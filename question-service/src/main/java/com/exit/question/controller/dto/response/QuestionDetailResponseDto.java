@@ -1,4 +1,10 @@
 package com.exit.question.controller.dto.response;
 
-public record QuestionDetailResponseDto() {
+import java.util.List;
+
+public record QuestionDetailResponseDto(
+        QuestionCreateResponseDto question,
+        List<ResponseDetailDto> responses,
+        Boolean hasNext
+) {
 }

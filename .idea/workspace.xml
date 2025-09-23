@@ -5,6 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="feat/ 파일 업로드 유틸리티 구현">
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/success/QuestionSuccessCode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/util/time/TimeStampUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/question/QuestionCreateResponseDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/question/QuestionListQueryResponseDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionDetailResponseDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/ResponseDetailDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.bin" afterDir="false" />
@@ -12,22 +19,70 @@
       <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e42a8389-0387-49d9-8f17-f89905d61adb.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e42a8389-0387-49d9-8f17-f89905d61adb.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/question-service/backend.question-service.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/question-service/backend.question-service.main.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/magazine-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/magazine-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/auth/jwt/dto/UserIdRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/auth/jwt/dto/UserIdRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/domain/BaseEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/domain/BaseEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/file/util/FileUploadException.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/util/file/FileUploadException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/file/util/FileUploadUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/util/file/FileUploadUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/file/util/FileValidationUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/util/file/FileValidationUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/grpc/GrpcErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/grpc/GrpcErrorCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-server/src/main/resources/config/gateway-service.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config-server/src/main/resources/config/gateway-service.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-server/src/main/resources/config/question-service.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config-server/src/main/resources/config/question-service.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-server/src/main/resources/config/user-service.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config-server/src/main/resources/config/user-service.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/filter/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/filter/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/request/LoginRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/request/auth/LoginRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/request/RefreshTokenRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/request/auth/RefreshTokenRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/AuthResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/auth/AuthResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/TokenResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/auth/TokenResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/oauth2/KakaoOAuth2UserInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/auth/oauth2/KakaoOAuth2UserInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/oauth2/NaverOAuth2UserInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/auth/oauth2/NaverOAuth2UserInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/oauth2/OAuth2UserInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/auth/oauth2/OAuth2UserInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/entity/OAuth2UserInfoFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/entity/OAuth2UserInfoFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/handler/OAuth2LoginSuccessHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/handler/OAuth2LoginSuccessHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/service/CustomOAuth2UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/service/CustomOAuth2UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/service/UserGrpcClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/service/UserGrpcClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/magazine-service/src/main/java/com/exit/magazine/MagazineServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/magazine-service/src/main/java/com/exit/magazine/MagazineServiceApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/question-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/QuestionServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/QuestionServiceApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerCreateRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerAdoptResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerAdoptResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionCreateResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionCreateResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerAdoptRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerAdoptRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerCreateRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerRecommendRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerRecommendRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerReportRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerReportRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/HashtagSuggestionRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/HashtagSuggestionRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/QuestionCreateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/QuestionCreateRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/QuestionListRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/QuestionListRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/QuestionReportRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/QuestionReportRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerAdoptResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerAdoptResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerCreateResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerCreateResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerRecommendResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerRecommendResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerReportResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerReportResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/CategoryRecommendationResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/CategoryRecommendationResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/HashtagSuggestionResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/HashtagSuggestionResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionCreateResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionCreateResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionListQueryResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionListQueryResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionListResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionListResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionReportResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionReportResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/SimilarQuestionResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/SimilarQuestionResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/question/Question.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/question/Question.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/question/repository/QuestionImageRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/question/repository/QuestionImageRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/question/repository/QuestionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/question/repository/QuestionRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/Response.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/Response.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/ResponseImage.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/ResponseImage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/ResponseReference.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/repository/ResponseReferenceRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/repository/ResponseImageRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/repository/ResponseImageRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/repository/ResponseRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/repository/ResponseRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/exception/GrpcQuestionErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/exception/GrpcQuestionErrorCode.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/quiz-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/quiz-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/proto/question.proto" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/proto/question.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/src/main/resources/bootstrap.yml" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/src/main/resources/bootstrap.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/quiz-service/src/main/java/com/exit/quiz/QuizServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/quiz-service/src/main/java/com/exit/quiz/QuizServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/UserApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/UserApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/resources/bootstrap.yml" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/resources/bootstrap.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,8 +189,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
         <option value="Record" />
       </list>
     </option>
@@ -206,11 +261,11 @@
     &quot;Spring Boot.CommonApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.ConfigServerApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.EurekaServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.GatewayApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.GatewayApplication.executor&quot;: &quot;Debug&quot;,
     &quot;Spring Boot.MagazineServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.QuestionServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.QuestionServiceApplication.executor&quot;: &quot;Debug&quot;,
     &quot;Spring Boot.QuizServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.UserApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.UserApplication.executor&quot;: &quot;Debug&quot;,
     &quot;git-widget-placeholder&quot;: &quot;feat/question&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/User/Desktop/exit/backend/user-service&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -236,6 +291,9 @@
     <option name="notificationShown" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.exit.gateway.controller.dto.response.question" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\User\Desktop\exit\backend\user-service" />
       <recent name="C:\Users\User\Desktop\exit\backend\quiz-service" />
@@ -244,6 +302,7 @@
       <recent name="C:\Users\User\Desktop\exit\backend\magazine-service" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\User\Desktop\exit\backend\common\src\main\proto" />
       <recent name="C:\Users\User\Desktop\exit\backend" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -261,7 +320,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.backend [build]">
+  <component name="RunManager" selected="Spring Boot.QuestionServiceApplication">
     <configuration name="msa" type="CompoundRunConfigurationType">
       <toRun name="GatewayApplication" type="SpringBootApplicationConfigurationType" />
       <toRun name="MagazineServiceApplication" type="SpringBootApplicationConfigurationType" />
@@ -464,6 +523,7 @@
       <item itemvalue="Gradle.C:/Users/User/Desktop/exit/backend/user-service [build]" />
       <item itemvalue="Gradle.backend [build]" />
       <item itemvalue="Gradle.backend [clean]" />
+      <item itemvalue="Spring Boot.QuizServiceApplication" />
       <item itemvalue="Spring Boot.UserApplication" />
       <item itemvalue="Spring Boot.ConfigServerApplication" />
       <item itemvalue="Spring Boot.GatewayApplication" />
@@ -471,7 +531,6 @@
       <item itemvalue="Spring Boot.EurekaServiceApplication" />
       <item itemvalue="Spring Boot.MagazineServiceApplication" />
       <item itemvalue="Spring Boot.QuestionServiceApplication" />
-      <item itemvalue="Spring Boot.QuizServiceApplication" />
       <item itemvalue="복합.msa" />
     </list>
     <recent_temporary>
@@ -519,6 +578,13 @@
       <workItem from="1757654783750" duration="26109000" />
       <workItem from="1757905388443" duration="10934000" />
       <workItem from="1757988772534" duration="7133000" />
+      <workItem from="1758032194637" duration="14114000" />
+      <workItem from="1758160191565" duration="5122000" />
+      <workItem from="1758169098200" duration="982000" />
+      <workItem from="1758372759937" duration="7525000" />
+      <workItem from="1758419085028" duration="10071000" />
+      <workItem from="1758510828283" duration="13219000" />
+      <workItem from="1758599626750" duration="4523000" />
     </task>
     <task id="LOCAL-00001" summary="초기 환경 설정 V1">
       <option name="closed" value="true" />
@@ -551,48 +617,85 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/oauth2/KakaoOAuth2UserInfo.java</url>
-          <line>11</line>
-          <properties class="com.exit.gateway.controller.dto.response.oauth2.KakaoOAuth2UserInfo" method="getProviderId">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/oauth2/NaverOAuth2UserInfo.java</url>
-          <line>20</line>
-          <properties class="com.exit.gateway.controller.dto.response.oauth2.NaverOAuth2UserInfo" method="getName">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/handler/OAuth2LoginSuccessHandler.java</url>
-          <line>58</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/handler/OAuth2LoginSuccessHandler.java</url>
-          <line>50</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/filter/JwtAuthenticationFilter.java</url>
           <line>33</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/filter/JwtAuthenticationFilter.java</url>
-          <line>67</line>
-          <option name="timeStamp" value="17" />
+          <url>file://$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java</url>
+          <line>28</line>
+          <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/config/filter/JwtAuthenticationFilter.java</url>
-          <line>68</line>
-          <option name="timeStamp" value="18" />
+          <url>file://$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java</url>
+          <line>29</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java</url>
+          <line>31</line>
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java</url>
+          <line>43</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java</url>
+          <line>200</line>
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java</url>
+          <line>201</line>
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java</url>
+          <line>203</line>
+          <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java</url>
+          <line>206</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/service/QuestionGrpcClient.java</url>
+          <line>94</line>
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/QuestionController.java</url>
+          <line>63</line>
+          <option name="timeStamp" value="40" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/QuestionController.java</url>
+          <line>116</line>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/QuestionController.java</url>
+          <line>113</line>
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/QuestionController.java</url>
+          <line>117</line>
+          <option name="timeStamp" value="66" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/service/QuestionGrpcClient.java</url>
+          <line>58</line>
+          <option name="timeStamp" value="69" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/service/QuestionGrpcClient.java</url>
+          <line>60</line>
+          <option name="timeStamp" value="70" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

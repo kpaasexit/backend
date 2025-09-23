@@ -4,7 +4,7 @@ import com.exit.question.domain.question.QuestionAnswerType;
 
 import java.time.LocalDateTime;
 
-public record QuestionListQueryResponse(
+public record QuestionListQueryResponseDto(
         Long questionId,
         Long questionCategoryId,
         Long questionWriterId,

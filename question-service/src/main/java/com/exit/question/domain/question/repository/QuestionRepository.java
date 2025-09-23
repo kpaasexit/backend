@@ -1,6 +1,6 @@
 package com.exit.question.domain.question.repository;
 
-import com.exit.question.controller.dto.response.QuestionListQueryResponse;
+import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query(value = """
-            select new com.exit.question.controller.dto.response.QuestionListQueryResponse(
+            select new com.exit.question.controller.dto.response.QuestionListQueryResponseDto(
                 q.questionId,
                 qc.questionCategoryId,
                 q.questionWriterId,
@@ -23,12 +23,12 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                 q.questionUrgency,
                 q.questionAnswerType,
                 q.questionAnswerAdopt,
-                (select count(r1) from Response r1 where r1.questionId = q.questionId),
+                cast((select count(r1) from Response r1 where r1.questionId = q.questionId) as int),
                 q.createdAt
             )
             from Question q
             join q.questionCategory qc
-            where qc.questionCategoryId in :categoryIds
+            where (qc.questionCategoryId in :categoryIds)
               and (
                     :keyword is null or :keyword = ''
                     or lower(q.questionTitle)  like lower(concat('%', :keyword, '%'))
@@ -36,5 +36,5 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                   )
             order by q.createdAt desc
             """)
-    Slice<QuestionListQueryResponse> findQuestionsByFilter(@Param("categoryIds") List<Short> categoryIds, @Param("keyword") String keyword, Pageable pageable);
+    Slice<QuestionListQueryResponseDto> findQuestionsByFilter(@Param("categoryIds") List<Long> categoryIds, @Param("keyword") String keyword, Pageable pageable);
 }

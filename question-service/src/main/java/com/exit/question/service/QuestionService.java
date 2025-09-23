@@ -1,7 +1,8 @@
 package com.exit.question.service;
 
 import com.exit.common.exception.grpc.GrpcException;
-import com.exit.common.file.util.FileUploadUtil;
+import com.exit.common.grpc.UserIdAndNameInfo;
+import com.exit.common.util.file.FileUploadUtil;
 import com.exit.question.controller.dto.request.*;
 import com.exit.question.controller.dto.response.*;
 import com.exit.question.domain.question.Question;
@@ -27,15 +28,17 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class QuestionService {
-    private static final String QUESTION_FOLDER = "/question";
-    private static final String RESPONSE_FOLDER = "/response";
+    private static final String QUESTION_FOLDER = "question";
+    private static final String RESPONSE_FOLDER = "response";
     private final QuestionRepository questionRepository;
     private final QuestionCategoryRepository questionCategoryRepository;
     private final QuestionImageRepository questionImageRepository;
@@ -45,169 +48,124 @@ public class QuestionService {
     private final ResponseLikeRepository responseLikeRepository;
     private final ResponseReportRepository responseReportRepository;
     private final FileUploadUtil fileUploadUtil;
+    private final UserGrpcClient userGrpcClient;
+//    private final NlpGrpcClient nlpGrpcClient;
 
-    public QuestionCreateResponse questionCreate(QuestionCreateRequest questionCreateRequest) {
-        Question question = Question.createQuestionFromRequest(questionCreateRequest);
+    public QuestionCreateResponseDto createQuestion(QuestionCreateRequestDto request) {
+        QuestionCategory questionCategory = questionCategoryRepository.findById(request.questionCategoryId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+        Question question = Question.createQuestionFromRequest(request, questionCategory);
 
         Question savedQuestion = questionRepository.save(question);
 
-        List<String> imageUrls = null;
-        if (questionCreateRequest.images() != null) {
-            imageUrls = fileUploadUtil.uploadImages(questionCreateRequest.images(), QUESTION_FOLDER);
-            for (String imageUrl : imageUrls) {
-                QuestionImage questionImage = QuestionImage.builder()
-                        .questionId(savedQuestion.getQuestionId())
-                        .questionImageUrl(imageUrl)
-                        .build();
-                questionImageRepository.save(questionImage);
-            }
-        }
+        List<String> imageUrls = uploadQuestionImages(request, savedQuestion);
+        String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
 
-        return QuestionCreateResponse.from(savedQuestion, imageUrls);
+        return QuestionCreateResponseDto.from(savedQuestion, imageUrls, questionWriterName);
     }
 
-    public AnswerAdoptResponse answerAdopt(AnswerAdoptRequest answerAdoptRequest) {
-        Response response = responseRepository.findById(answerAdoptRequest.responseId())
+    private List<String> uploadQuestionImages(QuestionCreateRequestDto questionCreateRequestDto, Question savedQuestion) {
+        List<String> imageUrls = null;
+        if (questionCreateRequestDto.images() != null) {
+            imageUrls = fileUploadUtil.uploadImages(questionCreateRequestDto.images(), QUESTION_FOLDER);
+            List<QuestionImage> questionImages = imageUrls.stream()
+                    .map(url -> QuestionImage.builder()
+                            .questionId(savedQuestion.getQuestionId())
+                            .questionImageUrl(url)
+                            .build())
+                    .toList();
+
+            questionImageRepository.saveAll(questionImages);
+        }
+        return imageUrls;
+    }
+
+    public AnswerAdoptResponseDto answerAdopt(AnswerAdoptRequestDto answerAdoptRequestDto) {
+        Response response = responseRepository.findById(answerAdoptRequestDto.responseId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
 
-        Response updateResponseAdopt = response.updateResponseAdopt();
-        Response savedResponse = responseRepository.save(updateResponseAdopt);
+        validateQuestionNotAlreadyAdopted(response.getQuestionId());
 
-        return AnswerAdoptResponse.from(savedResponse);
+        Response adoptedResponse = adoptResponse(response);
+
+        return AnswerAdoptResponseDto.from(adoptedResponse);
     }
 
-    public AnswerCreateResponse answerCreate(AnswerCreateRequest answerCreateRequest) {
-        Response newResponse = Response.createResponse(answerCreateRequest);
-
+    public AnswerCreateResponseDto answerCreate(AnswerCreateRequestDto answerCreateRequestDto) {
+        Response newResponse = Response.createResponse(answerCreateRequestDto);
         Response savedResponse = responseRepository.save(newResponse);
 
-        List<String> imageUrls = null;
-        if (answerCreateRequest.images() != null) {
-            imageUrls = fileUploadUtil.uploadImages(answerCreateRequest.images(), RESPONSE_FOLDER);
-            for (String imageUrl : imageUrls) {
-                ResponseImage responseImage = ResponseImage.builder()
-                        .responseId(savedResponse.getResponseId())
-                        .responseImageUrl(imageUrl)
-                        .build();
-                responseImageRepository.save(responseImage);
-            }
-        }
+        List<String> imageUrls = processAnswerImages(answerCreateRequestDto, savedResponse);
 
-        return AnswerCreateResponse.from(savedResponse, imageUrls);
+        return AnswerCreateResponseDto.from(savedResponse, imageUrls);
     }
 
-    public AnswerRecommendResponse answerRecommend(AnswerRecommendRequest req) {
-        Optional<ResponseLike> existing =
+    public AnswerRecommendResponseDto toggleAnswerLike(AnswerRecommendRequestDto req) {
+        Optional<ResponseLike> existingLike =
                 responseLikeRepository.findByResponseIdAndUserId(req.responseId(), req.userId());
 
-        if (existing.isPresent()) {
-            // 이미 좋아요 → 취소
-            responseLikeRepository.delete(existing.get());
-            int count = responseLikeRepository.countByResponseId(req.responseId());
-            return new AnswerRecommendResponse(count, false);
-        }
+        boolean isLiked = handleLikeToggle(existingLike, req);
+        int likeCount = responseLikeRepository.countByResponseId(req.responseId());
 
-        // 새로 좋아요
-        ResponseLike like = ResponseLike.builder()
-                .responseId(req.responseId())
-                .userId(req.userId())
-                .build();
-        responseLikeRepository.save(like);
-
-        int count = responseLikeRepository.countByResponseId(req.responseId());
-        return new AnswerRecommendResponse(count, true);
+        return new AnswerRecommendResponseDto(likeCount, isLiked);
     }
 
-    public QuestionReportResponse questionReport(QuestionReportRequest questionReportRequest) {
-        QuestionReport questionReport = QuestionReport.builder()
-                .questionId(questionReportRequest.questionId())
-                .questionReportTitle(questionReportRequest.questionReportTitle())
-                .questionReportContent(questionReportRequest.questionReportContent())
-                .questionReportWriterId(1L)
-                .build();
+    public QuestionReportResponseDto questionReport(QuestionReportRequestDto request) {
+        Question question = questionRepository.findById(request.questionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        QuestionReport questionReport = createQuestionReport(request);
+        userGrpcClient.increaseReportCount(question.getQuestionWriterId());
 
         QuestionReport savedQuestionReport = questionReportRepository.save(questionReport);
-
-        return new QuestionReportResponse(
-                savedQuestionReport.getQuestionReportId(),
-                savedQuestionReport.getQuestionId(),
-                savedQuestionReport.getQuestionReportTitle(),
-                savedQuestionReport.getQuestionReportContent(),
-                savedQuestionReport.getQuestionReportWriterId(),
-                savedQuestionReport.getCreatedAt(),
-                savedQuestionReport.getUpdatedAt()
-        );
+        return QuestionReportResponseDto.from(savedQuestionReport);
     }
 
-    public AnswerReportResponse answerReport(AnswerReportRequest answerReportRequest) {
-        ResponseReport responseReport = ResponseReport.builder()
-                .responseId(answerReportRequest.responseId())
-                .responseReportTitle(answerReportRequest.responseReportTitle())
-                .responseReportContent(answerReportRequest.responseReportContent())
-                .responseReportWriterId(1L)
+    private QuestionReport createQuestionReport(QuestionReportRequestDto request) {
+        return QuestionReport.builder()
+                .questionId(request.questionId())
+                .questionReportTitle(request.questionReportTitle())
+                .questionReportContent(request.questionReportContent())
+                .questionReportWriterId(request.questionReportWriterId())
                 .build();
+    }
+
+    public AnswerReportResponseDto answerReport(AnswerReportRequestDto request) {
+        Response response = responseRepository.findById(request.responseId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+        ResponseReport responseReport = ResponseReport.from(request);
 
         ResponseReport savedResponseReport = responseReportRepository.save(responseReport);
+        userGrpcClient.increaseReportCount(response.getResponseWriterId());
 
-        return new AnswerReportResponse(
-                savedResponseReport.getResponseReportId(),
-                savedResponseReport.getResponseId(),
-                savedResponseReport.getResponseReportTitle(),
-                savedResponseReport.getResponseReportContent(),
-                savedResponseReport.getResponseReportWriterId(),
-                savedResponseReport.getCreatedAt(),
-                savedResponseReport.getUpdatedAt()
-        );
+        return AnswerReportResponseDto.from(savedResponseReport);
     }
 
     @Transactional(readOnly = true)
-    public QuestionListResponse questionList(QuestionListRequest filter) {
+    public QuestionListResponseDto questionList(QuestionListRequestDto filter) {
         PageRequest pageRequest = PageRequest.of(filter.getPage(), filter.getSize());
-        Slice<QuestionListQueryResponse> slice = questionRepository.findQuestionsByFilter(filter.getCategoryIds(), filter.getKeyword(), pageRequest);
-        return new QuestionListResponse(slice.getContent(), slice.hasNext());
+        Slice<QuestionListQueryResponseDto> slice = questionRepository.findQuestionsByFilter(filter.getCategoryIds(), filter.getKeyword(), pageRequest);
+        return new QuestionListResponseDto(slice.getContent(), slice.hasNext());
     }
 
+
     // 카테고리 추천
-    public CategoryRecommendationResponse categoryRecommend(String title) {
-        // 1. 과거 질문 데이터를 기반으로 유사한 제목의 질문에서 가장 많이 사용된 카테고리 찾기
-        QuestionCategory mostUsedCategory = questionCategoryRepository.findMostUsedCategoryByTitlePattern(title);
-        if (mostUsedCategory != null) {
-            return CategoryRecommendationResponse.from(mostUsedCategory);
-        }
+    @Transactional(readOnly = true)
+    public CategoryRecommendationResponseDto categoryRecommend(String title) {
 
-        // 2. 제목에서 키워드를 추출하여 카테고리 이름과 매칭
-        String[] keywords = title.toLowerCase().split("\\s+");
-        for (String keyword : keywords) {
-            List<QuestionCategory> matchingCategories = questionCategoryRepository.findCategoriesByKeyword(keyword);
-            if (!matchingCategories.isEmpty()) {
-                QuestionCategory matchedCategory = matchingCategories.get(0);
-                return CategoryRecommendationResponse.from(matchedCategory);
-            }
-        }
-
-        // 3. 기본값: 첫 번째 카테고리 반환
-        // TODO: 더 정교한 카테고리 추천을 위해서는 AI/ML 기술이 필요
-        // - 자연어 처리(NLP)를 통한 의미적 유사도 계산
-        // - 머신러닝 모델을 활용한 카테고리 분류
-        // - 벡터 임베딩 기반 유사도 매칭
-        List<QuestionCategory> allCategories = questionCategoryRepository.findAll();
-        if (allCategories.isEmpty()) {
-            return null;
-        }
-
-        QuestionCategory defaultCategory = allCategories.get(0);
-        return CategoryRecommendationResponse.from(defaultCategory);
+        return null;
     }
 
     // 유사 질문 조회
-    public SimilarQuestionResponse similarQuestion(String title) {
+    @Transactional(readOnly = true)
+    public SimilarQuestionResponseDto similarQuestion(String title) {
         List<Question> questions = questionRepository.findAll();
         if (questions.isEmpty()) {
             return null;
         }
         Question similarQuestion = questions.get(0);
 
-        return new SimilarQuestionResponse(
+        return new SimilarQuestionResponseDto(
                 similarQuestion.getQuestionId(),
                 similarQuestion.getQuestionTitle(),
                 similarQuestion.getQuestionContent(),
@@ -218,5 +176,137 @@ public class QuestionService {
                 similarQuestion.getCreatedAt()
         );
     }
-}
 
+    @Transactional(readOnly = true)
+    public QuestionDetailResponseDto getQuestionDetail(Long questionId) {
+        QuestionCreateResponseDto questionDto = buildQuestionDto(questionId);
+        List<ResponseDetailDto> responseDetailDtos = buildResponseDetailDtos(questionId);
+        boolean hasMore = hasMoreResponses(questionId);
+
+        return new QuestionDetailResponseDto(questionDto, responseDetailDtos, hasMore);
+    }
+
+    private QuestionCreateResponseDto buildQuestionDto(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        Optional<List<QuestionImage>> images = questionImageRepository.findAllByQuestionId(questionId);
+        List<String> questionUrls = new ArrayList<>();
+        images.ifPresent(questionImages ->
+                questionImages.forEach(image -> questionUrls.add(image.getQuestionImageUrl())));
+        String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
+        QuestionCreateResponseDto questionDto = QuestionCreateResponseDto.from(question, questionUrls, questionWriterName);
+        return questionDto;
+    }
+
+    private List<ResponseDetailDto> buildResponseDetailDtos(Long questionId) {
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        Slice<Response> responseSlice = responseRepository.findAllByQuestionId(questionId, pageRequest);
+
+        List<Response> responses = responseSlice.getContent();
+        if (responses.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 배치로 필요한 데이터 미리 조회 (N+1 문제 해결)
+        Map<Long, List<String>> responseImageUrlsMap = getResponseImageUrlsMap(responses);
+        Map<Long, Integer> likeCountMap = getLikeCountMap(responses);
+        Map<Long, String> writerNameMap = getWriterNameMap(responses);
+
+        return responses.stream()
+                .map(response -> ResponseDetailDto.from(
+                        response,
+                        responseImageUrlsMap.getOrDefault(response.getResponseId(), Collections.emptyList()),
+                        likeCountMap.getOrDefault(response.getResponseId(), 0),
+                        writerNameMap.getOrDefault(response.getResponseWriterId(), "Unknown")
+                ))
+                .toList();
+    }
+
+    private Map<Long, List<String>> getResponseImageUrlsMap(List<Response> responses) {
+        List<Long> responseIds = responses.stream()
+                .map(Response::getResponseId)
+                .toList();
+
+        return responseImageRepository.findAllByResponseIdIn(responseIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        ResponseImage::getResponseId,
+                        Collectors.mapping(ResponseImage::getResponseImageUrl, Collectors.toList())
+                ));
+    }
+
+    private Map<Long, Integer> getLikeCountMap(List<Response> responses) {
+        List<Long> responseIds = responses.stream()
+                .map(Response::getResponseId)
+                .toList();
+
+        return responseLikeRepository.countByResponseIdIn(responseIds);
+    }
+
+    private Map<Long, String> getWriterNameMap(List<Response> responses) {
+        Set<Long> writerIds = responses.stream()
+                .map(Response::getResponseWriterId)
+                .collect(toSet());
+
+        List<UserIdAndNameInfo> userInfos = userGrpcClient.getUserNames(new ArrayList<>(writerIds));
+        return userInfos.stream()
+                .collect(toMap(
+                        UserIdAndNameInfo::getUserId,
+                        UserIdAndNameInfo::getUserName
+                ));
+    }
+
+    private boolean hasMoreResponses(Long questionId) {
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        return responseRepository.findAllByQuestionId(questionId, pageRequest).hasNext();
+    }
+
+    private void validateQuestionNotAlreadyAdopted(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        if (question.getQuestionAnswerAdopt()) {
+            throw new GrpcException(GrpcQuestionErrorCode.EXIST_ADOPTED_RESPONSE);
+        }
+    }
+
+    private Response adoptResponse(Response response) {
+        Response updateResponseAdopt = response.updateResponseAdopt();
+        Response savedResponse = responseRepository.save(updateResponseAdopt);
+        return savedResponse;
+    }
+
+    private List<String> processAnswerImages(AnswerCreateRequestDto answerCreateRequestDto, Response savedResponse) {
+        List<String> imageUrls = null;
+        if (answerCreateRequestDto.images() != null) {
+            imageUrls = fileUploadUtil.uploadImages(answerCreateRequestDto.images(), RESPONSE_FOLDER);
+            for (String imageUrl : imageUrls) {
+                ResponseImage responseImage = ResponseImage.builder()
+                        .responseId(savedResponse.getResponseId())
+                        .responseImageUrl(imageUrl)
+                        .build();
+                responseImageRepository.save(responseImage);
+            }
+        }
+        return imageUrls;
+    }
+
+    private boolean handleLikeToggle(Optional<ResponseLike> existingLike, AnswerRecommendRequestDto req) {
+        if (existingLike.isPresent()) {
+            responseLikeRepository.delete(existingLike.get());
+            return false; // 좋아요 취소됨
+        }
+
+        ResponseLike newLike = createNewLike(req);
+        responseLikeRepository.save(newLike);
+        return true; // 새로운 좋아요
+    }
+
+    private ResponseLike createNewLike(AnswerRecommendRequestDto req) {
+        return ResponseLike.builder()
+                .responseId(req.responseId())
+                .userId(req.userId())
+                .build();
+    }
+}

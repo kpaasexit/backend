@@ -1,4 +1,4 @@
-package com.exit.common.file.util;
+package com.exit.common.util.file;
 
 import com.exit.common.grpc.UploadBytesRequest;
 import com.google.protobuf.ByteString;
