@@ -1,6 +1,7 @@
 package com.exit.common.file.util;
 
-import org.springframework.web.multipart.MultipartFile;
+import com.exit.common.grpc.UploadBytesRequest;
+import com.google.protobuf.ByteString;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,29 +18,30 @@ public class FileValidationUtils {
 
     private static final long MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
-    public static boolean isValidImageFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
+    public static boolean isValidImageFile(UploadBytesRequest request) {
+        ByteString data = request.getData();
+        String fileName = request.getMeta().getFilename();
+        String contentType = request.getMeta().getContentType();
+        if (data.isEmpty()) {
             return false;
         }
 
         // 파일 크기 검증
-        if (file.getSize() > MAX_FILE_SIZE) {
+        if (data.size() > MAX_FILE_SIZE) {
             return false;
         }
 
         // MIME 타입 검증
-        String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_MIME_TYPES.contains(contentType.toLowerCase())) {
+        if (contentType.isEmpty() || !ALLOWED_MIME_TYPES.contains(contentType.toLowerCase())) {
             return false;
         }
 
         // 파일 확장자 검증
-        String originalFilename = file.getOriginalFilename();
-        if (originalFilename == null) {
+        if (fileName.isEmpty()) {
             return false;
         }
 
-        return isImageFile(originalFilename);
+        return isImageFile(fileName);
     }
 
     public static String getFileExtension(String filename) {

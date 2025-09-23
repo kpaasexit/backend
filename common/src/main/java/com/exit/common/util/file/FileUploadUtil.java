@@ -1,16 +1,16 @@
 package com.exit.common.file.util;
 
+import com.exit.common.grpc.UploadBytesRequest;
 import com.exit.common.properties.FileStorageProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,12 +26,12 @@ public class FileUploadUtil {
     /**
      * 단일 이미지 파일을 마운트된 NAS에 업로드
      *
-     * @param file       업로드할 파일
+     * @param request    업로드할 파일 정보
      * @param folderPath 저장할 폴더 경로 (예: "questions/images/")
      * @return 업로드된 파일의 공개 URL
      */
-    public String uploadImage(MultipartFile file, String folderPath) {
-        validateFile(file);
+    public String uploadImage(UploadBytesRequest request, String folderPath) {
+        validateFile(request);
 
         try {
             // 날짜별 폴더 구조 생성 (예: 2024/01/15/)
@@ -39,7 +39,7 @@ public class FileUploadUtil {
             String fullFolderPath = folderPath + "/" + dateFolder;
 
             // 고유한 파일명 생성
-            String fileName = generateUniqueFileName(file.getOriginalFilename());
+            String fileName = generateUniqueFileName(request.getMeta().getFilename());
 
             // 전체 파일 경로 생성
             Path uploadDir = Paths.get(properties.getUploadPath(), fullFolderPath);
@@ -51,20 +51,20 @@ public class FileUploadUtil {
             }
 
             // 파일 저장
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            Files.write(filePath, request.getData().toByteArray(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
 
             // 공개 URL 생성
             String relativePath = fullFolderPath + "/" + fileName;
             String fileUrl = generateFileUrl(relativePath);
 
-            log.info("File uploaded successfully: {} -> {}", file.getOriginalFilename(), fileUrl);
+            log.info("File uploaded successfully: {} -> {}", request.getMeta().getFilename(), fileUrl);
             return fileUrl;
 
         } catch (IOException e) {
-            log.error("Failed to upload file: {}", file.getOriginalFilename(), e);
+            log.error("Failed to upload file: {}", request.getMeta().getFilename(), e);
             throw new FileUploadException.FileUploadFailedException("파일 업로드 실패", e);
         } catch (Exception e) {
-            log.error("Unexpected error during file upload: {}", file.getOriginalFilename(), e);
+            log.error("Unexpected error during file upload: {}", request.getMeta().getFilename(), e);
             throw new FileUploadException.FileUploadFailedException("파일 업로드 중 예상치 못한 오류 발생", e);
         }
     }
@@ -76,15 +76,15 @@ public class FileUploadUtil {
      * @param folderPath 저장할 폴더 경로
      * @return 업로드된 파일들의 공개 URL 목록
      */
-    public List<String> uploadImages(List<MultipartFile> files, String folderPath) {
+    public List<String> uploadImages(List<UploadBytesRequest> files, String folderPath) {
         if (files == null || files.isEmpty()) {
             return new ArrayList<>();
         }
 
         List<String> uploadedUrls = new ArrayList<>();
 
-        for (MultipartFile file : files) {
-            if (file != null && !file.isEmpty()) {
+        for (UploadBytesRequest file : files) {
+            if (file != null) {
                 String uploadedUrl = uploadImage(file, folderPath);
                 uploadedUrls.add(uploadedUrl);
             }
@@ -178,12 +178,12 @@ public class FileUploadUtil {
         }
     }
 
-    private void validateFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
+    private void validateFile(UploadBytesRequest request) {
+        if (request.getData().isEmpty()) {
             throw new FileUploadException("업로드할 파일이 없습니다.");
         }
 
-        if (!FileValidationUtils.isValidImageFile(file)) {
+        if (!FileValidationUtils.isValidImageFile(request)) {
             throw new FileUploadException.InvalidFileTypeException("지원하지 않는 파일 형식입니다. (지원 형식: JPG, PNG, GIF, BMP, WEBP)");
         }
     }

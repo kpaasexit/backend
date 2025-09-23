@@ -1,7 +1,7 @@
 package com.exit.question.controller.dto.request;
 
+import com.exit.common.grpc.UploadBytesRequest;
 import com.exit.question.domain.question.QuestionDisclosureType;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public record AnswerCreateRequest(
         String responseContent,
         QuestionDisclosureType responseDisclosure,
         Boolean responseIsAnonymous,
-        List<MultipartFile> images,
+        List<UploadBytesRequest> images,
         List<String> referenceUrls
 ) {
 }
