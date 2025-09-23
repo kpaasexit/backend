@@ -2,8 +2,8 @@ package com.exit.question.controller.dto.response;
 
 import java.util.List;
 
-public record QuestionListResponse(
-        List<QuestionListQueryResponse> questionList,
+public record QuestionListResponseDto(
+        List<QuestionListQueryResponseDto> questionList,
         boolean hasNext
 ) {
 }

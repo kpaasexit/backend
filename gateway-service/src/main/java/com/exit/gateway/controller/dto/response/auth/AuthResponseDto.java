@@ -1,4 +1,4 @@
-package com.exit.gateway.controller.dto.response;
+package com.exit.gateway.controller.dto.response.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

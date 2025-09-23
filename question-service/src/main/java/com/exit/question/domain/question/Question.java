@@ -1,13 +1,12 @@
 package com.exit.question.domain.question;
 
 import com.exit.common.domain.BaseEntity;
-import com.exit.question.controller.dto.request.QuestionCreateRequest;
+import com.exit.question.controller.dto.request.QuestionCreateRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
 
 @Entity
 @Table(name = "questions")
@@ -22,7 +21,7 @@ public class Question extends BaseEntity {
     @Column(name = "question_id")
     private Long questionId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_category_id", nullable = false)
     private QuestionCategory questionCategory;
 
@@ -65,16 +64,17 @@ public class Question extends BaseEntity {
         this.questionIsAnonymous = questionIsAnonymous;
     }
 
-    public static Question createQuestionFromRequest(QuestionCreateRequest questionCreateRequest) {
+    public static Question createQuestionFromRequest(QuestionCreateRequestDto questionCreateRequestDto, QuestionCategory questionCategory) {
         return Question.builder()
-                .questionTitle(questionCreateRequest.questionTitle())
-                .questionContent(questionCreateRequest.questionContent())
-                .questionCategory(questionCreateRequest.questionCategory())
-                .questionUrgency(questionCreateRequest.questionUrgency())
-                .questionAnswerType(questionCreateRequest.questionAnswerType())
+                .questionWriterId(questionCreateRequestDto.questionWriterId())
+                .questionTitle(questionCreateRequestDto.questionTitle())
+                .questionContent(questionCreateRequestDto.questionContent())
+                .questionCategory(questionCategory)
+                .questionUrgency(questionCreateRequestDto.questionUrgency())
+                .questionAnswerType(questionCreateRequestDto.questionAnswerType())
                 .questionAnswerAdopt(false)
-                .questionDisclosure(questionCreateRequest.questionDisclosure())
-                .questionIsAnonymous(questionCreateRequest.questionIsAnonymous())
+                .questionDisclosure(questionCreateRequestDto.questionDisclosure())
+                .questionIsAnonymous(questionCreateRequestDto.questionIsAnonymous())
                 .build();
     }
 }

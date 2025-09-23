@@ -1,4 +1,4 @@
-package com.exit.common.file.util;
+package com.exit.common.util.file;
 
 public class FileUploadException extends RuntimeException {
 

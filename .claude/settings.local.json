@@ -15,7 +15,8 @@
       "Bash(cls)",
       "Bash(clear)",
       "Bash(mkdir:*)",
-      "Bash(../gradlew:*)"
+      "Bash(../gradlew:*)",
+      "Bash(jar tf:*)"
     ],
     "deny": [],
     "ask": []

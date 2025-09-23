@@ -78,3 +78,6 @@ grpc:
     user-service:
       address: discovery:///user-service  # Eureka에서 서비스 발견
       negotiation-type: plaintext
+    question-service:
+      address: discovery:///question-service  # Eureka에서 서비스 발견
+      negotiation-type: plaintext

@@ -23,10 +23,16 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
-# gRPC 서버 설정
+# gRPC 설정
 grpc:
   server:
     port: 0
+  client:
+    user-service:
+      address: discovery:///user-service
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
 
 # Eureka 클라이언트 설정
 eureka:
