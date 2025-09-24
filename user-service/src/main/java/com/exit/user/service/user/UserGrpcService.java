@@ -1,4 +1,4 @@
-package com.exit.user.service;
+package com.exit.user.service.user;
 
 import com.exit.common.grpc.*;
 import com.exit.user.domain.Users;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @Slf4j
 @GrpcService
 @RequiredArgsConstructor
-public class UserInfoGrpcService extends UserServiceGrpc.UserServiceImplBase {
+public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
     private UserService userService;
     private final UserRepository userRepository;
 
@@ -104,5 +104,13 @@ public class UserInfoGrpcService extends UserServiceGrpc.UserServiceImplBase {
                     .withDescription("신고 횟수 증가 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
+    }
+
+    @Override
+    public void updateAdditionalUserInfo(com.exit.common.grpc.UpdateAdditionalUserInfoRequest request,
+                                         StreamObserver<UpdateAdditionalUserInfoResponse> responseObserver) {
+        UpdateAdditionalUserInfoResponse response = userService.updateAdditionalUserInfo(request);
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }
