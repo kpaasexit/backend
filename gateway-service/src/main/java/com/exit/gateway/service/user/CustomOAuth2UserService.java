@@ -1,4 +1,4 @@
-package com.exit.gateway.service;
+package com.exit.gateway.service.user;
 
 import com.exit.common.grpc.SocialLoginResponse;
 import com.exit.gateway.controller.dto.response.auth.oauth2.OAuth2UserInfo;

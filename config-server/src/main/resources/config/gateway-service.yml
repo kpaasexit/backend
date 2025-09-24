@@ -81,3 +81,6 @@ grpc:
     question-service:
       address: discovery:///question-service  # Eureka에서 서비스 발견
       negotiation-type: plaintext
+    quiz-service:
+      address: discovery:///quiz-service  # Eureka에서 서비스 발견
+      negotiation-type: plaintext
