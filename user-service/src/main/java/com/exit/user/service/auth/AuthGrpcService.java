@@ -1,4 +1,4 @@
-package com.exit.user.service;
+package com.exit.user.service.auth;
 
 import com.exit.common.auth.jwt.dto.UserIdRequest;
 import com.exit.common.exception.grpc.GrpcException;
@@ -15,9 +15,9 @@ import net.devh.boot.grpc.server.service.GrpcService;
 @Slf4j
 @GrpcService
 @RequiredArgsConstructor
-public class UserGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImplBase {
+public class AuthGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImplBase {
 
-    private final UserService userService;
+    private final AuthService authService;
 
     public void socialLogin(SocialLoginRequest request,
                             StreamObserver<SocialLoginResponse> responseObserver) {
@@ -33,7 +33,7 @@ public class UserGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImpl
                     .build();
 
             // 소셜 로그인 처리 (회원가입 or 로그인)
-            LoginSuccessResponse loginResponse = userService.socialLogin(oauth2UserInfoRequestDto);
+            LoginSuccessResponse loginResponse = authService.socialLogin(oauth2UserInfoRequestDto);
 
             // gRPC 응답 생성
             SocialLoginResponse.Builder builder = SocialLoginResponse.newBuilder()
@@ -70,7 +70,7 @@ public class UserGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImpl
             // 기존 서비스 호출
             RefreshTokenRequestDto refreshDto = RefreshTokenRequestDto.from(request);
 
-            LoginSuccessResponse serviceResponse = userService.refreshAuthToken(refreshDto);
+            LoginSuccessResponse serviceResponse = authService.refreshAuthToken(refreshDto);
 
             // gRPC 응답으로 변환
             RefreshTokenResponse grpcResponse = RefreshTokenResponse.newBuilder()
@@ -108,7 +108,7 @@ public class UserGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImpl
             // 기존 서비스 호출
             UserIdRequest userIdRequest = new UserIdRequest(request.getUserId());
 
-            userService.logout(userIdRequest);
+            authService.logout(userIdRequest);
 
             // gRPC 응답
             LogoutResponse grpcResponse = LogoutResponse.newBuilder()
