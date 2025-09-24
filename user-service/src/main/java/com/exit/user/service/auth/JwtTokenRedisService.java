@@ -1,4 +1,4 @@
-package com.exit.user.service;
+package com.exit.user.service.auth;
 
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.user.domain.JwtToken;
