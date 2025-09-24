@@ -51,6 +51,7 @@ public class Users extends BaseEntity {
         if (nickname != null && !nickname.isEmpty()) {
             this.userNickname = nickname;
         }
+
         if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
             this.userProfileUrl = profileImageUrl;
         }
