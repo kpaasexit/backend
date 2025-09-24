@@ -1,7 +1,7 @@
 package com.exit.gateway.service.user;
 
 import com.exit.common.grpc.*;
-import com.exit.gateway.controller.dto.response.auth.oauth2.OAuth2UserInfo;
+import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

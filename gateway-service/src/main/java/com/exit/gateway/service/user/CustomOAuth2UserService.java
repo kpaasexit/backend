@@ -1,7 +1,7 @@
 package com.exit.gateway.service.user;
 
 import com.exit.common.grpc.SocialLoginResponse;
-import com.exit.gateway.controller.dto.response.auth.oauth2.OAuth2UserInfo;
+import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
 import com.exit.gateway.entity.CustomOAuth2User;
 import com.exit.gateway.entity.OAuth2UserInfoFactory;
 import lombok.RequiredArgsConstructor;

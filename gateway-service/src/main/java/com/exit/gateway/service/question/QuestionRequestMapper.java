@@ -1,7 +1,10 @@
 package com.exit.gateway.service.question;
 
 import com.exit.common.grpc.*;
-import com.exit.gateway.controller.dto.request.question.*;
+import com.exit.gateway.controller.question.dto.request.question.AnswerCreateRequestDto;
+import com.exit.gateway.controller.question.dto.request.question.AnswerReportRequestDto;
+import com.exit.gateway.controller.question.dto.request.question.QuestionCreateRequestDto;
+import com.exit.gateway.controller.question.dto.request.question.QuestionReportRequestDto;
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

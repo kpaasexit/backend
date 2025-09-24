@@ -1,7 +1,7 @@
 package com.exit.gateway.service.quiz;
 
 import com.exit.common.grpc.*;
-import com.exit.gateway.controller.dto.request.quiz.ReportQuizRequestDto;
+import com.exit.gateway.controller.quiz.dto.request.quiz.ReportQuizRequestDto;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
