@@ -1519,7 +1519,7 @@
     <schema id="561" parent="1" name="exit_quiz_db">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-09-12.09:03:42</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-09-24.07:04:51</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
     </schema>
     <schema id="562" parent="1" name="exit_user_db">
@@ -1583,478 +1583,735 @@
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
     </table>
-    <table id="576" parent="562" name="notifications">
+    <table id="576" parent="561" name="quiz_attempts">
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
     </table>
-    <table id="577" parent="562" name="userinterestcategories">
+    <table id="577" parent="561" name="quiz_categories">
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
     </table>
-    <table id="578" parent="562" name="users">
+    <table id="578" parent="561" name="quiz_reports">
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
     </table>
-    <column id="579" parent="568" name="question_category_id">
+    <table id="579" parent="561" name="quiz_stats">
+      <DetailsLevel>3</DetailsLevel>
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
+    </table>
+    <table id="580" parent="561" name="quizs">
+      <DetailsLevel>3</DetailsLevel>
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
+    </table>
+    <table id="581" parent="562" name="notifications">
+      <DetailsLevel>3</DetailsLevel>
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
+    </table>
+    <table id="582" parent="562" name="userinterestcategories">
+      <DetailsLevel>3</DetailsLevel>
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
+    </table>
+    <table id="583" parent="562" name="users">
+      <DetailsLevel>3</DetailsLevel>
+      <Engine>InnoDB</Engine>
+      <CollationName>utf8mb4_uca1400_ai_ci</CollationName>
+    </table>
+    <column id="584" parent="568" name="question_category_id">
       <AutoIncrement>2</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="580" parent="568" name="question_category_created_at">
+    <column id="585" parent="568" name="question_category_created_at">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="581" parent="568" name="question_category_updated_at">
+    <column id="586" parent="568" name="question_category_updated_at">
       <Position>3</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="582" parent="568" name="question_category_name">
+    <column id="587" parent="568" name="question_category_name">
       <Position>4</Position>
       <StoredType>varchar(20)|0s</StoredType>
     </column>
-    <index id="583" parent="568" name="PRIMARY">
+    <index id="588" parent="568" name="PRIMARY">
       <ColNames>question_category_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="584" parent="568" name="PRIMARY">
+    <key id="589" parent="568" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="585" parent="569" name="question_image_id">
+    <column id="590" parent="569" name="question_image_id">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="586" parent="569" name="question_image_created_at">
+    <column id="591" parent="569" name="question_image_created_at">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="587" parent="569" name="question_image_updated_at">
+    <column id="592" parent="569" name="question_image_updated_at">
       <Position>3</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="588" parent="569" name="question_id">
+    <column id="593" parent="569" name="question_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="589" parent="569" name="question_iamge_url">
+    <column id="594" parent="569" name="question_iamge_url">
       <Position>5</Position>
       <StoredType>varchar(512)|0s</StoredType>
     </column>
-    <index id="590" parent="569" name="PRIMARY">
+    <index id="595" parent="569" name="PRIMARY">
       <ColNames>question_image_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="591" parent="569" name="PRIMARY">
+    <key id="596" parent="569" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="592" parent="570" name="question_report_id">
+    <column id="597" parent="570" name="question_report_id">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="593" parent="570" name="question_report_created_at">
+    <column id="598" parent="570" name="question_report_created_at">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="594" parent="570" name="question_report_updated_at">
+    <column id="599" parent="570" name="question_report_updated_at">
       <Position>3</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="595" parent="570" name="question_id">
+    <column id="600" parent="570" name="question_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="596" parent="570" name="question_report_content">
+    <column id="601" parent="570" name="question_report_content">
       <Position>5</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="597" parent="570" name="question_report_title">
+    <column id="602" parent="570" name="question_report_title">
       <Position>6</Position>
       <StoredType>varchar(100)|0s</StoredType>
     </column>
-    <column id="598" parent="570" name="question_report_writer_id">
+    <column id="603" parent="570" name="question_report_writer_id">
       <Position>7</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <index id="599" parent="570" name="PRIMARY">
+    <index id="604" parent="570" name="PRIMARY">
       <ColNames>question_report_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="600" parent="570" name="PRIMARY">
+    <key id="605" parent="570" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="601" parent="571" name="question_id">
+    <column id="606" parent="571" name="question_id">
       <AutoIncrement>8</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="602" parent="571" name="question_created_at">
+    <column id="607" parent="571" name="question_created_at">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="603" parent="571" name="question_updated_at">
+    <column id="608" parent="571" name="question_updated_at">
       <Position>3</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="604" parent="571" name="questIon_answer_adopt">
+    <column id="609" parent="571" name="questIon_answer_adopt">
       <Position>4</Position>
       <StoredType>bit(1)|0s</StoredType>
     </column>
-    <column id="605" parent="571" name="question_answer_type">
+    <column id="610" parent="571" name="question_answer_type">
       <Position>5</Position>
       <StoredType>enum(&apos;COMMUNITY&apos;, &apos;INSTANT&apos;)|0e</StoredType>
     </column>
-    <column id="606" parent="571" name="question_content">
+    <column id="611" parent="571" name="question_content">
       <Position>6</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="607" parent="571" name="question_disclosure">
+    <column id="612" parent="571" name="question_disclosure">
       <Position>7</Position>
       <StoredType>enum(&apos;PRIVATE&apos;, &apos;PUBLIC&apos;)|0e</StoredType>
     </column>
-    <column id="608" parent="571" name="question_is_anonymous">
+    <column id="613" parent="571" name="question_is_anonymous">
       <Position>8</Position>
       <StoredType>bit(1)|0s</StoredType>
     </column>
-    <column id="609" parent="571" name="question_title">
+    <column id="614" parent="571" name="question_title">
       <Position>9</Position>
       <StoredType>varchar(100)|0s</StoredType>
     </column>
-    <column id="610" parent="571" name="question_urgency">
+    <column id="615" parent="571" name="question_urgency">
       <Position>10</Position>
       <StoredType>bit(1)|0s</StoredType>
     </column>
-    <column id="611" parent="571" name="question_writer_id">
+    <column id="616" parent="571" name="question_writer_id">
       <Position>11</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="612" parent="571" name="question_category_id">
+    <column id="617" parent="571" name="question_category_id">
       <NotNull>1</NotNull>
       <Position>12</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <foreign-key id="613" parent="571" name="FKor375e4atswekyo82q9pvkide">
+    <foreign-key id="618" parent="571" name="FKor375e4atswekyo82q9pvkide">
       <ColNames>question_category_id</ColNames>
       <RefColNames>question_category_id</RefColNames>
       <RefTableName>question_categories</RefTableName>
     </foreign-key>
-    <index id="614" parent="571" name="PRIMARY">
+    <index id="619" parent="571" name="PRIMARY">
       <ColNames>question_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="615" parent="571" name="FKor375e4atswekyo82q9pvkide">
+    <index id="620" parent="571" name="FKor375e4atswekyo82q9pvkide">
       <ColNames>question_category_id</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="616" parent="571" name="PRIMARY">
+    <key id="621" parent="571" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="617" parent="572" name="response_image_id">
+    <column id="622" parent="572" name="response_image_id">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="618" parent="572" name="response_image_created_at">
+    <column id="623" parent="572" name="response_image_created_at">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="619" parent="572" name="response_image_updated_at">
+    <column id="624" parent="572" name="response_image_updated_at">
       <Position>3</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="620" parent="572" name="response_id">
+    <column id="625" parent="572" name="response_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="621" parent="572" name="response_image_url">
+    <column id="626" parent="572" name="response_image_url">
       <Position>5</Position>
       <StoredType>varchar(512)|0s</StoredType>
     </column>
-    <index id="622" parent="572" name="PRIMARY">
+    <index id="627" parent="572" name="PRIMARY">
       <ColNames>response_image_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="623" parent="572" name="PRIMARY">
+    <key id="628" parent="572" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="624" parent="573" name="response_like_id">
+    <column id="629" parent="573" name="response_like_id">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="625" parent="573" name="response_like_created_at">
+    <column id="630" parent="573" name="response_like_created_at">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="626" parent="573" name="updatedAt">
+    <column id="631" parent="573" name="updatedAt">
       <Position>3</Position>
       <StoredType>timestamp(6)|0s</StoredType>
     </column>
-    <column id="627" parent="573" name="response_id">
+    <column id="632" parent="573" name="response_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="628" parent="573" name="user_id">
+    <column id="633" parent="573" name="user_id">
       <Position>5</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <index id="629" parent="573" name="PRIMARY">
+    <index id="634" parent="573" name="PRIMARY">
       <ColNames>response_like_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="630" parent="573" name="PRIMARY">
+    <key id="635" parent="573" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="631" parent="574" name="response_report_id">
+    <column id="636" parent="574" name="response_report_id">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="632" parent="574" name="response_report_created_at">
+    <column id="637" parent="574" name="response_report_created_at">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="633" parent="574" name="response_report_updated_at">
+    <column id="638" parent="574" name="response_report_updated_at">
       <Position>3</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="634" parent="574" name="response_id">
+    <column id="639" parent="574" name="response_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="635" parent="574" name="response_report_content">
+    <column id="640" parent="574" name="response_report_content">
       <Position>5</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="636" parent="574" name="response_report_title">
+    <column id="641" parent="574" name="response_report_title">
       <Position>6</Position>
       <StoredType>varchar(100)|0s</StoredType>
     </column>
-    <column id="637" parent="574" name="response_report_writer_id">
+    <column id="642" parent="574" name="response_report_writer_id">
       <Position>7</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <index id="638" parent="574" name="PRIMARY">
+    <index id="643" parent="574" name="PRIMARY">
       <ColNames>response_report_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="639" parent="574" name="PRIMARY">
+    <key id="644" parent="574" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="640" parent="575" name="response_id">
+    <column id="645" parent="575" name="response_id">
       <AutoIncrement>16</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="641" parent="575" name="response_created_at">
+    <column id="646" parent="575" name="response_created_at">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="642" parent="575" name="response_updated_at">
+    <column id="647" parent="575" name="response_updated_at">
       <Position>3</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="643" parent="575" name="question_id">
+    <column id="648" parent="575" name="question_id">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="644" parent="575" name="response_adopt">
+    <column id="649" parent="575" name="response_adopt">
       <Position>5</Position>
       <StoredType>bit(1)|0s</StoredType>
     </column>
-    <column id="645" parent="575" name="response_content">
+    <column id="650" parent="575" name="response_content">
       <Position>6</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="646" parent="575" name="response_is_anonymous">
+    <column id="651" parent="575" name="response_is_anonymous">
       <Position>7</Position>
       <StoredType>bit(1)|0s</StoredType>
     </column>
-    <column id="647" parent="575" name="response_writer_id">
+    <column id="652" parent="575" name="response_writer_id">
       <Position>8</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <index id="648" parent="575" name="PRIMARY">
+    <index id="653" parent="575" name="PRIMARY">
       <ColNames>response_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="649" parent="575" name="PRIMARY">
+    <key id="654" parent="575" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="650" parent="576" name="notification_created_at">
+    <column id="655" parent="576" name="quiz_attempt_id">
+      <AutoIncrement>1</AutoIncrement>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>bigint(20)|0s</StoredType>
+    </column>
+    <column id="656" parent="576" name="quiz_category_created_at">
+      <Position>2</Position>
+      <StoredType>datetime(6)|0s</StoredType>
+    </column>
+    <column id="657" parent="576" name="quiz_category_updated_at">
+      <Position>3</Position>
+      <StoredType>datetime(6)|0s</StoredType>
+    </column>
+    <column id="658" parent="576" name="is_correct">
+      <Position>4</Position>
+      <StoredType>bit(1)|0s</StoredType>
+    </column>
+    <column id="659" parent="576" name="user_id">
+      <Position>5</Position>
+      <StoredType>bigint(20)|0s</StoredType>
+    </column>
+    <column id="660" parent="576" name="user_selection_answer">
+      <Position>6</Position>
+      <StoredType>varchar(1)|0s</StoredType>
+    </column>
+    <column id="661" parent="576" name="quiz_id">
+      <Position>7</Position>
+      <StoredType>bigint(20)|0s</StoredType>
+    </column>
+    <foreign-key id="662" parent="576" name="FKr5uhcby975j9qdwhqjcwtfao4">
+      <ColNames>quiz_id</ColNames>
+      <RefColNames>quiz_id</RefColNames>
+      <RefTableName>quizs</RefTableName>
+    </foreign-key>
+    <index id="663" parent="576" name="PRIMARY">
+      <ColNames>quiz_attempt_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <index id="664" parent="576" name="FKr5uhcby975j9qdwhqjcwtfao4">
+      <ColNames>quiz_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="665" parent="576" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="666" parent="577" name="quiz_category_id">
+      <AutoIncrement>1</AutoIncrement>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>smallint(6)|0s</StoredType>
+    </column>
+    <column id="667" parent="577" name="quiz_category_created_at">
+      <Position>2</Position>
+      <StoredType>datetime(6)|0s</StoredType>
+    </column>
+    <column id="668" parent="577" name="quiz_category_updated_at">
+      <Position>3</Position>
+      <StoredType>datetime(6)|0s</StoredType>
+    </column>
+    <column id="669" parent="577" name="quiz_category_name">
+      <Position>4</Position>
+      <StoredType>varchar(20)|0s</StoredType>
+    </column>
+    <index id="670" parent="577" name="PRIMARY">
+      <ColNames>quiz_category_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="671" parent="577" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="672" parent="578" name="quiz_report_id">
+      <AutoIncrement>1</AutoIncrement>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>bigint(20)|0s</StoredType>
+    </column>
+    <column id="673" parent="578" name="quiz_report_created_at">
+      <Position>2</Position>
+      <StoredType>datetime(6)|0s</StoredType>
+    </column>
+    <column id="674" parent="578" name="quiz_report_updated_at">
+      <Position>3</Position>
+      <StoredType>datetime(6)|0s</StoredType>
+    </column>
+    <column id="675" parent="578" name="quiz_report_content">
+      <Position>4</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="676" parent="578" name="quiz_report_reporter_id">
+      <Position>5</Position>
+      <StoredType>bigint(20)|0s</StoredType>
+    </column>
+    <column id="677" parent="578" name="quiz_report_title">
+      <Position>6</Position>
+      <StoredType>varchar(255)|0s</StoredType>
+    </column>
+    <column id="678" parent="578" name="quiz_id">
+      <Position>7</Position>
+      <StoredType>bigint(20)|0s</StoredType>
+    </column>
+    <foreign-key id="679" parent="578" name="FKg24e0qp01d5kxd5m9ot1axe3q">
+      <ColNames>quiz_id</ColNames>
+      <RefColNames>quiz_id</RefColNames>
+      <RefTableName>quizs</RefTableName>
+    </foreign-key>
+    <index id="680" parent="578" name="PRIMARY">
+      <ColNames>quiz_report_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <index id="681" parent="578" name="FKg24e0qp01d5kxd5m9ot1axe3q">
+      <ColNames>quiz_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="682" parent="578" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="683" parent="579" name="quiz_stat_id">
+      <AutoIncrement>1</AutoIncrement>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>bigint(20)|0s</StoredType>
+    </column>
+    <column id="684" parent="579" name="quiz_stat_created_at">
+      <Position>2</Position>
+      <StoredType>datetime(6)|0s</StoredType>
+    </column>
+    <column id="685" parent="579" name="quiz_stat_updated_at">
+      <Position>3</Position>
+      <StoredType>datetime(6)|0s</StoredType>
+    </column>
+    <column id="686" parent="579" name="correct_answer_number">
+      <Position>4</Position>
+      <StoredType>int(11)|0s</StoredType>
+    </column>
+    <column id="687" parent="579" name="total_number">
+      <Position>5</Position>
+      <StoredType>int(11)|0s</StoredType>
+    </column>
+    <column id="688" parent="579" name="quiz_id">
+      <Position>6</Position>
+      <StoredType>bigint(20)|0s</StoredType>
+    </column>
+    <foreign-key id="689" parent="579" name="FKfo0uipj2qijy7yvb5v51fg96s">
+      <ColNames>quiz_id</ColNames>
+      <RefColNames>quiz_id</RefColNames>
+      <RefTableName>quizs</RefTableName>
+    </foreign-key>
+    <index id="690" parent="579" name="PRIMARY">
+      <ColNames>quiz_stat_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <index id="691" parent="579" name="UKjve93ocnaaeha1ubvc75pc4ev">
+      <ColNames>quiz_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <key id="692" parent="579" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <key id="693" parent="579" name="UKjve93ocnaaeha1ubvc75pc4ev">
+      <UnderlyingIndexName>UKjve93ocnaaeha1ubvc75pc4ev</UnderlyingIndexName>
+    </key>
+    <column id="694" parent="580" name="quiz_id">
+      <AutoIncrement>1</AutoIncrement>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>bigint(20)|0s</StoredType>
+    </column>
+    <column id="695" parent="580" name="quiz_created_at">
+      <Position>2</Position>
+      <StoredType>datetime(6)|0s</StoredType>
+    </column>
+    <column id="696" parent="580" name="quiz_updated_at">
+      <Position>3</Position>
+      <StoredType>datetime(6)|0s</StoredType>
+    </column>
+    <column id="697" parent="580" name="quiz_additional_information">
+      <Position>4</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="698" parent="580" name="quiz_content">
+      <Position>5</Position>
+      <StoredType>text|0s</StoredType>
+    </column>
+    <column id="699" parent="580" name="quiz_correct_answer">
+      <Position>6</Position>
+      <StoredType>varchar(1)|0s</StoredType>
+    </column>
+    <column id="700" parent="580" name="quiz_title">
+      <Position>7</Position>
+      <StoredType>varchar(100)|0s</StoredType>
+    </column>
+    <column id="701" parent="580" name="quiz_type">
+      <Position>8</Position>
+      <StoredType>enum(&apos;FOUR_LIMBS&apos;, &apos;OX&apos;)|0e</StoredType>
+    </column>
+    <column id="702" parent="580" name="quiz_category_id">
+      <Position>9</Position>
+      <StoredType>smallint(6)|0s</StoredType>
+    </column>
+    <foreign-key id="703" parent="580" name="FKal89v9dxsetakboyuvumoq2w9">
+      <ColNames>quiz_category_id</ColNames>
+      <RefColNames>quiz_category_id</RefColNames>
+      <RefTableName>quiz_categories</RefTableName>
+    </foreign-key>
+    <index id="704" parent="580" name="PRIMARY">
+      <ColNames>quiz_id</ColNames>
+      <Type>btree</Type>
+      <Unique>1</Unique>
+    </index>
+    <index id="705" parent="580" name="FKal89v9dxsetakboyuvumoq2w9">
+      <ColNames>quiz_category_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="706" parent="580" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <Primary>1</Primary>
+      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
+    </key>
+    <column id="707" parent="581" name="notification_created_at">
       <Position>1</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="651" parent="576" name="notification_id">
+    <column id="708" parent="581" name="notification_id">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="652" parent="576" name="notification_updated_at">
+    <column id="709" parent="581" name="notification_updated_at">
       <Position>3</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="653" parent="576" name="userId">
+    <column id="710" parent="581" name="userId">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="654" parent="576" name="notification_title">
+    <column id="711" parent="581" name="notification_title">
       <Position>5</Position>
       <StoredType>varchar(100)|0s</StoredType>
     </column>
-    <column id="655" parent="576" name="notification_content">
+    <column id="712" parent="581" name="notification_content">
       <Position>6</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <foreign-key id="656" parent="576" name="FKb2fpbvqvqvdn3vycmui2p7qcv">
+    <foreign-key id="713" parent="581" name="FKb2fpbvqvqvdn3vycmui2p7qcv">
       <ColNames>userId</ColNames>
       <RefColNames>user_id</RefColNames>
       <RefTableName>users</RefTableName>
     </foreign-key>
-    <index id="657" parent="576" name="PRIMARY">
+    <index id="714" parent="581" name="PRIMARY">
       <ColNames>notification_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="658" parent="576" name="FKb2fpbvqvqvdn3vycmui2p7qcv">
+    <index id="715" parent="581" name="FKb2fpbvqvqvdn3vycmui2p7qcv">
       <ColNames>userId</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="659" parent="576" name="PRIMARY">
+    <key id="716" parent="581" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="660" parent="577" name="category_id">
+    <column id="717" parent="582" name="category_id">
       <Position>1</Position>
       <StoredType>smallint(6)|0s</StoredType>
     </column>
-    <column id="661" parent="577" name="userId">
+    <column id="718" parent="582" name="userId">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="662" parent="577" name="user_interest_category_created_at">
+    <column id="719" parent="582" name="user_interest_category_created_at">
       <Position>3</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="663" parent="577" name="user_interest_category_id">
+    <column id="720" parent="582" name="user_interest_category_id">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="664" parent="577" name="user_interest_category_updated_at">
+    <column id="721" parent="582" name="user_interest_category_updated_at">
       <Position>5</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <foreign-key id="665" parent="577" name="FKmv41ej46kd1wmobccy3hn553i">
+    <foreign-key id="722" parent="582" name="FKmv41ej46kd1wmobccy3hn553i">
       <ColNames>userId</ColNames>
       <RefColNames>user_id</RefColNames>
       <RefTableName>users</RefTableName>
     </foreign-key>
-    <index id="666" parent="577" name="PRIMARY">
+    <index id="723" parent="582" name="PRIMARY">
       <ColNames>user_interest_category_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="667" parent="577" name="FKmv41ej46kd1wmobccy3hn553i">
+    <index id="724" parent="582" name="FKmv41ej46kd1wmobccy3hn553i">
       <ColNames>userId</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="668" parent="577" name="PRIMARY">
+    <key id="725" parent="582" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="669" parent="578" name="user_report_count">
+    <column id="726" parent="583" name="user_report_count">
       <Position>1</Position>
       <StoredType>smallint(6)|0s</StoredType>
     </column>
-    <column id="670" parent="578" name="user_created_at">
+    <column id="727" parent="583" name="user_created_at">
       <Position>2</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="671" parent="578" name="user_id">
+    <column id="728" parent="583" name="user_id">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>bigint(20)|0s</StoredType>
     </column>
-    <column id="672" parent="578" name="user_updated_at">
+    <column id="729" parent="583" name="user_updated_at">
       <Position>4</Position>
       <StoredType>datetime(6)|0s</StoredType>
     </column>
-    <column id="673" parent="578" name="user_nickname">
+    <column id="730" parent="583" name="user_nickname">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StoredType>varchar(20)|0s</StoredType>
     </column>
-    <column id="674" parent="578" name="user_email">
+    <column id="731" parent="583" name="user_email">
       <Position>6</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <column id="675" parent="578" name="user_profile_url">
+    <column id="732" parent="583" name="user_profile_url">
       <Position>7</Position>
       <StoredType>varchar(512)|0s</StoredType>
     </column>
-    <column id="676" parent="578" name="provider">
+    <column id="733" parent="583" name="provider">
       <Position>8</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="677" parent="578" name="social_id">
+    <column id="734" parent="583" name="social_id">
       <Position>9</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <index id="678" parent="578" name="PRIMARY">
+    <index id="735" parent="583" name="PRIMARY">
       <ColNames>user_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="679" parent="578" name="PRIMARY">
+    <key id="736" parent="583" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
