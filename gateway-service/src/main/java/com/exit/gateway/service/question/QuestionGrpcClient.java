@@ -1,7 +1,6 @@
-package com.exit.gateway.service;
+package com.exit.gateway.service.question;
 
 import com.exit.common.grpc.*;
-import com.exit.common.response.success.QuestionSuccessCode;
 import com.exit.gateway.controller.dto.response.question.*;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
