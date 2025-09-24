@@ -1,10 +1,9 @@
 package com.exit.gateway.config;
 
 import com.exit.gateway.config.filter.JwtAuthenticationFilter;
-import com.exit.gateway.service.CustomOAuth2UserService;
+import com.exit.gateway.service.user.CustomOAuth2UserService;
 import com.exit.gateway.handler.OAuth2LoginSuccessHandler;
 import com.exit.gateway.handler.OAuth2LoginFailureHandler;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

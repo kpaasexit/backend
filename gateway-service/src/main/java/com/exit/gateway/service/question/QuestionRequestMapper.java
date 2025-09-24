@@ -1,4 +1,4 @@
-package com.exit.gateway.service;
+package com.exit.gateway.service.question;
 
 import com.exit.common.grpc.*;
 import com.exit.gateway.controller.dto.request.question.*;
