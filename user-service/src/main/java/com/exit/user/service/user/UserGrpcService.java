@@ -18,7 +18,7 @@ import java.util.Optional;
 @GrpcService
 @RequiredArgsConstructor
 public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
-    private UserService userService;
+    private final UserService userService;
     private final UserRepository userRepository;
 
     @Override
