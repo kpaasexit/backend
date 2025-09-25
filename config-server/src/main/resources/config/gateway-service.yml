@@ -4,21 +4,21 @@ server:
 spring:
   application:
     name: gateway-service
-#  cloud:
-#    gateway:
-#      mvc:
-#        routes:
-#          - id: user-service-route
-#            uri: lb://user-service
-#            predicates:
-#              - Path=/api/v1/users/**
-#              - Path=/api/auth/**
-#            filters:
-#              - StripPrefix=3
-#          - id: auth-service-route
-#            uri: lb://user-service
-#            predicates:
-#              - Path=/api/auth/**
+  #  cloud:
+  #    gateway:
+  #      mvc:
+  #        routes:
+  #          - id: user-service-route
+  #            uri: lb://user-service
+  #            predicates:
+  #              - Path=/api/v1/users/**
+  #              - Path=/api/auth/**
+  #            filters:
+  #              - StripPrefix=3
+  #          - id: auth-service-route
+  #            uri: lb://user-service
+  #            predicates:
+  #              - Path=/api/auth/**
   data:
     redis:
       host: ${redis.host}

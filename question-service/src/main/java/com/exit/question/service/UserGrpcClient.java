@@ -46,8 +46,7 @@ public class UserGrpcClient {
             GetUserNamesResponse response = userServiceStub.getUserNames(request);
 
             return response.getUserInfoList();
-        }
-        catch (StatusRuntimeException e) {
+        } catch (StatusRuntimeException e) {
             log.error("gRPC get user name list failed {}", e.getStatus(), e);
             return null;
         }

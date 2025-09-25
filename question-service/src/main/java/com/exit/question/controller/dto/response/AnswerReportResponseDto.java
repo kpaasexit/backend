@@ -15,7 +15,7 @@ public record AnswerReportResponseDto(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static AnswerReportResponseDto from(ResponseReport request){
+    public static AnswerReportResponseDto from(ResponseReport request) {
         return AnswerReportResponseDto.builder()
                 .responseReportId(request.getResponseReportId())
                 .responseId(request.getResponseId())

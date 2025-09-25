@@ -6,7 +6,7 @@ spring:
     name: question-service
   profiles:
     active: dev
-    
+
   # MySQL 데이터베이스 설정
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

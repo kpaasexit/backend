@@ -26,7 +26,7 @@ jwt:
   refresh_token:
     valid_time: 2592000
   issuer: exit-backend
-  
+
 # OAuth2 공통 설정
 oauth2:
   kakao:
