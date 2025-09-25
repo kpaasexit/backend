@@ -14,12 +14,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class UserGrpcClient {
-
     @GrpcClient("user-service")
     private SocialAuthServiceGrpc.SocialAuthServiceBlockingStub socialAuthServiceStub;
+    @GrpcClient("user-service")
     private UserServiceGrpc.UserServiceBlockingStub userServiceStub;
 
     public SocialLoginResponse socialLogin(OAuth2UserInfo userInfo) {
