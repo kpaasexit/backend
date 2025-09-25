@@ -19,10 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -31,10 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserGrpcClient userGrpcClient;
 
-    @PostMapping("/additional-info")
-    public SuccessResponse<UpdateAdditionalUserInfoResponseDto> refresh(
+    @PostMapping(value = "/additional-info", consumes = "multipart/form-data")
+    public SuccessResponse<UpdateAdditionalUserInfoResponseDto> updateAdditionalUserInfo(
             @AuthenticationPrincipal Long userId,
-            @Valid @RequestBody UpdateAdditionalUserInfoRequestDto request) {
+            @Valid @ModelAttribute UpdateAdditionalUserInfoRequestDto request) {
         try {
             log.info("Update additional user info request received");
             UpdateAdditionalUserInfoResponse grpcResponse = userGrpcClient.updateAdditionalUserInfo(userId, request);
