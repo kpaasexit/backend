@@ -1,20 +1,25 @@
 package com.exit.gateway.service.user;
 
 import com.exit.common.grpc.*;
-import com.exit.gateway.controller.dto.response.auth.oauth2.OAuth2UserInfo;
+import com.exit.gateway.controller.user.dto.request.user.UpdateAdditionalUserInfoRequestDto;
+import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
+import com.google.protobuf.ByteString;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class UserGrpcClient {
-
     @GrpcClient("user-service")
     private SocialAuthServiceGrpc.SocialAuthServiceBlockingStub socialAuthServiceStub;
+    @GrpcClient("user-service")
+    private UserServiceGrpc.UserServiceBlockingStub userServiceStub;
 
     public SocialLoginResponse socialLogin(OAuth2UserInfo userInfo) {
         try {
@@ -67,6 +72,45 @@ public class UserGrpcClient {
             return response;
         } catch (StatusRuntimeException e) {
             log.error("gRPC logout failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
+
+    public UpdateAdditionalUserInfoResponse updateAdditionalUserInfo(Long userId, UpdateAdditionalUserInfoRequestDto requestDto) throws IOException {
+        try {
+            MultipartFile image = requestDto.image();
+            UpdateAdditionalUserInfoRequest request;
+            if(image != null) {
+                ImageMetadata metaData = ImageMetadata.newBuilder()
+                        .setFilename(image.getOriginalFilename())
+                        .setContentType(image.getContentType())
+                        .build();
+                UploadBytesRequest uploadBytesRequest = UploadBytesRequest.newBuilder()
+                        .setMeta(metaData)
+                        .setData(ByteString.copyFrom(image.getBytes()))
+                        .build();
+                request = UpdateAdditionalUserInfoRequest.newBuilder()
+                        .setUserId(userId)
+                        .setUserName(requestDto.nickname())
+                        .setImageFile(uploadBytesRequest)
+                        .build();
+            } else {
+                request = UpdateAdditionalUserInfoRequest.newBuilder()
+                        .setUserId(userId)
+                        .setUserName(requestDto.nickname())
+                        .build();
+            }
+
+            log.debug("Sending updateAdditionalUserInfo request via gRPC: {}", request);
+            UpdateAdditionalUserInfoResponse response = userServiceStub.updateAdditionalUserInfo(request);
+            log.debug("Received updateAdditionalUserInfo response via gRPC: {}", response);
+
+            return response;
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC updateAdditionalUserInfo failed: {}", e.getStatus(), e);
+            throw e;
+        } catch (IOException e) {
+            log.error("image bytes data extraction failed");
             throw e;
         }
     }

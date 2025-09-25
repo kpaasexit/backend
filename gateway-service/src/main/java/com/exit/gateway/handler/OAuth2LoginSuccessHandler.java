@@ -1,9 +1,9 @@
 package com.exit.gateway.handler;
 
 import com.exit.gateway.entity.CustomOAuth2User;
-import com.exit.gateway.controller.dto.response.auth.oauth2.KakaoOAuth2UserInfo;
-import com.exit.gateway.controller.dto.response.auth.oauth2.NaverOAuth2UserInfo;
-import com.exit.gateway.controller.dto.response.auth.oauth2.OAuth2UserInfo;
+import com.exit.gateway.controller.user.dto.response.auth.oauth2.KakaoOAuth2UserInfo;
+import com.exit.gateway.controller.user.dto.response.auth.oauth2.NaverOAuth2UserInfo;
+import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
