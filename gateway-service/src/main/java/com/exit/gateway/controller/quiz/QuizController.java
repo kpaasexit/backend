@@ -1,20 +1,12 @@
 package com.exit.gateway.controller.quiz;
 
 import com.exit.common.exception.rest.RestApiException;
-import com.exit.common.grpc.GetCategoryStatisticsResponse;
-import com.exit.common.grpc.GetQuizResponse;
-import com.exit.common.grpc.GetSolvedQuizResponse;
-import com.exit.common.grpc.ReportQuizResponse;
-import com.exit.common.grpc.SubmitAnswerResponse;
+import com.exit.common.grpc.*;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.QuizErrorCode;
 import com.exit.common.response.success.QuizSuccessCode;
 import com.exit.gateway.controller.quiz.dto.request.quiz.ReportQuizRequestDto;
-import com.exit.gateway.controller.quiz.dto.response.quiz.GetCategoryStatisticsResponseDto;
-import com.exit.gateway.controller.quiz.dto.response.quiz.GetQuizResponseDto;
-import com.exit.gateway.controller.quiz.dto.response.quiz.GetSolvedQuizResponseDto;
-import com.exit.gateway.controller.quiz.dto.response.quiz.ReportQuizResponseDto;
-import com.exit.gateway.controller.quiz.dto.response.quiz.SubmitAnswerResponseDto;
+import com.exit.gateway.controller.quiz.dto.response.quiz.*;
 import com.exit.gateway.service.quiz.QuizGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -120,7 +112,7 @@ public class QuizController {
     ) {
         try {
             log.info("Get solved quiz request received for userId: {}", userId);
-            GetSolvedQuizResponse response = quizGrpcClient.getSolvedQuiz(userId, categoryIds, pageNum-1);
+            GetSolvedQuizResponse response = quizGrpcClient.getSolvedQuiz(userId, categoryIds, pageNum - 1);
 
             return SuccessResponse.of(QuizSuccessCode.GET_SOLVED_QUIZ_SUCCESS,
                     GetSolvedQuizResponseDto.from(response));

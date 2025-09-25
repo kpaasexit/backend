@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@ComponentScan( basePackages = {
+@ComponentScan(basePackages = {
         "com.exit.gateway",    // Gateway 패키지
         "com.exit.common"      // Common 패키지 추가
 })

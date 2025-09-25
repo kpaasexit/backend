@@ -1,10 +1,11 @@
 package com.exit.gateway.config;
 
 import com.exit.gateway.config.filter.JwtAuthenticationFilter;
-import com.exit.gateway.service.user.CustomOAuth2UserService;
-import com.exit.gateway.handler.OAuth2LoginSuccessHandler;
 import com.exit.gateway.handler.OAuth2LoginFailureHandler;
+import com.exit.gateway.handler.OAuth2LoginSuccessHandler;
+import com.exit.gateway.service.user.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Arrays;

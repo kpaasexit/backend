@@ -77,12 +77,12 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
                 userIdAndNameInfos.add(info);
             });
 
-                GetUserNamesResponse grpcResponse = GetUserNamesResponse.newBuilder()
-                        .addAllUserInfo(userIdAndNameInfos)
-                        .build();
+            GetUserNamesResponse grpcResponse = GetUserNamesResponse.newBuilder()
+                    .addAllUserInfo(userIdAndNameInfos)
+                    .build();
 
-                responseObserver.onNext(grpcResponse);
-                responseObserver.onCompleted();
+            responseObserver.onNext(grpcResponse);
+            responseObserver.onCompleted();
 
         } catch (Exception e) {
             responseObserver.onError(Status.INTERNAL
