@@ -6,13 +6,16 @@ option java_multiple_files = true;
 option java_package = "com.exit.common.grpc";
 option java_outer_classname = "UserServiceProto";
 import "google/protobuf/empty.proto";
+import "question.proto";
 
 service UserService {
   rpc GetUserName(GetUserNameRequest) returns (GetUserNameResponse);
   rpc GetUserNames(GetUserNamesRequest) returns (GetUserNamesResponse);
   rpc IncreaseReportCount(IncreaseReportCountRequest) returns (google.protobuf.Empty);
+  rpc UpdateAdditionalUserInfo(UpdateAdditionalUserInfoRequest) returns (UpdateAdditionalUserInfoResponse);
 }
 
+// request
 message GetUserNameRequest {
   int64 user_id = 1;
 }
@@ -25,6 +28,13 @@ message IncreaseReportCountRequest {
   int64 user_id = 1;
 }
 
+message UpdateAdditionalUserInfoRequest {
+  int64 user_id = 1;
+  string user_name = 2;
+  UploadBytesRequest image_file = 3;
+}
+
+// response
 message GetUserNameResponse {
   string user_name = 1;
   bool success = 2;
@@ -38,4 +48,10 @@ message UserIdAndNameInfo {
 
 message GetUserNamesResponse {
   repeated UserIdAndNameInfo userInfo = 1;
+}
+
+message UpdateAdditionalUserInfoResponse {
+  int64 user_id = 1;
+  string user_name = 2;
+  string user_profile = 3;
 }
