@@ -4,10 +4,12 @@ import com.exit.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "Magazines")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AttributeOverride(name = "createdAt", column = @Column(name = "magazine_created_at"))
 @AttributeOverride(name = "updatedAt", column = @Column(name = "magazine_updated_at"))
