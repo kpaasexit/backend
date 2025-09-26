@@ -2,7 +2,6 @@ package com.exit.question.domain.response;
 
 import com.exit.common.domain.BaseEntity;
 import com.exit.question.controller.dto.request.AnswerCreateRequestDto;
-import com.exit.question.domain.question.QuestionDisclosureType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -56,7 +55,7 @@ public class Response extends BaseEntity {
                 .build();
     }
 
-    public Response updateResponseAdopt(){
+    public Response updateResponseAdopt() {
         this.responseAdopt = true;
         return this;
     }

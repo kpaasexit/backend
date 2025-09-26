@@ -23,7 +23,7 @@ public record QuestionCreateResponseDto(
     public static QuestionCreateResponseDto from(Question savedQuestion, List<String> urls, String questionWriterName) {
         QuestionCreateResponseDtoBuilder builder = QuestionCreateResponseDto.builder();
 
-        if(urls != null && !urls.isEmpty()){
+        if (urls != null && !urls.isEmpty()) {
             builder.imageUrls(urls);
         }
 

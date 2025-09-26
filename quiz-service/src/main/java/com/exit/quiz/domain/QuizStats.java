@@ -29,6 +29,12 @@ public class QuizStats extends BaseEntity {
     @Column(name = "total_number")
     private Integer totalNumber;
 
+    public QuizStats(Quiz quiz, Integer correctAnswerNumber, Integer totalNumber) {
+        this.quiz = quiz;
+        this.correctAnswerNumber = correctAnswerNumber;
+        this.totalNumber = totalNumber;
+    }
+
     public double getCorrectRate() {
         if (totalNumber == null || totalNumber == 0) {
             return 0.0;
@@ -42,11 +48,5 @@ public class QuizStats extends BaseEntity {
 
     public void incrementCorrect() {
         this.correctAnswerNumber += 1;
-    }
-
-    public QuizStats(Quiz quiz, Integer correctAnswerNumber, Integer totalNumber) {
-        this.quiz = quiz;
-        this.correctAnswerNumber = correctAnswerNumber;
-        this.totalNumber = totalNumber;
     }
 }

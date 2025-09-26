@@ -1,17 +1,16 @@
-# Compiled class file
+# Java 컴파일 파일
 *.class
 
-
-# Log file
+# 로그 파일
 *.log
 
-# BlueJ files
+# BlueJ 파일
 *.ctxt
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# 패키지 파일
 *.jar
 *.war
 *.nar
@@ -20,22 +19,29 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# JVM crash logs
 hs_err_pid*
 replay_pid*
 
-### IntelliJ IDEA ###
-./.idea
+# IDE - IntelliJ IDEA
+.idea/
+*.iml
 
-### build ###
-./build
+# 빌드 디렉토리
+build/
+target/
 
-### common module secret key ###
-common/src/main/resources/application.yml
+# Gradle
+.gradle/
 
-**/*.md
-
-# Secrets and sensitive configuration
+# 설정 파일 및 민감한 정보
 secrets.yml
 config-server/secrets.yml
 **/*secrets*
+common/src/main/resources/application.yml
+
+# 마크다운 파일
+**/*.md
+
+# 기타
+nul

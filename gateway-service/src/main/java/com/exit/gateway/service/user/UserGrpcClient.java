@@ -5,7 +5,6 @@ import com.exit.gateway.controller.user.dto.request.user.UpdateAdditionalUserInf
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
 import com.google.protobuf.ByteString;
 import io.grpc.StatusRuntimeException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
@@ -80,7 +79,7 @@ public class UserGrpcClient {
         try {
             MultipartFile image = requestDto.image();
             UpdateAdditionalUserInfoRequest request;
-            if(image != null) {
+            if (image != null) {
                 ImageMetadata metaData = ImageMetadata.newBuilder()
                         .setFilename(image.getOriginalFilename())
                         .setContentType(image.getContentType())

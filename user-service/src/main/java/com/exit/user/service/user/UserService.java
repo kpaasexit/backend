@@ -1,26 +1,16 @@
 package com.exit.user.service.user;
 
-import com.exit.common.auth.jwt.JwtTokenProvider;
-import com.exit.common.auth.jwt.dto.UserIdRequest;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.IncreaseReportCountRequest;
 import com.exit.common.grpc.UpdateAdditionalUserInfoRequest;
 import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
 import com.exit.common.util.file.FileUploadUtil;
-import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
-import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
-import com.exit.user.controller.dto.response.LoginSuccessResponse;
-import com.exit.user.domain.JwtToken;
 import com.exit.user.domain.Users;
 import com.exit.user.domain.repository.UserRepository;
 import com.exit.user.exception.GrpcUserErrorCode;
-import com.exit.user.service.auth.JwtTokenRedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Duration;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +41,17 @@ public class UserService {
                 .setUserId(savedUser.getUserId())
                 .setUserName(savedUser.getUserNickname())
                 .setUserProfile(savedUser.getUserProfileUrl())
+                .build();
+    }
+
+    public UpdateAdditionalUserInfoResponse getUserNameAndProfile(Long userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
+
+        return UpdateAdditionalUserInfoResponse.newBuilder()
+                .setUserId(user.getUserId())
+                .setUserName(user.getUserNickname())
+                .setUserProfile(user.getUserProfileUrl())
                 .build();
     }
 }

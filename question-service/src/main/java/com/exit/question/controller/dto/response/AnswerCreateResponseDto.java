@@ -20,18 +20,18 @@ public record AnswerCreateResponseDto(
 ) {
     public static AnswerCreateResponseDto from(Response answer, List<String> urls) {
         AnswerCreateResponseDtoBuilder builder = AnswerCreateResponseDto.builder();
-        if(urls != null && !urls.isEmpty()){
+        if (urls != null && !urls.isEmpty()) {
             builder.imageUrls(urls);
         }
 
         return builder.responseId(answer.getResponseId())
-                    .questionId(answer.getQuestionId())
-                    .responseWriterId(answer.getResponseWriterId())
-                    .responseContent(answer.getResponseContent())
-                    .responseAdopt(answer.getResponseAdopt())
-                    .likeCount(0)
-                    .createdAt(answer.getCreatedAt())
-                    .updatedAt(answer.getUpdatedAt())
-                    .build();
+                .questionId(answer.getQuestionId())
+                .responseWriterId(answer.getResponseWriterId())
+                .responseContent(answer.getResponseContent())
+                .responseAdopt(answer.getResponseAdopt())
+                .likeCount(0)
+                .createdAt(answer.getCreatedAt())
+                .updatedAt(answer.getUpdatedAt())
+                .build();
     }
 }
