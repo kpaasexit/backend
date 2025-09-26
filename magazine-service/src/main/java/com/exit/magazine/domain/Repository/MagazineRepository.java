@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface MagazineRepository extends JpaRepository<Magazines, Long> {
-    List<Magazines> findAllByMagazineCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
+    List<Magazines> findAllByMagazineCategoryMagazineCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 }
