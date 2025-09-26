@@ -23,7 +23,7 @@ public class MagazineService {
 
     public GetMagazinesByCategoryResponse getMagazinesByCategory(GetMagazinesByCategoryRequest request) {
         PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
-        List<MagazineItem> magazineItems = magazineRepository.findAllByMagazineCategoryId(request.getCategoryId(), pageRequest)
+        List<MagazineItem> magazineItems = magazineRepository.findAllByMagazineCategoryMagazineCategoryId(request.getCategoryId(), pageRequest)
                 .stream()
                 .map(magazine -> {
                     UpdateAdditionalUserInfoResponse userInfo = userGrpcClient.getUserNameAndProfile(magazine.getMagazineAuthorId());
