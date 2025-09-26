@@ -41,3 +41,8 @@ eureka:
     metadata-map:
       grpc-port: ${grpc.server.port}
       grpc-service: question-service
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
