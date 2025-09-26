@@ -2,4 +2,4 @@
 # 나머지 설정은 Config Server에서 가져옴
 logging:
   level:
-    com.exit.user: DEBUG
+    com.exit.question: DEBUG
