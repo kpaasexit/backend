@@ -3,7 +3,6 @@ package com.exit.magazine.service;
 import com.exit.common.grpc.GetMagazineResponse;
 import com.exit.common.grpc.GetMagazinesByCategoryResponse;
 import com.exit.common.grpc.MagazineServiceGrpc;
-import com.exit.common.grpc.QuestionServiceGrpc;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
