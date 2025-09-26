@@ -23,14 +23,6 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
-# Eureka 클라이언트 설정
-eureka:
-  instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-    metadata-map:
-      grpc-port: ${grpc.server.port}
-      grpc-service: magazine-service
-
 # gRPC 설정
 grpc:
   server:
@@ -41,3 +33,16 @@ grpc:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
+
+# Eureka 클라이언트 설정
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    metadata-map:
+      grpc-port: ${grpc.server.port}
+      grpc-service: magazine-service
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
