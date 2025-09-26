@@ -43,5 +43,16 @@ public class UserService {
                 .setUserProfile(savedUser.getUserProfileUrl())
                 .build();
     }
+
+    public UpdateAdditionalUserInfoResponse getUserNameAndProfile(Long userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
+
+        return UpdateAdditionalUserInfoResponse.newBuilder()
+                .setUserId(user.getUserId())
+                .setUserName(user.getUserNickname())
+                .setUserProfile(user.getUserProfileUrl())
+                .build();
+    }
 }
 
