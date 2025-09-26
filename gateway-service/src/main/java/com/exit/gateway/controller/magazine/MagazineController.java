@@ -2,13 +2,12 @@ package com.exit.gateway.controller.magazine;
 
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.GetMagazineRequest;
-import com.exit.common.grpc.GetMagazineResponse;
 import com.exit.common.grpc.GetMagazinesByCategoryRequest;
-import com.exit.common.grpc.GetMagazinesByCategoryResponse;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.MagazineErrorCode;
-import com.exit.common.response.error.rest.UserErrorCode;
 import com.exit.common.response.success.MagazineSuccessCode;
+import com.exit.gateway.controller.dto.response.MagazineItemDto;
+import com.exit.gateway.controller.dto.response.MagazineItemListDto;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -24,14 +23,14 @@ public class MagazineController {
     private final MagazineGrpcClient magazineGrpcClient;
 
     @GetMapping("/category/{categoryId}")
-    public SuccessResponse<GetMagazinesByCategoryResponse> getMagazinesByCategory(
+    public SuccessResponse<MagazineItemListDto> getMagazinesByCategory(
             @PathVariable Long categoryId,
             @RequestParam(defaultValue = "1") Integer pageNum) {
         try {
-            log.info("Get magazines by category request received: categoryId={}, pageNum={}", categoryId, pageNum-1);
+            log.info("Get magazines by category request received: categoryId={}, pageNum={}", categoryId, pageNum - 1);
             GetMagazinesByCategoryRequest request = GetMagazinesByCategoryRequest.newBuilder()
                     .setCategoryId(categoryId)
-                    .setPageNum(pageNum)
+                    .setPageNum(pageNum - 1)
                     .build();
 
             return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_LIST_SUCCESS,
@@ -47,7 +46,7 @@ public class MagazineController {
     }
 
     @GetMapping("/{magazineId}")
-    public SuccessResponse<GetMagazineResponse> getMagazine(
+    public SuccessResponse<MagazineItemDto> getMagazine(
             @PathVariable Long magazineId) {
         try {
             log.info("Get magazine request received: magazineId={}", magazineId);
