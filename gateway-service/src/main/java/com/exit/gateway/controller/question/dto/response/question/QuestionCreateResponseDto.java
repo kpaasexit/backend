@@ -24,7 +24,7 @@ public record QuestionCreateResponseDto(
 ) {
     public static QuestionCreateResponseDto from(QuestionCreateResponse questionCreateResponse) {
         QuestionCreateResponseDtoBuilder builder = QuestionCreateResponseDto.builder();
-        if(!questionCreateResponse.getImageUrlsList().isEmpty()) {
+        if (!questionCreateResponse.getImageUrlsList().isEmpty()) {
             builder.imageUrls(questionCreateResponse.getImageUrlsList());
         }
 

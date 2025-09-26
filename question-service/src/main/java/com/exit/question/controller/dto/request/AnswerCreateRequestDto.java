@@ -2,7 +2,6 @@ package com.exit.question.controller.dto.request;
 
 import com.exit.common.grpc.AnswerCreateRequest;
 import com.exit.common.grpc.UploadBytesRequest;
-import com.exit.question.domain.question.QuestionDisclosureType;
 
 import java.util.List;
 

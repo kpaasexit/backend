@@ -9,7 +9,7 @@ public record UpdateAdditionalUserInfoResponseDto(
         String nickName,
         String profile
 ) {
-    public static UpdateAdditionalUserInfoResponseDto from(UpdateAdditionalUserInfoResponse response){
+    public static UpdateAdditionalUserInfoResponseDto from(UpdateAdditionalUserInfoResponse response) {
         return UpdateAdditionalUserInfoResponseDto.builder()
                 .userId(response.getUserId())
                 .nickName(response.getUserName())

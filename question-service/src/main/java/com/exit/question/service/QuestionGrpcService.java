@@ -1,6 +1,7 @@
 package com.exit.question.service;
 
-import com.exit.common.grpc.*;
+import com.exit.common.grpc.QuestionListItem;
+import com.exit.common.grpc.QuestionServiceGrpc;
 import com.exit.question.controller.dto.request.*;
 import com.exit.question.controller.dto.response.*;
 import io.grpc.Status;
@@ -23,7 +24,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void questionCreate(com.exit.common.grpc.QuestionCreateRequest request,
-                              StreamObserver<com.exit.common.grpc.QuestionCreateResponse> responseObserver) {
+                               StreamObserver<com.exit.common.grpc.QuestionCreateResponse> responseObserver) {
         try {
             log.info("Question create request received: {}", request.getQuestionTitle());
             QuestionCreateRequestDto requestDto = QuestionCreateRequestDto.from(request);
@@ -54,7 +55,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void answerAdopt(com.exit.common.grpc.AnswerAdoptRequest request,
-                           StreamObserver<com.exit.common.grpc.AnswerAdoptResponse> responseObserver) {
+                            StreamObserver<com.exit.common.grpc.AnswerAdoptResponse> responseObserver) {
         try {
             log.info("Answer adopt request received for response ID: {}", request.getResponseId());
 
@@ -80,7 +81,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void answerCreate(com.exit.common.grpc.AnswerCreateRequest request,
-                            StreamObserver<com.exit.common.grpc.AnswerCreateResponse> responseObserver) {
+                             StreamObserver<com.exit.common.grpc.AnswerCreateResponse> responseObserver) {
         try {
             log.info("Answer create request received for question ID: {}", request.getQuestionId());
 
@@ -108,7 +109,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void answerRecommend(com.exit.common.grpc.AnswerRecommendRequest request,
-                               StreamObserver<com.exit.common.grpc.AnswerRecommendResponse> responseObserver) {
+                                StreamObserver<com.exit.common.grpc.AnswerRecommendResponse> responseObserver) {
         try {
             log.info("Answer recommend request received for response ID: {}", request.getResponseId());
 
@@ -134,7 +135,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void questionReport(com.exit.common.grpc.QuestionReportRequest request,
-                              StreamObserver<com.exit.common.grpc.QuestionReportResponse> responseObserver) {
+                               StreamObserver<com.exit.common.grpc.QuestionReportResponse> responseObserver) {
         try {
             log.info("Question report request received for question ID: {}", request.getQuestionId());
 
@@ -164,7 +165,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void answerReport(com.exit.common.grpc.AnswerReportRequest request,
-                            StreamObserver<com.exit.common.grpc.AnswerReportResponse> responseObserver) {
+                             StreamObserver<com.exit.common.grpc.AnswerReportResponse> responseObserver) {
         try {
             log.info("Answer report request received for response ID: {}", request.getResponseId());
 
@@ -194,7 +195,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void questionList(com.exit.common.grpc.QuestionListRequest request,
-                            StreamObserver<com.exit.common.grpc.QuestionListResponse> responseObserver) {
+                             StreamObserver<com.exit.common.grpc.QuestionListResponse> responseObserver) {
         try {
             log.info("Question list request received");
 
@@ -235,7 +236,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void categoryRecommend(com.exit.common.grpc.CategoryRecommendRequest request,
-                                 StreamObserver<com.exit.common.grpc.CategoryRecommendationResponse> responseObserver) {
+                                  StreamObserver<com.exit.common.grpc.CategoryRecommendationResponse> responseObserver) {
         try {
             log.info("Category recommend request received for title: {}", request.getTitle());
 
@@ -266,7 +267,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void similarQuestion(com.exit.common.grpc.SimilarQuestionRequest request,
-                               StreamObserver<com.exit.common.grpc.SimilarQuestionResponse> responseObserver) {
+                                StreamObserver<com.exit.common.grpc.SimilarQuestionResponse> responseObserver) {
         try {
             log.info("Similar question request received for title: {}", request.getTitle());
 
@@ -303,7 +304,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void getQuestionDetail(com.exit.common.grpc.QuestionDetailRequest request,
-                                 StreamObserver<com.exit.common.grpc.QuestionDetailResponse> responseObserver) {
+                                  StreamObserver<com.exit.common.grpc.QuestionDetailResponse> responseObserver) {
         try {
             log.info("Question detail request received for question ID: {}", request.getQuestionId());
 

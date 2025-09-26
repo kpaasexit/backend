@@ -1,16 +1,11 @@
 package com.exit.gateway.controller.user;
 
 import com.exit.common.exception.rest.RestApiException;
-import com.exit.common.grpc.RefreshTokenResponse;
-import com.exit.common.grpc.UpdateAdditionalUserInfoRequest;
 import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.UserErrorCode;
-import com.exit.common.response.success.AuthSuccessCode;
 import com.exit.common.response.success.UserSuccessCode;
-import com.exit.gateway.controller.user.dto.request.auth.RefreshTokenRequestDto;
 import com.exit.gateway.controller.user.dto.request.user.UpdateAdditionalUserInfoRequestDto;
-import com.exit.gateway.controller.user.dto.response.auth.TokenResponseDto;
 import com.exit.gateway.controller.user.dto.response.user.UpdateAdditionalUserInfoResponseDto;
 import com.exit.gateway.service.user.UserGrpcClient;
 import io.grpc.Status;
@@ -19,7 +14,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/user")

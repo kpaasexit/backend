@@ -77,7 +77,7 @@ dependencies {
 
     // Common (JAR 파일만 가져오고 의존성은 제외)
     implementation files('../common/build/libs/common-0.0.1-SNAPSHOT.jar')
-    
+
     // Common 모듈의 proto 파일 사용
     compileProtoPath project(':common')
 }

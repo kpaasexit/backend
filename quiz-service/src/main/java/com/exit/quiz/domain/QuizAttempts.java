@@ -20,7 +20,7 @@ public class QuizAttempts extends BaseEntity {
     @Column(name = "quiz_attempt_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY,  cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 
