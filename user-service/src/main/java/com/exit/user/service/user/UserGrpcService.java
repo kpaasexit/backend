@@ -113,4 +113,21 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void getUserNameAndProfile(GetUserNameRequest request, StreamObserver<UpdateAdditionalUserInfoResponse> responseObserver) {
+        try {
+            log.info("Get user name request received for userId: {}", request.getUserId());
+            UpdateAdditionalUserInfoResponse response = userService.getUserNameAndProfile(request.getUserId());
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Get user name failed for userId: {}", request.getUserId(), e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("사용자 이름, 프로필 이미지 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
 }
