@@ -1,0 +1,37 @@
+package com.exit.gateway.controller.dto.response;
+
+import com.exit.common.grpc.GetMagazineResponse;
+import com.exit.common.grpc.MagazineItem;
+import lombok.Builder;
+
+import java.time.LocalDateTime;
+
+import static com.exit.common.util.time.TimeStampUtil.timestampToLocalDateTime;
+
+@Builder
+public record MagazineItemDto(
+        Long magazineId,
+        Long magazineCategoryId,
+        String magazineTitle,
+        String magazineSubtitle,
+        String magazineContent,
+        String magazineAuthor,
+        String authorProfileUrl,
+        String magazineThumbnailUrl,
+        LocalDateTime createdAt
+) {
+    public static MagazineItemDto from(MagazineItem response) {
+        return MagazineItemDto.builder()
+                .magazineId(response.getMagazineId())
+                .magazineCategoryId(response.getMagazineCategoryId())
+                .magazineTitle(response.getMagazineTitle())
+                .magazineSubtitle(response.getMagazineSubtitle())
+                .magazineContent(response.getMagazineContent())
+                .magazineAuthor(response.getMagazineAuthor())
+                .authorProfileUrl(response.getAuthorProfileUrl())
+                .magazineThumbnailUrl(response.getMagazineThumbnailUrl())
+                .createdAt(timestampToLocalDateTime(response.getCreatedAt()))
+                .build();
+
+    }
+}
