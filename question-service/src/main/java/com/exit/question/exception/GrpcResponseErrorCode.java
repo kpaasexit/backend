@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum GrpcResponseErrorCode implements GrpcErrorCode {
     EXIST_RESPONSE_LIKE(Status.Code.UNAVAILABLE, "RESPONSE_ERR_001"),
+    NULL_RESPONSE(Status.Code.NOT_FOUND, "RESPONSE_ERR_002"),
     ;
 
     private final Status.Code grpcStatusCode;
