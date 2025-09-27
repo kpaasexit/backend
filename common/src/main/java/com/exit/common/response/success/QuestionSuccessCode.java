@@ -16,7 +16,8 @@ public enum QuestionSuccessCode implements SuccessCode {
     QUESTION_REPORT_SUCCESS("QUESTION_OK_007", HttpStatus.CREATED, "질문 신고 성공"),
     ANSWER_REPORT_SUCCESS("QUESTION_OK_008", HttpStatus.CREATED, "답변 신고 성공"),
     CATEGORY_RECOMMEND_SUCCESS("QUESTION_OK_009", HttpStatus.OK, "카테고리 추천 성공"),
-    SIMILAR_QUESTION_SUCCESS("QUESTION_OK_010", HttpStatus.OK, "유사 질문 조회 성공");
+    SIMILAR_QUESTION_SUCCESS("QUESTION_OK_010", HttpStatus.OK, "유사 질문 조회 성공"),
+    ADDITIONAL_QUESTION_CREATE_SUCCESS("QUESTION_OK_011", HttpStatus.CREATED, "추가 질문 생성 성공");
 
     private final String code;
     private final HttpStatus httpStatus;

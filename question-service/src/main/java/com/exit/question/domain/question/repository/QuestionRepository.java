@@ -37,4 +37,5 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             order by q.createdAt desc
             """)
     Slice<QuestionListQueryResponseDto> findQuestionsByFilter(@Param("categoryIds") List<Long> categoryIds, @Param("keyword") String keyword, Pageable pageable);
+
 }
