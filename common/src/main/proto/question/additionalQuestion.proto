@@ -24,7 +24,8 @@ message CreateAdditionalQuestionMessageRequest {
 }
 
 message GetAdditionalQuestionRequest {
-  int64 response_id = 1;
+  int64 question_id = 1;
+  int64 follow_up_room_id = 2;
 }
 
 // response
