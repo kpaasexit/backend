@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "follow_up_messages")
@@ -27,4 +31,8 @@ public class FollowUpMessage extends BaseEntity {
 
     @Column(name = "follow_up_message_content", columnDefinition = "TEXT")
     private String followUpMessageContent;
+
+    @OneToMany(mappedBy = "followUpMessage", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @BatchSize(size = 50)
+    private List<FollowUpImage> followUpImages = new ArrayList<>();
 }
