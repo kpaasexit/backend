@@ -4,6 +4,7 @@ import com.exit.common.domain.BaseEntity;
 import com.exit.question.domain.response.Response;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
@@ -35,6 +36,7 @@ public class FollowUpRoom extends BaseEntity {
 
     @Id
     @Column(name = "follow_up_room_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long followUpRoomId;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
@@ -44,4 +46,14 @@ public class FollowUpRoom extends BaseEntity {
     @OneToMany(mappedBy = "followUpRoom", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @BatchSize(size = 5)
     private List<FollowUpMessage> followUpMessages = new ArrayList<>();
+
+    public FollowUpRoom(Response response) {
+        this.response = response;
+    }
+
+    @Builder
+    public FollowUpRoom(Response response, List<FollowUpMessage> followUpMessages) {
+        this.response = response;
+        this.followUpMessages = followUpMessages;
+    }
 }
