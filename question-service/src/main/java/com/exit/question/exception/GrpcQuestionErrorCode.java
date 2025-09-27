@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 public enum GrpcQuestionErrorCode implements GrpcErrorCode {
     NULL_RESPONSE(Status.Code.NOT_FOUND, "QUESTION_ERR_001"),
     NULL_QUESTION(Status.Code.NOT_FOUND, "QUESTION_ERR_002"),
-    EXIST_ADOPTED_RESPONSE(Status.Code.ALREADY_EXISTS, "QUESTION_ERR_003");
+    EXIST_ADOPTED_RESPONSE(Status.Code.ALREADY_EXISTS, "QUESTION_ERR_003"),
+    NULL_ADDITIONAL_QUESTION(Status.Code.NOT_FOUND, "QUESTION_ERR_004");
 
     private final Status.Code grpcStatusCode;
     private final String developCode;
