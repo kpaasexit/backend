@@ -19,7 +19,9 @@ public enum QuestionSuccessCode implements SuccessCode {
     SIMILAR_QUESTION_SUCCESS("QUESTION_OK_010", HttpStatus.OK, "유사 질문 조회 성공"),
     ADDITIONAL_QUESTION_CREATE_SUCCESS("QUESTION_OK_011", HttpStatus.CREATED, "추가 질문 생성 성공"),
     COMMENT_CREATE_SUCCESS("QUESTION_OK_012", HttpStatus.CREATED, "댓글 생성 성공"),
-    COMMENT_DELETE_SUCCESS("QUESTION_OK_013", HttpStatus.OK , "댓글 삭제 성공");
+    COMMENT_DELETE_SUCCESS("QUESTION_OK_013", HttpStatus.OK , "댓글 삭제 성공"),
+    ANSWER_UPDATE_SUCCESS("QUESTION_OK_014", HttpStatus.OK, "답변 수정 성공"),
+    ANSWER_DELETE_SUCCESS("QUESTION_OK_015", HttpStatus.OK, "답변 삭제 성공");
 
     private final String code;
     private final HttpStatus httpStatus;
