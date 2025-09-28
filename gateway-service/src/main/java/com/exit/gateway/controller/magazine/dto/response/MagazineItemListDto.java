@@ -1,4 +1,4 @@
-package com.exit.gateway.controller.dto.response;
+package com.exit.gateway.controller.magazine.dto.response;
 
 import com.exit.common.grpc.GetMagazinesByCategoryResponse;
 

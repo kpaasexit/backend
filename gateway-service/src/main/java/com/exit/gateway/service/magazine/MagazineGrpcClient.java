@@ -1,8 +1,8 @@
 package com.exit.gateway.service.magazine;
 
 import com.exit.common.grpc.*;
-import com.exit.gateway.controller.dto.response.MagazineItemDto;
-import com.exit.gateway.controller.dto.response.MagazineItemListDto;
+import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
+import com.exit.gateway.controller.magazine.dto.response.MagazineItemListDto;
 import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
