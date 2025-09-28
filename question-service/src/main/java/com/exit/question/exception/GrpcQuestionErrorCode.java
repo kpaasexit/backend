@@ -12,7 +12,8 @@ public enum GrpcQuestionErrorCode implements GrpcErrorCode {
     NULL_QUESTION(Status.Code.NOT_FOUND, "QUESTION_ERR_002"),
     EXIST_ADOPTED_RESPONSE(Status.Code.ALREADY_EXISTS, "QUESTION_ERR_003"),
     NULL_ADDITIONAL_QUESTION(Status.Code.NOT_FOUND, "QUESTION_ERR_004"),
-    UNAVAILABLE_COMMENT_TYPE(Status.Code.UNAVAILABLE, "QUESTION_ERR_005");
+    UNAVAILABLE_COMMENT_TYPE(Status.Code.UNAVAILABLE, "QUESTION_ERR_005"),
+    ;
 
 
     private final Status.Code grpcStatusCode;
