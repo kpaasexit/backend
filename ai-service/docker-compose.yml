@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: ai-service-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"  # gRPC port
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__LOG_LEVEL=INFO
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    networks:
+      - ai-service-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: ai-service-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - ai-service-network
+
+  # AI Service
+  ai-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BUILDKIT_PROGRESS=plain
+    container_name: ai-service-app
+    restart: unless-stopped
+    ports:
+      - "8090:8090"   # FastAPI HTTP
+      - "50051:50051" # gRPC
+    environment:
+      # Server configuration
+      - HTTP_PORT=8090
+      - GRPC_PORT=50051
+      - WORKERS=4
+      - LOG_LEVEL=info
+
+      # Qdrant configuration
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - QDRANT_API_KEY=${QDRANT_API_KEY:-}
+      - QDRANT_COLLECTION_QUESTIONS=questions
+      - QDRANT_COLLECTION_QUIZ=quiz
+
+      # Redis configuration
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+
+      # OpenAI configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - OPENAI_TEMPERATURE=${OPENAI_TEMPERATURE:-0.7}
+      - OPENAI_MAX_TOKENS=${OPENAI_MAX_TOKENS:-2000}
+
+      # Eureka configuration (optional)
+      - EUREKA_ENABLED=${EUREKA_ENABLED:-false}
+      - EUREKA_SERVER_URL=${EUREKA_SERVER_URL:-http://localhost:8761/eureka}
+      - EUREKA_APP_NAME=AI-SERVICE
+
+      # Model configuration
+      - MODEL_CACHE_DIR=/app/model_cache
+      - BATCH_SIZE=32
+      - MAX_SEQUENCE_LENGTH=512
+    volumes:
+      - model_cache:/app/model_cache
+      - ./logs:/app/logs
+      - ./app:/app/app:ro  # Mount app code read-only for development
+    depends_on:
+      - qdrant
+      - redis
+    networks:
+      - ai-service-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  qdrant_data:
+    driver: local
+  redis_data:
+    driver: local
+  model_cache:
+    driver: local
+
+networks:
+  ai-service-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
