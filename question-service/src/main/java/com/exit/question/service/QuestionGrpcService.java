@@ -2,8 +2,10 @@ package com.exit.question.service;
 
 import com.exit.common.grpc.QuestionListItem;
 import com.exit.common.grpc.QuestionServiceGrpc;
+import com.exit.common.grpc.UpdateResponseResponse;
 import com.exit.question.controller.dto.request.*;
 import com.exit.question.controller.dto.response.*;
+import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -362,6 +364,44 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
             log.error("Question detail failed", e);
             responseObserver.onError(Status.INTERNAL
                     .withDescription("질문 상세 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void updateResponse(com.exit.common.grpc.UpdateResponseRequest request,
+                                StreamObserver<com.exit.common.grpc.UpdateResponseResponse> responseObserver) {
+        try {
+            log.info("Update response request received for response id: {}", request.getResponseId());
+
+            UpdateResponseResponse response = questionService.updateResponse(request);
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Update response failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("답변 수정 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void deleteResponse(com.exit.common.grpc.DeleteResponseRequest request,
+                                  StreamObserver<com.google.protobuf.Empty> responseObserver) {
+        try {
+            log.info("Delete response request received for response ID: {}", request.getResponseId());
+
+            questionService.deleteResponse(request);
+
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Delete Response failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("답변 삭제 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
     }
