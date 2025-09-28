@@ -135,4 +135,27 @@ public class QuestionGrpcClient {
             throw e;
         }
     }
+
+    public AnswerUpdateResponseDto updateResponse(UpdateResponseRequest request) {
+        try {
+            log.debug("Sending update response request via gRPC for responseId: {}", request.getResponseId());
+            UpdateResponseResponse response = questionServiceStub.updateResponse(request);
+            log.debug("Received update response response via gRPC");
+            return new AnswerUpdateResponseDto(response.getResponseId(), response.getContent());
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC update response failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
+
+    public void deleteResponse(DeleteResponseRequest request) {
+        try {
+            log.debug("Sending delete response request via gRPC for responseId: {}", request.getResponseId());
+            questionServiceStub.deleteResponse(request);
+            log.debug("Received delete response response via gRPC");
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC delete response failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
 }
