@@ -59,4 +59,9 @@ public class Response extends BaseEntity {
         this.responseAdopt = true;
         return this;
     }
+
+    public Response updateContent(String content) {
+        responseContent = content;
+        return this;
+    }
 }
