@@ -6,6 +6,7 @@ option java_multiple_files = true;
 option java_package = "com.exit.common.grpc";
 option java_outer_classname = "QuestionServiceProto";
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 service QuestionService {
@@ -19,6 +20,8 @@ service QuestionService {
   rpc CategoryRecommend(CategoryRecommendRequest) returns (CategoryRecommendationResponse);
   rpc SimilarQuestion(SimilarQuestionRequest) returns (SimilarQuestionResponse);
   rpc GetQuestionDetail(QuestionDetailRequest) returns (QuestionDetailResponse);
+  rpc UpdateResponse(UpdateResponseRequest) returns (UpdateResponseResponse);
+  rpc DeleteResponse(DeleteResponseRequest) returns (google.protobuf.Empty);
 }
 
 message ImageMetadata {
@@ -92,6 +95,15 @@ message SimilarQuestionRequest {
 
 message QuestionDetailRequest {
   int64 question_id = 1;
+}
+
+message UpdateResponseRequest {
+  int64 response_id = 1;
+  string content = 2;
+}
+
+message DeleteResponseRequest {
+  int64 response_id = 1;
 }
 
 // Response messages
@@ -200,4 +212,9 @@ message QuestionDetailResponse {
   QuestionCreateResponse question = 1;
   repeated ResponseDetail responses = 2;
   bool has_next = 3;
+}
+
+message UpdateResponseResponse {
+  int64 response_id = 1;
+  string content = 2;
 }
