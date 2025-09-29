@@ -42,7 +42,8 @@ services:
     restart: unless-stopped
     ports:
       - "8090:8090"   # FastAPI HTTP
-      - "50051:50051" # gRPC
+      - "50051:50051" # Question Service gRPC
+      - "50052:50052" # Quiz Service gRPC
     environment:
       # Server configuration
       - HTTP_PORT=8090
@@ -92,6 +93,42 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  # gRPC UI for Question Service
+  grpcui-question:
+    image: fullstorydev/grpcui:latest
+    container_name: ai-service-grpcui-question
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    command: [
+      "-plaintext",
+      "-port", "8080",
+      "-open-browser=false",
+      "ai-service:50051"
+    ]
+    depends_on:
+      - ai-service
+    networks:
+      - ai-service-network
+
+  # gRPC UI for Quiz Service
+  grpcui-quiz:
+    image: fullstorydev/grpcui:latest
+    container_name: ai-service-grpcui-quiz
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    command: [
+      "-plaintext",
+      "-port", "8081",
+      "-open-browser=false",
+      "ai-service:50052"
+    ]
+    depends_on:
+      - ai-service
+    networks:
+      - ai-service-network
 
 volumes:
   qdrant_data:
