@@ -51,12 +51,13 @@ class QuestionGRPCServer:
         question_servicer = QuestionServicer()
         question_service_pb2_grpc.add_QuestionServiceServicer_to_server(question_servicer, server)
 
-        if not self.settings.is_production:
-            SERVICE_NAMES = (
-                question_service_pb2.DESCRIPTOR.services_by_name['QuestionService'].full_name,
-                reflection.SERVICE_NAME,
-            )
-            reflection.enable_server_reflection(SERVICE_NAMES, server)
+        # Enable gRPC reflection for documentation and debugging
+        SERVICE_NAMES = (
+            question_service_pb2.DESCRIPTOR.services_by_name['QuestionService'].full_name,
+            reflection.SERVICE_NAME,
+        )
+        reflection.enable_server_reflection(SERVICE_NAMES, server)
+        self.logger.info("gRPC reflection enabled for QuestionService")
 
         return server
 
