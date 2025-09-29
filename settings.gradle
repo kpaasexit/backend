@@ -7,5 +7,6 @@ include 'user-service'
 include 'quiz-service'
 include 'question-service'
 include 'magazine-service'
+include 'notification-service'
 include 'common'
 
