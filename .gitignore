@@ -36,8 +36,7 @@ target/
 
 # 설정 파일 및 민감한 정보
 secrets.yml
-config-server/secrets.yml
-**/*secrets*
+**/*secret*
 common/src/main/resources/application.yml
 
 # 마크다운 파일
