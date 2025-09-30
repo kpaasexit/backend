@@ -5,32 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="feat/ 파일 업로드 유틸리티 구현">
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerAdoptRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerCreateRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerRecommendRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/AnswerReportRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/HashtagSuggestionRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/QuestionCreateRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/request/QuestionReportRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerAdoptResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerCreateResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerRecommendResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/AnswerReportResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/CategoryRecommendationResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/HashtagSuggestionResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionCreateResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionListResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/QuestionReportResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/controller/dto/response/SimilarQuestionResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/question/QuestionAnswerType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/question/QuestionCategoryType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/domain/response/ResponseDisclosureType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/exception/GrpcQuestionErrorCode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionGrpcService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/question-service/src/main/java/com/exit/question/service/QuestionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.13/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e42a8389-0387-49d9-8f17-f89905d61adb.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -214,7 +193,7 @@
     "Spring Boot.QuestionServiceApplication.executor": "Run",
     "Spring Boot.QuizServiceApplication.executor": "Run",
     "Spring Boot.UserApplication.executor": "Run",
-    "git-widget-placeholder": "feat/question",
+    "git-widget-placeholder": "dev",
     "last_opened_file_path": "C:/Users/User/Desktop/exit/backend/user-service",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -557,7 +536,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/oauth2/KakaoOAuth2UserInfo.java</url>
           <line>11</line>
-          <properties class="com.exit.gateway.controller.dto.response.oauth2.KakaoOAuth2UserInfo" method="getProviderId">
+          <properties class="com.exit.gateway.controller.dto.response.oauth2.KakaoOAuth2UserInfo">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -566,7 +545,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/dto/response/oauth2/NaverOAuth2UserInfo.java</url>
           <line>20</line>
-          <properties class="com.exit.gateway.controller.dto.response.oauth2.NaverOAuth2UserInfo" method="getName">
+          <properties class="com.exit.gateway.controller.dto.response.oauth2.NaverOAuth2UserInfo">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -599,6 +578,11 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="com.exit.question.controller.dto.request.NotificationContentDto" memberName="content" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
