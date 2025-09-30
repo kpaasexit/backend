@@ -7,9 +7,6 @@ service QuestionService {
     // 질문 카테고리 분류
     rpc ClassifyCategory(ClassifyRequest) returns (CategoryResponse);
 
-    // 텍스트 임베딩 생성
-    rpc GetEmbedding(EmbeddingRequest) returns (EmbeddingResponse);
-
     // AI 답변 생성
     rpc GenerateAIAnswer(AnswerRequest) returns (AnswerResponse);
 
@@ -25,51 +22,26 @@ service QuestionService {
 // 분류 요청
 message ClassifyRequest {
     string title = 1;
-    string request_id = 2;
 }
 
 // 카테고리 응답
 message CategoryResponse {
-    string category = 1;
+    int32 category_id = 1;
     float confidence = 2;
-    string request_id = 3;
-    int64 processing_time_ms = 4;
+    int64 processing_time_ms = 3;
 }
 
-
-// 임베딩 요청
-message EmbeddingRequest {
-    repeated string texts = 1;
-    string model_type = 2;
-}
-
-// 임베딩 벡터
-message EmbeddingVector {
-    repeated float values = 1;
-}
-
-// 임베딩 응답
-message EmbeddingResponse {
-    repeated EmbeddingVector embeddings = 1;
-    int32 dimension = 2;
-    int64 processing_time = 3;
-}
 
 // AI 답변 생성 요청
 message AnswerRequest {
-    string category = 1;
-    string question = 2;
-    string request_id = 3;
-    bool use_cache = 4;
+    string question = 1;
 }
 
 // AI 답변 생성 응답
 message AnswerResponse {
     string answer = 1;
-    string request_id = 2;
-    int32 tokens_used = 3;
-    int64 processing_time_ms = 4;
-    bool from_cache = 5;
+    int32 tokens_used = 2;
+    int64 processing_time_ms = 3;
 }
 
 
@@ -77,43 +49,34 @@ message AnswerResponse {
 message SimilarRequest {
     string title = 1;
     string content = 2;
-    string category = 3;
-    int32 limit = 4;
-    float score_threshold = 5;
-    string request_id = 6;
 }
 
 // 유사한 질문 정보
 message SimilarQuestion {
-    string question_id = 1;
+    int64 question_id = 1;
     string title = 2;
-    string category = 3;
-    float similarity = 4;
-    string content_sample = 5;
-    int64 created_at = 6;
+    float similarity = 3;
+    string content_sample = 4;
+    int64 created_at = 5;
 }
 
 // 유사성 검색 응답
 message SimilarResponse {
     repeated SimilarQuestion questions = 1;
-    string request_id = 2;
-    int32 total_found = 3;
+    int32 total_found = 2;
 }
 
 // 질문 저장 요청
 message SaveQuestionRequest {
-    string question_id = 1;
+    int64 question_id = 1;
     string title = 2;
     string content = 3;
-    string category = 4;
-    repeated string tags = 5;
-    string request_id = 6;
+    int32 category_id = 4;
 }
 
 // 질문 저장 응답
 message SaveQuestionResponse {
     bool success = 1;
     string message = 2;
-    string request_id = 3;
 }
 
