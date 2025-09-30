@@ -3,6 +3,7 @@ package com.exit.question.domain.response;
 import com.exit.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,4 +25,10 @@ public class ResponseImage extends BaseEntity {
 
     @Column(name = "response_image_url", length = 512)
     private String responseImageUrl;
+
+    @Builder
+    public ResponseImage(Long responseId, String responseImageUrl) {
+        this.responseId = responseId;
+        this.responseImageUrl = responseImageUrl;
+    }
 }

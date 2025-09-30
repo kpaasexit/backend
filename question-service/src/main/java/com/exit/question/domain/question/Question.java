@@ -1,7 +1,7 @@
 package com.exit.question.domain.question;
 
 import com.exit.common.domain.BaseEntity;
-import com.exit.question.controller.dto.request.QuestionCreateRequest;
+import com.exit.question.controller.dto.request.QuestionCreateRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,8 +21,9 @@ public class Question extends BaseEntity {
     @Column(name = "question_id")
     private Long questionId;
 
-    @Column(name = "question_category_id", nullable = false)
-    private Long questionCategoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_category_id", nullable = false)
+    private QuestionCategory questionCategory;
 
     @Column(name = "question_writer_id")
     private Long questionWriterId;
@@ -32,10 +33,6 @@ public class Question extends BaseEntity {
 
     @Column(name = "question_content", columnDefinition = "TEXT")
     private String questionContent;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "question_category")
-    private QuestionCategoryType questionCategory;
 
     @Column(name = "question_urgency")
     private Boolean questionUrgency;
@@ -47,9 +44,15 @@ public class Question extends BaseEntity {
     @Column(name = "questIon_answer_adopt")
     private Boolean questionAnswerAdopt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "question_disclosure")
+    private QuestionDisclosureType questionDisclosure;
+
+    @Column(name = "question_is_anonymous")
+    private Boolean questionIsAnonymous;
+
     @Builder
-    public Question(Long questionCategoryId, Long questionWriterId, String questionTitle, String questionContent, QuestionCategoryType questionCategory, Boolean questionUrgency, QuestionAnswerType questionAnswerType, Boolean questionAnswerAdopt) {
-        this.questionCategoryId = questionCategoryId;
+    public Question(Long questionWriterId, String questionTitle, String questionContent, QuestionCategory questionCategory, Boolean questionUrgency, QuestionAnswerType questionAnswerType, Boolean questionAnswerAdopt, QuestionDisclosureType questionDisclosure, Boolean questionIsAnonymous) {
         this.questionWriterId = questionWriterId;
         this.questionTitle = questionTitle;
         this.questionContent = questionContent;
@@ -57,17 +60,25 @@ public class Question extends BaseEntity {
         this.questionUrgency = questionUrgency;
         this.questionAnswerType = questionAnswerType;
         this.questionAnswerAdopt = questionAnswerAdopt;
+        this.questionDisclosure = questionDisclosure;
+        this.questionIsAnonymous = questionIsAnonymous;
     }
 
-    public static Question createQuestionFromRequest(QuestionCreateRequest questionCreateRequest) {
+    public static Question createQuestionFromRequest(QuestionCreateRequestDto questionCreateRequestDto, QuestionCategory questionCategory) {
         return Question.builder()
-                .questionCategoryId(questionCreateRequest.questionCategoryId())
-                .questionTitle(questionCreateRequest.questionTitle())
-                .questionContent(questionCreateRequest.questionContent())
-                .questionCategory(questionCreateRequest.questionCategory())
-                .questionUrgency(questionCreateRequest.questionUrgency())
-                .questionAnswerType(questionCreateRequest.questionAnswerType())
+                .questionWriterId(questionCreateRequestDto.questionWriterId())
+                .questionTitle(questionCreateRequestDto.questionTitle())
+                .questionContent(questionCreateRequestDto.questionContent())
+                .questionCategory(questionCategory)
+                .questionUrgency(questionCreateRequestDto.questionUrgency())
+                .questionAnswerType(questionCreateRequestDto.questionAnswerType())
                 .questionAnswerAdopt(false)
+                .questionDisclosure(questionCreateRequestDto.questionDisclosure())
+                .questionIsAnonymous(questionCreateRequestDto.questionIsAnonymous())
                 .build();
+    }
+
+    public void updateAnswerAdopt() {
+        questionAnswerAdopt = true;
     }
 }

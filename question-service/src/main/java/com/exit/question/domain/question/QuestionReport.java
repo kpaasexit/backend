@@ -3,6 +3,7 @@ package com.exit.question.domain.question;
 import com.exit.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,4 +31,12 @@ public class QuestionReport extends BaseEntity {
 
     @Column(name = "question_report_writer_id")
     private Long questionReportWriterId;
+
+    @Builder
+    public QuestionReport(Long questionId, String questionReportTitle, String questionReportContent, Long questionReportWriterId) {
+        this.questionId = questionId;
+        this.questionReportTitle = questionReportTitle;
+        this.questionReportContent = questionReportContent;
+        this.questionReportWriterId = questionReportWriterId;
+    }
 }

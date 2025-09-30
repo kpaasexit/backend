@@ -12,14 +12,14 @@ import java.util.List;
 public interface QuestionCategoryRepository extends JpaRepository<QuestionCategory, Long> {
 
     @Query("SELECT qc FROM QuestionCategory qc WHERE " +
-           "LOWER(qc.questionCategoryName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+            "LOWER(qc.questionCategoryName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<QuestionCategory> findCategoriesByKeyword(@Param("keyword") String keyword);
 
     @Query(value = "SELECT qc.* FROM question_categories qc " +
-           "JOIN questions q ON q.question_category_id = qc.question_category_id " +
-           "WHERE LOWER(q.question_title) LIKE LOWER(CONCAT('%', :title, '%')) " +
-           "GROUP BY qc.question_category_id " +
-           "ORDER BY COUNT(*) DESC " +
-           "LIMIT 1", nativeQuery = true)
+            "JOIN questions q ON q.question_category_id = qc.question_category_id " +
+            "WHERE LOWER(q.question_title) LIKE LOWER(CONCAT('%', :title, '%')) " +
+            "GROUP BY qc.question_category_id " +
+            "ORDER BY COUNT(*) DESC " +
+            "LIMIT 1", nativeQuery = true)
     QuestionCategory findMostUsedCategoryByTitlePattern(@Param("title") String title);
 }

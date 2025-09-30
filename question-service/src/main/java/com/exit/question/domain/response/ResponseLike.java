@@ -3,6 +3,7 @@ package com.exit.question.domain.response;
 import com.exit.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,4 +24,10 @@ public class ResponseLike extends BaseEntity {
 
     @Column(name = "user_id")
     private Long userId;
+
+    @Builder
+    public ResponseLike(Long responseId, Long userId) {
+        this.responseId = responseId;
+        this.userId = userId;
+    }
 }

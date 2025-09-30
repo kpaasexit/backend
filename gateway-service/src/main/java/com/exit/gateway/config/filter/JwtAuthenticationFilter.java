@@ -31,22 +31,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             if (shouldNotFilter(request)) {
+                log.debug("Skipping JWT filter for path: {}", request.getRequestURI());
                 filterChain.doFilter(request, response);
                 return;
             }
 
+            log.debug("Processing JWT for path: {}", request.getRequestURI());
             String accessToken = jwtTokenProvider.extractAccessToken(request);
             if (accessToken != null) {
+                log.debug("JWT token found, validating...");
                 if (jwtTokenProvider.isExpiredToken(accessToken)) {
                     throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
                 }
 
                 Authentication authentication = jwtAuthenticationProvider.authenticate(new JwtAuthenticationToken(accessToken));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.debug("JWT authentication successful");
+            } else {
+                log.debug("No JWT token found, proceeding without authentication");
             }
 
             filterChain.doFilter(request, response);
         } catch (RestApiException ex) {
+            log.error("JWT authentication failed: {}", ex.getMessage());
             response.setStatus(ex.getErrorCode().getHttpStatus().value());
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -66,6 +73,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return path.startsWith("/api/auth/refresh");
+        return path.startsWith("/api/auth/refresh") ||
+                path.startsWith("/oauth2/") ||
+                path.startsWith("/login/");
     }
 }

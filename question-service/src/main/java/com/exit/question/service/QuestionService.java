@@ -1,189 +1,335 @@
 package com.exit.question.service;
 
+import com.exit.common.exception.grpc.GrpcException;
+import com.exit.common.grpc.DeleteResponseRequest;
+import com.exit.common.grpc.UpdateResponseRequest;
+import com.exit.common.grpc.UpdateResponseResponse;
+import com.exit.common.grpc.UserIdAndNameInfo;
+import com.exit.common.util.file.FileUploadUtil;
 import com.exit.question.controller.dto.request.*;
 import com.exit.question.controller.dto.response.*;
-import com.exit.question.domain.question.*;
-import com.exit.question.domain.question.repository.*;
-import com.exit.question.domain.response.*;
-import com.exit.question.domain.response.repository.*;
+import com.exit.question.domain.question.Question;
+import com.exit.question.domain.question.QuestionCategory;
+import com.exit.question.domain.question.QuestionImage;
+import com.exit.question.domain.question.QuestionReport;
+import com.exit.question.domain.question.FollowUpRoom;
+import com.exit.question.domain.question.repository.QuestionCategoryRepository;
+import com.exit.question.domain.question.repository.QuestionImageRepository;
+import com.exit.question.domain.question.repository.QuestionReportRepository;
+import com.exit.question.domain.question.repository.QuestionRepository;
+import com.exit.question.domain.question.repository.FollowUpRoomRepository;
+import com.exit.question.domain.response.Response;
+import com.exit.question.domain.response.ResponseImage;
+import com.exit.question.domain.response.ResponseLike;
+import com.exit.question.domain.response.ResponseReport;
+import com.exit.question.domain.response.repository.ResponseImageRepository;
+import com.exit.question.domain.response.repository.ResponseLikeRepository;
+import com.exit.question.domain.response.repository.ResponseReportRepository;
+import com.exit.question.domain.response.repository.ResponseRepository;
+import com.exit.question.exception.GrpcQuestionErrorCode;
+import com.exit.question.exception.GrpcResponseErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class QuestionService {
+    private static final String QUESTION_FOLDER = "question";
+    private static final String RESPONSE_FOLDER = "response";
     private final QuestionRepository questionRepository;
     private final QuestionCategoryRepository questionCategoryRepository;
-    private final HashTagRepository hashTagRepository;
     private final QuestionImageRepository questionImageRepository;
     private final QuestionReportRepository questionReportRepository;
     private final ResponseRepository responseRepository;
     private final ResponseImageRepository responseImageRepository;
-    private final ResponseReferenceRepository responseReferenceRepository;
     private final ResponseLikeRepository responseLikeRepository;
     private final ResponseReportRepository responseReportRepository;
+    private final FollowUpRoomRepository followUpRoomRepository;
+    private final FileUploadUtil fileUploadUtil;
+    private final UserGrpcClient userGrpcClient;
+    private final NotificationGrpcClient notificationGrpcClient;
 
-//    public CategoryRecommendationResponse categoryRecommend(String title) {
-//        // 1. 과거 질문 데이터를 기반으로 유사한 제목의 질문에서 가장 많이 사용된 카테고리 찾기
-//        QuestionCategory mostUsedCategory = questionCategoryRepository.findMostUsedCategoryByTitlePattern(title);
-//        if (mostUsedCategory != null) {
-//            return CategoryRecommendationResponse.from(mostUsedCategory);
-//
-//        }
-//
-//        // 2. 제목에서 키워드를 추출하여 카테고리 이름과 매칭
-//        String[] keywords = title.toLowerCase().split("\\s+");
-//        for (String keyword : keywords) {
-//            List<QuestionCategory> matchingCategories = questionCategoryRepository.findCategoriesByKeyword(keyword);
-//            if (!matchingCategories.isEmpty()) {
-//                QuestionCategory matchedCategory = matchingCategories.get(0);
-//                return CategoryRecommendationResponse.from(matchedCategory);
-//            }
-//        }
-//
-//        // 3. 기본값: 첫 번째 카테고리 반환
-//        // TODO: 더 정교한 카테고리 추천을 위해서는 AI/ML 기술이 필요
-//        // - 자연어 처리(NLP)를 통한 의미적 유사도 계산
-//        // - 머신러닝 모델을 활용한 카테고리 분류
-//        // - 벡터 임베딩 기반 유사도 매칭
-//        List<QuestionCategory> allCategories = questionCategoryRepository.findAll();
-//        if (allCategories.isEmpty()) {
-//            return null;
-//        }
-//
-//        QuestionCategory defaultCategory = allCategories.get(0);
-//        return CategoryRecommendationResponse.from(defaultCategory);
-//    }
-//
-//    public HashtagSuggestionResponse hashtagSuggest(HashtagSuggestionRequest hashtagSuggestionRequest) {
-//
-//        // 1. 단어 기반 해시태그 검색
-//
-//        // 2. 기본값: null 반환 (추천할 해시태그가 없음)
-//        // TODO: 더 정교한 해시태그 추천을 위해서는 AI/ML 기술이 필요
-//        // - 자연어 처리(NLP)를 통한 키워드 추출 및 의미 분석
-//        // - TF-IDF 또는 Word2Vec을 활용한 텍스트 유사도 계산
-//        // - 협업 필터링을 통한 사용자 기반 해시태그 추천
-//        // - 딥러닝 모델을 활용한 자동 태깅 시스템
-//        return null;
-//    }
-//
-//    public SimilarQuestionResponse similarQuestion(String title) {
-//        List<Question> questions = questionRepository.findAll();
-//        if (questions.isEmpty()) {
-//            return null;
-//        }
-//        Question similarQuestion = questions.get(0);
-//        List<HashTag> hashTags = hashTagRepository.findAll().stream()
-//                .filter(tag -> tag.getQuestionId().equals(similarQuestion.getQuestionId()))
-//                .collect(Collectors.toList());
-//        List<String> hashTagTitles = hashTags.stream()
-//                .map(HashTag::getHashTagTitle)
-//                .collect(Collectors.toList());
-//
-//        return new SimilarQuestionResponse(
-//                similarQuestion.getQuestionId(),
-//                similarQuestion.getQuestionTitle(),
-//                similarQuestion.getQuestionContent(),
-//                similarQuestion.getQuestionCategory(),
-//                similarQuestion.getQuestionUrgency(),
-//                similarQuestion.getQuestionAnswerType(),
-//                similarQuestion.getQuestionAnswerAdopt(),
-//                hashTagTitles,
-//                0.85,
-//                similarQuestion.getCreatedAt()
-//        );
-//    }
+//    private final NlpGrpcClient nlpGrpcClient;
 
-    public QuestionCreateResponse questionCreate(QuestionCreateRequest questionCreateRequest) {
-        Question question = Question.createQuestionFromRequest(questionCreateRequest);
+    public QuestionCreateResponseDto createQuestion(QuestionCreateRequestDto request) {
+        QuestionCategory questionCategory = questionCategoryRepository.findById(request.questionCategoryId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+        Question question = Question.createQuestionFromRequest(request, questionCategory);
 
         Question savedQuestion = questionRepository.save(question);
 
-        if (questionCreateRequest.hashTags() != null) {
-            for (String hashTagTitle : questionCreateRequest.hashTags()) {
-                HashTag hashTag = HashTag.builder()
-                        .questionId(savedQuestion.getQuestionId())
-                        .hashTagTitle(hashTagTitle)
-                        .build();
-                hashTagRepository.save(hashTag);
-            }
-        }
+        List<String> imageUrls = uploadQuestionImages(request, savedQuestion);
+        String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
 
-        if (questionCreateRequest.images() != null) {
-            // 이미지 저장 작업
-            for (String imageUrl : questionCreateRequest.images()) {
-                QuestionImage questionImage = QuestionImage.builder()
-                        .questionId(savedQuestion.getQuestionId())
-                        .questionImageUrl(imageUrl)
-                        .build();
-                questionImageRepository.save(questionImage);
-            }
-        }
+        return QuestionCreateResponseDto.from(savedQuestion, imageUrls, questionWriterName);
+    }
 
-        return new QuestionCreateResponse(
-                savedQuestion.getQuestionId(),
-                savedQuestion.getQuestionCategoryId(),
-                savedQuestion.getQuestionWriterId(),
-                savedQuestion.getQuestionTitle(),
-                savedQuestion.getQuestionContent(),
-                savedQuestion.getQuestionCategory(),
-                savedQuestion.getQuestionUrgency(),
-                savedQuestion.getQuestionAnswerType(),
-                savedQuestion.getQuestionAnswerAdopt(),
-                questionCreateRequest.hashTags(),
-                questionCreateRequest.imageUrls(),
-                savedQuestion.getCreatedAt(),
-                savedQuestion.getUpdatedAt()
+    private List<String> uploadQuestionImages(QuestionCreateRequestDto questionCreateRequestDto, Question savedQuestion) {
+        List<String> imageUrls = null;
+        if (questionCreateRequestDto.images() != null) {
+            imageUrls = fileUploadUtil.uploadImages(questionCreateRequestDto.images(), QUESTION_FOLDER);
+            List<QuestionImage> questionImages = imageUrls.stream()
+                    .map(url -> QuestionImage.builder()
+                            .questionId(savedQuestion.getQuestionId())
+                            .questionImageUrl(url)
+                            .build())
+                    .toList();
+
+            questionImageRepository.saveAll(questionImages);
+        }
+        return imageUrls;
+    }
+
+    public AnswerAdoptResponseDto answerAdopt(AnswerAdoptRequestDto answerAdoptRequestDto) {
+        Response response = responseRepository.findById(answerAdoptRequestDto.responseId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+
+        validateQuestionNotAlreadyAdopted(response.getQuestionId());
+
+        Response adoptedResponse = adoptResponse(response);
+        Question question = questionRepository.findById(adoptedResponse.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+        updateResponseAdopt(question);
+        String body = truncateContent(adoptedResponse.getResponseContent());
+        SendNotificationRequestDto requestDto = SendNotificationRequestDto.builder()
+                .body(body)
+                .type("ANSWER_ADOPTED")
+                .targetId(question.getQuestionId())
+                .receiverId(question.getQuestionWriterId())
+                .deviceId(answerAdoptRequestDto.deviceId())
+                .build();
+        notificationGrpcClient.sendNotification(requestDto);
+        return AnswerAdoptResponseDto.from(adoptedResponse);
+    }
+
+    private void updateResponseAdopt(Question question) {
+        question.updateAnswerAdopt();
+        questionRepository.save(question);
+    }
+
+    public AnswerCreateResponseDto answerCreate(AnswerCreateRequestDto answerCreateRequestDto) {
+        Response newResponse = Response.createResponse(answerCreateRequestDto);
+        Response savedResponse = responseRepository.save(newResponse);
+
+        List<String> imageUrls = processAnswerImages(answerCreateRequestDto, savedResponse);
+        Question question = questionRepository.findById(savedResponse.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        String subBody = truncateContent(savedResponse.getResponseContent());
+        SendNotificationRequestDto requestDto = SendNotificationRequestDto.builder()
+                .body(subBody)
+                .type("NEW_ANSWER_ON_QUESTION")
+                .targetId(question.getQuestionId())
+                .receiverId(question.getQuestionWriterId())
+                .deviceId(answerCreateRequestDto.deviceId())
+                .build();
+        notificationGrpcClient.sendNotification(requestDto);
+
+        return AnswerCreateResponseDto.from(savedResponse, imageUrls);
+    }
+
+    private String truncateContent(String content) {
+        String subBody;
+        if(content.length() <= 100) {
+            subBody = content.substring(0, content.length()-1);
+        } else {
+            subBody = content.substring(0, 100);
+        }
+        return subBody;
+    }
+
+    public AnswerRecommendResponseDto toggleAnswerLike(AnswerRecommendRequestDto req) {
+        Optional<ResponseLike> existingLike =
+                responseLikeRepository.findByResponseIdAndUserId(req.responseId(), req.userId());
+
+        boolean isLiked = handleLikeToggle(existingLike, req);
+        int likeCount = responseLikeRepository.countByResponseId(req.responseId());
+
+        return new AnswerRecommendResponseDto(likeCount, isLiked);
+    }
+
+    public QuestionReportResponseDto questionReport(QuestionReportRequestDto request) {
+        Question question = questionRepository.findById(request.questionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        QuestionReport questionReport = createQuestionReport(request);
+        userGrpcClient.increaseReportCount(question.getQuestionWriterId());
+
+        QuestionReport savedQuestionReport = questionReportRepository.save(questionReport);
+        return QuestionReportResponseDto.from(savedQuestionReport);
+    }
+
+    private QuestionReport createQuestionReport(QuestionReportRequestDto request) {
+        return QuestionReport.builder()
+                .questionId(request.questionId())
+                .questionReportTitle(request.questionReportTitle())
+                .questionReportContent(request.questionReportContent())
+                .questionReportWriterId(request.questionReportWriterId())
+                .build();
+    }
+
+    public AnswerReportResponseDto answerReport(AnswerReportRequestDto request) {
+        Response response = responseRepository.findById(request.responseId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+        ResponseReport responseReport = ResponseReport.from(request);
+
+        ResponseReport savedResponseReport = responseReportRepository.save(responseReport);
+        userGrpcClient.increaseReportCount(response.getResponseWriterId());
+
+        return AnswerReportResponseDto.from(savedResponseReport);
+    }
+
+    @Transactional(readOnly = true)
+    public QuestionListResponseDto questionList(QuestionListRequestDto filter) {
+        PageRequest pageRequest = PageRequest.of(filter.getPage(), filter.getSize());
+        Slice<QuestionListQueryResponseDto> slice = questionRepository.findQuestionsByFilter(filter.getCategoryIds(), filter.getKeyword(), pageRequest);
+        return new QuestionListResponseDto(slice.getContent(), slice.hasNext());
+    }
+
+
+    // 카테고리 추천
+    @Transactional(readOnly = true)
+    public CategoryRecommendationResponseDto categoryRecommend(String title) {
+
+        return null;
+    }
+
+    // 유사 질문 조회
+    @Transactional(readOnly = true)
+    public SimilarQuestionResponseDto similarQuestion(String title) {
+        List<Question> questions = questionRepository.findAll();
+        if (questions.isEmpty()) {
+            return null;
+        }
+        Question similarQuestion = questions.get(0);
+
+        return new SimilarQuestionResponseDto(
+                similarQuestion.getQuestionId(),
+                similarQuestion.getQuestionTitle(),
+                similarQuestion.getQuestionContent(),
+                similarQuestion.getQuestionCategory(),
+                similarQuestion.getQuestionUrgency(),
+                similarQuestion.getQuestionAnswerType(),
+                similarQuestion.getQuestionAnswerAdopt(),
+                similarQuestion.getCreatedAt()
         );
     }
 
-    public AnswerAdoptResponse answerAdopt(AnswerAdoptRequest answerAdoptRequest) {
-        Optional<Response> responseOpt = responseRepository.findById(answerAdoptRequest.responseId());
-        if (responseOpt.isEmpty()) {
-            throw new RuntimeException("Response not found");
-        }
+    @Transactional(readOnly = true)
+    public QuestionDetailResponseDto getQuestionDetail(Long questionId) {
+        QuestionCreateResponseDto questionDto = buildQuestionDto(questionId);
+        List<ResponseDetailDto> responseDetailDtos = buildResponseDetailDtos(questionId);
+        boolean hasMore = hasMoreResponses(questionId);
 
-        Response response = responseOpt.get();
-        Response updatedResponse = Response.builder()
-                .responseId(response.getResponseId())
-                .questionId(response.getQuestionId())
-                .responseWriterId(response.getResponseWriterId())
-                .responseTitle(response.getResponseTitle())
-                .responseContent(response.getResponseContent())
-                .responseDisclosure(response.getResponseDisclosure())
-                .responseAdopt(true)
-                .build();
-
-        Response savedResponse = responseRepository.save(updatedResponse);
-
-        return new AnswerAdoptResponse(
-                savedResponse.getResponseId(),
-                savedResponse.getResponseAdopt(),
-                savedResponse.getUpdatedAt()
-        );
+        return new QuestionDetailResponseDto(questionDto, responseDetailDtos, hasMore);
     }
 
-    public AnswerCreateResponse answerCreate(AnswerCreateRequest answerCreateRequest) {
-        Response response = Response.builder()
-                .questionId(answerCreateRequest.questionId())
-                .responseTitle(answerCreateRequest.responseTitle())
-                .responseContent(answerCreateRequest.responseContent())
-                .responseDisclosure(answerCreateRequest.responseDisclosure())
-                .responseAdopt(false)
-                .build();
+    private QuestionCreateResponseDto buildQuestionDto(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
 
-        Response savedResponse = responseRepository.save(response);
+        Optional<List<QuestionImage>> images = questionImageRepository.findAllByQuestionId(questionId);
+        List<String> questionUrls = new ArrayList<>();
+        images.ifPresent(questionImages ->
+                questionImages.forEach(image -> questionUrls.add(image.getQuestionImageUrl())));
+        String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
+        QuestionCreateResponseDto questionDto = QuestionCreateResponseDto.from(question, questionUrls, questionWriterName);
+        return questionDto;
+    }
 
-        if (answerCreateRequest.imageUrls() != null) {
-            for (String imageUrl : answerCreateRequest.imageUrls()) {
+    private List<ResponseDetailDto> buildResponseDetailDtos(Long questionId) {
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        Slice<Response> responseSlice = responseRepository.findAllByQuestionId(questionId, pageRequest);
+
+        List<Response> responses = responseSlice.getContent();
+        if (responses.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 배치로 필요한 데이터 미리 조회 (N+1 문제 해결)
+        Map<Long, List<String>> responseImageUrlsMap = getResponseImageUrlsMap(responses);
+        Map<Long, Integer> likeCountMap = getLikeCountMap(responses);
+        Map<Long, String> writerNameMap = getWriterNameMap(responses);
+
+        return responses.stream()
+                .map(response -> ResponseDetailDto.from(
+                        response,
+                        responseImageUrlsMap.getOrDefault(response.getResponseId(), Collections.emptyList()),
+                        likeCountMap.getOrDefault(response.getResponseId(), 0),
+                        writerNameMap.getOrDefault(response.getResponseWriterId(), "Unknown")
+                ))
+                .toList();
+    }
+
+    private Map<Long, List<String>> getResponseImageUrlsMap(List<Response> responses) {
+        List<Long> responseIds = responses.stream()
+                .map(Response::getResponseId)
+                .toList();
+
+        return responseImageRepository.findAllByResponseIdIn(responseIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        ResponseImage::getResponseId,
+                        Collectors.mapping(ResponseImage::getResponseImageUrl, Collectors.toList())
+                ));
+    }
+
+    private Map<Long, Integer> getLikeCountMap(List<Response> responses) {
+        List<Long> responseIds = responses.stream()
+                .map(Response::getResponseId)
+                .toList();
+
+        return responseLikeRepository.countByResponseIdIn(responseIds);
+    }
+
+    private Map<Long, String> getWriterNameMap(List<Response> responses) {
+        Set<Long> writerIds = responses.stream()
+                .map(Response::getResponseWriterId)
+                .collect(toSet());
+
+        List<UserIdAndNameInfo> userInfos = userGrpcClient.getUserNames(new ArrayList<>(writerIds));
+        return userInfos.stream()
+                .collect(toMap(
+                        UserIdAndNameInfo::getUserId,
+                        UserIdAndNameInfo::getUserName
+                ));
+    }
+
+    private boolean hasMoreResponses(Long questionId) {
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        return responseRepository.findAllByQuestionId(questionId, pageRequest).hasNext();
+    }
+
+    private void validateQuestionNotAlreadyAdopted(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        if (question.getQuestionAnswerAdopt()) {
+            throw new GrpcException(GrpcQuestionErrorCode.EXIST_ADOPTED_RESPONSE);
+        }
+    }
+
+    private Response adoptResponse(Response response) {
+        Response updateResponseAdopt = response.updateResponseAdopt();
+        Response savedResponse = responseRepository.save(updateResponseAdopt);
+        return savedResponse;
+    }
+
+    private List<String> processAnswerImages(AnswerCreateRequestDto answerCreateRequestDto, Response savedResponse) {
+        List<String> imageUrls = null;
+        if (answerCreateRequestDto.images() != null) {
+            imageUrls = fileUploadUtil.uploadImages(answerCreateRequestDto.images(), RESPONSE_FOLDER);
+            for (String imageUrl : imageUrls) {
                 ResponseImage responseImage = ResponseImage.builder()
                         .responseId(savedResponse.getResponseId())
                         .responseImageUrl(imageUrl)
@@ -191,137 +337,54 @@ public class QuestionService {
                 responseImageRepository.save(responseImage);
             }
         }
+        return imageUrls;
+    }
 
-        if (answerCreateRequest.referenceUrls() != null) {
-            for (String referenceUrl : answerCreateRequest.referenceUrls()) {
-                ResponseReference responseReference = ResponseReference.builder()
-                        .responseId(savedResponse.getResponseId())
-                        .responseReferenceUrl(referenceUrl)
-                        .build();
-                responseReferenceRepository.save(responseReference);
-            }
+    private boolean handleLikeToggle(Optional<ResponseLike> existingLike, AnswerRecommendRequestDto req) {
+        if (existingLike.isPresent()) {
+            responseLikeRepository.delete(existingLike.get());
+            return false; // 좋아요 취소됨
         }
 
-        int likeCount = responseLikeRepository.findAll().stream()
-                .filter(like -> like.getResponseId().equals(savedResponse.getResponseId()))
-                .size();
-
-        return new AnswerCreateResponse(
-                savedResponse.getResponseId(),
-                savedResponse.getQuestionId(),
-                savedResponse.getResponseWriterId(),
-                savedResponse.getResponseTitle(),
-                savedResponse.getResponseContent(),
-                savedResponse.getResponseDisclosure(),
-                savedResponse.getResponseAdopt(),
-                answerCreateRequest.imageUrls(),
-                answerCreateRequest.referenceUrls(),
-                likeCount,
-                savedResponse.getCreatedAt(),
-                savedResponse.getUpdatedAt()
-        );
+        ResponseLike newLike = createNewLike(req);
+        responseLikeRepository.save(newLike);
+        return true; // 새로운 좋아요
     }
 
-    public AnswerRecommendResponse answerRecommend(AnswerRecommendRequest answerRecommendRequest) {
-        ResponseLike responseLike = ResponseLike.builder()
-                .responseId(answerRecommendRequest.responseId())
-                .userId(1L)
+    private ResponseLike createNewLike(AnswerRecommendRequestDto req) {
+        return ResponseLike.builder()
+                .responseId(req.responseId())
+                .userId(req.userId())
                 .build();
-
-        ResponseLike savedResponseLike = responseLikeRepository.save(responseLike);
-
-        return new AnswerRecommendResponse(
-                savedResponseLike.getResponseLikeId(),
-                savedResponseLike.getResponseId(),
-                savedResponseLike.getUserId(),
-                savedResponseLike.getCreatedAt()
-        );
     }
 
-    public QuestionReportResponse questionReport(QuestionReportRequest questionReportRequest) {
-        QuestionReport questionReport = QuestionReport.builder()
-                .questionId(questionReportRequest.questionId())
-                .questionReportTitle(questionReportRequest.questionReportTitle())
-                .questionReportContent(questionReportRequest.questionReportContent())
-                .questionReportWriterId(1L)
+    public UpdateResponseResponse updateResponse(UpdateResponseRequest request) {
+        Response response = responseRepository.findById(request.getResponseId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+
+        if(Boolean.TRUE.equals(response.getResponseAdopt()))
+            throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
+
+        response.updateContent(request.getContent());
+        responseRepository.save(response);
+
+        return UpdateResponseResponse.newBuilder()
+                .setResponseId(response.getResponseId())
+                .setContent(response.getResponseContent())
                 .build();
-
-        QuestionReport savedQuestionReport = questionReportRepository.save(questionReport);
-
-        return new QuestionReportResponse(
-                savedQuestionReport.getQuestionReportId(),
-                savedQuestionReport.getQuestionId(),
-                savedQuestionReport.getQuestionReportTitle(),
-                savedQuestionReport.getQuestionReportContent(),
-                savedQuestionReport.getQuestionReportWriterId(),
-                savedQuestionReport.getCreatedAt(),
-                savedQuestionReport.getUpdatedAt()
-        );
     }
 
-    public AnswerReportResponse answerReport(AnswerReportRequest answerReportRequest) {
-        ResponseReport responseReport = ResponseReport.builder()
-                .responseId(answerReportRequest.responseId())
-                .responseReportTitle(answerReportRequest.responseReportTitle())
-                .responseReportContent(answerReportRequest.responseReportContent())
-                .responseReportWriterId(1L)
-                .build();
+    public void deleteResponse(DeleteResponseRequest request) {
+        Response response = responseRepository.findById(request.getResponseId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
 
-        ResponseReport savedResponseReport = responseReportRepository.save(responseReport);
+        if(Boolean.TRUE.equals(response.getResponseAdopt()))
+            throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
 
-        return new AnswerReportResponse(
-                savedResponseReport.getResponseReportId(),
-                savedResponseReport.getResponseId(),
-                savedResponseReport.getResponseReportTitle(),
-                savedResponseReport.getResponseReportContent(),
-                savedResponseReport.getResponseReportWriterId(),
-                savedResponseReport.getCreatedAt(),
-                savedResponseReport.getUpdatedAt()
-        );
+        // FollowUpRoom이 있다면 먼저 삭제
+        followUpRoomRepository.findByResponse(response)
+                .ifPresent(followUpRoomRepository::delete);
+
+        responseRepository.delete(response);
     }
-
-    public QuestionListResponse questionList(String title) {
-        List<Question> questions = questionRepository.findAll();
-        if (questions.isEmpty()) {
-            return null;
-        }
-
-        Question question = questions.get(0);
-        List<HashTag> hashTags = hashTagRepository.findAll().stream()
-                .filter(tag -> tag.getQuestionId().equals(question.getQuestionId()))
-                .collect(Collectors.toList());
-        List<String> hashTagTitles = hashTags.stream()
-                .map(HashTag::getHashTagTitle)
-                .collect(Collectors.toList());
-
-        List<QuestionImage> questionImages = questionImageRepository.findAll().stream()
-                .filter(img -> img.getQuestionId().equals(question.getQuestionId()))
-                .collect(Collectors.toList());
-        List<String> imageUrls = questionImages.stream()
-                .map(QuestionImage::getQuestionImageUrl)
-                .collect(Collectors.toList());
-
-        int answerCount = responseRepository.findAll().stream()
-                .filter(response -> response.getQuestionId().equals(question.getQuestionId()))
-                .size();
-
-        return new QuestionListResponse(
-                question.getQuestionId(),
-                question.getQuestionCategoryId(),
-                question.getQuestionWriterId(),
-                question.getQuestionTitle(),
-                question.getQuestionContent(),
-                question.getQuestionCategory(),
-                question.getQuestionUrgency(),
-                question.getQuestionAnswerType(),
-                question.getQuestionAnswerAdopt(),
-                hashTagTitles,
-                imageUrls,
-                answerCount,
-                question.getCreatedAt(),
-                question.getUpdatedAt()
-        );
-    }
-
 }
-

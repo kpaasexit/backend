@@ -1,133 +1,415 @@
 package com.exit.question.service;
 
-import com.exit.common.auth.jwt.dto.UserIdRequest;
-import com.exit.common.exception.grpc.GrpcException;
-import com.exit.common.grpc.*;
-import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
-import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
-import com.exit.user.controller.dto.response.LoginSuccessResponse;
+import com.exit.common.grpc.QuestionCreateResponse;
+import com.exit.common.grpc.QuestionListItem;
+import com.exit.common.grpc.QuestionServiceGrpc;
+import com.exit.common.grpc.UpdateResponseResponse;
+import com.exit.question.controller.dto.request.*;
+import com.exit.question.controller.dto.response.*;
+import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.exit.common.util.time.TimeStampUtil.toGrpcTimestamp;
+
 @Slf4j
 @GrpcService
 @RequiredArgsConstructor
-public class QuestionGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImplBase {
+public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImplBase {
 
-    private final QuestionService userService;
+    private final QuestionService questionService;
 
-    public void socialLogin(SocialLoginRequest request,
-                            StreamObserver<SocialLoginResponse> responseObserver) {
+    @Override
+    public void questionCreate(com.exit.common.grpc.QuestionCreateRequest request,
+                               StreamObserver<com.exit.common.grpc.QuestionCreateResponse> responseObserver) {
         try {
-            log.info("Social login with user info request received for provider: {}", request.getProvider());
+            log.info("Question create request received: {}", request.getQuestionTitle());
+            QuestionCreateRequestDto requestDto = QuestionCreateRequestDto.from(request);
+            QuestionCreateResponseDto responseDto = questionService.createQuestion(requestDto);
 
-            // SocialLoginWithUserInfoRequest를 OAuth2UserInfo로 변환
-            OAuth2UserInfoRequestDto oauth2UserInfoRequestDto = OAuth2UserInfoRequestDto.builder()
-                    .socialId(request.getSocialId())
-                    .email(request.getEmail())
-                    .name(request.getName())
-                    .provider(request.getProvider())
-                    .build();
+            QuestionCreateResponse.Builder builder = QuestionCreateResponse.newBuilder();
 
-            // 소셜 로그인 처리 (회원가입 or 로그인)
-            LoginSuccessResponse loginResponse = userService.socialLogin(oauth2UserInfoRequestDto);
-
-            // gRPC 응답 생성
-            SocialLoginResponse.Builder builder = SocialLoginResponse.newBuilder()
-                    .setAccessToken(loginResponse.accessToken())
-                    .setRefreshToken(loginResponse.refreshToken())
-                    .setUserId(loginResponse.userId())
-                    .setEmail(oauth2UserInfoRequestDto.getEmail())
-                    .setNickname(oauth2UserInfoRequestDto.getName())
-                    .setProvider(oauth2UserInfoRequestDto.getProvider())
-                    .setSocialId(oauth2UserInfoRequestDto.getSocialId());
-
-            if (loginResponse.profileImageUrl() != null) {
-                builder.setProfileImageUrl(loginResponse.profileImageUrl());
+            if (responseDto.imageUrls() != null && !responseDto.imageUrls().isEmpty()) {
+                builder.addAllImageUrls(responseDto.imageUrls());
             }
 
-            SocialLoginResponse grpcResponse = builder.build();
+            com.exit.common.grpc.QuestionCreateResponse response = builder
+                    .setQuestionId(responseDto.questionId())
+                    .setQuestionWriterId(responseDto.questionWriterId())
+                    .setQuestionWriterName(responseDto.questionWriterName())
+                    .setQuestionTitle(responseDto.questionTitle())
+                    .setQuestionContent(responseDto.questionContent())
+                    .setQuestionCategory(responseDto.questionCategory())
+                    .setQuestionUrgency(responseDto.questionUrgency())
+                    .setQuestionAnswerType(responseDto.questionAnswerType())
+                    .setQuestionDisclosureType(responseDto.questionDisclosureType())
+                    .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
+                    .build();
 
-            responseObserver.onNext(grpcResponse);
+            responseObserver.onNext(response);
             responseObserver.onCompleted();
 
         } catch (Exception e) {
-            log.error("Social login with user info failed", e);
+            log.error("Question create failed", e);
             responseObserver.onError(Status.INTERNAL
-                    .withDescription("소셜 로그인 처리 중 오류가 발생했습니다")
+                    .withDescription("질문 생성 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
     }
 
     @Override
-    public void refreshToken(RefreshTokenRequest request, StreamObserver<RefreshTokenResponse> responseObserver) {
+    public void answerAdopt(com.exit.common.grpc.AnswerAdoptRequest request,
+                            StreamObserver<com.exit.common.grpc.AnswerAdoptResponse> responseObserver) {
         try {
-            log.info("Refresh token request received");
+            log.info("Answer adopt request received for response ID: {}", request.getResponseId());
 
-            // 기존 서비스 호출
-            RefreshTokenRequestDto refreshDto = RefreshTokenRequestDto.from(request);
+            AnswerAdoptRequestDto requestDto = AnswerAdoptRequestDto.from(request);
+            AnswerAdoptResponseDto responseDto = questionService.answerAdopt(requestDto);
 
-            LoginSuccessResponse serviceResponse = userService.refreshAuthToken(refreshDto);
-
-            // gRPC 응답으로 변환
-            RefreshTokenResponse grpcResponse = RefreshTokenResponse.newBuilder()
-                    .setAccessToken(serviceResponse.accessToken())
-                    .setRefreshToken(serviceResponse.refreshToken())
-                    .setExpiresIn(3600L) // 1시간
+            com.exit.common.grpc.AnswerAdoptResponse response = com.exit.common.grpc.AnswerAdoptResponse.newBuilder()
+                    .setResponseId(responseDto.responseId())
+                    .setResponseAdopt(responseDto.responseAdopt())
+                    .setUpdatedAt(toGrpcTimestamp(responseDto.updatedAt()))
                     .build();
 
-            responseObserver.onNext(grpcResponse);
+            responseObserver.onNext(response);
             responseObserver.onCompleted();
 
-        } catch (GrpcException e) {
-            log.error("Invalid refresh token");
-            responseObserver.onError(Status.UNAUTHENTICATED
-                    .withDescription("유효하지 않은 토큰입니다")
-                    .asRuntimeException());
-        } catch (IllegalAccessError e) {
-            log.error("Refresh token expired");
-            responseObserver.onError(Status.UNAUTHENTICATED
-                    .withDescription("토큰이 만료되었습니다")
-                    .asRuntimeException());
         } catch (Exception e) {
-            log.error("Refresh token failed", e);
+            log.error("Answer adopt failed", e);
             responseObserver.onError(Status.INTERNAL
-                    .withDescription("토큰 갱신 중 오류가 발생했습니다")
+                    .withDescription("답변 채택 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
     }
 
     @Override
-    public void logout(LogoutRequest request, StreamObserver<LogoutResponse> responseObserver) {
+    public void answerCreate(com.exit.common.grpc.AnswerCreateRequest request,
+                             StreamObserver<com.exit.common.grpc.AnswerCreateResponse> responseObserver) {
         try {
-            log.info("Logout request received for userId: {}", request.getUserId());
+            log.info("Answer create request received for question ID: {}", request.getQuestionId());
 
-            // 기존 서비스 호출
-            UserIdRequest userIdRequest = new UserIdRequest(request.getUserId());
+            AnswerCreateRequestDto requestDto = AnswerCreateRequestDto.from(request);
+            AnswerCreateResponseDto responseDto = questionService.answerCreate(requestDto);
 
-            userService.logout(userIdRequest);
+            com.exit.common.grpc.AnswerCreateResponse response = com.exit.common.grpc.AnswerCreateResponse.newBuilder()
+                    .setResponseId(responseDto.responseId())
+                    .setQuestionId(responseDto.questionId())
+                    .setResponseContent(responseDto.responseContent())
+                    .setResponseWriterId(responseDto.responseWriterId())
+                    .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
+                    .build();
 
-            // gRPC 응답
-            LogoutResponse grpcResponse = LogoutResponse.newBuilder()
-                    .setSuccess(true)
-                    .setMessage("로그아웃이 완료되었습니다")
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Answer create failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("답변 생성 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void answerRecommend(com.exit.common.grpc.AnswerRecommendRequest request,
+                                StreamObserver<com.exit.common.grpc.AnswerRecommendResponse> responseObserver) {
+        try {
+            log.info("Answer recommend request received for response ID: {}", request.getResponseId());
+
+            AnswerRecommendRequestDto requestDto = AnswerRecommendRequestDto.from(request);
+            AnswerRecommendResponseDto responseDto = questionService.toggleAnswerLike(requestDto);
+
+            com.exit.common.grpc.AnswerRecommendResponse response = com.exit.common.grpc.AnswerRecommendResponse.newBuilder()
+                    .setResponseId(requestDto.responseId())
+                    .setCount(responseDto.answerLikeNum())
+                    .setIsRecommended(responseDto.isLiked())
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Answer recommend failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("답변 추천 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void questionReport(com.exit.common.grpc.QuestionReportRequest request,
+                               StreamObserver<com.exit.common.grpc.QuestionReportResponse> responseObserver) {
+        try {
+            log.info("Question report request received for question ID: {}", request.getQuestionId());
+
+            QuestionReportRequestDto requestDto = QuestionReportRequestDto.from(request);
+            QuestionReportResponseDto responseDto = questionService.questionReport(requestDto);
+
+            com.exit.common.grpc.QuestionReportResponse response = com.exit.common.grpc.QuestionReportResponse.newBuilder()
+                    .setQuestionReportId(responseDto.questionReportId())
+                    .setQuestionId(responseDto.questionId())
+                    .setQuestionReportTitle(responseDto.questionReportTitle())
+                    .setQuestionReportContent(responseDto.questionReportContent())
+                    .setQuestionReportWriterId(responseDto.questionReportWriterId())
+                    .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
+                    .setUpdatedAt(toGrpcTimestamp(responseDto.updatedAt()))
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Question report failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("질문 신고 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void answerReport(com.exit.common.grpc.AnswerReportRequest request,
+                             StreamObserver<com.exit.common.grpc.AnswerReportResponse> responseObserver) {
+        try {
+            log.info("Answer report request received for response ID: {}", request.getResponseId());
+
+            AnswerReportRequestDto requestDto = AnswerReportRequestDto.from(request);
+            AnswerReportResponseDto responseDto = questionService.answerReport(requestDto);
+
+            com.exit.common.grpc.AnswerReportResponse response = com.exit.common.grpc.AnswerReportResponse.newBuilder()
+                    .setResponseReportId(responseDto.responseReportId())
+                    .setResponseId(responseDto.responseId())
+                    .setResponseReportTitle(responseDto.responseReportTitle())
+                    .setResponseReportContent(responseDto.responseReportContent())
+                    .setResponseReportWriterId(responseDto.responseReportWriterId())
+                    .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
+                    .setUpdatedAt(toGrpcTimestamp(responseDto.updatedAt()))
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Answer report failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("답변 신고 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void questionList(com.exit.common.grpc.QuestionListRequest request,
+                             StreamObserver<com.exit.common.grpc.QuestionListResponse> responseObserver) {
+        try {
+            log.info("Question list request received");
+
+            QuestionListRequestDto requestDto = QuestionListRequestDto.from(request);
+            QuestionListResponseDto responseDto = questionService.questionList(requestDto);
+
+            com.exit.common.grpc.QuestionListResponse.Builder responseBuilder = com.exit.common.grpc.QuestionListResponse.newBuilder()
+                    .setHasNext(responseDto.hasNext());
+
+            List<QuestionListItem> questionList = new ArrayList<>();
+            for (QuestionListQueryResponseDto question : responseDto.questionList()) {
+                com.exit.common.grpc.QuestionListItem grpcQuestion = com.exit.common.grpc.QuestionListItem.newBuilder()
+                        .setQuestionId(question.questionId())
+                        .setQuestionCategory(question.questionCategoryId())
+                        .setQuestionWriterId(question.questionWriterId())
+                        .setQuestionTitle(question.questionTitle())
+                        .setQuestionContent(question.questionContent())
+                        .setQuestionUrgency(question.questionUrgency())
+                        .setQuestionAnswerType(question.questionAnswerType().name())
+                        .setQuestionAnswerAdopt(question.questionAnswerAdopt())
+                        .setAnswerCount(question.answerCount())
+                        .setCreatedAt(toGrpcTimestamp(question.createdAt()))
+                        .build();
+                questionList.add(grpcQuestion);
+            }
+            responseBuilder.addAllQuestions(questionList);
+
+            responseObserver.onNext(responseBuilder.build());
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Question list failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("질문 목록 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void categoryRecommend(com.exit.common.grpc.CategoryRecommendRequest request,
+                                  StreamObserver<com.exit.common.grpc.CategoryRecommendationResponse> responseObserver) {
+        try {
+            log.info("Category recommend request received for title: {}", request.getTitle());
+
+            CategoryRecommendationResponseDto responseDto = questionService.categoryRecommend(request.getTitle());
+
+            if (responseDto == null) {
+                responseObserver.onError(Status.NOT_FOUND
+                        .withDescription("추천할 카테고리를 찾을 수 없습니다")
+                        .asRuntimeException());
+                return;
+            }
+
+            com.exit.common.grpc.CategoryRecommendationResponse response = com.exit.common.grpc.CategoryRecommendationResponse.newBuilder()
+                    .setCategoryId(responseDto.questionCategoryId())
+                    .setCategoryName(responseDto.questionCategoryName())
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Category recommend failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("카테고리 추천 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void similarQuestion(com.exit.common.grpc.SimilarQuestionRequest request,
+                                StreamObserver<com.exit.common.grpc.SimilarQuestionResponse> responseObserver) {
+        try {
+            log.info("Similar question request received for title: {}", request.getTitle());
+
+            SimilarQuestionResponseDto responseDto = questionService.similarQuestion(request.getTitle());
+
+            if (responseDto == null) {
+                responseObserver.onError(Status.NOT_FOUND
+                        .withDescription("유사한 질문을 찾을 수 없습니다")
+                        .asRuntimeException());
+                return;
+            }
+
+            com.exit.common.grpc.SimilarQuestionResponse response = com.exit.common.grpc.SimilarQuestionResponse.newBuilder()
+                    .setQuestionId(responseDto.questionId())
+                    .setQuestionTitle(responseDto.questionTitle())
+                    .setQuestionContent(responseDto.questionContent())
+                    .setQuestionCategory(responseDto.questionCategory().getQuestionCategoryId())
+                    .setQuestionUrgency(responseDto.questionUrgency())
+                    .setQuestionAnswerType(responseDto.questionAnswerType().name())
+                    .setQuestionAnswerAdopt(responseDto.questionAnswerAdopt())
+                    .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Similar question failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("유사 질문 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void getQuestionDetail(com.exit.common.grpc.QuestionDetailRequest request,
+                                  StreamObserver<com.exit.common.grpc.QuestionDetailResponse> responseObserver) {
+        try {
+            log.info("Question detail request received for question ID: {}", request.getQuestionId());
+
+            QuestionDetailResponseDto responseDto = questionService.getQuestionDetail(request.getQuestionId());
+
+            // Convert QuestionCreateResponseDto to gRPC QuestionCreateResponse
+            com.exit.common.grpc.QuestionCreateResponse.Builder questionBuilder = com.exit.common.grpc.QuestionCreateResponse.newBuilder()
+                    .setQuestionId(responseDto.question().questionId())
+                    .setQuestionTitle(responseDto.question().questionTitle())
+                    .setQuestionContent(responseDto.question().questionContent())
+                    .setQuestionCategory(responseDto.question().questionCategory())
+                    .setQuestionUrgency(responseDto.question().questionUrgency())
+                    .setQuestionAnswerType(responseDto.question().questionAnswerType())
+                    .setQuestionDisclosureType(responseDto.question().questionDisclosureType())
+                    .setQuestionWriterId(responseDto.question().questionWriterId())
+                    .setQuestionWriterName(responseDto.question().questionWriterName())
+                    .setCreatedAt(toGrpcTimestamp(responseDto.question().createdAt()));
+
+            // Add question image URLs if they exist
+            if (responseDto.question().imageUrls() != null) {
+                questionBuilder.addAllImageUrls(responseDto.question().imageUrls());
+            }
+
+            // Convert ResponseDetailDto list to gRPC ResponseDetail list
+            List<com.exit.common.grpc.ResponseDetail> grpcResponses = new ArrayList<>();
+            for (ResponseDetailDto response : responseDto.responses()) {
+                com.exit.common.grpc.ResponseDetail.Builder responseDetailBuilder = com.exit.common.grpc.ResponseDetail.newBuilder()
+                        .setResponseId(response.responseId())
+                        .setResponseWriterId(response.responseWriterId())
+                        .setResponseWriterName(response.responseWriterName() != null ? response.responseWriterName() : "")
+                        .setResponseContent(response.responseContent())
+                        .setResponseAdopt(response.responseAdopt())
+                        .setLikeCount(response.likeCount())
+                        .setCreatedAt(response.createdAt().toString())
+                        .setUpdatedAt(response.updatedAt().toString());
+
+                // Add response image URLs if they exist
+                if (response.urls() != null) {
+                    responseDetailBuilder.addAllUrls(response.urls());
+                }
+
+                grpcResponses.add(responseDetailBuilder.build());
+            }
+
+            com.exit.common.grpc.QuestionDetailResponse grpcResponse = com.exit.common.grpc.QuestionDetailResponse.newBuilder()
+                    .setQuestion(questionBuilder.build())
+                    .addAllResponses(grpcResponses)
+                    .setHasNext(responseDto.hasNext())
                     .build();
 
             responseObserver.onNext(grpcResponse);
             responseObserver.onCompleted();
 
-        } catch (GrpcException e) {
-            log.error("User not found for logout: {}", request.getUserId());
-            responseObserver.onError(Status.NOT_FOUND
-                    .withDescription("사용자를 찾을 수 없습니다")
-                    .asRuntimeException());
         } catch (Exception e) {
-            log.error("Logout failed", e);
+            log.error("Question detail failed", e);
             responseObserver.onError(Status.INTERNAL
-                    .withDescription("로그아웃 처리 중 오류가 발생했습니다")
+                    .withDescription("질문 상세 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void updateResponse(com.exit.common.grpc.UpdateResponseRequest request,
+                                StreamObserver<com.exit.common.grpc.UpdateResponseResponse> responseObserver) {
+        try {
+            log.info("Update response request received for response id: {}", request.getResponseId());
+
+            UpdateResponseResponse response = questionService.updateResponse(request);
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Update response failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("답변 수정 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void deleteResponse(com.exit.common.grpc.DeleteResponseRequest request,
+                                  StreamObserver<com.google.protobuf.Empty> responseObserver) {
+        try {
+            log.info("Delete response request received for response ID: {}", request.getResponseId());
+
+            questionService.deleteResponse(request);
+
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Delete Response failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("답변 삭제 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
     }

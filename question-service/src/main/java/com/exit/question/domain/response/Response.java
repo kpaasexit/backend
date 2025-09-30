@@ -1,8 +1,10 @@
 package com.exit.question.domain.response;
 
 import com.exit.common.domain.BaseEntity;
+import com.exit.question.controller.dto.request.AnswerCreateRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,17 +27,41 @@ public class Response extends BaseEntity {
     @Column(name = "response_writer_id")
     private Long responseWriterId;
 
-    @Column(name = "response_title", length = 100)
-    private String responseTitle;
-
     @Column(name = "response_content", columnDefinition = "TEXT")
     private String responseContent;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "response_disclosure")
-    private ResponseDisclosureType responseDisclosure;
 
     @Column(name = "response_adopt")
     private Boolean responseAdopt;
 
+    @Column(name = "response_is_anonymous")
+    private Boolean responseIsAnonymous;
+
+    @Builder
+    public Response(Long questionId, Long responseWriterId, String responseContent, Boolean responseAdopt, Boolean responseIsAnonymous) {
+        this.questionId = questionId;
+        this.responseWriterId = responseWriterId;
+        this.responseContent = responseContent;
+        this.responseAdopt = responseAdopt;
+        this.responseIsAnonymous = responseIsAnonymous;
+    }
+
+    public static Response createResponse(AnswerCreateRequestDto answerCreateRequestDto) {
+        return Response.builder()
+                .questionId(answerCreateRequestDto.questionId())
+                .responseWriterId(answerCreateRequestDto.responseWriterId())
+                .responseContent(answerCreateRequestDto.responseContent())
+                .responseAdopt(false)
+                .responseIsAnonymous(answerCreateRequestDto.responseIsAnonymous())
+                .build();
+    }
+
+    public Response updateResponseAdopt() {
+        this.responseAdopt = true;
+        return this;
+    }
+
+    public Response updateContent(String content) {
+        responseContent = content;
+        return this;
+    }
 }

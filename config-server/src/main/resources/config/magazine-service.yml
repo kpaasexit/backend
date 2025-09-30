@@ -6,11 +6,13 @@ spring:
     name: magazine-service
   profiles:
     active: dev
-    
+
   # MySQL 데이터베이스 설정
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/exit_magazine_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
@@ -23,7 +25,26 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
+# gRPC 설정
+grpc:
+  server:
+    port: 0
+  client:
+    user-service:
+      address: discovery:///user-service
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+
 # Eureka 클라이언트 설정
 eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    metadata-map:
+      grpc-port: ${grpc.server.port}
+      grpc-service: magazine-service
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true

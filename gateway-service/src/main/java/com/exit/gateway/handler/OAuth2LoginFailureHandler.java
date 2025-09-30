@@ -19,15 +19,15 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,
-                                      HttpServletResponse response,
-                                      AuthenticationException exception) throws IOException {
-        
+                                        HttpServletResponse response,
+                                        AuthenticationException exception) throws IOException {
+
         log.error("OAuth2 로그인 실패", exception);
-        
+
         // 실패 시 에러 파라미터와 함께 리다이렉트
-        String errorRedirectUrl = redirectUrl + "?error=authentication_failed&message=" + 
-                                exception.getMessage();
-        
+        String errorRedirectUrl = redirectUrl + "?error=authentication_failed&message=" +
+                exception.getMessage();
+
         response.sendRedirect(errorRedirectUrl);
     }
 }

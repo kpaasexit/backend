@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package com.exit.common;
+
+option java_multiple_files = true;
+option java_package = "com.exit.common.grpc";
+option java_outer_classname = "AdditionalQuestionServiceProto";
+
+import "google/protobuf/timestamp.proto";
+import "question/question.proto";
+
+service AdditionalQuestionService {
+  rpc CreateAdditionalQuestionMessage(CreateAdditionalQuestionMessageRequest) returns (CreateAdditionalQuestionMessageResponse);
+  rpc GetAdditionalQuestion(GetAdditionalQuestionRequest) returns (GetAdditionalQuestionResponse);
+}
+
+// request
+message CreateAdditionalQuestionMessageRequest {
+  int64 user_id = 1;
+  int64 question_id = 2;
+  int64 response_id = 3;
+  string content = 4;
+  repeated UploadBytesRequest images = 5;
+  string device_id = 6;
+}
+
+message GetAdditionalQuestionRequest {
+  int64 question_id = 1;
+  int64 follow_up_room_id = 2;
+}
+
+// response
+message MessageItem {
+  bool is_questioner = 1;
+  int64 message_id = 2;
+  string content = 3;
+  repeated string images = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message CreateAdditionalQuestionMessageResponse {
+  int64 follow_up_room_id = 1;
+  MessageItem message = 2;
+}
+
+message GetAdditionalQuestionResponse {
+  int64 follow_up_room_id = 1;
+  repeated MessageItem message = 2;
+}
