@@ -28,26 +28,38 @@ class ClassificationHandler(BaseHandler):
         try:
             self.log_request(
                 "ClassifyCategory",
-                title_length=len(request.title) if request.title else 0,
-                request_id=request.request_id or "N/A"
+                title_length=len(request.title) if request.title else 0
             )
 
             # Perform classification
-            category, confidence = self.classifier.classify(request.title)
+            category_id, confidence = self.classifier.classify(request.title)
+            # Convert category name to ID if needed
+            if isinstance(category_id, str):
+                # Map category names to IDs
+                category_map = {
+                    "general": 1,
+                    "tech": 2,
+                    "science": 3,
+                    "health": 4,
+                    "business": 5,
+                    "education": 6,
+                    "entertainment": 7,
+                    "sports": 8
+                }
+                category_id = category_map.get(category_id.lower(), 1)
 
             processing_time_ms = int((time.time() - start_time) * 1000)
 
             self.log_performance(
                 "ClassifyCategory",
                 start_time,
-                category=category,
+                category_id=category_id,
                 confidence=f"{confidence:.3f}"
             )
 
             return question_service_pb2.CategoryResponse(
-                category=category,
+                category_id=category_id,
                 confidence=confidence,
-                request_id=request.request_id,
                 processing_time_ms=processing_time_ms
             )
 

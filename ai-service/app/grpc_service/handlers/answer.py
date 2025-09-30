@@ -27,17 +27,12 @@ class AnswerHandler(BaseHandler):
         try:
             self.log_request(
                 "GenerateAIAnswer",
-                category=request.category,
-                question_length=len(request.question) if request.question else 0,
-                use_cache=request.use_cache,
-                request_id=request.request_id or "N/A"
+                question_length=len(request.question) if request.question else 0
             )
 
-            # Generate answer
+            # Generate answer (always uses cache)
             result = self.gpt_service.generate_answer(
-                category=request.category,
-                question=request.question,
-                use_cache=request.use_cache
+                question=request.question
             )
 
             processing_time_ms = int((time.time() - start_time) * 1000)
@@ -45,16 +40,13 @@ class AnswerHandler(BaseHandler):
             self.log_performance(
                 "GenerateAIAnswer",
                 start_time,
-                tokens_used=result.get("tokens_used", 0),
-                from_cache=result.get("from_cache", False)
+                tokens_used=result.get("tokens_used", 0)
             )
 
             return question_service_pb2.AnswerResponse(
                 answer=result["answer"],
-                request_id=request.request_id,
                 tokens_used=result.get("tokens_used", 0),
-                processing_time_ms=processing_time_ms,
-                from_cache=result.get("from_cache", False)
+                processing_time_ms=processing_time_ms
             )
 
         except Exception as e:

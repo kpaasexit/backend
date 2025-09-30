@@ -60,12 +60,20 @@ class SpringQuizGrpcClient:
             from protos.generated import quiz_service_pb2
 
             # Quiz를 Spring 서버로 전송 (SendQuizToSpring 사용 - 전체 데이터 전송)
+            # Convert quiz_type to proto enum
+            if quiz.quiz_type and quiz.quiz_type.value == "OX":
+                quiz_type_proto = quiz_service_pb2.OX
+            elif quiz.quiz_type and quiz.quiz_type.value == "FOUR_LIMBS":
+                quiz_type_proto = quiz_service_pb2.FOUR_LIMBS
+            else:
+                quiz_type_proto = quiz_service_pb2.QUIZ_TYPE_UNSPECIFIED
+
             request = quiz_service_pb2.SendQuizToSpringRequest(
                 quiz_id=quiz.quiz_id,
                 quiz_category_id=quiz.quiz_category_id,
                 quiz_title=quiz.quiz_title,
                 quiz_content=quiz.quiz_content,
-                quiz_type=str(quiz.quiz_type.value) if quiz.quiz_type else "OX",
+                quiz_type=quiz_type_proto,
                 quiz_correct_answer=quiz.quiz_correct_answer,
                 quiz_additional_information=quiz.quiz_additional_information or ""
             )

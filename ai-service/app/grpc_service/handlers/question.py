@@ -32,9 +32,7 @@ class QuestionHandler(BaseHandler):
             self.log_request(
                 "FindSimilarQuestions",
                 title_length=len(request.title) if request.title else 0,
-                category=request.category if request.category else "all",
-                limit=request.limit,
-                threshold=request.score_threshold
+                content_length=len(request.content) if request.content else 0
             )
 
             # 쿼리 텍스트 준비
@@ -43,14 +41,14 @@ class QuestionHandler(BaseHandler):
                 query_text = f"{request.title} {request.content}"
 
             # 임베딩 생성
-            embedding = self.embedder.generate_embedding(query_text)
+            embedding = self.embedder.embed(query_text)
 
-            # 유사한 질문 검색
+            # 유사한 질문 검색 (limit=5, score_threshold=0.5 고정)
             similar_questions = self.vector_ops.search_similar_questions(
                 query_vector=embedding,
-                limit=request.limit if request.limit > 0 else 10,
-                score_threshold=request.score_threshold if request.score_threshold > 0 else 0.7,
-                category_filter=request.category if request.category else None
+                limit=5,
+                score_threshold=0.5,
+                category_filter=None
             )
 
             # 결과를 protobuf 형식으로 변환
@@ -66,9 +64,8 @@ class QuestionHandler(BaseHandler):
                         created_at = 0
 
                 question = question_service_pb2.SimilarQuestion(
-                    question_id=sq.get("question_id", ""),
+                    question_id=int(sq.get("question_id", 0)),
                     title=sq.get("title", ""),
-                    category=sq.get("category", ""),
                     similarity=sq.get("score", 0.0),
                     content_sample=sq.get("content_sample", ""),
                     created_at=created_at
@@ -84,7 +81,6 @@ class QuestionHandler(BaseHandler):
 
             return question_service_pb2.SimilarResponse(
                 questions=questions,
-                request_id=request.request_id if request.request_id else "",
                 total_found=len(questions)
             )
 
@@ -98,14 +94,15 @@ class QuestionHandler(BaseHandler):
 
         try:
             # 질문 ID 생성 (제공되지 않은 경우)
-            question_id = request.question_id if request.question_id else str(uuid.uuid4())
+            # 0이면 자동 생성
+            import random
+            question_id = request.question_id if request.question_id else random.randint(1000000, 9999999)
 
             self.log_request(
                 "SaveQuestion",
                 question_id=question_id,
                 title_length=len(request.title) if request.title else 0,
-                category=request.category,
-                tags_count=len(request.tags)
+                category_id=request.category_id
             )
 
             # 임베딩 생성 (제목과 내용 결합)
@@ -113,16 +110,15 @@ class QuestionHandler(BaseHandler):
             if request.content:
                 text_to_embed = f"{request.title} {request.content}"
 
-            embedding = self.embedder.generate_embedding(text_to_embed)
+            embedding = self.embedder.embed(text_to_embed)
 
             # 벡터 데이터베이스에 저장
             success = self.vector_ops.insert_question(
                 vector=embedding,
                 question_id=question_id,
                 title=request.title,
-                category=request.category,
-                content_sample=request.content[:500] if request.content else None,  # 처음 500자만 저장
-                tags=list(request.tags) if request.tags else None
+                category_id=request.category_id,
+                content_sample=request.content[:500] if request.content else None  # 처음 500자만 저장
             )
 
             if success:
@@ -135,20 +131,17 @@ class QuestionHandler(BaseHandler):
 
                 return question_service_pb2.SaveQuestionResponse(
                     success=True,
-                    message=f"질문이 성공적으로 저장되었습니다. ID: {question_id}",
-                    request_id=request.request_id if request.request_id else ""
+                    message=f"질문이 성공적으로 저장되었습니다. ID: {question_id}"
                 )
             else:
                 return question_service_pb2.SaveQuestionResponse(
                     success=False,
-                    message="질문 저장에 실패했습니다.",
-                    request_id=request.request_id if request.request_id else ""
+                    message="질문 저장에 실패했습니다."
                 )
 
         except Exception as e:
             self.handle_error(context, "SaveQuestion", e)
             return question_service_pb2.SaveQuestionResponse(
                 success=False,
-                message=f"오류가 발생했습니다: {str(e)}",
-                request_id=request.request_id if request.request_id else ""
+                message=f"오류가 발생했습니다: {str(e)}"
             )

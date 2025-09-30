@@ -5,7 +5,6 @@ from app.config import get_settings
 from app.core.logger import LoggerSetup
 from .handlers import (
     ClassificationHandler,
-    EmbeddingHandler,
     AnswerHandler
 )
 from .handlers.question import QuestionHandler
@@ -27,7 +26,6 @@ class QuestionServicer(question_service_pb2_grpc.QuestionServiceServicer):
         super().__init__()
         self.settings = get_settings()
         self.classification_handler = ClassificationHandler()
-        self.embedding_handler = EmbeddingHandler()
         self.answer_handler = AnswerHandler()
         self.question_handler = QuestionHandler()
         logger.info("Question gRPC servicer initialized")
@@ -35,10 +33,6 @@ class QuestionServicer(question_service_pb2_grpc.QuestionServiceServicer):
     def ClassifyCategory(self, request, context):
         """질문 카테고리 분류."""
         return self.classification_handler.classify_category(request, context)
-
-    def GetEmbedding(self, request, context):
-        """텍스트 임베딩 생성."""
-        return self.embedding_handler.get_embedding(request, context)
 
     def GenerateAIAnswer(self, request, context):
         """AI 답변 생성."""

@@ -69,30 +69,12 @@ class QuizServicer(quiz_service_pb2_grpc.QuizServiceServicer):
         finally:
             loop.close()
 
-    def CheckQuizSimilarity(self, request, context):
-        """퀴즈 제목 유사도 검사."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.CheckQuizSimilarity(request, context))
-        finally:
-            loop.close()
-
     def GenerateDailyQuizzes(self, request, context):
         """일일 퀴즈 생성 (10문제, 8개 카테고리)."""
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
             return loop.run_until_complete(self.quiz_handler.GenerateDailyQuizzes(request, context))
-        finally:
-            loop.close()
-
-    def CorrectQuiz(self, request, context):
-        """GPT-4를 사용한 퀴즈 오류 수정."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.CorrectQuiz(request, context))
         finally:
             loop.close()
 
@@ -120,5 +102,14 @@ class QuizServicer(quiz_service_pb2_grpc.QuizServiceServicer):
         asyncio.set_event_loop(loop)
         try:
             return loop.run_until_complete(self.quiz_handler.SendQuizToSpring(request, context))
+        finally:
+            loop.close()
+
+    def GetCategories(self, request, context):
+        """카테고리 목록 조회."""
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            return loop.run_until_complete(self.quiz_handler.GetCategories(request, context))
         finally:
             loop.close()

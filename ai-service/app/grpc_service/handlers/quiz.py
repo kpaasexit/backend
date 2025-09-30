@@ -73,6 +73,27 @@ class QuizHandler:
 
     async def UpdateQuiz(self, request: quiz_service_pb2.UpdateQuizRequest, context) -> quiz_service_pb2.UpdateQuizResponse:
         try:
+            # GPT를 사용한 자동 오류 수정 처리
+            if request.HasField("auto_correct") and request.auto_correct:
+                from app.services.quiz import QuizCorrectorService
+                corrector = QuizCorrectorService()
+
+                error_description = request.error_description if request.HasField('error_description') else None
+                corrected_quiz = await corrector.correct_quiz(request.quiz_id, error_description)
+
+                if not corrected_quiz:
+                    return quiz_service_pb2.UpdateQuizResponse(
+                        success=False,
+                        message=f"퀴즈 ID {request.quiz_id}를 찾을 수 없거나 수정에 실패했습니다."
+                    )
+
+                return quiz_service_pb2.UpdateQuizResponse(
+                    quiz=self._quiz_to_proto(corrected_quiz),
+                    success=True,
+                    message=f"GPT를 사용하여 퀴즈가 성공적으로 수정되었습니다."
+                )
+
+            # 수동 수정 처리
             from app.models.quiz import QuizUpdate
 
             update_dict = {}
@@ -179,38 +200,6 @@ class QuizHandler:
                 message=f"퀴즈 목록 조회 실패: {str(e)}"
             )
 
-    async def CheckQuizSimilarity(self, request: quiz_service_pb2.CheckQuizSimilarityRequest, context) -> quiz_service_pb2.CheckQuizSimilarityResponse:
-        try:
-            similar_titles = await self.quiz_service.check_title_similarity(
-                request.title,
-                request.category_id,
-                request.threshold if request.threshold > 0 else 0.85
-            )
-
-            proto_similar = [
-                quiz_service_pb2.SimilarQuiz(title=item["title"], score=item["score"])
-                for item in similar_titles
-            ]
-
-            return quiz_service_pb2.CheckQuizSimilarityResponse(
-                title=request.title,
-                category_id=request.category_id,
-                threshold=request.threshold,
-                similar_quizzes=proto_similar,
-                is_duplicate=len(similar_titles) > 0,
-                success=True,
-                message="유사도 검사가 완료되었습니다."
-            )
-        except Exception as e:
-            logger.error(f"Error checking similarity: {e}")
-            return quiz_service_pb2.CheckQuizSimilarityResponse(
-                title=request.title,
-                category_id=request.category_id,
-                threshold=request.threshold,
-                success=False,
-                message=f"유사도 검사 실패: {str(e)}"
-            )
-
     async def GenerateDailyQuizzes(self, request, context) -> quiz_service_pb2.GenerateDailyQuizzesResponse:
         """Generate daily quizzes (10 quizzes across 8 categories)."""
         try:
@@ -234,45 +223,6 @@ class QuizHandler:
             return quiz_service_pb2.GenerateDailyQuizzesResponse(
                 success=False,
                 message=f"Failed to generate daily quizzes: {str(e)}"
-            )
-
-    async def CorrectQuiz(self, request, context) -> quiz_service_pb2.CorrectQuizResponse:
-        """Correct quiz errors using GPT-4."""
-        try:
-            from app.services.quiz import QuizCorrectorService
-            corrector = QuizCorrectorService()
-
-            # Correct the quiz
-            error_description = request.error_description if request.HasField('error_description') else None
-            corrected_quiz = await corrector.correct_quiz(request.quiz_id, error_description)
-
-            if not corrected_quiz:
-                return quiz_service_pb2.CorrectQuizResponse(
-                    success=False,
-                    message=f"Quiz {request.quiz_id} not found or correction failed"
-                )
-
-            # Convert to protobuf Quiz message
-            quiz_proto = quiz_service_pb2.Quiz(
-                quiz_id=corrected_quiz.quiz_id,
-                quiz_category_id=corrected_quiz.quiz_category_id,
-                quiz_title=corrected_quiz.quiz_title,
-                quiz_content=corrected_quiz.quiz_content,
-                quiz_type=quiz_service_pb2.QuizType.Value(corrected_quiz.quiz_type.value),
-                quiz_correct_answer=corrected_quiz.quiz_correct_answer,
-                quiz_additional_information=corrected_quiz.quiz_additional_information or ""
-            )
-
-            return quiz_service_pb2.CorrectQuizResponse(
-                quiz=quiz_proto,
-                success=True,
-                message=f"Successfully corrected quiz {request.quiz_id}"
-            )
-        except Exception as e:
-            logger.error(f"Error correcting quiz: {e}")
-            return quiz_service_pb2.CorrectQuizResponse(
-                success=False,
-                message=f"Failed to correct quiz: {str(e)}"
             )
 
     async def StartScheduler(self, request, context) -> quiz_service_pb2.SchedulerStatusResponse:
@@ -360,5 +310,30 @@ class QuizHandler:
             return quiz_service_pb2.SendQuizToSpringResponse(
                 success=False,
                 message=f"Failed to send quiz to Spring: {str(e)}"
+            )
+
+    async def GetCategories(self, request, context) -> quiz_service_pb2.GetCategoriesResponse:
+        """Get list of available categories."""
+        try:
+            from app.core.constants import CATEGORY_MAP
+
+            categories = []
+            for category_id in sorted(CATEGORY_MAP.keys()):
+                category = quiz_service_pb2.Category(
+                    category_id=category_id,
+                    category_name=CATEGORY_MAP[category_id],
+                    description=""
+                )
+                categories.append(category)
+
+            return quiz_service_pb2.GetCategoriesResponse(
+                categories=categories,
+                success=True
+            )
+        except Exception as e:
+            logger.error(f"Error getting categories: {e}")
+            return quiz_service_pb2.GetCategoriesResponse(
+                categories=[],
+                success=False
             )
 
