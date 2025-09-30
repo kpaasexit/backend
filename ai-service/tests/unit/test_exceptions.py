@@ -312,8 +312,8 @@ class TestGRPCError:
 
     def test_grpc_error_details(self):
         """Test GRPCError details."""
-        error = GRPCError("GetEmbedding", "server unavailable", "UNAVAILABLE")
-        assert error.details["method"] == "GetEmbedding"
+        error = GRPCError("GenerateAIAnswer", "server unavailable", "UNAVAILABLE")
+        assert error.details["method"] == "GenerateAIAnswer"
         assert error.details["reason"] == "server unavailable"
         assert error.details["status_code"] == "UNAVAILABLE"
 
@@ -326,8 +326,8 @@ class TestGRPCError:
         """Test GRPCError with different gRPC methods."""
         methods = [
             "ClassifyCategory",
-            "GetEmbedding",
-            "GenerateAnswer",
+            "GenerateAIAnswer",
+            "FindSimilarQuestions",
             "HealthCheck"
         ]
         for method in methods:

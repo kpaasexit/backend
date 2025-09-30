@@ -67,23 +67,8 @@ async def test_quiz_grpc():
         for quiz in list_response.quizzes:
             print(f"   - [{quiz.quiz_id}] {quiz.quiz_title}")
 
-        # 5. 유사도 검사
-        print("\n5. 유사도 검사 테스트")
-        similarity_response = await stub.CheckQuizSimilarity(
-            nlp_service_pb2.CheckQuizSimilarityRequest(
-                title="태양계 행성의 수",
-                category_id=1,
-                threshold=0.8
-            )
-        )
-        print(f"   성공: {similarity_response.success}")
-        print(f"   중복 여부: {similarity_response.is_duplicate}")
-        if similarity_response.similar_quizzes:
-            for similar in similarity_response.similar_quizzes:
-                print(f"   유사 퀴즈: {similar.title} (점수: {similar.score:.3f})")
-
-        # 6. GPT를 사용한 퀴즈 생성 (선택사항)
-        print("\n6. GPT 퀴즈 생성 테스트 (API 키가 설정된 경우)")
+        # 5. GPT를 사용한 퀴즈 생성 (선택사항)
+        print("\n5. GPT 퀴즈 생성 테스트 (API 키가 설정된 경우)")
         generate_response = await stub.GenerateQuiz(
             nlp_service_pb2.GenerateQuizRequest(
                 category_id=2,  # 역사
