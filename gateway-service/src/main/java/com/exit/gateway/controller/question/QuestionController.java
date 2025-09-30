@@ -32,9 +32,9 @@ public class QuestionController {
     private final QuestionGrpcClient questionGrpcClient;
     private final QuestionRequestMapper questionRequestMapper;
 
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public SuccessResponse<QuestionCreateResponseDto> createQuestion(
-            @Valid @RequestBody QuestionCreateRequestDto request) {
+            @Valid @ModelAttribute QuestionCreateRequestDto request) {
         try {
             log.info("Question create request received");
             QuestionCreateRequest grpcRequest = questionRequestMapper.toGrpcQuestionCreateRequest(request);

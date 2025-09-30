@@ -3,7 +3,6 @@ package com.exit.user.service.user;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.*;
 import com.exit.common.util.file.FileUploadUtil;
-import com.exit.user.domain.UserFcmToken;
 import com.exit.user.domain.Users;
 import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
@@ -11,6 +10,8 @@ import com.exit.user.exception.GrpcUserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -58,11 +59,10 @@ public class UserService {
 
 
     public GetFcmTokenResponse getFcmToken(GetFcmTokenRequest request) {
-        String fcmToken = userFcmTokenRepository.findFcmTokenByUserIdAndDeviceId(request.getUserId(), request.getDeviceId())
-                .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
+        List<String> fcmTokens = userFcmTokenRepository.findFcmTokenByUserId(request.getUserId());
 
         return GetFcmTokenResponse.newBuilder()
-                .setFcmToken(fcmToken)
+                .addAllFcmToken(fcmTokens)
                 .build();
     }
 }

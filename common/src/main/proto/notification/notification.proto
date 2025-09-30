@@ -23,7 +23,7 @@ message SendNotificationRequest {
 
 // response
 message SendNotificationResponse {
-  string notification_id = 1;
+  repeated string notification_id = 1;
   bool success = 2;
   google.protobuf.Timestamp sent_at = 3;
 }

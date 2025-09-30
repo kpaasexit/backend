@@ -15,16 +15,15 @@ public class UserGrpcClient {
     @GrpcClient("user-service")
     private UserServiceGrpc.UserServiceBlockingStub userServiceStub;
 
-    public String getFcmToken(Long userId, String deviceId) {
+    public List<String> getFcmToken(Long userId) {
         try {
             GetFcmTokenRequest request = GetFcmTokenRequest.newBuilder()
                     .setUserId(userId)
-                    .setDeviceId(deviceId)
                     .build();
 
             log.debug("Sending get user fcmToken request via gRPC for userId: {}", userId);
             GetFcmTokenResponse response = userServiceStub.getFcmToken(request);
-            return response.getFcmToken();
+            return response.getFcmTokenList();
         } catch (StatusRuntimeException e) {
             log.error("gRPC get user fcmToken failed for userId {}: {}", userId, e.getStatus(), e);
             return null;

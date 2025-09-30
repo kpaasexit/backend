@@ -77,4 +77,8 @@ public class Question extends BaseEntity {
                 .questionIsAnonymous(questionCreateRequestDto.questionIsAnonymous())
                 .build();
     }
+
+    public void updateAnswerAdopt() {
+        questionAnswerAdopt = true;
+    }
 }

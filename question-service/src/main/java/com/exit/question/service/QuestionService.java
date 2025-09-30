@@ -99,9 +99,10 @@ public class QuestionService {
         Response adoptedResponse = adoptResponse(response);
         Question question = questionRepository.findById(adoptedResponse.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
-
+        updateResponseAdopt(question);
+        String body = truncateContent(adoptedResponse.getResponseContent());
         SendNotificationRequestDto requestDto = SendNotificationRequestDto.builder()
-                .body(adoptedResponse.getResponseContent().substring(0, 100))
+                .body(body)
                 .type("ANSWER_ADOPTED")
                 .targetId(question.getQuestionId())
                 .receiverId(question.getQuestionWriterId())
@@ -109,6 +110,11 @@ public class QuestionService {
                 .build();
         notificationGrpcClient.sendNotification(requestDto);
         return AnswerAdoptResponseDto.from(adoptedResponse);
+    }
+
+    private void updateResponseAdopt(Question question) {
+        question.updateAnswerAdopt();
+        questionRepository.save(question);
     }
 
     public AnswerCreateResponseDto answerCreate(AnswerCreateRequestDto answerCreateRequestDto) {
@@ -119,8 +125,9 @@ public class QuestionService {
         Question question = questionRepository.findById(savedResponse.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
 
+        String subBody = truncateContent(savedResponse.getResponseContent());
         SendNotificationRequestDto requestDto = SendNotificationRequestDto.builder()
-                .body(savedResponse.getResponseContent().substring(0, 100))
+                .body(subBody)
                 .type("NEW_ANSWER_ON_QUESTION")
                 .targetId(question.getQuestionId())
                 .receiverId(question.getQuestionWriterId())
@@ -129,6 +136,16 @@ public class QuestionService {
         notificationGrpcClient.sendNotification(requestDto);
 
         return AnswerCreateResponseDto.from(savedResponse, imageUrls);
+    }
+
+    private String truncateContent(String content) {
+        String subBody;
+        if(content.length() <= 100) {
+            subBody = content.substring(0, content.length()-1);
+        } else {
+            subBody = content.substring(0, 100);
+        }
+        return subBody;
     }
 
     public AnswerRecommendResponseDto toggleAnswerLike(AnswerRecommendRequestDto req) {

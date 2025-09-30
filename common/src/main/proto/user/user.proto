@@ -38,7 +38,6 @@ message UpdateAdditionalUserInfoRequest {
 
 message GetFcmTokenRequest {
   int64 user_id = 1;
-  string device_id = 2;
 }
 
 // response
@@ -64,5 +63,5 @@ message UpdateAdditionalUserInfoResponse {
 }
 
 message GetFcmTokenResponse {
-  string fcm_token = 1;
+  repeated string fcm_token = 1;
 }

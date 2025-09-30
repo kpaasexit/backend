@@ -1,5 +1,6 @@
 package com.exit.question.service;
 
+import com.exit.common.grpc.QuestionCreateResponse;
 import com.exit.common.grpc.QuestionListItem;
 import com.exit.common.grpc.QuestionServiceGrpc;
 import com.exit.common.grpc.UpdateResponseResponse;
@@ -32,15 +33,22 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
             QuestionCreateRequestDto requestDto = QuestionCreateRequestDto.from(request);
             QuestionCreateResponseDto responseDto = questionService.createQuestion(requestDto);
 
-            com.exit.common.grpc.QuestionCreateResponse response = com.exit.common.grpc.QuestionCreateResponse.newBuilder()
+            QuestionCreateResponse.Builder builder = QuestionCreateResponse.newBuilder();
+
+            if (responseDto.imageUrls() != null && !responseDto.imageUrls().isEmpty()) {
+                builder.addAllImageUrls(responseDto.imageUrls());
+            }
+
+            com.exit.common.grpc.QuestionCreateResponse response = builder
                     .setQuestionId(responseDto.questionId())
+                    .setQuestionWriterId(responseDto.questionWriterId())
+                    .setQuestionWriterName(responseDto.questionWriterName())
                     .setQuestionTitle(responseDto.questionTitle())
                     .setQuestionContent(responseDto.questionContent())
                     .setQuestionCategory(responseDto.questionCategory())
                     .setQuestionUrgency(responseDto.questionUrgency())
                     .setQuestionAnswerType(responseDto.questionAnswerType())
                     .setQuestionDisclosureType(responseDto.questionDisclosureType())
-                    .setQuestionWriterId(responseDto.questionWriterId())
                     .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
                     .build();
 

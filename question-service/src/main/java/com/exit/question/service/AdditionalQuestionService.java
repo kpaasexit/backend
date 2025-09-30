@@ -125,13 +125,24 @@ public class AdditionalQuestionService {
         boolean isQuestioner = messageItem.getIsQuestioner();
         String notificationType = isQuestioner ? "NEW_ADDITIONAL_QUESTION_ON_ANSWER" : "NEW_ANSWER_ON_ADDITIONAL_QUESTION";
         Long receiverId = isQuestioner ? responseWriterId : questionWriterId;
+        String body = truncateContent(messageItem.getContent());
 
         return SendNotificationRequestDto.builder()
                 .type(notificationType)
                 .receiverId(receiverId)
-                .body(messageItem.getContent().substring(0, 100))
+                .body(body)
                 .targetId(messageItem.getMessageId())
                 .deviceId(deviceId)
                 .build();
+    }
+
+    private String truncateContent(String content) {
+        String subBody;
+        if(content.length() <= 100) {
+            subBody = content.substring(0, content.length()-1);
+        } else {
+            subBody = content.substring(0, 100);
+        }
+        return subBody;
     }
 }

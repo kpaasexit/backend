@@ -40,7 +40,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             """)
     Slice<QuestionListQueryResponseDto> findQuestionsByFilter(@Param("categoryIds") List<Long> categoryIds, @Param("keyword") String keyword, Pageable pageable);
 
-    @Query("select new com.exit.question.controller.dto.request.NotificationContentDto(substring(q.questionContent, 0, 100), q.questionWriterId) " +
+    @Query("select new com.exit.question.controller.dto.request.NotificationContentDto(substring(q.questionContent, 1, 100), q.questionWriterId) " +
             "from Question q where q.questionId = :targetId")
     Optional<NotificationContentDto> findContentById(Long targetId);
 

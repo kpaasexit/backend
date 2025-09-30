@@ -8,12 +8,14 @@ import com.exit.notification.domain.Notification;
 import com.exit.notification.domain.NotificationType;
 import com.exit.notification.domain.repository.NotificationRepository;
 import com.exit.notification.exception.GrpcNotificationErrorCode;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,22 +32,42 @@ public class NotificationService {
                     .setBody(request.getBody())
                     .build();
 
-            String fcmToken = userGrpcClient.getFcmToken(request.getReceiverId(), request.getDeviceId());
-            Message message = Message.builder()
-                    .setToken(fcmToken)
-                    .setNotification(notification)
-                    .build();
+            List<String> fcmTokens = userGrpcClient.getFcmToken(request.getReceiverId());
 
-            String fcmMessageId = firebaseMessaging.send(message);
-            log.info("Successfully sent notification: {}", fcmMessageId);
+            if (fcmTokens == null || fcmTokens.isEmpty()) {
+                log.warn("No FCM tokens found for user: {}", request.getReceiverId());
+                throw new GrpcException(GrpcNotificationErrorCode.FCM_TOKEN_NOT_FOUND);
+            }
 
-            Notification notificationEntity = Notification.from(request, fcmMessageId);
-            notificationRepository.save(notificationEntity);
+            List<Message> messageList = new ArrayList<>();
+            fcmTokens.forEach(fcmToken -> {
+                Message message = Message.builder()
+                        .setToken(fcmToken)
+                        .setNotification(notification)
+                        .build();
 
+                messageList.add(message);
+            });
+            BatchResponse batchResponse = firebaseMessaging.sendEach(messageList);
+            List<String> messageIds = batchResponse.getResponses().stream()
+                    .map(SendResponse::getMessageId)
+                    .toList();
+
+            if (!messageIds.isEmpty()) {
+                log.info("Successfully sent notification: {}", messageIds.get(0));
+            }
+
+            List<Notification> notificationList = new ArrayList<>();
+            messageIds.forEach(messageId -> {
+                Notification notificationEntity = Notification.from(request, messageId);
+                notificationList.add(notificationEntity);
+            });
+
+            notificationRepository.saveAll(notificationList);
             return SendNotificationResponse.newBuilder()
-                    .setNotificationId(fcmMessageId)
+                    .addAllNotificationId(messageIds)
                     .setSuccess(true)
-                    .setSentAt(TimeStampUtil.toGrpcTimestamp(notificationEntity.getNotificationSentAt()))
+                    .setSentAt(TimeStampUtil.toGrpcTimestamp(LocalDateTime.now()))
                     .build();
 
         } catch (FirebaseMessagingException e) {
