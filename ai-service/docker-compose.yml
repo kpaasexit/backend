@@ -71,7 +71,7 @@ services:
 
       # Eureka configuration (optional)
       - EUREKA_ENABLED=${EUREKA_ENABLED:-false}
-      - EUREKA_SERVER_URL=${EUREKA_SERVER_URL:-http://localhost:8761/eureka}
+      - EUREKA_SERVER_URL=${EUREKA_SERVER_URL:-http://host.docker.internal:8761/eureka}
       - EUREKA_APP_NAME=AI-SERVICE
 
       # Model configuration
@@ -87,6 +87,8 @@ services:
       - redis
     networks:
       - ai-service-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
       interval: 30s
