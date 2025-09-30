@@ -44,3 +44,5 @@ common/src/main/resources/application.yml
 
 # 기타
 nul
+
+*.env
