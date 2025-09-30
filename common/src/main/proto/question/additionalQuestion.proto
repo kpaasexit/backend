@@ -21,6 +21,7 @@ message CreateAdditionalQuestionMessageRequest {
   int64 response_id = 3;
   string content = 4;
   repeated UploadBytesRequest images = 5;
+  string device_id = 6;
 }
 
 message GetAdditionalQuestionRequest {

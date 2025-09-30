@@ -3,7 +3,9 @@ package com.exit.question.service;
 import com.exit.common.grpc.CreateCommentRequest;
 import com.exit.common.grpc.CreateCommentResponse;
 import com.exit.common.grpc.DeleteCommentRequest;
+import com.exit.common.grpc.SendNotificationResponse;
 import com.exit.common.util.time.TimeStampUtil;
+import com.exit.question.controller.dto.request.SendNotificationRequestDto;
 import com.exit.question.domain.Comment;
 import com.exit.question.domain.CommentType;
 import com.exit.question.service.util.CommentFactory;
@@ -16,11 +18,16 @@ import org.springframework.stereotype.Service;
 public class CommentService {
     private final CommentFactoryManager commentFactoryManager;
     private final UserGrpcClient userGrpcClient;
+    private final NotificationGrpcClient notificationGrpcClient;
 
     public CreateCommentResponse createComment(CreateCommentRequest request) {
         CommentFactory factory = commentFactoryManager.getFactory(CommentType.valueOf(request.getCommentType()));
         Comment comment = factory.createAndSaveComment(request.getTargetId(), request.getWriterId(), request.getContent());
         String authorName = userGrpcClient.getUserName(comment.getAuthorId());
+
+        SendNotificationRequestDto requestDto = factory.createSendNotificationRequestDto(request.getTargetId(), request.getDeviceId());
+        notificationGrpcClient.sendNotification(requestDto);
+
         return CreateCommentResponse.newBuilder()
                 .setCommentId(comment.getCommentId())
                 .setContent(comment.getContent())

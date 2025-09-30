@@ -3,6 +3,7 @@ package com.exit.question.service;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.*;
 import com.exit.common.util.file.FileUploadUtil;
+import com.exit.question.controller.dto.request.SendNotificationRequestDto;
 import com.exit.question.domain.question.FollowUpImage;
 import com.exit.question.domain.question.FollowUpMessage;
 import com.exit.question.domain.question.FollowUpRoom;
@@ -33,6 +34,7 @@ public class AdditionalQuestionService {
     private final FollowUpRoomRepository followUpRoomRepository;
     private final FileUploadUtil fileUploadUtil;
     private final QuestionRepository questionRepository;
+    private final NotificationGrpcClient notificationGrpcClient;
 
     private final String ADDITIONAL_QUESTION_PATH = "ADDITIONAL";
 
@@ -46,6 +48,8 @@ public class AdditionalQuestionService {
         boolean isQuestioner = isUserQuestioner(question.getQuestionWriterId(), request.getUserId());
         MessageItem messageItem = buildMessageItem(savedMessage, imageUrls, isQuestioner);
 
+        SendNotificationRequestDto requestDto = createSendNotificationRequestDto(messageItem, request.getDeviceId(), response.getResponseWriterId(), question.getQuestionWriterId());
+        notificationGrpcClient.sendNotification(requestDto);
         return CreateAdditionalQuestionMessageResponse.newBuilder()
                 .setFollowUpRoomId(followUpRoom.getFollowUpRoomId())
                 .setMessage(messageItem)
@@ -114,6 +118,20 @@ public class AdditionalQuestionService {
                 .setContent(savedMessage.getFollowUpMessageContent())
                 .addAllImages(imageUrls)
                 .setCreatedAt(toGrpcTimestamp(savedMessage.getCreatedAt()))
+                .build();
+    }
+
+    private SendNotificationRequestDto createSendNotificationRequestDto(MessageItem messageItem, String deviceId, Long responseWriterId, Long questionWriterId) {
+        boolean isQuestioner = messageItem.getIsQuestioner();
+        String notificationType = isQuestioner ? "NEW_ADDITIONAL_QUESTION_ON_ANSWER" : "NEW_ANSWER_ON_ADDITIONAL_QUESTION";
+        Long receiverId = isQuestioner ? responseWriterId : questionWriterId;
+
+        return SendNotificationRequestDto.builder()
+                .type(notificationType)
+                .receiverId(receiverId)
+                .body(messageItem.getContent().substring(0, 100))
+                .targetId(messageItem.getMessageId())
+                .deviceId(deviceId)
                 .build();
     }
 }

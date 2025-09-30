@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum GrpcNotificationErrorCode implements GrpcErrorCode {
-    FCM_SEND_FAILED(Status.Code.NOT_FOUND, "NOTIFICATION_ERR_001")
+    FCM_SEND_FAILED(Status.Code.INTERNAL, "NOTIFICATION_ERR_001")
     ;
 
     private final Status.Code grpcStatusCode;

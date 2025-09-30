@@ -1,4 +1,7 @@
 package com.exit.question.controller.dto.request;
 
-public record NotificationContentDto() {
+public record NotificationContentDto(
+        String content,
+        Long receiverId
+) {
 }

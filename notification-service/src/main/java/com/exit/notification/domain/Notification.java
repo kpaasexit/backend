@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AttributeOverride(name = "createdAt", column = @Column(name = "notification_created_at"))
 @AttributeOverride(name = "updatedAt", column = @Column(name = "notification_updated_at"))
-public class Notifications extends BaseEntity {
+public class Notification extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,7 +52,7 @@ public class Notifications extends BaseEntity {
     private String notificationFcmMessageId;
 
     @Builder
-    public Notifications(NotificationType notificationType, String notificationTitle, String notificationContent, Long targetId, Long receiverId, Boolean notificationIsRead, LocalDateTime notificationReadAt, LocalDateTime notificationSentAt, String notificationFcmMessageId) {
+    public Notification(NotificationType notificationType, String notificationTitle, String notificationContent, Long targetId, Long receiverId, Boolean notificationIsRead, LocalDateTime notificationReadAt, LocalDateTime notificationSentAt, String notificationFcmMessageId) {
         this.notificationType = notificationType;
         this.notificationTitle = notificationTitle;
         this.notificationContent = notificationContent;
@@ -64,17 +64,19 @@ public class Notifications extends BaseEntity {
         this.notificationFcmMessageId = notificationFcmMessageId;
     }
 
-    public static Notifications from(SendNotificationRequest request) {
-        return Notifications.builder()
-                .notificationType(NotificationType.valueOf(request.getType()))
-                .notificationTitle()
-                .notificationContent()
-                .targetId()
-                .receiverId()
-                .notificationIsRead()
-                .notificationReadAt()
-                .notificationSentAt()
-                .notificationFcmMessageId()
+    public static Notification from(SendNotificationRequest request, String fcmMessageId) {
+        NotificationType notificationType = NotificationType.valueOf(request.getType());
+        return Notification.builder()
+                .notificationType(notificationType)
+                .notificationTitle(notificationType.getTitle())
+                .notificationContent(request.getBody())
+                .targetId(request.getTargetId())
+                .receiverId(request.getReceiverId())
+                .notificationIsRead(false)
+                .notificationReadAt(null)
+                .notificationSentAt(LocalDateTime.now())
+                .notificationFcmMessageId(fcmMessageId)
+                .build();
 
 
     }

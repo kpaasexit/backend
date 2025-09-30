@@ -49,6 +49,7 @@ message QuestionCreateRequest {
 
 message AnswerAdoptRequest {
   int64 response_id = 1;
+  string device_id = 2;
 }
 
 message AnswerCreateRequest {
@@ -57,6 +58,7 @@ message AnswerCreateRequest {
   int64 response_writer_id = 3;
   bool response_is_anonymous = 4;
   repeated UploadBytesRequest images = 5;
+  string device_id = 6;
 }
 
 message AnswerRecommendRequest {

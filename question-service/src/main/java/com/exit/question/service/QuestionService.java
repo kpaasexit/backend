@@ -57,6 +57,8 @@ public class QuestionService {
     private final FollowUpRoomRepository followUpRoomRepository;
     private final FileUploadUtil fileUploadUtil;
     private final UserGrpcClient userGrpcClient;
+    private final NotificationGrpcClient notificationGrpcClient;
+
 //    private final NlpGrpcClient nlpGrpcClient;
 
     public QuestionCreateResponseDto createQuestion(QuestionCreateRequestDto request) {
@@ -95,7 +97,17 @@ public class QuestionService {
         validateQuestionNotAlreadyAdopted(response.getQuestionId());
 
         Response adoptedResponse = adoptResponse(response);
+        Question question = questionRepository.findById(adoptedResponse.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
 
+        SendNotificationRequestDto requestDto = SendNotificationRequestDto.builder()
+                .body(adoptedResponse.getResponseContent().substring(0, 100))
+                .type("ANSWER_ADOPTED")
+                .targetId(question.getQuestionId())
+                .receiverId(question.getQuestionWriterId())
+                .deviceId(answerAdoptRequestDto.deviceId())
+                .build();
+        notificationGrpcClient.sendNotification(requestDto);
         return AnswerAdoptResponseDto.from(adoptedResponse);
     }
 
@@ -104,6 +116,17 @@ public class QuestionService {
         Response savedResponse = responseRepository.save(newResponse);
 
         List<String> imageUrls = processAnswerImages(answerCreateRequestDto, savedResponse);
+        Question question = questionRepository.findById(savedResponse.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        SendNotificationRequestDto requestDto = SendNotificationRequestDto.builder()
+                .body(savedResponse.getResponseContent().substring(0, 100))
+                .type("NEW_ANSWER_ON_QUESTION")
+                .targetId(question.getQuestionId())
+                .receiverId(question.getQuestionWriterId())
+                .deviceId(answerCreateRequestDto.deviceId())
+                .build();
+        notificationGrpcClient.sendNotification(requestDto);
 
         return AnswerCreateResponseDto.from(savedResponse, imageUrls);
     }

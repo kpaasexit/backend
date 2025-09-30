@@ -30,7 +30,8 @@ spring:
           max-active: ${redis.lettuce.pool.max-active}
           max-idle: ${redis.lettuce.pool.max-idle}
           min-idle: ${redis.lettuce.pool.min-idle}
-          max-wait: ${redis.lettuce.pool.max-wait}
+          max-wait: ${redis.lettuce.pool.max-wait}q
+
   security:
     oauth2:
       client:
@@ -86,4 +87,7 @@ grpc:
       negotiation-type: plaintext
     magazine-service:
       address: discovery:///magazine-service  # Eureka에서 서비스 발견
+      negotiation-type: plaintext
+    notification-service:
+      address: discovery:///notification-service  # Eureka에서 서비스 발견
       negotiation-type: plaintext

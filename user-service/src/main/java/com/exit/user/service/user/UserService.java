@@ -1,11 +1,11 @@
 package com.exit.user.service.user;
 
 import com.exit.common.exception.grpc.GrpcException;
-import com.exit.common.grpc.IncreaseReportCountRequest;
-import com.exit.common.grpc.UpdateAdditionalUserInfoRequest;
-import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
+import com.exit.common.grpc.*;
 import com.exit.common.util.file.FileUploadUtil;
+import com.exit.user.domain.UserFcmToken;
 import com.exit.user.domain.Users;
+import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
 import com.exit.user.exception.GrpcUserErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
+    private final UserFcmTokenRepository userFcmTokenRepository;
     private final FileUploadUtil fileUploadUtil;
 
     private final String PROFILE_FOLDER = "profile";
@@ -52,6 +53,16 @@ public class UserService {
                 .setUserId(user.getUserId())
                 .setUserName(user.getUserNickname())
                 .setUserProfile(user.getUserProfileUrl())
+                .build();
+    }
+
+
+    public GetFcmTokenResponse getFcmToken(GetFcmTokenRequest request) {
+        String fcmToken = userFcmTokenRepository.findFcmTokenByUserIdAndDeviceId(request.getUserId(), request.getDeviceId())
+                .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
+
+        return GetFcmTokenResponse.newBuilder()
+                .setFcmToken(fcmToken)
                 .build();
     }
 }
