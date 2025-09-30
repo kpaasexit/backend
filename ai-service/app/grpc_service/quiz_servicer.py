@@ -24,30 +24,12 @@ class QuizServicer(quiz_service_pb2_grpc.QuizServiceServicer):
         self.quiz_handler = QuizHandler()
         logger.info("Quiz gRPC servicer initialized")
 
-    def CreateQuiz(self, request, context):
-        """퀴즈 생성."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.CreateQuiz(request, context))
-        finally:
-            loop.close()
-
     def UpdateQuiz(self, request, context):
         """퀴즈 수정."""
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
             return loop.run_until_complete(self.quiz_handler.UpdateQuiz(request, context))
-        finally:
-            loop.close()
-
-    def GenerateQuiz(self, request, context):
-        """GPT를 사용한 퀴즈 생성."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.GenerateQuiz(request, context))
         finally:
             loop.close()
 

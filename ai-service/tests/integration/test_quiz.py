@@ -16,25 +16,17 @@ async def test_quiz_grpc():
     stub = nlp_service_pb2_grpc.NLPServiceStub(channel)
 
     try:
-        # 1. 수동 퀴즈 생성
-        print("1. 수동 퀴즈 생성 테스트")
-        create_request = nlp_service_pb2.CreateQuizRequest(
-            quiz_category_id=1,
-            quiz_title="태양계의 행성 개수",
-            quiz_content="태양계에는 총 8개의 행성이 있다.",
-            quiz_type=nlp_service_pb2.OX,
-            quiz_correct_answer="O",
-            quiz_additional_information="2006년 명왕성이 왜행성으로 재분류되면서 태양계 행성은 8개가 되었습니다."
+        # 1. 퀴즈 목록 조회 먼저 실행하여 기존 퀴즈 확인
+        print("1. 퀴즈 목록 조회 테스트")
+        list_response = await stub.ListQuizzes(
+            nlp_service_pb2.ListQuizzesRequest(category_id=1, limit=10)
         )
+        print(f"   성공: {list_response.success}")
+        print(f"   조회된 퀴즈 수: {len(list_response.quizzes)}")
 
-        response = await stub.CreateQuiz(create_request)
-        print(f"   성공: {response.success}")
-        print(f"   메시지: {response.message}")
-
-        if response.success:
-            quiz_id = response.quiz.quiz_id
-            print(f"   퀴즈 ID: {quiz_id}")
-            print(f"   제목: {response.quiz.quiz_title}")
+        if list_response.quizzes:
+            quiz_id = list_response.quizzes[0].quiz_id
+            print(f"   첫 번째 퀴즈 ID: {quiz_id}")
 
             # 2. 퀴즈 조회
             print("\n2. 퀴즈 조회 테스트")
@@ -51,36 +43,21 @@ async def test_quiz_grpc():
             update_response = await stub.UpdateQuiz(
                 nlp_service_pb2.UpdateQuizRequest(
                     quiz_id=quiz_id,
-                    quiz_additional_information="명왕성은 이제 왜소행성으로 분류됩니다."
+                    quiz_additional_information="테스트 수정 내용입니다."
                 )
             )
             print(f"   성공: {update_response.success}")
             print(f"   메시지: {update_response.message}")
 
-        # 4. 퀴즈 목록 조회
-        print("\n4. 퀴즈 목록 조회 테스트")
-        list_response = await stub.ListQuizzes(
-            nlp_service_pb2.ListQuizzesRequest(category_id=1, limit=10)
-        )
-        print(f"   성공: {list_response.success}")
-        print(f"   조회된 퀴즈 수: {len(list_response.quizzes)}")
-        for quiz in list_response.quizzes:
-            print(f"   - [{quiz.quiz_id}] {quiz.quiz_title}")
-
-        # 5. GPT를 사용한 퀴즈 생성 (선택사항)
-        print("\n5. GPT 퀴즈 생성 테스트 (API 키가 설정된 경우)")
-        generate_response = await stub.GenerateQuiz(
-            nlp_service_pb2.GenerateQuizRequest(
-                category_id=2,  # 역사
-                count=1,
-                quiz_type=nlp_service_pb2.FOUR_LIMBS
+        # 4. 카테고리별 퀴즈 목록 조회
+        print("\n4. 카테고리별 퀴즈 목록 조회 테스트")
+        for category_id in [1, 2]:
+            list_response = await stub.ListQuizzes(
+                nlp_service_pb2.ListQuizzesRequest(category_id=category_id, limit=5)
             )
-        )
-        print(f"   성공: {generate_response.success}")
-        print(f"   메시지: {generate_response.message}")
-        if generate_response.success and generate_response.quizzes:
-            for quiz in generate_response.quizzes:
-                print(f"   생성된 퀴즈: {quiz.quiz_title}")
+            print(f"   카테고리 {category_id}: {len(list_response.quizzes)}개 퀴즈")
+            for quiz in list_response.quizzes[:2]:  # 처음 2개만 표시
+                print(f"     - [{quiz.quiz_id}] {quiz.quiz_title}")
 
     except grpc.RpcError as e:
         print(f"gRPC 오류: {e.code()}: {e.details()}")

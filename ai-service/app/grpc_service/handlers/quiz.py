@@ -44,33 +44,6 @@ class QuizHandler:
             quiz_updated_at=int(quiz.quiz_updated_at.timestamp())
         )
 
-    async def CreateQuiz(self, request: quiz_service_pb2.CreateQuizRequest, context) -> quiz_service_pb2.CreateQuizResponse:
-        try:
-            from app.models.quiz import QuizCreate
-
-            quiz_create = QuizCreate(
-                quiz_category_id=request.quiz_category_id,
-                quiz_title=request.quiz_title,
-                quiz_content=request.quiz_content,
-                quiz_type=self._convert_quiz_type_to_model(request.quiz_type),
-                quiz_correct_answer=request.quiz_correct_answer,
-                quiz_additional_information=request.quiz_additional_information or None
-            )
-
-            quiz = await self.quiz_service.create_quiz(quiz_create)
-
-            return quiz_service_pb2.CreateQuizResponse(
-                quiz=self._quiz_to_proto(quiz),
-                success=True,
-                message="퀴즈가 성공적으로 생성되었습니다."
-            )
-        except Exception as e:
-            logger.error(f"Error creating quiz: {e}")
-            return quiz_service_pb2.CreateQuizResponse(
-                success=False,
-                message=f"퀴즈 생성 실패: {str(e)}"
-            )
-
     async def UpdateQuiz(self, request: quiz_service_pb2.UpdateQuizRequest, context) -> quiz_service_pb2.UpdateQuizResponse:
         try:
             # GPT를 사용한 자동 오류 수정 처리
@@ -129,32 +102,6 @@ class QuizHandler:
             return quiz_service_pb2.UpdateQuizResponse(
                 success=False,
                 message=f"퀴즈 수정 실패: {str(e)}"
-            )
-
-    async def GenerateQuiz(self, request: quiz_service_pb2.GenerateQuizRequest, context) -> quiz_service_pb2.GenerateQuizResponse:
-        try:
-            from app.models.quiz import QuizGenerationRequest
-
-            generation_request = QuizGenerationRequest(
-                category_id=request.category_id,
-                count=request.count,
-                quiz_type=self._convert_quiz_type_to_model(request.quiz_type) if request.HasField("quiz_type") else None
-            )
-
-            quizzes = await self.quiz_service.generate_quiz(generation_request)
-
-            proto_quizzes = [self._quiz_to_proto(quiz) for quiz in quizzes]
-
-            return quiz_service_pb2.GenerateQuizResponse(
-                quizzes=proto_quizzes,
-                success=True,
-                message=f"{len(quizzes)}개의 퀴즈가 성공적으로 생성되었습니다."
-            )
-        except Exception as e:
-            logger.error(f"Error generating quiz: {e}")
-            return quiz_service_pb2.GenerateQuizResponse(
-                success=False,
-                message=f"퀴즈 생성 실패: {str(e)}"
             )
 
     async def GetQuiz(self, request: quiz_service_pb2.GetQuizRequest, context) -> quiz_service_pb2.GetQuizResponse:

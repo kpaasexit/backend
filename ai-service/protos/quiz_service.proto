@@ -4,14 +4,8 @@ package quiz;
 
 // 퀴즈 관리 서비스
 service QuizService {
-    // 퀴즈 생성 (수동)
-    rpc CreateQuiz(CreateQuizRequest) returns (CreateQuizResponse);
-
     // 퀴즈 수정
     rpc UpdateQuiz(UpdateQuizRequest) returns (UpdateQuizResponse);
-
-    // 퀴즈 생성 (GPT 사용)
-    rpc GenerateQuiz(GenerateQuizRequest) returns (GenerateQuizResponse);
 
     // 퀴즈 조회
     rpc GetQuiz(GetQuizRequest) returns (GetQuizResponse);
@@ -55,23 +49,6 @@ message Quiz {
     int64 quiz_updated_at = 9;  // Unix 타임스탬프
 }
 
-// 퀴즈 생성 요청
-message CreateQuizRequest {
-    int32 quiz_category_id = 1;
-    string quiz_title = 2;
-    string quiz_content = 3;
-    QuizType quiz_type = 4;
-    string quiz_correct_answer = 5;
-    string quiz_additional_information = 6;
-}
-
-// 퀴즈 생성 응답
-message CreateQuizResponse {
-    Quiz quiz = 1;
-    bool success = 2;
-    string message = 3;
-}
-
 // 퀴즈 업데이트 요청
 message UpdateQuizRequest {
     int64 quiz_id = 1;
@@ -88,20 +65,6 @@ message UpdateQuizRequest {
 // 퀴즈 업데이트 응답
 message UpdateQuizResponse {
     Quiz quiz = 1;
-    bool success = 2;
-    string message = 3;
-}
-
-// 퀴즈 생성 요청 (GPT 사용)
-message GenerateQuizRequest {
-    int32 category_id = 1;
-    int32 count = 2;
-    optional QuizType quiz_type = 3;
-}
-
-// 퀴즈 생성 응답 (GPT 사용)
-message GenerateQuizResponse {
-    repeated Quiz quizzes = 1;
     bool success = 2;
     string message = 3;
 }

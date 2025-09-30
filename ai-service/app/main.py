@@ -200,9 +200,7 @@ Quiz Service gRPC: 50052
                 "quiz_service": {
                     "port": settings.server.quiz_service_port,
                     "methods": [
-                        "CreateQuiz",
                         "UpdateQuiz",
-                        "GenerateQuiz",
                         "GetQuiz",
                         "ListQuizzes",
                         "GenerateDailyQuizzes",
