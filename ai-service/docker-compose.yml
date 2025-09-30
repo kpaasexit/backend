@@ -102,10 +102,10 @@ services:
     container_name: ai-service-grpcui-question
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "50000:50000"
     command: [
       "-plaintext",
-      "-port", "8080",
+      "-port", "50000",
       "-open-browser=false",
       "ai-service:50051"
     ]
@@ -120,10 +120,10 @@ services:
     container_name: ai-service-grpcui-quiz
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "50001:50001"
     command: [
       "-plaintext",
-      "-port", "8081",
+      "-port", "50001",
       "-open-browser=false",
       "ai-service:50052"
     ]
