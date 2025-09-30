@@ -10,13 +10,12 @@ class PromptBuilder:
 
     @staticmethod
     def create_answer_prompt(
-        category: str,
         question: str,
         context: Optional[str] = None
     ) -> str:
         """Create prompt for answer generation."""
-        # Get category persona
-        persona = CATEGORY_PERSONAS.get(category, CATEGORY_PERSONAS["기타"])
+        # Use a general persona for all questions
+        persona = CATEGORY_PERSONAS.get("기타", "당신은 친절하고 유용한 AI 어시스턴트입니다.")
 
         # Zero-Shot Chain-of-Thought prompt structure
         prompt = f"""{persona}

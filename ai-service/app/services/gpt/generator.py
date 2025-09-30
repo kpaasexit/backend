@@ -25,13 +25,12 @@ class AnswerGenerator:
 
     def generate_answer(
         self,
-        category: str,
         question: str,
         context: Optional[str] = None,
         max_retries: int = 3
     ) -> Dict[str, Any]:
         """Generate answer using GPT."""
-        prompt = self.prompt_builder.create_answer_prompt(category, question, context)
+        prompt = self.prompt_builder.create_answer_prompt(question, context)
 
         for attempt in range(max_retries):
             try:
@@ -63,11 +62,9 @@ class AnswerGenerator:
 
                 result = {
                     "answer": answer,
-                    "category": category,
                     "tokens_used": tokens_used,
                     "model": self.settings.openai.openai_model,
-                    "response_time": response_time,
-                    "from_cache": False
+                    "response_time": response_time
                 }
 
                 logger.info(f"Generated answer: {tokens_used} tokens, {response_time:.2f}s")
@@ -89,13 +86,12 @@ class AnswerGenerator:
 
     async def agenerate_answer(
         self,
-        category: str,
         question: str,
         context: Optional[str] = None,
         max_retries: int = 3
     ) -> Dict[str, Any]:
         """Async version of generate_answer."""
-        prompt = self.prompt_builder.create_answer_prompt(category, question, context)
+        prompt = self.prompt_builder.create_answer_prompt(question, context)
 
         for attempt in range(max_retries):
             try:
@@ -127,11 +123,9 @@ class AnswerGenerator:
 
                 result = {
                     "answer": answer,
-                    "category": category,
                     "tokens_used": tokens_used,
                     "model": self.settings.openai.openai_model,
-                    "response_time": response_time,
-                    "from_cache": False
+                    "response_time": response_time
                 }
 
                 logger.info(f"Generated answer: {tokens_used} tokens, {response_time:.2f}s")
@@ -156,7 +150,6 @@ class AnswerGenerator:
         for item in questions:
             try:
                 result = self.generate_answer(
-                    category=item["category"],
                     question=item["question"]
                 )
                 results.append(result)
@@ -164,7 +157,6 @@ class AnswerGenerator:
                 logger.error(f"Failed to generate answer for question: {e}")
                 results.append({
                     "answer": "죄송합니다. 답변 생성 중 오류가 발생했습니다.",
-                    "category": item["category"],
                     "error": str(e)
                 })
 

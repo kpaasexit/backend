@@ -192,7 +192,6 @@ Quiz Service gRPC: 50052
                     "port": settings.server.question_service_port,
                     "methods": [
                         "ClassifyCategory",
-                        "GetEmbedding",
                         "GenerateAIAnswer",
                         "FindSimilarQuestions",
                         "SaveQuestion"
@@ -206,12 +205,11 @@ Quiz Service gRPC: 50052
                         "GenerateQuiz",
                         "GetQuiz",
                         "ListQuizzes",
-                        "CheckQuizSimilarity",
                         "GenerateDailyQuizzes",
-                        "CorrectQuiz",
                         "StartScheduler",
                         "StopScheduler",
-                        "SendQuizToSpring"
+                        "SendQuizToSpring",
+                        "GetCategories"
                     ]
                 }
             }

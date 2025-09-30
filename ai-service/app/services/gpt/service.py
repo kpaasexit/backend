@@ -33,71 +33,59 @@ class GPTService:
 
     def generate_answer(
         self,
-        category: str,
         question: str,
         context: Optional[str] = None,
-        use_cache: bool = True,
         max_retries: int = 3
     ) -> Dict[str, Any]:
         """Generate AI answer for a question."""
-        # Check cache
-        cache_key = f"answer:{category}:{hash(question)}"
-        if use_cache:
-            cached_result = self.cache_service.get(cache_key)
-            if cached_result:
-                logger.debug(f"Answer retrieved from cache: {question[:50]}...")
-                # Ensure from_cache field is set
-                if isinstance(cached_result, dict):
-                    cached_result['from_cache'] = True
-                return cached_result
+        # Always check cache
+        cache_key = f"answer:{hash(question)}"
+        cached_result = self.cache_service.get(cache_key)
+        if cached_result:
+            logger.debug(f"Answer retrieved from cache: {question[:50]}...")
+            return cached_result
 
         # Generate new answer
-        result = self.generator.generate_answer(category, question, context, max_retries)
+        result = self.generator.generate_answer(question, context, max_retries)
 
-        # Cache result
-        if use_cache:
-            self.cache_service.set(
-                cache_key,
-                result,
-                ttl=self.settings.redis.cache_ttl
-            )
+        # Always cache result
+        self.cache_service.set(
+            cache_key,
+            result,
+            ttl=self.settings.redis.cache_ttl
+        )
 
         return result
 
     async def agenerate_answer(
         self,
-        category: str,
         question: str,
         context: Optional[str] = None,
-        use_cache: bool = True,
         max_retries: int = 3
     ) -> Dict[str, Any]:
         """Async version of generate_answer."""
-        # Check cache
-        cache_key = f"answer:{category}:{hash(question)}"
-        if use_cache:
-            cached_result = await self.cache_service.aget(cache_key)
-            if cached_result:
-                logger.debug(f"Answer retrieved from cache: {question[:50]}...")
-                return cached_result
+        # Always check cache
+        cache_key = f"answer:{hash(question)}"
+        cached_result = await self.cache_service.aget(cache_key)
+        if cached_result:
+            logger.debug(f"Answer retrieved from cache: {question[:50]}...")
+            return cached_result
 
         # Generate new answer
-        result = await self.generator.agenerate_answer(category, question, context, max_retries)
+        result = await self.generator.agenerate_answer(question, context, max_retries)
 
-        # Cache result
-        if use_cache:
-            await self.cache_service.aset(
-                cache_key,
-                result,
-                ttl=self.settings.redis.cache_ttl
-            )
+        # Always cache result
+        await self.cache_service.aset(
+            cache_key,
+            result,
+            ttl=self.settings.redis.cache_ttl
+        )
 
         return result
 
     def generate_batch_answers(
         self,
-        questions: List[Dict[str, str]],
-        use_cache: bool = True
+        questions: List[Dict[str, str]]
     ) -> List[Dict[str, Any]]:
         """Generate answers for multiple questions."""
         return self.generator.generate_batch_answers(questions)
@@ -124,12 +112,11 @@ class GPTService:
 
     def create_prompt(
         self,
-        category: str,
         question: str,
         context: Optional[str] = None
     ) -> str:
-        """Create prompt for GPT based on category and question."""
-        return self.generator.prompt_builder.create_answer_prompt(category, question, context)
+        """Create prompt for GPT based on question."""
+        return self.generator.prompt_builder.create_answer_prompt(question, context)
 
 
 # Global GPT service instance

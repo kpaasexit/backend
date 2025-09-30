@@ -3,7 +3,6 @@ import threading
 from typing import List, Optional, Tuple
 import torch
 from torch.nn import functional as F
-from transformers import AutoTokenizer
 
 from app.config import get_settings
 from app.core.exceptions import ClassificationError
@@ -53,19 +52,45 @@ class HomeLifeClassifier:
                 return
 
             try:
-                finetuned_path = "/home/ubuntu/backend/ai-service/app/models/home_life_finetuned"
-                base_path = "/home/ubuntu/backend/ai-service/app/models/home_life_classifier"
+                from transformers import RobertaForSequenceClassification, BertTokenizer
 
-                model_path = finetuned_path if os.path.exists(finetuned_path) else base_path
+                # Get the base directory for models
+                # In Docker container: /app/app/models/
+                # In local development: /home/ubuntu/backend/ai-service/app/models/
+                current_dir = os.path.dirname(os.path.abspath(__file__))
 
-                from transformers import RobertaForSequenceClassification
-                self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+                finetuned_path = os.path.join(current_dir, "home_life_finetuned")
+                base_path = os.path.join(current_dir, "home_life_classifier")
+
+                # Check which path exists and has required files
+                if os.path.exists(os.path.join(finetuned_path, 'config.json')):
+                    model_path = finetuned_path
+                elif os.path.exists(os.path.join(base_path, 'config.json')):
+                    model_path = base_path
+                else:
+                    # Debug: print available files
+                    print(f"Current directory: {current_dir}")
+                    print(f"Files in current directory: {os.listdir(current_dir)}")
+                    print(f"Checking finetuned_path: {finetuned_path}, exists: {os.path.exists(finetuned_path)}")
+                    print(f"Checking base_path: {base_path}, exists: {os.path.exists(base_path)}")
+                    raise FileNotFoundError(f"Model files not found. Searched in: {finetuned_path} and {base_path}")
+
+                # Explicitly set to use local files only
+                os.environ['TRANSFORMERS_OFFLINE'] = '1'
+
+                # Load tokenizer using BertTokenizer (as specified in config)
+                self.tokenizer = BertTokenizer.from_pretrained(
+                    model_path,
+                    local_files_only=True
+                )
 
                 torch.set_default_dtype(torch.float32)
 
+                # Load the model
                 self.model = RobertaForSequenceClassification.from_pretrained(
                     model_path,
-                    num_labels=8
+                    num_labels=8,
+                    local_files_only=True
                 )
 
                 self.model = self.model.float()
