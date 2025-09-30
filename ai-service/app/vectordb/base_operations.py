@@ -31,7 +31,8 @@ class BaseVectorOperations(VectorOperationsInterface):
 
     def __init__(self):
         self.settings = get_settings()
-        self.client = get_qdrant_client()
+        qdrant_wrapper = get_qdrant_client()
+        self.client = qdrant_wrapper.get_client()  # Get the actual QdrantClientBase
 
     def _validate_vector(self, vector: Union[List[float], np.ndarray]) -> List[float]:
         """Validate and convert vector to list format."""
@@ -111,7 +112,7 @@ class BaseVectorOperations(VectorOperationsInterface):
         """Handle Qdrant errors consistently."""
         error_msg = f"Qdrant {operation} failed: {str(e)}"
         logger.error(error_msg)
-        raise VectorDBError(error_msg)
+        raise VectorDBError(operation=operation, reason=str(e))
 
     def get_collection_info(self, collection_name: str) -> Dict[str, Any]:
         """Get information about a collection."""

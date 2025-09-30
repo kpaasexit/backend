@@ -25,13 +25,12 @@ class QuestionVectorOperations(BaseVectorOperations):
     def insert_question(
         self,
         vector: Union[List[float], np.ndarray],
-        question_id: str,
+        question_id: int,
         title: str,
-        category: str,
+        category_id: int,
         content_sample: Optional[str] = None,
         language_ratio: Optional[Dict[str, float]] = None,
         embedding_type: str = "mixed",
-        tags: Optional[List[str]] = None,
         **additional_payload
     ) -> bool:
         """Insert a single question into the vector database."""
@@ -41,8 +40,9 @@ class QuestionVectorOperations(BaseVectorOperations):
 
             # Create payload
             payload = {
+                "question_id": question_id,
                 "title": title,
-                "category": category,
+                "category_id": category_id,
                 "embedding_type": embedding_type,
                 "created_at": datetime.utcnow().isoformat(),
                 "updated_at": datetime.utcnow().isoformat(),
@@ -55,11 +55,9 @@ class QuestionVectorOperations(BaseVectorOperations):
             if language_ratio:
                 payload["language_ratio"] = language_ratio
 
-            if tags:
-                payload["tags"] = tags
-
             # Create point
-            point = self._create_point(question_id, vector, payload)
+            # Use string ID for Qdrant, but store numeric ID in payload
+            point = self._create_point(str(question_id), vector, payload)
 
             # Insert into Qdrant
             operation_info = self.client.upsert(
@@ -69,7 +67,7 @@ class QuestionVectorOperations(BaseVectorOperations):
 
             success = operation_info.status.name == "COMPLETED"
             if success:
-                logger.info(f"Question inserted: {question_id} (category: {category})")
+                logger.info(f"Question inserted: {question_id} (category_id: {category_id})")
             else:
                 logger.error(f"Question insertion failed: {question_id}")
 
@@ -96,20 +94,22 @@ class QuestionVectorOperations(BaseVectorOperations):
                 vector = self._validate_vector(vector)
 
                 # Generate ID if not provided
-                question_id = question_data.get("question_id", str(uuid.uuid4()))
+                import random
+                question_id = question_data.get("question_id", random.randint(1000000, 9999999))
                 processed_ids.append(question_id)
 
                 # Create payload
                 payload = {
+                    "question_id": question_id,
                     "title": question_data.get("title", ""),
-                    "category": question_data.get("category", ""),
+                    "category_id": question_data.get("category_id", 1),
                     "embedding_type": question_data.get("embedding_type", "mixed"),
                     "created_at": datetime.utcnow().isoformat(),
                     "updated_at": datetime.utcnow().isoformat(),
                 }
 
                 # Add optional fields
-                optional_fields = ["content_sample", "language_ratio", "tags"]
+                optional_fields = ["content_sample", "language_ratio"]
                 for field in optional_fields:
                     if field in question_data:
                         payload[field] = question_data[field]
@@ -120,7 +120,8 @@ class QuestionVectorOperations(BaseVectorOperations):
                 payload.update(additional_data)
 
                 # Create point
-                point = self._create_point(question_id, vector, payload)
+                # Use string ID for Qdrant, but store numeric ID in payload
+                point = self._create_point(str(question_id), vector, payload)
                 points.append(point)
 
             # Batch insert into Qdrant
@@ -152,9 +153,8 @@ class QuestionVectorOperations(BaseVectorOperations):
         query_vector: Union[List[float], np.ndarray],
         limit: int = 10,
         score_threshold: float = 0.7,
-        category_filter: Optional[str] = None,
-        language_filter: Optional[str] = None,
-        tags_filter: Optional[List[str]] = None
+        category_filter: Optional[int] = None,
+        language_filter: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """Search for similar questions in the vector database."""
         try:
@@ -164,17 +164,16 @@ class QuestionVectorOperations(BaseVectorOperations):
             # Build search filter
             search_filter = self._build_search_filter(
                 category_filter=category_filter,
-                language_filter=language_filter,
-                tags_filter=tags_filter
+                language_filter=language_filter
             )
 
             # Perform search
             search_result = self.client.search(
                 collection_name=self.collection_name,
                 query_vector=query_vector,
+                query_filter=search_filter,
                 limit=limit,
                 score_threshold=score_threshold,
-                query_filter=search_filter,
                 with_payload=True,
                 with_vectors=False
             )
