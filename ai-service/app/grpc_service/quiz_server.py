@@ -48,15 +48,15 @@ class QuizGRPCServer:
         )
 
         quiz_servicer = QuizServicer()
-        quiz_service_pb2_grpc.add_QuizServiceServicer_to_server(quiz_servicer, server)
+        quiz_service_pb2_grpc.add_AIQuizServiceServicer_to_server(quiz_servicer, server)
 
         # Enable gRPC reflection for documentation and debugging
         SERVICE_NAMES = (
-            quiz_service_pb2.DESCRIPTOR.services_by_name['QuizService'].full_name,
+            quiz_service_pb2.DESCRIPTOR.services_by_name['AIQuizService'].full_name,
             reflection.SERVICE_NAME,
         )
         reflection.enable_server_reflection(SERVICE_NAMES, server)
-        self.logger.info("gRPC reflection enabled for QuizService")
+        self.logger.info("gRPC reflection enabled for AIQuizService")
 
         return server
 

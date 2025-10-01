@@ -20,7 +20,7 @@ from protos.generated import question_service_pb2
 logger = LoggerSetup.get_logger(__name__)
 
 
-class QuestionServicer(question_service_pb2_grpc.QuestionServiceServicer):
+class QuestionServicer(question_service_pb2_grpc.AIQuestionServiceServicer):
     """질문 처리 관련 gRPC 서비스 구현."""
 
     def __init__(self):
