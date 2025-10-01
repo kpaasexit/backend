@@ -25,3 +25,13 @@ class RedisConfig(BaseConfig):
     redis_password: Optional[str] = Field(default=None)
     redis_db: int = Field(default=0)
     cache_ttl: int = Field(default=3600)
+
+
+class MySQLConfig(BaseConfig):
+    """MySQL database configuration."""
+
+    mysql_host: str = Field(default="localhost")
+    mysql_port: int = Field(default=3306)
+    mysql_database: str = Field(default="exit_quiz_db")
+    mysql_user: str = Field(default="exit_user")
+    mysql_password: str = Field(default="exit_password")
