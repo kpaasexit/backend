@@ -7,7 +7,7 @@ from pydantic import Field
 from .base import BaseConfig
 from .server import ServerConfig
 from .model import ModelConfig
-from .database import QdrantConfig, RedisConfig
+from .database import QdrantConfig, RedisConfig, MySQLConfig
 from .services import OpenAIConfig, EurekaConfig
 from .system import MemoryConfig
 
@@ -20,6 +20,7 @@ class Settings(BaseConfig):
     qdrant: QdrantConfig = Field(default_factory=QdrantConfig)
     openai: OpenAIConfig = Field(default_factory=OpenAIConfig)
     redis: RedisConfig = Field(default_factory=RedisConfig)
+    mysql: MySQLConfig = Field(default_factory=MySQLConfig)
     memory: MemoryConfig = Field(default_factory=MemoryConfig)
     eureka: EurekaConfig = Field(default_factory=EurekaConfig)
 
@@ -43,6 +44,7 @@ class Settings(BaseConfig):
         self.qdrant = QdrantConfig()
         self.openai = OpenAIConfig()
         self.redis = RedisConfig()
+        self.mysql = MySQLConfig()
         self.memory = MemoryConfig()
         self.eureka = EurekaConfig()
 

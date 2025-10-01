@@ -83,7 +83,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
         cache_dir.mkdir(parents=True, exist_ok=True)
         logger.info("✓ Created model cache directory")
 
-    # 2. Qdrant collections 초기화
+    # 2. MySQL Database 초기화
+    try:
+        from app.db.database import init_db
+        await init_db()
+        logger.info("✓ MySQL database initialized")
+    except Exception as e:
+        logger.error(f"MySQL initialization error: {e}")
+
+    # 3. Qdrant collections 초기화
     try:
         client = get_qdrant_client()
         if client.is_alive():
@@ -97,7 +105,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     except Exception as e:
         logger.error(f"Qdrant initialization error: {e}")
 
-    # 3. Embedding model 사전 로드
+    # 4. Embedding model 사전 로드
     try:
         from app.services.embedding import EmbeddingService
         logger.info("Preloading embedding model...")
@@ -124,6 +132,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
 
     yield
 
+    # Cleanup
     if quiz_scheduler:
         quiz_scheduler.stop()
 
@@ -135,6 +144,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
 
     if quiz_server:
         quiz_server.stop()
+
+    # Close MySQL database connection
+    try:
+        from app.db.database import close_db
+        await close_db()
+        logger.info("MySQL database connection closed")
+    except Exception as e:
+        logger.error(f"Error closing MySQL database: {e}")
 
 
 def create_app() -> FastAPI:

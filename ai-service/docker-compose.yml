@@ -63,6 +63,13 @@ services:
       - REDIS_PORT=6379
       - REDIS_DB=0
 
+      # MySQL configuration
+      - MYSQL_HOST=host.docker.internal
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=exit_quiz_db
+      - MYSQL_USER=exit_user
+      - MYSQL_PASSWORD=exit_password
+
       # OpenAI configuration
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}

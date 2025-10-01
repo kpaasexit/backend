@@ -17,14 +17,14 @@ class TaskStatus(Enum):
     FAILED = "failed"
 
 CATEGORY_MAP = {
-    0: "요리/식품관리",
-    1: "청소/세탁",
-    2: "생활수리/DIY",
-    3: "생활경제/계약",
-    4: "이사/인테리어",
-    5: "육아/반려동물",
-    6: "환경/건강",
-    7: "스마트홈/가전"
+    1: "요리/식품관리",
+    2: "청소/세탁",
+    3: "생활수리/DIY",
+    4: "생활경제/계약",
+    5: "이사/인테리어",
+    6: "육아/반려동물",
+    7: "환경/건강",
+    8: "스마트홈/가전"
 }
 
 REVERSE_CATEGORY_MAP = {v: k for k, v in CATEGORY_MAP.items()}
@@ -83,12 +83,12 @@ MODEL_CONFIGS = {
     "klue/roberta-small": {
         "max_length": 512,
         "hidden_size": 768,
-        "num_labels": 8
+        "num_labels": 9
     },
     "distilbert-base-uncased": {
         "max_length": 512,
         "hidden_size": 768,
-        "num_labels": 8
+        "num_labels": 9
     },
     "jhgan/ko-sroberta-multitask": {
         "max_length": 128,
