@@ -1,5 +1,6 @@
 """Question gRPC service implementation."""
 
+import asyncio
 import time
 from app.config import get_settings
 from app.core.logger import LoggerSetup
@@ -36,7 +37,7 @@ class QuestionServicer(question_service_pb2_grpc.QuestionServiceServicer):
 
     def GenerateAIAnswer(self, request, context):
         """AI 답변 생성."""
-        return self.answer_handler.generate_ai_answer(request, context)
+        return asyncio.run(self.answer_handler.generate_ai_answer(request, context))
 
     def FindSimilarQuestions(self, request, context):
         """벡터 데이터베이스에서 유사한 질문 찾기."""

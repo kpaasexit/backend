@@ -20,7 +20,7 @@ class AnswerHandler(BaseHandler):
         super().__init__()
         self.gpt_service = get_gpt_service()
 
-    def generate_ai_answer(self, request, context):
+    async def generate_ai_answer(self, request, context):
         """Generate AI answer for a question using AnswerRequest."""
         start_time = time.time()
 
@@ -31,7 +31,7 @@ class AnswerHandler(BaseHandler):
             )
 
             # Generate answer (always uses cache)
-            result = self.gpt_service.generate_answer(
+            result = await self.gpt_service.agenerate_answer(
                 question=request.question
             )
 
