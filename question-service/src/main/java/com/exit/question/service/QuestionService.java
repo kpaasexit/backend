@@ -1,6 +1,9 @@
 package com.exit.question.service;
 
 import com.exit.common.exception.grpc.GrpcException;
+import com.exit.common.grpc.DeleteResponseRequest;
+import com.exit.common.grpc.UpdateResponseRequest;
+import com.exit.common.grpc.UpdateResponseResponse;
 import com.exit.common.grpc.UserIdAndNameInfo;
 import com.exit.common.util.file.FileUploadUtil;
 import com.exit.question.controller.dto.request.*;
@@ -9,10 +12,12 @@ import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.QuestionCategory;
 import com.exit.question.domain.question.QuestionImage;
 import com.exit.question.domain.question.QuestionReport;
+import com.exit.question.domain.question.FollowUpRoom;
 import com.exit.question.domain.question.repository.QuestionCategoryRepository;
 import com.exit.question.domain.question.repository.QuestionImageRepository;
 import com.exit.question.domain.question.repository.QuestionReportRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
+import com.exit.question.domain.question.repository.FollowUpRoomRepository;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.ResponseImage;
 import com.exit.question.domain.response.ResponseLike;
@@ -22,6 +27,7 @@ import com.exit.question.domain.response.repository.ResponseLikeRepository;
 import com.exit.question.domain.response.repository.ResponseReportRepository;
 import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcQuestionErrorCode;
+import com.exit.question.exception.GrpcResponseErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -48,8 +54,11 @@ public class QuestionService {
     private final ResponseImageRepository responseImageRepository;
     private final ResponseLikeRepository responseLikeRepository;
     private final ResponseReportRepository responseReportRepository;
+    private final FollowUpRoomRepository followUpRoomRepository;
     private final FileUploadUtil fileUploadUtil;
     private final UserGrpcClient userGrpcClient;
+    private final NotificationGrpcClient notificationGrpcClient;
+
 //    private final NlpGrpcClient nlpGrpcClient;
 
     public QuestionCreateResponseDto createQuestion(QuestionCreateRequestDto request) {
@@ -88,8 +97,24 @@ public class QuestionService {
         validateQuestionNotAlreadyAdopted(response.getQuestionId());
 
         Response adoptedResponse = adoptResponse(response);
-
+        Question question = questionRepository.findById(adoptedResponse.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+        updateResponseAdopt(question);
+        String body = truncateContent(adoptedResponse.getResponseContent());
+        SendNotificationRequestDto requestDto = SendNotificationRequestDto.builder()
+                .body(body)
+                .type("ANSWER_ADOPTED")
+                .targetId(question.getQuestionId())
+                .receiverId(question.getQuestionWriterId())
+                .deviceId(answerAdoptRequestDto.deviceId())
+                .build();
+        notificationGrpcClient.sendNotification(requestDto);
         return AnswerAdoptResponseDto.from(adoptedResponse);
+    }
+
+    private void updateResponseAdopt(Question question) {
+        question.updateAnswerAdopt();
+        questionRepository.save(question);
     }
 
     public AnswerCreateResponseDto answerCreate(AnswerCreateRequestDto answerCreateRequestDto) {
@@ -97,8 +122,30 @@ public class QuestionService {
         Response savedResponse = responseRepository.save(newResponse);
 
         List<String> imageUrls = processAnswerImages(answerCreateRequestDto, savedResponse);
+        Question question = questionRepository.findById(savedResponse.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        String subBody = truncateContent(savedResponse.getResponseContent());
+        SendNotificationRequestDto requestDto = SendNotificationRequestDto.builder()
+                .body(subBody)
+                .type("NEW_ANSWER_ON_QUESTION")
+                .targetId(question.getQuestionId())
+                .receiverId(question.getQuestionWriterId())
+                .deviceId(answerCreateRequestDto.deviceId())
+                .build();
+        notificationGrpcClient.sendNotification(requestDto);
 
         return AnswerCreateResponseDto.from(savedResponse, imageUrls);
+    }
+
+    private String truncateContent(String content) {
+        String subBody;
+        if(content.length() <= 100) {
+            subBody = content.substring(0, content.length()-1);
+        } else {
+            subBody = content.substring(0, 100);
+        }
+        return subBody;
     }
 
     public AnswerRecommendResponseDto toggleAnswerLike(AnswerRecommendRequestDto req) {
@@ -309,5 +356,35 @@ public class QuestionService {
                 .responseId(req.responseId())
                 .userId(req.userId())
                 .build();
+    }
+
+    public UpdateResponseResponse updateResponse(UpdateResponseRequest request) {
+        Response response = responseRepository.findById(request.getResponseId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+
+        if(Boolean.TRUE.equals(response.getResponseAdopt()))
+            throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
+
+        response.updateContent(request.getContent());
+        responseRepository.save(response);
+
+        return UpdateResponseResponse.newBuilder()
+                .setResponseId(response.getResponseId())
+                .setContent(response.getResponseContent())
+                .build();
+    }
+
+    public void deleteResponse(DeleteResponseRequest request) {
+        Response response = responseRepository.findById(request.getResponseId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+
+        if(Boolean.TRUE.equals(response.getResponseAdopt()))
+            throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
+
+        // FollowUpRoom이 있다면 먼저 삭제
+        followUpRoomRepository.findByResponse(response)
+                .ifPresent(followUpRoomRepository::delete);
+
+        responseRepository.delete(response);
     }
 }

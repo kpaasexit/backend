@@ -1,6 +1,8 @@
 package com.exit.question.service.util;
 
 import com.exit.common.exception.grpc.GrpcException;
+import com.exit.question.controller.dto.request.NotificationContentDto;
+import com.exit.question.controller.dto.request.SendNotificationRequestDto;
 import com.exit.question.domain.Comment;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.QuestionComment;
@@ -36,6 +38,20 @@ public class QuestionCommentFactory extends CommentFactory {
     public void deleteComment(Long targetId, Long authorId) {
         validateCommentWriter(targetId, authorId);
         questionCommentRepository.deleteById(targetId);
+    }
+
+    @Override
+    public SendNotificationRequestDto createSendNotificationRequestDto(Long targetId, String deviceId) {
+        NotificationContentDto dto = questionRepository.findContentById(targetId)
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        return SendNotificationRequestDto.builder()
+                .body(dto.content())
+                .type("NEW_COMMENT")
+                .targetId(targetId)
+                .receiverId(dto.receiverId())
+                .deviceId(deviceId)
+                .build();
     }
 
     private void validateCommentWriter(Long commentId, Long userId) {

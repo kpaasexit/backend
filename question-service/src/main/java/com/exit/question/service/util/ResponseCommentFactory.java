@@ -1,6 +1,8 @@
 package com.exit.question.service.util;
 
 import com.exit.common.exception.grpc.GrpcException;
+import com.exit.question.controller.dto.request.NotificationContentDto;
+import com.exit.question.controller.dto.request.SendNotificationRequestDto;
 import com.exit.question.domain.Comment;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.ResponseComment;
@@ -8,6 +10,7 @@ import com.exit.question.domain.response.repository.ResponseCommentRepository;
 import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcCommentErrorCode;
 import com.exit.question.exception.GrpcQuestionErrorCode;
+import com.exit.question.exception.GrpcResponseErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -36,6 +39,20 @@ public class ResponseCommentFactory extends CommentFactory {
     public void deleteComment(Long targetId, Long authorId) {
         validateCommentWriter(targetId, authorId);
         responseCommentRepository.deleteById(targetId);
+    }
+
+    @Override
+    public SendNotificationRequestDto createSendNotificationRequestDto(Long targetId, String deviceId) {
+
+        NotificationContentDto dto = responseRepository.findContentById(targetId)
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
+        return SendNotificationRequestDto.builder()
+                .body(dto.content())
+                .type("NEW_COMMENT")
+                .targetId(targetId)
+                .receiverId(dto.receiverId())
+                .deviceId(deviceId)
+                .build();
     }
 
     private void validateCommentWriter(Long commentId, Long userId) {

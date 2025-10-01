@@ -10,7 +10,8 @@ public record AnswerCreateRequestDto(
         Long responseWriterId,
         String responseContent,
         Boolean responseIsAnonymous,
-        List<UploadBytesRequest> images
+        List<UploadBytesRequest> images,
+        String deviceId
 ) {
     public static AnswerCreateRequestDto from(AnswerCreateRequest request) {
         return new AnswerCreateRequestDto(
@@ -18,7 +19,8 @@ public record AnswerCreateRequestDto(
                 request.getResponseWriterId(),
                 request.getResponseContent(),
                 request.getResponseIsAnonymous(),
-                request.getImagesList()
+                request.getImagesList(),
+                request.getDeviceId()
         );
     }
 }

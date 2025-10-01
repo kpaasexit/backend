@@ -14,6 +14,7 @@ service UserService {
   rpc IncreaseReportCount(IncreaseReportCountRequest) returns (google.protobuf.Empty);
   rpc UpdateAdditionalUserInfo(UpdateAdditionalUserInfoRequest) returns (UpdateAdditionalUserInfoResponse);
   rpc GetUserNameAndProfile(GetUserNameRequest) returns (UpdateAdditionalUserInfoResponse);
+  rpc GetFcmToken(GetFcmTokenRequest) returns (GetFcmTokenResponse);
 }
 
 // request
@@ -33,6 +34,10 @@ message UpdateAdditionalUserInfoRequest {
   int64 user_id = 1;
   string user_name = 2;
   UploadBytesRequest image_file = 3;
+}
+
+message GetFcmTokenRequest {
+  int64 user_id = 1;
 }
 
 // response
@@ -55,4 +60,8 @@ message UpdateAdditionalUserInfoResponse {
   int64 user_id = 1;
   string user_name = 2;
   string user_profile = 3;
+}
+
+message GetFcmTokenResponse {
+  repeated string fcm_token = 1;
 }

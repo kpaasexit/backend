@@ -11,6 +11,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/exit_question_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
@@ -33,6 +35,11 @@ grpc:
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
+    notification-service:
+        address: discovery:///notification-service
+        enableKeepAlive: true
+        keepAliveWithoutCalls: true
+        negotiationType: plaintext
 
 # Eureka 클라이언트 설정
 eureka:

@@ -130,4 +130,21 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
                     .asRuntimeException());
         }
     }
+
+    @Override
+    public void getFcmToken(GetFcmTokenRequest request, StreamObserver<GetFcmTokenResponse> responseObserver) {
+        try {
+            log.info("Get fcmToken request received for userId: {}", request.getUserId());
+            GetFcmTokenResponse response = userService.getFcmToken(request);
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Get fcmToken failed for userId: {}", request.getUserId(), e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("사용자 fcm 토큰 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
 }

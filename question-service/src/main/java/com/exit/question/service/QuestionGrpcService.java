@@ -1,9 +1,12 @@
 package com.exit.question.service;
 
+import com.exit.common.grpc.QuestionCreateResponse;
 import com.exit.common.grpc.QuestionListItem;
 import com.exit.common.grpc.QuestionServiceGrpc;
+import com.exit.common.grpc.UpdateResponseResponse;
 import com.exit.question.controller.dto.request.*;
 import com.exit.question.controller.dto.response.*;
+import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -30,15 +33,22 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
             QuestionCreateRequestDto requestDto = QuestionCreateRequestDto.from(request);
             QuestionCreateResponseDto responseDto = questionService.createQuestion(requestDto);
 
-            com.exit.common.grpc.QuestionCreateResponse response = com.exit.common.grpc.QuestionCreateResponse.newBuilder()
+            QuestionCreateResponse.Builder builder = QuestionCreateResponse.newBuilder();
+
+            if (responseDto.imageUrls() != null && !responseDto.imageUrls().isEmpty()) {
+                builder.addAllImageUrls(responseDto.imageUrls());
+            }
+
+            com.exit.common.grpc.QuestionCreateResponse response = builder
                     .setQuestionId(responseDto.questionId())
+                    .setQuestionWriterId(responseDto.questionWriterId())
+                    .setQuestionWriterName(responseDto.questionWriterName())
                     .setQuestionTitle(responseDto.questionTitle())
                     .setQuestionContent(responseDto.questionContent())
                     .setQuestionCategory(responseDto.questionCategory())
                     .setQuestionUrgency(responseDto.questionUrgency())
                     .setQuestionAnswerType(responseDto.questionAnswerType())
                     .setQuestionDisclosureType(responseDto.questionDisclosureType())
-                    .setQuestionWriterId(responseDto.questionWriterId())
                     .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
                     .build();
 
@@ -362,6 +372,44 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
             log.error("Question detail failed", e);
             responseObserver.onError(Status.INTERNAL
                     .withDescription("질문 상세 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void updateResponse(com.exit.common.grpc.UpdateResponseRequest request,
+                                StreamObserver<com.exit.common.grpc.UpdateResponseResponse> responseObserver) {
+        try {
+            log.info("Update response request received for response id: {}", request.getResponseId());
+
+            UpdateResponseResponse response = questionService.updateResponse(request);
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Update response failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("답변 수정 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void deleteResponse(com.exit.common.grpc.DeleteResponseRequest request,
+                                  StreamObserver<com.google.protobuf.Empty> responseObserver) {
+        try {
+            log.info("Delete response request received for response ID: {}", request.getResponseId());
+
+            questionService.deleteResponse(request);
+
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Delete Response failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("답변 삭제 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
     }

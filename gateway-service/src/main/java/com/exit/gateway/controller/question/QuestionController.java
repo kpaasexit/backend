@@ -1,10 +1,13 @@
 package com.exit.gateway.controller.question;
 
+import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.*;
 import com.exit.common.response.SuccessResponse;
+import com.exit.common.response.error.rest.QuestionErrorCode;
 import com.exit.common.response.success.QuestionSuccessCode;
 import com.exit.gateway.controller.question.dto.request.question.AnswerCreateRequestDto;
 import com.exit.gateway.controller.question.dto.request.question.AnswerReportRequestDto;
+import com.exit.gateway.controller.question.dto.request.question.AnswerUpdateRequestDto;
 import com.exit.gateway.controller.question.dto.request.question.QuestionCreateRequestDto;
 import com.exit.gateway.controller.question.dto.request.question.QuestionReportRequestDto;
 import com.exit.gateway.controller.question.dto.response.question.*;
@@ -29,9 +32,9 @@ public class QuestionController {
     private final QuestionGrpcClient questionGrpcClient;
     private final QuestionRequestMapper questionRequestMapper;
 
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public SuccessResponse<QuestionCreateResponseDto> createQuestion(
-            @Valid @RequestBody QuestionCreateRequestDto request) {
+            @Valid @ModelAttribute QuestionCreateRequestDto request) {
         try {
             log.info("Question create request received");
             QuestionCreateRequest grpcRequest = questionRequestMapper.toGrpcQuestionCreateRequest(request);
@@ -221,6 +224,46 @@ public class QuestionController {
         } catch (Exception e) {
             log.error("Similar question failed", e);
             throw new RuntimeException("유사 질문 조회에 실패했습니다.");
+        }
+    }
+
+    @PutMapping("/answers/{responseId}")
+    public SuccessResponse<AnswerUpdateResponseDto> updateAnswer(
+            @PathVariable Long responseId,
+            @Valid @RequestBody AnswerUpdateRequestDto request) {
+        try {
+            log.info("Answer update request received for responseId: {}", responseId);
+            UpdateResponseRequest grpcRequest = UpdateResponseRequest.newBuilder()
+                    .setResponseId(responseId)
+                    .setContent(request.content())
+                    .build();
+
+            return SuccessResponse.of(QuestionSuccessCode.ANSWER_UPDATE_SUCCESS,
+                    questionGrpcClient.updateResponse(grpcRequest));
+        } catch (StatusRuntimeException e) {
+            log.error("Answer update failed via gRPC: {}", e.getStatus(), e);
+            throw new RestApiException(QuestionErrorCode.UPDATE_RESPONSE_FAIL, getGrpcErrorMessage(e));
+        } catch (Exception e) {
+            log.error("Answer update failed", e);
+            throw new RestApiException(QuestionErrorCode.UPDATE_RESPONSE_FAIL);
+        }
+    }
+
+    @DeleteMapping("/answers/{responseId}")
+    public SuccessResponse<String> deleteAnswer(@PathVariable Long responseId) {
+        try {
+            log.info("Answer delete request received for responseId: {}", responseId);
+            DeleteResponseRequest grpcRequest = DeleteResponseRequest.newBuilder()
+                    .setResponseId(responseId)
+                    .build();
+            questionGrpcClient.deleteResponse(grpcRequest);
+            return SuccessResponse.of(QuestionSuccessCode.ANSWER_DELETE_SUCCESS, "성공적으로 삭제하였습니다.");
+        } catch (StatusRuntimeException e) {
+            log.error("Answer delete failed via gRPC: {}", e.getStatus(), e);
+            throw new RestApiException(QuestionErrorCode.DELETE_RESPONSE_FAIL, getGrpcErrorMessage(e));
+        } catch (Exception e) {
+            log.error("Answer delete failed", e);
+            throw new RestApiException(QuestionErrorCode.DELETE_RESPONSE_FAIL);
         }
     }
 

@@ -20,6 +20,7 @@ message CreateCommentRequest {
   string comment_type = 2;
   int64 writer_id = 3;
   string content = 4;
+  string device_id = 5;
 }
 
 message DeleteCommentRequest {
