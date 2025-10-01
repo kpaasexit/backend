@@ -56,8 +56,9 @@ class QuestionVectorOperations(BaseVectorOperations):
                 payload["language_ratio"] = language_ratio
 
             # Create point
-            # Use string ID for Qdrant, but store numeric ID in payload
-            point = self._create_point(str(question_id), vector, payload)
+            # Use UUID for Qdrant ID to avoid format issues with small numeric IDs
+            point_id = str(uuid.uuid4())
+            point = self._create_point(point_id, vector, payload)
 
             # Insert into Qdrant
             operation_info = self.client.upsert(
@@ -120,8 +121,9 @@ class QuestionVectorOperations(BaseVectorOperations):
                 payload.update(additional_data)
 
                 # Create point
-                # Use string ID for Qdrant, but store numeric ID in payload
-                point = self._create_point(str(question_id), vector, payload)
+                # Use UUID for Qdrant ID to avoid format issues with small numeric IDs
+                point_id = str(uuid.uuid4())
+                point = self._create_point(point_id, vector, payload)
                 points.append(point)
 
             # Batch insert into Qdrant
@@ -187,12 +189,22 @@ class QuestionVectorOperations(BaseVectorOperations):
         except Exception as e:
             self._handle_qdrant_error("search_similar_questions", e)
 
-    def delete_question(self, question_id: str) -> bool:
-        """Delete a question from the vector database."""
+    def delete_question(self, question_id: int) -> bool:
+        """Delete a question from the vector database by question_id in payload."""
         try:
+            from qdrant_client.models import Filter, FieldCondition, MatchValue
+
+            # Delete by payload filter instead of ID
             operation_info = self.client.delete(
                 collection_name=self.collection_name,
-                points_selector=[question_id]
+                points_selector=Filter(
+                    must=[
+                        FieldCondition(
+                            key="question_id",
+                            match=MatchValue(value=question_id)
+                        )
+                    ]
+                )
             )
 
             success = operation_info.status.name == "COMPLETED"
@@ -206,19 +218,30 @@ class QuestionVectorOperations(BaseVectorOperations):
         except Exception as e:
             self._handle_qdrant_error("delete_question", e)
 
-    def get_question(self, question_id: str) -> Optional[Dict[str, Any]]:
-        """Get a specific question by ID."""
+    def get_question(self, question_id: int) -> Optional[Dict[str, Any]]:
+        """Get a specific question by question_id from payload."""
         try:
-            result = self.client.retrieve(
+            from qdrant_client.models import Filter, FieldCondition, MatchValue
+
+            # Search by payload filter instead of ID
+            result = self.client.search(
                 collection_name=self.collection_name,
-                ids=[question_id],
+                query_filter=Filter(
+                    must=[
+                        FieldCondition(
+                            key="question_id",
+                            match=MatchValue(value=question_id)
+                        )
+                    ]
+                ),
+                query_vector=[0.0] * 384,  # Dummy vector for filter-only search
+                limit=1,
                 with_payload=True,
                 with_vectors=False
             )
 
             if result:
-                point = result[0]
-                return self._format_search_result(point)
+                return self._format_search_result(result[0])
 
             return None
 
@@ -227,12 +250,35 @@ class QuestionVectorOperations(BaseVectorOperations):
 
     def update_question(
         self,
-        question_id: str,
+        question_id: int,
         vector: Optional[Union[List[float], np.ndarray]] = None,
         payload: Optional[Dict[str, Any]] = None
     ) -> bool:
-        """Update a question in the vector database."""
+        """Update a question in the vector database by question_id."""
         try:
+            from qdrant_client.models import Filter, FieldCondition, MatchValue
+
+            # First, find the actual point ID by question_id
+            search_result = self.client.search(
+                collection_name=self.collection_name,
+                query_filter=Filter(
+                    must=[
+                        FieldCondition(
+                            key="question_id",
+                            match=MatchValue(value=question_id)
+                        )
+                    ]
+                ),
+                query_vector=[0.0] * 384,  # Dummy vector for filter-only search
+                limit=1,
+                with_payload=True,
+                with_vectors=False
+            )
+
+            if not search_result:
+                raise VectorDBError(f"Question with ID {question_id} not found")
+
+            point_id = search_result[0].id
             update_data = {}
 
             if vector is not None:
@@ -243,14 +289,16 @@ class QuestionVectorOperations(BaseVectorOperations):
                 # Add updated timestamp
                 payload = payload.copy()
                 payload["updated_at"] = datetime.utcnow().isoformat()
+                # Also ensure question_id is preserved
+                payload["question_id"] = question_id
                 update_data["payload"] = payload
 
             if not update_data:
                 raise VectorDBError("Either vector or payload must be provided for update")
 
-            # Create updated point
+            # Create updated point with the found point ID
             point = PointStruct(
-                id=question_id,
+                id=point_id,
                 **update_data
             )
 
