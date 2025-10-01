@@ -64,11 +64,11 @@ services:
       - REDIS_DB=0
 
       # MySQL configuration
-      - MYSQL_HOST=host.docker.internal
-      - MYSQL_PORT=3306
-      - MYSQL_DATABASE=exit_quiz_db
-      - MYSQL_USER=exit_user
-      - MYSQL_PASSWORD=exit_password
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
       # OpenAI configuration
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -89,6 +89,7 @@ services:
       - model_cache:/app/model_cache
       - ./logs:/app/logs
       - ./app:/app/app:ro  # Mount app code read-only for development
+      - ./models:/app/app/models/home_life_finetuned:ro  # Mount model files
     depends_on:
       - qdrant
       - redis
