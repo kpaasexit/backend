@@ -223,7 +223,6 @@ Quiz Service gRPC: 50052
                         "GenerateDailyQuizzes",
                         "StartScheduler",
                         "StopScheduler",
-                        "SendQuizToSpring",
                         "GetCategories"
                     ]
                 }

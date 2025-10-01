@@ -20,9 +20,6 @@ service QuizService {
     rpc StartScheduler(StartSchedulerRequest) returns (SchedulerStatusResponse);
     rpc StopScheduler(StopSchedulerRequest) returns (SchedulerStatusResponse);
 
-    // Spring 서버로 퀴즈 전송
-    rpc SendQuizToSpring(SendQuizToSpringRequest) returns (SendQuizToSpringResponse);
-
     // 카테고리 목록 조회
     rpc GetCategories(GetCategoriesRequest) returns (GetCategoriesResponse);
 }
@@ -122,23 +119,6 @@ message SchedulerStatusResponse {
     bool is_running = 1;
     bool success = 2;
     string message = 3;
-}
-
-// Spring 서버로 퀴즈 전송 요청
-message SendQuizToSpringRequest {
-    int64 quiz_id = 1;
-    int32 quiz_category_id = 2;
-    string quiz_title = 3;
-    string quiz_content = 4;
-    QuizType quiz_type = 5;
-    string quiz_correct_answer = 6;
-    string quiz_additional_information = 7;
-}
-
-// Spring 서버로 퀴즈 전송 응답
-message SendQuizToSpringResponse {
-    bool success = 1;
-    string message = 2;
 }
 
 // 카테고리 목록 요청
