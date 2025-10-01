@@ -3,7 +3,7 @@ syntax = "proto3";
 package question;
 
 // 질문 처리 서비스
-service QuestionService {
+service AIQuestionService {
     // 질문 카테고리 분류
     rpc ClassifyCategory(ClassifyRequest) returns (CategoryResponse);
 
