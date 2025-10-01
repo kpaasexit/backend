@@ -1,6 +1,5 @@
 """Quiz gRPC service implementation."""
 
-import time
 import asyncio
 from app.config import get_settings
 from app.core.logger import LoggerSetup
@@ -26,72 +25,28 @@ class QuizServicer(quiz_service_pb2_grpc.QuizServiceServicer):
 
     def UpdateQuiz(self, request, context):
         """퀴즈 수정."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.UpdateQuiz(request, context))
-        finally:
-            loop.close()
+        return asyncio.run(self.quiz_handler.UpdateQuiz(request, context))
 
     def GetQuiz(self, request, context):
         """퀴즈 조회."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.GetQuiz(request, context))
-        finally:
-            loop.close()
+        return asyncio.run(self.quiz_handler.GetQuiz(request, context))
 
     def ListQuizzes(self, request, context):
         """퀴즈 목록 조회."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.ListQuizzes(request, context))
-        finally:
-            loop.close()
+        return asyncio.run(self.quiz_handler.ListQuizzes(request, context))
 
     def GenerateDailyQuizzes(self, request, context):
         """일일 퀴즈 생성 (10문제, 8개 카테고리)."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.GenerateDailyQuizzes(request, context))
-        finally:
-            loop.close()
+        return asyncio.run(self.quiz_handler.GenerateDailyQuizzes(request, context))
 
     def StartScheduler(self, request, context):
         """퀴즈 생성 스케줄러 시작."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.StartScheduler(request, context))
-        finally:
-            loop.close()
+        return asyncio.run(self.quiz_handler.StartScheduler(request, context))
 
     def StopScheduler(self, request, context):
         """퀴즈 생성 스케줄러 중지."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.StopScheduler(request, context))
-        finally:
-            loop.close()
-
-    def SendQuizToSpring(self, request, context):
-        """Spring 서버로 퀴즈 전송."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.SendQuizToSpring(request, context))
-        finally:
-            loop.close()
+        return asyncio.run(self.quiz_handler.StopScheduler(request, context))
 
     def GetCategories(self, request, context):
         """카테고리 목록 조회."""
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            return loop.run_until_complete(self.quiz_handler.GetCategories(request, context))
-        finally:
-            loop.close()
+        return asyncio.run(self.quiz_handler.GetCategories(request, context))

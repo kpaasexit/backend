@@ -5,7 +5,7 @@ from typing import Optional
 import grpc
 from protos.generated import quiz_service_pb2, quiz_service_pb2_grpc
 
-from app.services.quiz import QuizService
+from app.services.quiz.mysql_service import MySQLQuizService as QuizService
 from app.models.quiz import QuizType as ModelQuizType
 
 logger = logging.getLogger(__name__)
@@ -212,52 +212,6 @@ class QuizHandler:
                 message=f"Failed to stop scheduler: {str(e)}"
             )
 
-    async def SendQuizToSpring(self, request, context) -> quiz_service_pb2.SendQuizToSpringResponse:
-        """Send quiz to Spring gRPC server."""
-        try:
-            # Get the quiz
-            quiz = await self.quiz_service.get_quiz(request.quiz_id)
-            if not quiz:
-                return quiz_service_pb2.SendQuizToSpringResponse(
-                    success=False,
-                    message=f"Quiz {request.quiz_id} not found"
-                )
-
-            # Send to Spring server
-            from app.grpc_service.spring_client import get_spring_quiz_client
-            client = get_spring_quiz_client()
-            await client.connect()
-            success = await client.send_quiz(quiz)
-            await client.disconnect()
-
-            if not success:
-                return quiz_service_pb2.SendQuizToSpringResponse(
-                    success=False,
-                    message="Failed to send quiz to Spring server"
-                )
-
-            # Convert to protobuf Quiz message
-            quiz_proto = quiz_service_pb2.Quiz(
-                quiz_id=quiz.quiz_id,
-                quiz_category_id=quiz.quiz_category_id,
-                quiz_title=quiz.quiz_title,
-                quiz_content=quiz.quiz_content,
-                quiz_type=quiz_service_pb2.QuizType.Value(quiz.quiz_type.value),
-                quiz_correct_answer=quiz.quiz_correct_answer,
-                quiz_additional_information=quiz.quiz_additional_information or ""
-            )
-
-            return quiz_service_pb2.SendQuizToSpringResponse(
-                success=True,
-                message=f"Quiz {request.quiz_id} sent to Spring server",
-                quiz=quiz_proto
-            )
-        except Exception as e:
-            logger.error(f"Error sending quiz to Spring: {e}")
-            return quiz_service_pb2.SendQuizToSpringResponse(
-                success=False,
-                message=f"Failed to send quiz to Spring: {str(e)}"
-            )
 
     async def GetCategories(self, request, context) -> quiz_service_pb2.GetCategoriesResponse:
         """Get list of available categories."""

@@ -5,7 +5,7 @@ from typing import List, Dict
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-from app.services.quiz.service import QuizService
+from app.services.quiz.mysql_service import MySQLQuizService as QuizService
 from app.models.quiz import QuizType, Quiz
 from app.core.logger import LoggerSetup
 from app.config import get_settings
@@ -17,12 +17,9 @@ settings = get_settings()
 
 class QuizScheduler:
     def __init__(self):
-        self.quiz_service = QuizService()
         self.scheduler = AsyncIOScheduler()
         self.categories = CATEGORY_MAP
 
-        self.spring_grpc_host = "localhost"
-        self.spring_grpc_port = 9081
 
     def start(self):
         if not self.scheduler.running:
@@ -43,6 +40,9 @@ class QuizScheduler:
     async def generate_daily_quizzes(self) -> List[Quiz]:
         logger.info("Starting daily quiz generation...")
 
+        # Create new QuizService instance for this request
+        quiz_service = QuizService()
+
         try:
             quiz_distribution = self._calculate_quiz_distribution(10)
             generated_quizzes = []
@@ -57,15 +57,12 @@ class QuizScheduler:
                     quiz_type = random.choice([QuizType.OX, QuizType.FOUR_LIMBS])
 
                     try:
-                        quiz = await self._generate_unique_quiz(category_id, quiz_type)
+                        quiz = await self._generate_unique_quiz(quiz_service, category_id, quiz_type)
                         if quiz:
                             generated_quizzes.append(quiz)
                             logger.info(f"Generated quiz: {quiz.quiz_title}")
                     except Exception as e:
                         logger.error(f"Failed to generate quiz for category {category_id}: {e}")
-
-            if generated_quizzes:
-                await self._send_quizzes_to_spring(generated_quizzes)
 
             logger.info(f"Daily quiz generation completed. Generated {len(generated_quizzes)} quizzes")
             return generated_quizzes
@@ -99,7 +96,7 @@ class QuizScheduler:
 
         return distribution
 
-    async def _generate_unique_quiz(self, category_id: int, quiz_type: QuizType) -> Quiz:
+    async def _generate_unique_quiz(self, quiz_service: QuizService, category_id: int, quiz_type: QuizType) -> Quiz:
         from app.models.quiz import QuizGenerationRequest
 
         try:
@@ -109,7 +106,7 @@ class QuizScheduler:
                 quiz_type=quiz_type
             )
 
-            generated_quizzes = await self.quiz_service.generate_quiz(request)
+            generated_quizzes = await quiz_service.generate_quiz(request)
 
             if generated_quizzes:
                 return generated_quizzes[0]
@@ -123,32 +120,6 @@ class QuizScheduler:
 
         return None
 
-    async def _send_quizzes_to_spring(self, quizzes: List[Quiz]):
-        try:
-            from app.grpc_service.spring_client import get_spring_quiz_client
-            client = get_spring_quiz_client()
-
-            await client.connect()
-
-            success_count = 0
-            for quiz in quizzes:
-                try:
-                    success = await client.send_quiz(quiz)
-
-                    if success:
-                        success_count += 1
-                        logger.info(f"Successfully sent quiz {quiz.quiz_id} to Spring server")
-                    else:
-                        logger.error(f"Failed to send quiz {quiz.quiz_id} to Spring server")
-
-                except Exception as e:
-                    logger.error(f"Failed to send quiz {quiz.quiz_id} to Spring: {e}")
-
-            await client.disconnect()
-            logger.info(f"Sent {success_count}/{len(quizzes)} quizzes to Spring server successfully")
-
-        except Exception as e:
-            logger.error(f"Failed to connect to Spring gRPC server: {e}")
 
     def _run_daily_job(self):
         asyncio.create_task(self.generate_daily_quizzes())
