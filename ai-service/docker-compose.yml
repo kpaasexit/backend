@@ -64,11 +64,11 @@ services:
       - REDIS_DB=0
 
       # MySQL configuration
-      - MYSQL_HOST=host.docker.internal
-      - MYSQL_PORT=3306
-      - MYSQL_DATABASE=exit_quiz_db
-      - MYSQL_USER=exit_user
-      - MYSQL_PASSWORD=exit_password
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
       # OpenAI configuration
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -85,10 +85,14 @@ services:
       - MODEL_CACHE_DIR=/app/model_cache
       - BATCH_SIZE=32
       - MAX_SEQUENCE_LENGTH=512
+
+      # HuggingFace configuration
+      - HUGGINGFACE_API_TOKEN=${HUGGINGFACE_API_TOKEN:-}
     volumes:
       - model_cache:/app/model_cache
       - ./logs:/app/logs
-      - ./app:/app/app:ro  # Mount app code read-only for development
+      - onnx_models_embeddings:/app/app/models/embeddings_onnx  # Cache embedding ONNX models
+      - onnx_models_classifier:/app/app/models/home_life_finetuned  # Cache classifier ONNX model
     depends_on:
       - qdrant
       - redis
@@ -145,6 +149,10 @@ volumes:
   redis_data:
     driver: local
   model_cache:
+    driver: local
+  onnx_models_embeddings:
+    driver: local
+  onnx_models_classifier:
     driver: local
 
 networks:

@@ -14,7 +14,7 @@ from protos.generated import quiz_service_pb2_grpc
 logger = LoggerSetup.get_logger(__name__)
 
 
-class QuizServicer(quiz_service_pb2_grpc.QuizServiceServicer):
+class QuizServicer(quiz_service_pb2_grpc.AIQuizServiceServicer):
     """퀴즈 관련 gRPC 서비스 구현."""
 
     def __init__(self):

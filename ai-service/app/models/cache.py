@@ -5,8 +5,6 @@ import threading
 from typing import Dict, Any, Optional
 from collections import OrderedDict
 
-import torch
-
 from app.core.logger import LoggerSetup
 from .memory import MemoryManager
 
@@ -94,9 +92,6 @@ class ModelCache:
             del model_data["tokenizer"]
 
         gc.collect()
-
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
 
     def get_cache_stats(self) -> Dict[str, Any]:
         """Get cache statistics."""

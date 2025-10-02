@@ -24,7 +24,7 @@ class QuizScheduler:
     def start(self):
         if not self.scheduler.running:
             self.scheduler.add_job(
-                self._run_daily_job,
+                self.generate_daily_quizzes,
                 CronTrigger(hour=2, minute=0),
                 id='daily_quiz_generation',
                 replace_existing=True
@@ -119,10 +119,6 @@ class QuizScheduler:
             return None
 
         return None
-
-
-    def _run_daily_job(self):
-        asyncio.create_task(self.generate_daily_quizzes())
 
 
 _quiz_scheduler = None

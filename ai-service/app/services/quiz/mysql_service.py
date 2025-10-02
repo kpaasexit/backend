@@ -9,7 +9,7 @@ from app.models.quiz import (
     Quiz, QuizCreate, QuizUpdate, QuizType,
     QuizGenerationRequest, QuizGenerationPrompt
 )
-from app.db.database import engine
+from app.db.database import get_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.db.repositories import QuizRepository
 from app.config import get_settings
@@ -27,6 +27,7 @@ class MySQLQuizService:
 
     def _get_session(self):
         """Create a new session factory for current event loop"""
+        engine = get_engine()
         return async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     async def generate_quiz_prompt(self, category_id: int, quiz_type: QuizType) -> str:

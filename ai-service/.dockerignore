@@ -1,0 +1,93 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info
+.pytest_cache
+.mypy_cache
+.coverage
+htmlcov
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Model cache and temporary files
+model_cache/
+*.bin
+*.h5
+*.pt
+*.pth
+*.safetensors
+
+# ONNX models (will be downloaded from HuggingFace)
+app/models/embeddings_onnx/
+app/models/home_life_finetuned/
+
+# Training data and checkpoints
+app/models/home_life_classifier/
+app/models/data/
+app/models/fine_tuned/
+app/models/training_data/
+checkpoints/
+*.xlsx
+training_results.json
+
+# Logs
+logs/
+*.log
+
+# Documentation
+README.md
+docs/
+*.md
+
+# Docker
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Deploy configurations
+deploy/
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/
+
+# gRPC generated (will be regenerated in container)
+protos/generated/
+
+# Storage
+qdrant_storage/
+
+# Zone Identifier files (Windows)
+*:Zone.Identifier
