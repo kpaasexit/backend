@@ -38,8 +38,7 @@ public class AiGrpcClient {
 
             AnswerResponse response = aiQuestionServiceBlockingStub.generateAIAnswer(request);
 
-            log.info("AI answer generated successfully. Tokens: {}, Time: {}ms",
-                    response.getTokensUsed(), response.getProcessingTimeMs());
+            log.info("AI answer generated successfully.");
 
             return response.getAnswer();
 
@@ -93,6 +92,18 @@ public class AiGrpcClient {
         } catch (Exception e) {
             log.error("Unexpected error while find similarQuestion", e);
             throw new GrpcException(GrpcAiErrorCode.AI_SIMILAR_QUESTION_FAIL, "AI 유사 질문 찾기 중 예상치 못한 오류가 발생했습니다");
+        }
+    }
+
+    public SaveQuestionResponse saveQuestion(SaveQuestionRequest request) {
+        try {
+            return aiQuestionServiceBlockingStub.saveQuestion(request);
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC error while save question vector DB: {}", e.getStatus(), e);
+            throw new GrpcException(GrpcAiErrorCode.AI_SAVE_QUESTION_FAIL, "백터 디비 질문 저장 중 오류가 발생했습니다.");
+        } catch (Exception e) {
+            log.error("Unexpected error while save question vector DB", e);
+            throw new GrpcException(GrpcAiErrorCode.AI_SAVE_QUESTION_FAIL, "백터 디비 질문 저장 중 예상치 못한 오류가 발생했습니다");
         }
     }
 }

@@ -2,6 +2,7 @@ package com.exit.question.service;
 
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.*;
+import com.exit.common.grpc.ai.SaveQuestionRequest;
 import com.exit.common.grpc.ai.SimilarQuestion;
 import com.exit.common.grpc.ai.SimilarResponse;
 import com.exit.common.util.file.FileUploadUtil;
@@ -80,10 +81,20 @@ public class QuestionService {
         List<String> imageUrls = uploadQuestionImages(request, savedQuestion);
         String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
 
+        aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
         // AI 답변 자동 생성
         scheduleAiAnswerGeneration(savedQuestion);
 
         return QuestionCreateResponseDto.from(savedQuestion, imageUrls, questionWriterName);
+    }
+
+    private SaveQuestionRequest createSaveQuestionToVectorDBRequest(Question question) {
+        return SaveQuestionRequest.newBuilder()
+                .setQuestionId(question.getQuestionId())
+                .setTitle(question.getQuestionTitle())
+                .setContent(question.getQuestionContent())
+                .setCategoryId(question.getQuestionCategory().getQuestionCategoryId().intValue())
+                .build();
     }
 
     /**
