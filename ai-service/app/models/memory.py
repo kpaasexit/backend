@@ -3,7 +3,6 @@
 import gc
 from typing import Dict
 import psutil
-import torch
 
 from app.config import get_settings
 from app.core.logger import LoggerSetup
@@ -54,10 +53,6 @@ class MemoryManager:
 
         # Force garbage collection
         gc.collect()
-
-        # Clear PyTorch cache if available
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
 
         after = self.get_memory_usage()
 
