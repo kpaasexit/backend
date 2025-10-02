@@ -1,6 +1,5 @@
-package com.exit.question.service.util;
+package com.exit.question.service.util.factory;
 
-import com.exit.question.controller.dto.request.SendNotificationRequestDto;
 import com.exit.question.domain.Comment;
 
 public abstract class CommentFactory {

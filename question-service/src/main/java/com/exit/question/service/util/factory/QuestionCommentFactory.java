@@ -1,51 +1,49 @@
-package com.exit.question.service.util;
+package com.exit.question.service.util.factory;
 
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.question.controller.dto.request.NotificationContentDto;
-import com.exit.question.controller.dto.request.SendNotificationRequestDto;
 import com.exit.question.domain.Comment;
-import com.exit.question.domain.response.Response;
-import com.exit.question.domain.response.ResponseComment;
-import com.exit.question.domain.response.repository.ResponseCommentRepository;
-import com.exit.question.domain.response.repository.ResponseRepository;
+import com.exit.question.domain.question.Question;
+import com.exit.question.domain.question.QuestionComment;
+import com.exit.question.domain.question.repository.QuestionCommentRepository;
+import com.exit.question.domain.question.repository.QuestionRepository;
 import com.exit.question.exception.GrpcCommentErrorCode;
 import com.exit.question.exception.GrpcQuestionErrorCode;
-import com.exit.question.exception.GrpcResponseErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class ResponseCommentFactory extends CommentFactory {
-    private final ResponseRepository responseRepository;
-    private final ResponseCommentRepository responseCommentRepository;
+public class QuestionCommentFactory extends CommentFactory {
+    private final QuestionRepository questionRepository;
+    private final QuestionCommentRepository questionCommentRepository;
 
     @Override
     public Comment createAndSaveComment(Long targetId, Long authorId, String content) {
-        Response response = responseRepository.findById(targetId)
+        Question question = questionRepository.findById(targetId)
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
 
-        ResponseComment comment = ResponseComment.builder()
-                .response(response)
+        QuestionComment comment = QuestionComment.builder()
+                .question(question)
                 .writerId(authorId)
                 .content(content)
                 .build();
 
-        return responseCommentRepository.save(comment);
+        return questionCommentRepository.save(comment);
     }
 
     @Override
     public void deleteComment(Long targetId, Long authorId) {
         validateCommentWriter(targetId, authorId);
-        responseCommentRepository.deleteById(targetId);
+        questionCommentRepository.deleteById(targetId);
     }
 
     @Override
     public SendNotificationRequestDto createSendNotificationRequestDto(Long targetId, String deviceId) {
+        NotificationContentDto dto = questionRepository.findContentById(targetId)
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
 
-        NotificationContentDto dto = responseRepository.findContentById(targetId)
-                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
         return SendNotificationRequestDto.builder()
                 .body(dto.content())
                 .type("NEW_COMMENT")
@@ -56,7 +54,7 @@ public class ResponseCommentFactory extends CommentFactory {
     }
 
     private void validateCommentWriter(Long commentId, Long userId) {
-        boolean isAuthorized = responseCommentRepository.existsByIdAndWriterId(commentId, userId);
+        boolean isAuthorized = questionCommentRepository.existsByIdAndWriterId(commentId, userId);
         if (!isAuthorized) {
             throw new GrpcException(GrpcCommentErrorCode.COMMENT_WRITER_MISMATCH);
         }
