@@ -1,11 +1,11 @@
 package com.exit.question.service;
 
 import com.exit.common.exception.grpc.GrpcException;
-import com.exit.common.grpc.DeleteResponseRequest;
-import com.exit.common.grpc.UpdateResponseRequest;
-import com.exit.common.grpc.UpdateResponseResponse;
-import com.exit.common.grpc.UserIdAndNameInfo;
+import com.exit.common.grpc.*;
+import com.exit.common.grpc.ai.SimilarQuestion;
+import com.exit.common.grpc.ai.SimilarResponse;
 import com.exit.common.util.file.FileUploadUtil;
+import com.exit.common.util.time.TimeStampUtil;
 import com.exit.question.controller.dto.request.*;
 import com.exit.question.controller.dto.response.*;
 import com.exit.question.domain.question.Question;
@@ -270,30 +270,28 @@ public class QuestionService {
 
     // 카테고리 추천
     @Transactional(readOnly = true)
-    public CategoryRecommendationResponseDto categoryRecommend(String title) {
+    public CategoryRecommendationResponse categoryRecommend(String title) {
+        Long categoryRecommend = aiGrpcClient.categoryRecommend(title).longValue();
+        QuestionCategory questionCategory = questionCategoryRepository.findById(categoryRecommend)
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION_CATEGORY));
 
-        return null;
+        return CategoryRecommendationResponse.newBuilder()
+                .setCategoryId(questionCategory.getQuestionCategoryId())
+                .setCategoryName(questionCategory.getQuestionCategoryName())
+                .build();
     }
 
     // 유사 질문 조회
     @Transactional(readOnly = true)
-    public SimilarQuestionResponseDto similarQuestion(String title) {
-        List<Question> questions = questionRepository.findAll();
-        if (questions.isEmpty()) {
+    public SimilarQuestionResponse similarQuestion(String title, String content) {
+        SimilarResponse similarResponse = aiGrpcClient.similarQuestion(title, content);
+        if(similarResponse.getQuestionsCount() <= 0) {
             return null;
         }
-        Question similarQuestion = questions.get(0);
 
-        return new SimilarQuestionResponseDto(
-                similarQuestion.getQuestionId(),
-                similarQuestion.getQuestionTitle(),
-                similarQuestion.getQuestionContent(),
-                similarQuestion.getQuestionCategory(),
-                similarQuestion.getQuestionUrgency(),
-                similarQuestion.getQuestionAnswerType(),
-                similarQuestion.getQuestionAnswerAdopt(),
-                similarQuestion.getCreatedAt()
-        );
+        List<Long> similarQuestionIds = similarResponse.getQuestionsList().stream().map(SimilarQuestion::getQuestionId).toList();
+        List<Question> similarQuestions = questionRepository.findAllById(similarQuestionIds);
+        return getSimilarQuestionResponse(similarQuestions);
     }
 
     @Transactional(readOnly = true)
@@ -457,5 +455,25 @@ public class QuestionService {
                 .ifPresent(followUpRoomRepository::delete);
 
         responseRepository.delete(response);
+    }
+
+    private SimilarQuestionItem createSimilarQuestion(Question question) {
+        return SimilarQuestionItem.newBuilder()
+                .setQuestionId(question.getQuestionId())
+                .setQuestionTitle(question.getQuestionTitle())
+                .setQuestionContent(question.getQuestionContent())
+                .setQuestionCategory(question.getQuestionCategory().getQuestionCategoryId())
+                .setQuestionUrgency(question.getQuestionUrgency())
+                .setQuestionAnswerType(question.getQuestionAnswerType().name())
+                .setQuestionAnswerAdopt(question.getQuestionAnswerAdopt())
+                .setCreatedAt(TimeStampUtil.toGrpcTimestamp(question.getCreatedAt()))
+                .build();
+    }
+
+    public SimilarQuestionResponse getSimilarQuestionResponse(List<Question> questions) {
+        List<SimilarQuestionItem> similarQuestionItems = questions.stream().map(this::createSimilarQuestion).toList();
+        return SimilarQuestionResponse.newBuilder()
+                .addAllSimilarQuestions(similarQuestionItems)
+                .build();
     }
 }

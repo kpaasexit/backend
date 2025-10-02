@@ -93,6 +93,7 @@ message CategoryRecommendRequest {
 
 message SimilarQuestionRequest {
   string title = 1;
+  string content = 2;
 }
 
 message QuestionDetailRequest {
@@ -187,7 +188,7 @@ message CategoryRecommendationResponse {
   string category_name = 2;
 }
 
-message SimilarQuestionResponse {
+message SimilarQuestionItem {
   int64 question_id = 1;
   string question_title = 2;
   string question_content = 3;
@@ -196,6 +197,10 @@ message SimilarQuestionResponse {
   string question_answer_type = 6;
   bool question_answer_adopt = 7;
   google.protobuf.Timestamp created_at = 8;
+}
+
+message SimilarQuestionResponse {
+  repeated SimilarQuestionItem similarQuestions = 1;
 }
 
 message ResponseDetail {

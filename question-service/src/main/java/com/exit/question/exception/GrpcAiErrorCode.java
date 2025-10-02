@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum GrpcAiErrorCode implements GrpcErrorCode {
     AI_ANSWER_FAIL(Status.Code.INTERNAL, "AI_ERR_001"),
-    COMMENT_WRITER_MISMATCH(Status.Code.INVALID_ARGUMENT, "AI_ERR_002"),
+    AI_CATEGORY_RECOMMEND_FAIL(Status.Code.INTERNAL, "AI_ERR_002"),
+    AI_SIMILAR_QUESTION_FAIL(Status.Code.INTERNAL, "AI_ERR_003"),
+    AI_SAVE_QUESTION_FAIL(Status.Code.INTERNAL, "AI_ERR_004"),
     ;
 
     private final Status.Code grpcStatusCode;
