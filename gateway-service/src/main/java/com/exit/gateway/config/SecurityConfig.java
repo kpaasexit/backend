@@ -45,6 +45,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // OAuth2 관련 엔드포인트 허용
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        // HealthCheck 엔드포인트 허용
+                        .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator").permitAll()
                         // 기존 API 엔드포인트 허용 (JWT로 인증)
                         .requestMatchers("/api/**").authenticated()
                         // 기타 요청은 인증 필요
