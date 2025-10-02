@@ -12,7 +12,6 @@ import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.QuestionCategory;
 import com.exit.question.domain.question.QuestionImage;
 import com.exit.question.domain.question.QuestionReport;
-import com.exit.question.domain.question.FollowUpRoom;
 import com.exit.question.domain.question.repository.QuestionCategoryRepository;
 import com.exit.question.domain.question.repository.QuestionImageRepository;
 import com.exit.question.domain.question.repository.QuestionReportRepository;
@@ -29,10 +28,19 @@ import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.exception.GrpcResponseErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+import java.time.Instant;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,6 +51,7 @@ import static java.util.stream.Collectors.toSet;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class QuestionService {
     private static final String QUESTION_FOLDER = "question";
     private static final String RESPONSE_FOLDER = "response";
@@ -58,8 +67,8 @@ public class QuestionService {
     private final FileUploadUtil fileUploadUtil;
     private final UserGrpcClient userGrpcClient;
     private final NotificationGrpcClient notificationGrpcClient;
-
-//    private final NlpGrpcClient nlpGrpcClient;
+    private final AiGrpcClient aiGrpcClient;
+    private final TaskScheduler taskScheduler;
 
     public QuestionCreateResponseDto createQuestion(QuestionCreateRequestDto request) {
         QuestionCategory questionCategory = questionCategoryRepository.findById(request.questionCategoryId())
@@ -71,7 +80,69 @@ public class QuestionService {
         List<String> imageUrls = uploadQuestionImages(request, savedQuestion);
         String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
 
+        // AI 답변 자동 생성
+        scheduleAiAnswerGeneration(savedQuestion);
+
         return QuestionCreateResponseDto.from(savedQuestion, imageUrls, questionWriterName);
+    }
+
+    /**
+     * AI 답변 생성 스케줄링
+     * 긴급 질문: 즉시 생성
+     * 일반 질문: 5분 후 생성
+     */
+    private void scheduleAiAnswerGeneration(Question question) {
+        if (question.getQuestionUrgency()) {
+            // 긴급 질문은 즉시 생성
+            generateAiAnswerAsync(question);
+        } else {
+            // 일반 질문은 5분 후 생성
+            Instant scheduledTime = Instant.now().plus(Duration.ofMinutes(5));
+            taskScheduler.schedule(() -> generateAiAnswerAsync(question), scheduledTime);
+        }
+    }
+
+    /**
+     * 질문 생성 시 AI 답변을 자동으로 생성하여 저장
+     * AI 생성 실패 시 최대 3회 재시도 (지수 백오프)
+     * 모든 재시도 실패 시에도 질문 생성은 정상 처리됨
+     */
+    @Retryable(
+            retryFor = {Exception.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000, multiplier = 2),
+            recover = "recoverGenerateAiAnswer"
+    )
+    public void generateAiAnswerAsync(Question question) {
+        // 질문 제목과 내용을 결합
+        String fullQuestion = String.format("제목: %s\n\n내용: %s",
+                question.getQuestionTitle(),
+                question.getQuestionContent());
+
+        // AI 답변 생성 요청
+        String aiAnswer = aiGrpcClient.generateAiAnswer(fullQuestion, question.getQuestionId());
+
+        // AI 답변을 Response로 저장
+        Response aiResponse = Response.builder()
+                .questionId(question.getQuestionId())
+                .responseWriterId(1L) // AI 시스템 계정 ID
+                .responseContent(aiAnswer)
+                .responseAdopt(false)
+                .responseIsAnonymous(false)
+                .build();
+
+        responseRepository.save(aiResponse);
+        log.info("AI answer generated and saved for question ID: {}", question.getQuestionId());
+    }
+
+    /**
+     * AI 답변 생성 재시도 실패 시 폴백 메서드
+     */
+    @Recover
+    private void recoverGenerateAiAnswer(Exception e, Question question) {
+        log.error("Failed to generate AI answer after all retry attempts for question {}: {}",
+                question.getQuestionId(), e.getMessage(), e);
+        // TODO: 필요시 사용자에게 알림 전송 또는 재시도 큐에 추가
     }
 
     private List<String> uploadQuestionImages(QuestionCreateRequestDto questionCreateRequestDto, Question savedQuestion) {

@@ -12,3 +12,13 @@ spring:
         max-attempts: 3
         max-interval: 2000
         multiplier: 1.1
+
+# gRPC Client Configuration
+grpc:
+  client:
+    nlp-service:
+      address: static://localhost:50051
+      negotiationType: plaintext
+      enableKeepAlive: true
+      keepAliveTime: 30s
+      keepAliveTimeout: 10s

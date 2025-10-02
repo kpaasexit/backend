@@ -40,6 +40,11 @@ grpc:
         enableKeepAlive: true
         keepAliveWithoutCalls: true
         negotiationType: plaintext
+    ai-service:
+      address: discovery:///ai-service
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
 
 # Eureka 클라이언트 설정
 eureka:

@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package question;
+
+option java_multiple_files = true;
+option java_package = "com.exit.common.grpc.ai";
+option java_outer_classname = "AiServiceProto";
+
+import "google/protobuf/timestamp.proto";
+
+// 질문 처리 서비스
+service AIQuestionService {
+    // 질문 카테고리 분류
+    rpc ClassifyCategory(ClassifyRequest) returns (CategoryResponse);
+
+    // AI 답변 생성
+    rpc GenerateAIAnswer(AnswerRequest) returns (AnswerResponse);
+
+    // 벡터 데이터베이스에서 유사한 질문 찾기
+    rpc FindSimilarQuestions(SimilarRequest) returns (SimilarResponse);
+
+    // 벡터 데이터베이스에 질문 저장
+    rpc SaveQuestion(SaveQuestionRequest) returns (SaveQuestionResponse);
+}
+
+// 질문 관련 메시지
+
+// 분류 요청
+message ClassifyRequest {
+    string title = 1;
+}
+
+// 카테고리 응답
+message CategoryResponse {
+    int32 category_id = 1;
+    float confidence = 2;
+    int64 processing_time_ms = 3;
+}
+
+
+// AI 답변 생성 요청
+message AnswerRequest {
+    string question = 1;
+    int64 question_id = 2;
+}
+
+// AI 답변 생성 응답
+message AnswerResponse {
+    string answer = 1;
+    int32 tokens_used = 2;
+    int64 processing_time_ms = 3;
+}
+
+
+// 유사성 검색 요청
+message SimilarRequest {
+    string title = 1;
+    string content = 2;
+}
+
+// 유사한 질문 정보
+message SimilarQuestion {
+    int64 question_id = 1;
+    string title = 2;
+    float similarity = 3;
+    string content_sample = 4;
+    int64 created_at = 5;
+}
+
+// 유사성 검색 응답
+message SimilarResponse {
+    repeated SimilarQuestion questions = 1;
+    int32 total_found = 2;
+}
+
+// 질문 저장 요청
+message SaveQuestionRequest {
+    int64 question_id = 1;
+    string title = 2;
+    string content = 3;
+    int32 category_id = 4;
+}
+
+// 질문 저장 응답
+message SaveQuestionResponse {
+    bool success = 1;
+    string message = 2;
+}
