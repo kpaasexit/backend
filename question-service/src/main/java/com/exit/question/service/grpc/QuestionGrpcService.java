@@ -1,8 +1,9 @@
-package com.exit.question.service;
+package com.exit.question.service.grpc;
 
 import com.exit.common.grpc.*;
 import com.exit.question.controller.dto.request.*;
 import com.exit.question.controller.dto.response.*;
+import com.exit.question.service.QuestionService;
 import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;

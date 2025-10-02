@@ -1,8 +1,9 @@
-package com.exit.question.service;
+package com.exit.question.service.grpc;
 
 import com.exit.common.grpc.AdditionalQuestionServiceGrpc;
 import com.exit.common.grpc.CreateAdditionalQuestionMessageResponse;
 import com.exit.common.grpc.GetAdditionalQuestionResponse;
+import com.exit.question.service.AdditionalQuestionService;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;

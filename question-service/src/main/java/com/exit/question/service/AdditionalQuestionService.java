@@ -16,6 +16,8 @@ import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.exception.GrpcResponseErrorCode;
+import com.exit.question.service.client.AiGrpcClient;
+import com.exit.question.service.client.NotificationGrpcClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;

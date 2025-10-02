@@ -1,7 +1,8 @@
-package com.exit.question.service;
+package com.exit.question.service.grpc;
 
 import com.exit.common.grpc.CommentServiceGrpc;
 import com.exit.common.grpc.CreateCommentResponse;
+import com.exit.question.service.CommentService;
 import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
