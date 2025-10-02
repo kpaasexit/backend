@@ -1,9 +1,6 @@
 package com.exit.question.service;
 
-import com.exit.common.grpc.QuestionCreateResponse;
-import com.exit.common.grpc.QuestionListItem;
-import com.exit.common.grpc.QuestionServiceGrpc;
-import com.exit.common.grpc.UpdateResponseResponse;
+import com.exit.common.grpc.*;
 import com.exit.question.controller.dto.request.*;
 import com.exit.question.controller.dto.response.*;
 import com.google.protobuf.Empty;
@@ -250,19 +247,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
         try {
             log.info("Category recommend request received for title: {}", request.getTitle());
 
-            CategoryRecommendationResponseDto responseDto = questionService.categoryRecommend(request.getTitle());
-
-            if (responseDto == null) {
-                responseObserver.onError(Status.NOT_FOUND
-                        .withDescription("추천할 카테고리를 찾을 수 없습니다")
-                        .asRuntimeException());
-                return;
-            }
-
-            com.exit.common.grpc.CategoryRecommendationResponse response = com.exit.common.grpc.CategoryRecommendationResponse.newBuilder()
-                    .setCategoryId(responseDto.questionCategoryId())
-                    .setCategoryName(responseDto.questionCategoryName())
-                    .build();
+            CategoryRecommendationResponse response = questionService.categoryRecommend(request.getTitle());
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
@@ -280,30 +265,10 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
                                 StreamObserver<com.exit.common.grpc.SimilarQuestionResponse> responseObserver) {
         try {
             log.info("Similar question request received for title: {}", request.getTitle());
-
-            SimilarQuestionResponseDto responseDto = questionService.similarQuestion(request.getTitle());
-
-            if (responseDto == null) {
-                responseObserver.onError(Status.NOT_FOUND
-                        .withDescription("유사한 질문을 찾을 수 없습니다")
-                        .asRuntimeException());
-                return;
-            }
-
-            com.exit.common.grpc.SimilarQuestionResponse response = com.exit.common.grpc.SimilarQuestionResponse.newBuilder()
-                    .setQuestionId(responseDto.questionId())
-                    .setQuestionTitle(responseDto.questionTitle())
-                    .setQuestionContent(responseDto.questionContent())
-                    .setQuestionCategory(responseDto.questionCategory().getQuestionCategoryId())
-                    .setQuestionUrgency(responseDto.questionUrgency())
-                    .setQuestionAnswerType(responseDto.questionAnswerType().name())
-                    .setQuestionAnswerAdopt(responseDto.questionAnswerAdopt())
-                    .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
-                    .build();
+            SimilarQuestionResponse response =  questionService.similarQuestion(request.getTitle(), request.getContent());
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-
         } catch (Exception e) {
             log.error("Similar question failed", e);
             responseObserver.onError(Status.INTERNAL

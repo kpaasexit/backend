@@ -33,8 +33,6 @@ message ClassifyRequest {
 // 카테고리 응답
 message CategoryResponse {
     int32 category_id = 1;
-    float confidence = 2;
-    int64 processing_time_ms = 3;
 }
 
 
@@ -47,10 +45,7 @@ message AnswerRequest {
 // AI 답변 생성 응답
 message AnswerResponse {
     string answer = 1;
-    int32 tokens_used = 2;
-    int64 processing_time_ms = 3;
 }
-
 
 // 유사성 검색 요청
 message SimilarRequest {
@@ -61,10 +56,7 @@ message SimilarRequest {
 // 유사한 질문 정보
 message SimilarQuestion {
     int64 question_id = 1;
-    string title = 2;
     float similarity = 3;
-    string content_sample = 4;
-    int64 created_at = 5;
 }
 
 // 유사성 검색 응답
@@ -84,5 +76,4 @@ message SaveQuestionRequest {
 // 질문 저장 응답
 message SaveQuestionResponse {
     bool success = 1;
-    string message = 2;
 }

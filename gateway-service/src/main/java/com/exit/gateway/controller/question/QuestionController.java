@@ -210,11 +210,14 @@ public class QuestionController {
 
     @GetMapping("/similar")
     public SuccessResponse<SimilarQuestionResponseDto> getSimilarQuestion(
-            @RequestParam String title) {
+            @RequestParam String title,
+            @RequestParam String content
+            ) {
         try {
             log.info("Similar question request received for title: {}", title);
             SimilarQuestionRequest request = SimilarQuestionRequest.newBuilder()
                     .setTitle(title)
+                    .setContent(content)
                     .build();
             SimilarQuestionResponseDto response = questionGrpcClient.getSimilarQuestion(request);
             return SuccessResponse.of(QuestionSuccessCode.SIMILAR_QUESTION_SUCCESS, response);

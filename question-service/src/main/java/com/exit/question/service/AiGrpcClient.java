@@ -1,9 +1,7 @@
 package com.exit.question.service;
 
 import com.exit.common.exception.grpc.GrpcException;
-import com.exit.common.grpc.ai.AIQuestionServiceGrpc;
-import com.exit.common.grpc.ai.AnswerRequest;
-import com.exit.common.grpc.ai.AnswerResponse;
+import com.exit.common.grpc.ai.*;
 import com.exit.question.exception.GrpcAiErrorCode;
 import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +49,50 @@ public class AiGrpcClient {
         } catch (Exception e) {
             log.error("Unexpected error while generating AI answer", e);
             throw new GrpcException(GrpcAiErrorCode.AI_ANSWER_FAIL, "AI 답변 생성 중 예상치 못한 오류가 발생했습니다");
+        }
+    }
+
+    public Integer categoryRecommend(String title) {
+        try {
+            log.info("Requesting AI Category Recommend for title: {}", title);
+
+            ClassifyRequest request = ClassifyRequest.newBuilder()
+                    .setTitle(title)
+                    .build();
+
+            CategoryResponse response = aiQuestionServiceBlockingStub.classifyCategory(request);
+
+            log.info("AI category recommend successfully");
+
+            return response.getCategoryId();
+
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC error while recommend AI Category: {}", e.getStatus(), e);
+            throw new GrpcException(GrpcAiErrorCode.AI_CATEGORY_RECOMMEND_FAIL, "AI 카테고리 추천 중 오류가 발생했습니다.");
+        } catch (Exception e) {
+            log.error("Unexpected error while recommend AI Category", e);
+            throw new GrpcException(GrpcAiErrorCode.AI_CATEGORY_RECOMMEND_FAIL, "AI 카테고리 추천 중 예상치 못한 오류가 발생했습니다");
+        }
+    }
+
+    public SimilarResponse similarQuestion(String title, String content) {
+        try {
+            log.info("Requesting find similarQuestion for title : {}", title);
+
+            SimilarRequest request = SimilarRequest.newBuilder()
+                    .setTitle(title)
+                    .setContent(content)
+                    .build();
+
+            log.info("AI category recommend successfully");
+
+            return aiQuestionServiceBlockingStub.findSimilarQuestions(request);
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC error while find similarQuestion: {}", e.getStatus(), e);
+            throw new GrpcException(GrpcAiErrorCode.AI_SIMILAR_QUESTION_FAIL, "AI 유사 질문 찾기 중 오류가 발생했습니다.");
+        } catch (Exception e) {
+            log.error("Unexpected error while find similarQuestion", e);
+            throw new GrpcException(GrpcAiErrorCode.AI_SIMILAR_QUESTION_FAIL, "AI 유사 질문 찾기 중 예상치 못한 오류가 발생했습니다");
         }
     }
 }
