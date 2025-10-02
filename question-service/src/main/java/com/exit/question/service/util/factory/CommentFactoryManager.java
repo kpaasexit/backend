@@ -1,4 +1,4 @@
-package com.exit.question.service.util;
+package com.exit.question.service.util.factory;
 
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.question.domain.CommentType;
