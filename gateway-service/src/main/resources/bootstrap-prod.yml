@@ -1,0 +1,7 @@
+# bootstrap-prod.yml
+spring:
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
