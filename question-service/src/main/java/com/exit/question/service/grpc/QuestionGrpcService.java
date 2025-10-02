@@ -4,6 +4,7 @@ import com.exit.common.grpc.*;
 import com.exit.question.controller.dto.request.*;
 import com.exit.question.controller.dto.response.*;
 import com.exit.question.service.QuestionService;
+import com.exit.question.service.ResponseService;
 import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -22,6 +23,7 @@ import static com.exit.common.util.time.TimeStampUtil.toGrpcTimestamp;
 public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImplBase {
 
     private final QuestionService questionService;
+    private final ResponseService responseService;
 
     @Override
     public void questionCreate(com.exit.common.grpc.QuestionCreateRequest request,
@@ -94,7 +96,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
             log.info("Answer create request received for question ID: {}", request.getQuestionId());
 
             AnswerCreateRequestDto requestDto = AnswerCreateRequestDto.from(request);
-            AnswerCreateResponseDto responseDto = questionService.answerCreate(requestDto);
+            AnswerCreateResponseDto responseDto = responseService.answerCreate(requestDto);
 
             com.exit.common.grpc.AnswerCreateResponse response = com.exit.common.grpc.AnswerCreateResponse.newBuilder()
                     .setResponseId(responseDto.responseId())
@@ -122,7 +124,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
             log.info("Answer recommend request received for response ID: {}", request.getResponseId());
 
             AnswerRecommendRequestDto requestDto = AnswerRecommendRequestDto.from(request);
-            AnswerRecommendResponseDto responseDto = questionService.toggleAnswerLike(requestDto);
+            AnswerRecommendResponseDto responseDto = responseService.toggleAnswerLike(requestDto);
 
             com.exit.common.grpc.AnswerRecommendResponse response = com.exit.common.grpc.AnswerRecommendResponse.newBuilder()
                     .setResponseId(requestDto.responseId())
@@ -348,7 +350,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
         try {
             log.info("Update response request received for response id: {}", request.getResponseId());
 
-            UpdateResponseResponse response = questionService.updateResponse(request);
+            UpdateResponseResponse response = responseService.updateResponse(request);
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
@@ -367,7 +369,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
         try {
             log.info("Delete response request received for response ID: {}", request.getResponseId());
 
-            questionService.deleteResponse(request);
+            responseService.deleteResponse(request);
 
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();

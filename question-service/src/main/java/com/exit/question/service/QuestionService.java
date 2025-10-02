@@ -58,7 +58,6 @@ import static java.util.stream.Collectors.toSet;
 @Slf4j
 public class QuestionService {
     private static final String QUESTION_FOLDER = "question";
-    private static final String RESPONSE_FOLDER = "response";
     private final QuestionRepository questionRepository;
     private final QuestionCategoryRepository questionCategoryRepository;
     private final QuestionImageRepository questionImageRepository;
@@ -89,74 +88,6 @@ public class QuestionService {
         scheduleAiAnswerGeneration(savedQuestion);
 
         return QuestionCreateResponseDto.from(savedQuestion, imageUrls, questionWriterName);
-    }
-
-    private SaveQuestionRequest createSaveQuestionToVectorDBRequest(Question question) {
-        return SaveQuestionRequest.newBuilder()
-                .setQuestionId(question.getQuestionId())
-                .setTitle(question.getQuestionTitle())
-                .setContent(question.getQuestionContent())
-                .setCategoryId(question.getQuestionCategory().getQuestionCategoryId().intValue())
-                .build();
-    }
-
-    /**
-     * AI 답변 생성 스케줄링
-     * 긴급 질문: 즉시 생성
-     * 일반 질문: 5분 후 생성
-     */
-    private void scheduleAiAnswerGeneration(Question question) {
-        if (question.getQuestionUrgency()) {
-            // 긴급 질문은 즉시 생성
-            generateAiAnswerAsync(question);
-        } else {
-            // 일반 질문은 5분 후 생성
-            Instant scheduledTime = Instant.now().plus(Duration.ofMinutes(5));
-            taskScheduler.schedule(() -> generateAiAnswerAsync(question), scheduledTime);
-        }
-    }
-
-    /**
-     * 질문 생성 시 AI 답변을 자동으로 생성하여 저장
-     * AI 생성 실패 시 최대 3회 재시도 (지수 백오프)
-     * 모든 재시도 실패 시에도 질문 생성은 정상 처리됨
-     */
-    @Retryable(
-            retryFor = {Exception.class},
-            maxAttempts = 3,
-            backoff = @Backoff(delay = 1000, multiplier = 2),
-            recover = "recoverGenerateAiAnswer"
-    )
-    public void generateAiAnswerAsync(Question question) {
-        // 질문 제목과 내용을 결합
-        String fullQuestion = String.format("제목: %s\n\n내용: %s",
-                question.getQuestionTitle(),
-                question.getQuestionContent());
-
-        // AI 답변 생성 요청
-        String aiAnswer = aiGrpcClient.generateAiAnswer(fullQuestion, question.getQuestionId());
-
-        // AI 답변을 Response로 저장
-        Response aiResponse = Response.builder()
-                .questionId(question.getQuestionId())
-                .responseWriterId(1L) // AI 시스템 계정 ID
-                .responseContent(aiAnswer)
-                .responseAdopt(false)
-                .responseIsAnonymous(false)
-                .build();
-
-        responseRepository.save(aiResponse);
-        log.info("AI answer generated and saved for question ID: {}", question.getQuestionId());
-    }
-
-    /**
-     * AI 답변 생성 재시도 실패 시 폴백 메서드
-     */
-    @Recover
-    private void recoverGenerateAiAnswer(Exception e, Question question) {
-        log.error("Failed to generate AI answer after all retry attempts for question {}: {}",
-                question.getQuestionId(), e.getMessage(), e);
-        // TODO: 필요시 사용자에게 알림 전송 또는 재시도 큐에 추가
     }
 
     private List<String> uploadQuestionImages(QuestionCreateRequestDto questionCreateRequestDto, Question savedQuestion) {
@@ -202,27 +133,6 @@ public class QuestionService {
         questionRepository.save(question);
     }
 
-    public AnswerCreateResponseDto answerCreate(AnswerCreateRequestDto answerCreateRequestDto) {
-        Response newResponse = Response.createResponse(answerCreateRequestDto);
-        Response savedResponse = responseRepository.save(newResponse);
-
-        List<String> imageUrls = processAnswerImages(answerCreateRequestDto, savedResponse);
-        Question question = questionRepository.findById(savedResponse.getQuestionId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
-
-        String subBody = truncateContent(savedResponse.getResponseContent());
-        SendNotificationRequestDto requestDto = SendNotificationRequestDto.builder()
-                .body(subBody)
-                .type("NEW_ANSWER_ON_QUESTION")
-                .targetId(question.getQuestionId())
-                .receiverId(question.getQuestionWriterId())
-                .deviceId(answerCreateRequestDto.deviceId())
-                .build();
-        notificationGrpcClient.sendNotification(requestDto);
-
-        return AnswerCreateResponseDto.from(savedResponse, imageUrls);
-    }
-
     private String truncateContent(String content) {
         String subBody;
         if(content.length() <= 100) {
@@ -231,16 +141,6 @@ public class QuestionService {
             subBody = content.substring(0, 100);
         }
         return subBody;
-    }
-
-    public AnswerRecommendResponseDto toggleAnswerLike(AnswerRecommendRequestDto req) {
-        Optional<ResponseLike> existingLike =
-                responseLikeRepository.findByResponseIdAndUserId(req.responseId(), req.userId());
-
-        boolean isLiked = handleLikeToggle(existingLike, req);
-        int likeCount = responseLikeRepository.countByResponseId(req.responseId());
-
-        return new AnswerRecommendResponseDto(likeCount, isLiked);
     }
 
     public QuestionReportResponseDto questionReport(QuestionReportRequestDto request) {
@@ -283,6 +183,7 @@ public class QuestionService {
 
 
     // 카테고리 추천
+
     @Transactional(readOnly = true)
     public CategoryRecommendationResponse categoryRecommend(String title) {
         Long categoryRecommend = aiGrpcClient.categoryRecommend(title).longValue();
@@ -294,8 +195,8 @@ public class QuestionService {
                 .setCategoryName(questionCategory.getQuestionCategoryName())
                 .build();
     }
-
     // 유사 질문 조회
+
     @Transactional(readOnly = true)
     public SimilarQuestionResponse similarQuestion(String title, String content) {
         SimilarResponse similarResponse = aiGrpcClient.similarQuestion(title, content);
@@ -307,7 +208,6 @@ public class QuestionService {
         List<Question> similarQuestions = questionRepository.findAllById(similarQuestionIds);
         return getSimilarQuestionResponse(similarQuestions);
     }
-
     @Transactional(readOnly = true)
     public QuestionDetailResponseDto getQuestionDetail(Long questionId) {
         QuestionCreateResponseDto questionDto = buildQuestionDto(questionId);
@@ -408,69 +308,6 @@ public class QuestionService {
         return savedResponse;
     }
 
-    private List<String> processAnswerImages(AnswerCreateRequestDto answerCreateRequestDto, Response savedResponse) {
-        List<String> imageUrls = null;
-        if (answerCreateRequestDto.images() != null) {
-            imageUrls = fileUploadUtil.uploadImages(answerCreateRequestDto.images(), RESPONSE_FOLDER);
-            for (String imageUrl : imageUrls) {
-                ResponseImage responseImage = ResponseImage.builder()
-                        .responseId(savedResponse.getResponseId())
-                        .responseImageUrl(imageUrl)
-                        .build();
-                responseImageRepository.save(responseImage);
-            }
-        }
-        return imageUrls;
-    }
-
-    private boolean handleLikeToggle(Optional<ResponseLike> existingLike, AnswerRecommendRequestDto req) {
-        if (existingLike.isPresent()) {
-            responseLikeRepository.delete(existingLike.get());
-            return false; // 좋아요 취소됨
-        }
-
-        ResponseLike newLike = createNewLike(req);
-        responseLikeRepository.save(newLike);
-        return true; // 새로운 좋아요
-    }
-
-    private ResponseLike createNewLike(AnswerRecommendRequestDto req) {
-        return ResponseLike.builder()
-                .responseId(req.responseId())
-                .userId(req.userId())
-                .build();
-    }
-
-    public UpdateResponseResponse updateResponse(UpdateResponseRequest request) {
-        Response response = responseRepository.findById(request.getResponseId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
-
-        if(Boolean.TRUE.equals(response.getResponseAdopt()))
-            throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
-
-        response.updateContent(request.getContent());
-        responseRepository.save(response);
-
-        return UpdateResponseResponse.newBuilder()
-                .setResponseId(response.getResponseId())
-                .setContent(response.getResponseContent())
-                .build();
-    }
-
-    public void deleteResponse(DeleteResponseRequest request) {
-        Response response = responseRepository.findById(request.getResponseId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
-
-        if(Boolean.TRUE.equals(response.getResponseAdopt()))
-            throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
-
-        // FollowUpRoom이 있다면 먼저 삭제
-        followUpRoomRepository.findByResponse(response)
-                .ifPresent(followUpRoomRepository::delete);
-
-        responseRepository.delete(response);
-    }
-
     private SimilarQuestionItem createSimilarQuestion(Question question) {
         return SimilarQuestionItem.newBuilder()
                 .setQuestionId(question.getQuestionId())
@@ -489,5 +326,73 @@ public class QuestionService {
         return SimilarQuestionResponse.newBuilder()
                 .addAllSimilarQuestions(similarQuestionItems)
                 .build();
+    }
+
+    private SaveQuestionRequest createSaveQuestionToVectorDBRequest(Question question) {
+        return SaveQuestionRequest.newBuilder()
+                .setQuestionId(question.getQuestionId())
+                .setTitle(question.getQuestionTitle())
+                .setContent(question.getQuestionContent())
+                .setCategoryId(question.getQuestionCategory().getQuestionCategoryId().intValue())
+                .build();
+    }
+
+    /**
+     * AI 답변 생성 스케줄링
+     * 긴급 질문: 즉시 생성
+     * 일반 질문: 5분 후 생성
+     */
+    private void scheduleAiAnswerGeneration(Question question) {
+        if (question.getQuestionUrgency()) {
+            // 긴급 질문은 즉시 생성
+            generateAiAnswerAsync(question);
+        } else {
+            // 일반 질문은 5분 후 생성
+            Instant scheduledTime = Instant.now().plus(Duration.ofMinutes(5));
+            taskScheduler.schedule(() -> generateAiAnswerAsync(question), scheduledTime);
+        }
+    }
+
+    /**
+     * 질문 생성 시 AI 답변을 자동으로 생성하여 저장
+     * AI 생성 실패 시 최대 3회 재시도 (지수 백오프)
+     * 모든 재시도 실패 시에도 질문 생성은 정상 처리됨
+     */
+    @Retryable(
+            retryFor = {Exception.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000, multiplier = 2),
+            recover = "recoverGenerateAiAnswer"
+    )
+    public void generateAiAnswerAsync(Question question) {
+        // 질문 제목과 내용을 결합
+        String fullQuestion = String.format("제목: %s\n\n내용: %s",
+                question.getQuestionTitle(),
+                question.getQuestionContent());
+
+        // AI 답변 생성 요청
+        String aiAnswer = aiGrpcClient.generateAiAnswer(fullQuestion, question.getQuestionId());
+
+        // AI 답변을 Response로 저장
+        Response aiResponse = Response.builder()
+                .questionId(question.getQuestionId())
+                .responseWriterId(1L) // AI 시스템 계정 ID
+                .responseContent(aiAnswer)
+                .responseAdopt(false)
+                .responseIsAnonymous(false)
+                .build();
+
+        responseRepository.save(aiResponse);
+        log.info("AI answer generated and saved for question ID: {}", question.getQuestionId());
+    }
+
+    /**
+     * AI 답변 생성 재시도 실패 시 폴백 메서드
+     */
+    @Recover
+    private void recoverGenerateAiAnswer(Exception e, Question question) {
+        log.error("Failed to generate AI answer after all retry attempts for question {}: {}",
+                question.getQuestionId(), e.getMessage(), e);
+        // TODO: 필요시 사용자에게 알림 전송 또는 재시도 큐에 추가
     }
 }
