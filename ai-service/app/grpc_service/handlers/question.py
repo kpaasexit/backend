@@ -35,15 +35,12 @@ class QuestionHandler(BaseHandler):
                 content_length=len(request.content) if request.content else 0
             )
 
-            # 쿼리 텍스트 준비
             query_text = request.title
             if request.content:
                 query_text = f"{request.title} {request.content}"
 
-            # 임베딩 생성
             embedding = self.embedder.embed(query_text)
 
-            # 유사한 질문 검색 (limit=5, score_threshold=0.5 고정)
             similar_questions = self.vector_ops.search_similar_questions(
                 query_vector=embedding,
                 limit=5,
@@ -51,10 +48,8 @@ class QuestionHandler(BaseHandler):
                 category_filter=None
             )
 
-            # 결과를 protobuf 형식으로 변환
             questions = []
             for sq in similar_questions:
-                # created_at 처리 (ISO 형식 문자열을 타임스탬프로 변환)
                 created_at = 0
                 if "created_at" in sq:
                     try:
@@ -63,8 +58,16 @@ class QuestionHandler(BaseHandler):
                     except:
                         created_at = 0
 
+                question_id = 0
+                try:
+                    qid = sq.get("question_id", 0)
+                    question_id = int(qid) if qid else 0
+                except (ValueError, TypeError):
+                    self.logger.warning(f"Invalid question_id format: {sq.get('question_id')}")
+                    question_id = 0
+
                 question = question_service_pb2.SimilarQuestion(
-                    question_id=int(sq.get("question_id", 0)),
+                    question_id=question_id,
                     title=sq.get("title", ""),
                     similarity=sq.get("score", 0.0),
                     content_sample=sq.get("content_sample", ""),
@@ -93,10 +96,13 @@ class QuestionHandler(BaseHandler):
         start_time = time.time()
 
         try:
-            # 질문 ID 생성 (제공되지 않은 경우)
-            # 0이면 자동 생성
-            import random
-            question_id = request.question_id if request.question_id else random.randint(1000000, 9999999)
+            if not request.question_id or request.question_id <= 0:
+                return question_service_pb2.SaveQuestionResponse(
+                    success=False,
+                    message="유효하지 않은 question_id입니다. 양수의 BIGINT 값이 필요합니다."
+                )
+
+            question_id = request.question_id
 
             self.log_request(
                 "SaveQuestion",
@@ -105,14 +111,12 @@ class QuestionHandler(BaseHandler):
                 category_id=request.category_id
             )
 
-            # 임베딩 생성 (제목과 내용 결합)
             text_to_embed = request.title
             if request.content:
                 text_to_embed = f"{request.title} {request.content}"
 
             embedding = self.embedder.embed(text_to_embed)
 
-            # 벡터 데이터베이스에 저장
             success = self.vector_ops.insert_question(
                 vector=embedding,
                 question_id=question_id,
@@ -144,4 +148,96 @@ class QuestionHandler(BaseHandler):
             return question_service_pb2.SaveQuestionResponse(
                 success=False,
                 message=f"오류가 발생했습니다: {str(e)}"
+            )
+
+    def get_questions(self, request, context):
+        """질문 ID로 질문 목록 조회 (질문 + 답변 모두 포함)."""
+        start_time = time.time()
+
+        try:
+            self.log_request(
+                "GetQuestions",
+                question_id=request.question_id
+            )
+
+            # 동일한 question_id를 가진 모든 아이템 조회
+            from qdrant_client.models import Filter, FieldCondition, MatchValue
+
+            result = self.vector_ops.client.scroll(
+                collection_name=self.vector_ops.collection_name,
+                scroll_filter=Filter(
+                    must=[
+                        FieldCondition(
+                            key="question_id",
+                            match=MatchValue(value=request.question_id)
+                        )
+                    ]
+                ),
+                limit=100,
+                with_payload=True,
+                with_vectors=False
+            )
+
+            items = []
+            if result and result[0]:
+                points = result[0]
+
+                # 시간순 정렬을 위해 먼저 리스트로 변환
+                all_items = []
+                for point in points:
+                    if point.payload:
+                        payload_dict = dict(point.payload)
+                        all_items.append(payload_dict)
+
+                # created_at 기준으로 정렬 (오래된 것부터)
+                all_items.sort(
+                    key=lambda x: x.get("created_at", ""),
+                    reverse=False
+                )
+
+                # protobuf 메시지로 변환
+                for item in all_items:
+                    # created_at 처리
+                    created_at = 0
+                    if "created_at" in item:
+                        try:
+                            from datetime import datetime
+                            created_at = int(datetime.fromisoformat(item["created_at"].replace("Z", "+00:00")).timestamp())
+                        except:
+                            created_at = 0
+
+                    # question_id를 int로 변환
+                    qid = item.get("question_id", request.question_id)
+                    try:
+                        qid = int(qid) if qid else request.question_id
+                    except (ValueError, TypeError):
+                        qid = request.question_id
+
+                    question_item = question_service_pb2.QuestionItem(
+                        question_id=qid,
+                        title=item.get("title", ""),
+                        category_id=int(item.get("category_id", 0)),
+                        content_sample=item.get("content_sample", ""),
+                        answer=item.get("answer", ""),
+                        embedding_type=item.get("embedding_type", ""),
+                        created_at=created_at
+                    )
+                    items.append(question_item)
+
+            self.log_performance(
+                "GetQuestions",
+                start_time,
+                found_count=len(items)
+            )
+
+            return question_service_pb2.GetQuestionsResponse(
+                items=items,
+                total_count=len(items)
+            )
+
+        except Exception as e:
+            self.handle_error(context, "GetQuestions", e)
+            return question_service_pb2.GetQuestionsResponse(
+                items=[],
+                total_count=0
             )

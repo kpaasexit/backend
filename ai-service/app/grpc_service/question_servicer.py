@@ -46,3 +46,7 @@ class QuestionServicer(question_service_pb2_grpc.AIQuestionServiceServicer):
     def SaveQuestion(self, request, context):
         """벡터 데이터베이스에 질문 저장."""
         return self.question_handler.save_question(request, context)
+
+    def GetQuestions(self, request, context):
+        """질문 ID로 질문 목록 조회."""
+        return self.question_handler.get_questions(request, context)
