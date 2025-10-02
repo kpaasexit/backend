@@ -85,11 +85,14 @@ services:
       - MODEL_CACHE_DIR=/app/model_cache
       - BATCH_SIZE=32
       - MAX_SEQUENCE_LENGTH=512
+
+      # HuggingFace configuration
+      - HUGGINGFACE_API_TOKEN=${HUGGINGFACE_API_TOKEN:-}
     volumes:
       - model_cache:/app/model_cache
       - ./logs:/app/logs
-      - ./app:/app/app:ro  # Mount app code read-only for development
-      - ./models:/app/app/models/home_life_finetuned:ro  # Mount model files
+      - onnx_models_embeddings:/app/app/models/embeddings_onnx  # Cache embedding ONNX models
+      - onnx_models_classifier:/app/app/models/home_life_finetuned  # Cache classifier ONNX model
     depends_on:
       - qdrant
       - redis
@@ -146,6 +149,10 @@ volumes:
   redis_data:
     driver: local
   model_cache:
+    driver: local
+  onnx_models_embeddings:
+    driver: local
+  onnx_models_classifier:
     driver: local
 
 networks:
