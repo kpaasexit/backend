@@ -1,4 +1,4 @@
-package com.exit.question.service;
+package com.exit.question.service.client;
 
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.ai.*;

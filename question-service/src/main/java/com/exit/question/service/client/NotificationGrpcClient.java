@@ -1,4 +1,4 @@
-package com.exit.question.service;
+package com.exit.question.service.client;
 
 import com.exit.common.grpc.*;
 import com.exit.question.controller.dto.request.SendNotificationRequestDto;
@@ -6,8 +6,6 @@ import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Slf4j
