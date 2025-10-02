@@ -17,6 +17,10 @@ import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.exception.GrpcResponseErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,7 @@ import static com.exit.common.util.time.TimeStampUtil.toGrpcTimestamp;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AdditionalQuestionService {
     private final ResponseRepository responseRepository;
     private final FollowUpImageRepository followUpImageRepository;
@@ -35,6 +40,7 @@ public class AdditionalQuestionService {
     private final FileUploadUtil fileUploadUtil;
     private final QuestionRepository questionRepository;
     private final NotificationGrpcClient notificationGrpcClient;
+    private final AiGrpcClient aiGrpcClient;
 
     private final String ADDITIONAL_QUESTION_PATH = "ADDITIONAL";
 
@@ -46,10 +52,15 @@ public class AdditionalQuestionService {
 
         Question question = getQuestion(request.getQuestionId());
         boolean isQuestioner = isUserQuestioner(question.getQuestionWriterId(), request.getUserId());
+        if(isQuestioner && response.getResponseWriterId() == 1L){
+            generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question.getQuestionId());
+        }
         MessageItem messageItem = buildMessageItem(savedMessage, imageUrls, isQuestioner);
 
-        SendNotificationRequestDto requestDto = createSendNotificationRequestDto(messageItem, request.getDeviceId(), response.getResponseWriterId(), question.getQuestionWriterId());
-        notificationGrpcClient.sendNotification(requestDto);
+        if(response.getResponseWriterId() != 1L) {
+            SendNotificationRequestDto requestDto = createSendNotificationRequestDto(messageItem, request.getDeviceId(), response.getResponseWriterId(), question.getQuestionWriterId());
+            notificationGrpcClient.sendNotification(requestDto);
+        }
         return CreateAdditionalQuestionMessageResponse.newBuilder()
                 .setFollowUpRoomId(followUpRoom.getFollowUpRoomId())
                 .setMessage(messageItem)
@@ -144,5 +155,36 @@ public class AdditionalQuestionService {
             subBody = content.substring(0, 100);
         }
         return subBody;
+    }
+
+    @Retryable(
+            retryFor = {Exception.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000, multiplier = 2),
+            recover = "recoverGenerateAiAnswer"
+    )
+    private void generateAiAnswerAsync(String additionalQuestion, Long questionId) {
+            // AI 답변 생성 요청
+            String aiAnswer = aiGrpcClient.generateAiAnswer(additionalQuestion, questionId);
+
+            // AI 답변을 Response로 저장
+            FollowUpMessage aiFollowUpMessage = FollowUpMessage.builder()
+                    .followUpMessageContent(aiAnswer)
+                    .followUpMessageWriterId(1L)
+                    .build();
+
+            FollowUpMessage saved = followUpMessageRepository.save(aiFollowUpMessage);
+            log.info("AI Additional answer generated and saved for additional question ID: {}", saved.getFollowUpMessageId());
+    }
+
+
+    /**
+     * AI 답변 생성 재시도 실패 시 폴백 메서드
+     */
+    @Recover
+    private void recoverGenerateAiAnswer(Exception e, Long questionId) {
+        log.error("Failed to generate AI answer after all retry attempts for question {}: {}",
+                questionId, e.getMessage(), e);
+        // TODO: 필요시 사용자에게 알림 전송 또는 재시도 큐에 추가
     }
 }
