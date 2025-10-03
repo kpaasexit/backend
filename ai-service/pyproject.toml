@@ -1,0 +1,65 @@
+[tool.poetry]
+name = "nlp-service"
+version = "1.0.0"
+description = "NLP Service for AI-powered question processing"
+authors = ["NLP Service Team"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+# Web frameworks
+fastapi = "^0.104.0"
+uvicorn = {extras = ["standard"], version = "^0.24.0"}
+
+# gRPC
+grpcio = "^1.60.0"
+grpcio-tools = "^1.60.0"
+grpcio-reflection = "^1.60.0"
+
+# ML/NLP (ONNX Runtime for inference only - lightweight and fast)
+onnxruntime = "^1.16.0"
+transformers = "^4.36.0"
+
+# Vector DB
+qdrant-client = "^1.7.0"
+
+# OpenAI
+openai = "^1.6.0"
+
+# Utilities
+python-dotenv = "^1.0.0"
+pydantic = "^2.5.0"
+pydantic-settings = "^2.1.0"
+redis = "^5.0.0"
+aiocache = "^0.12.0"
+
+# Service Discovery
+py-eureka-client = "^0.11.9"
+
+# Database
+sqlalchemy = "^2.0.0"
+pymysql = "^1.1.0"
+aiomysql = "^0.2.0"
+
+# Monitoring
+psutil = "^5.9.0"
+
+# Language processing
+langdetect = "^1.0.9"
+numpy = "<2"
+
+# Scheduler
+apscheduler = "^3.10.4"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-asyncio = "^0.21.0"
+pytest-cov = "^4.1.0"
+black = "^23.0.0"
+isort = "^5.12.0"
+mypy = "^1.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

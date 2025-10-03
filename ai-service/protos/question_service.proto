@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package question;
+
+// 질문 처리 서비스
+service AIQuestionService {
+    // 질문 카테고리 분류
+    rpc ClassifyCategory(ClassifyRequest) returns (CategoryResponse);
+
+    // AI 답변 생성
+    rpc GenerateAIAnswer(AnswerRequest) returns (AnswerResponse);
+
+    // 벡터 데이터베이스에서 유사한 질문 찾기
+    rpc FindSimilarQuestions(SimilarRequest) returns (SimilarResponse);
+
+    // 벡터 데이터베이스에 질문 저장
+    rpc SaveQuestion(SaveQuestionRequest) returns (SaveQuestionResponse);
+
+    // 질문 ID로 질문 목록 조회
+    rpc GetQuestions(GetQuestionsRequest) returns (GetQuestionsResponse);
+}
+
+// 질문 관련 메시지
+
+// 분류 요청
+message ClassifyRequest {
+    string title = 1;
+}
+
+// 카테고리 응답
+message CategoryResponse {
+    int32 category_id = 1;
+    float confidence = 2;
+    int64 processing_time_ms = 3;
+}
+
+
+// AI 답변 생성 요청
+message AnswerRequest {
+    int64 question_id = 1;
+}
+
+// AI 답변 생성 응답
+message AnswerResponse {
+    string answer = 1;
+    int32 tokens_used = 2;
+    int64 processing_time_ms = 3;
+}
+
+
+// 유사성 검색 요청
+message SimilarRequest {
+    string title = 1;
+    string content = 2;
+}
+
+// 유사한 질문 정보
+message SimilarQuestion {
+    int64 question_id = 1;
+    string title = 2;
+    float similarity = 3;
+    string content_sample = 4;
+    int64 created_at = 5;
+}
+
+// 유사성 검색 응답
+message SimilarResponse {
+    repeated SimilarQuestion questions = 1;
+    int32 total_found = 2;
+}
+
+// 질문 저장 요청
+message SaveQuestionRequest {
+    int64 question_id = 1;
+    string title = 2;
+    string content = 3;
+    int32 category_id = 4;
+}
+
+// 질문 저장 응답
+message SaveQuestionResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// 질문 목록 조회 요청
+message GetQuestionsRequest {
+    int64 question_id = 1;
+}
+
+// 질문 아이템
+message QuestionItem {
+    int64 question_id = 1;
+    string title = 2;
+    int32 category_id = 3;
+    string content_sample = 4;
+    string answer = 5;  // 답변이 있는 경우
+    string embedding_type = 6;  // "mixed", "answer" 등
+    int64 created_at = 7;
+}
+
+// 질문 목록 조회 응답
+message GetQuestionsResponse {
+    repeated QuestionItem items = 1;
+    int32 total_count = 2;
+}
+
