@@ -6,12 +6,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class NotificationGrpcMapper {
-    public SendNotificationRequest getSendNotificationRequest(String type, String deviceId, String body, Question question) {
+    public SendNotificationRequest getSendNotificationRequest(String body, String type, Question question, String deviceId) {
         return SendNotificationRequest.newBuilder()
                 .setBody(body)
                 .setType(type)
                 .setTargetId(question.getQuestionId())
                 .setReceiverId(question.getQuestionWriterId())
+                .setDeviceId(deviceId)
+                .build();
+    }
+
+    public SendNotificationRequest getSendNotificationRequest(String body, String type, Long targetId, Long writerId, String deviceId) {
+        return SendNotificationRequest.newBuilder()
+                .setBody(body)
+                .setType(type)
+                .setTargetId(targetId)
+                .setReceiverId(writerId)
                 .setDeviceId(deviceId)
                 .build();
     }
