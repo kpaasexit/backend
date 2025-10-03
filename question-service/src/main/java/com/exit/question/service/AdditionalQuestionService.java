@@ -3,7 +3,6 @@ package com.exit.question.service;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.*;
 import com.exit.common.util.file.FileUploadUtil;
-import com.exit.question.controller.dto.request.SendNotificationRequestDto;
 import com.exit.question.domain.question.FollowUpImage;
 import com.exit.question.domain.question.FollowUpMessage;
 import com.exit.question.domain.question.FollowUpRoom;
@@ -44,7 +43,7 @@ public class AdditionalQuestionService {
     private final NotificationGrpcClient notificationGrpcClient;
     private final AiGrpcClient aiGrpcClient;
 
-    private final String ADDITIONAL_QUESTION_PATH = "ADDITIONAL";
+    private static final String ADDITIONAL_QUESTION_PATH = "ADDITIONAL";
 
     public CreateAdditionalQuestionMessageResponse createAdditionalQuestionMessage(CreateAdditionalQuestionMessageRequest request) {
         Response response = findResponseById(request.getResponseId());
