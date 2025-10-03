@@ -17,6 +17,7 @@ import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.exception.GrpcResponseErrorCode;
 import com.exit.question.service.client.AiGrpcClient;
 import com.exit.question.service.client.NotificationGrpcClient;
+import com.exit.question.service.util.NotificationGrpcMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
@@ -43,6 +44,7 @@ public class AdditionalQuestionService {
     private final QuestionRepository questionRepository;
     private final NotificationGrpcClient notificationGrpcClient;
     private final AiGrpcClient aiGrpcClient;
+    private final NotificationGrpcMapper notificationGrpcMapper;
 
     public CreateAdditionalQuestionMessageResponse createAdditionalQuestionMessage(CreateAdditionalQuestionMessageRequest request) {
         Response response = findResponseById(request.getResponseId());
@@ -55,12 +57,15 @@ public class AdditionalQuestionService {
         if (isQuestioner && response.getResponseWriterId() == 1L) {
             generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question.getQuestionId());
         }
+
         MessageItem messageItem = buildMessageItem(savedMessage, imageUrls, isQuestioner);
 
         if (response.getResponseWriterId() != 1L) {
-            SendNotificationRequestDto requestDto = createSendNotificationRequestDto(messageItem, request.getDeviceId(), response.getResponseWriterId(), question.getQuestionWriterId());
-            notificationGrpcClient.sendNotification(requestDto);
+            SendNotificationRequest sendNotificationRequest = createSendNotificationRequest(
+                    messageItem, request.getDeviceId(), response.getResponseWriterId(), question.getQuestionWriterId());
+            notificationGrpcClient.sendNotification(sendNotificationRequest);
         }
+
         return CreateAdditionalQuestionMessageResponse.newBuilder()
                 .setFollowUpRoomId(followUpRoom.getFollowUpRoomId())
                 .setMessage(messageItem)
@@ -132,19 +137,14 @@ public class AdditionalQuestionService {
                 .build();
     }
 
-    private SendNotificationRequestDto createSendNotificationRequestDto(MessageItem messageItem, String deviceId, Long responseWriterId, Long questionWriterId) {
+    private SendNotificationRequest createSendNotificationRequest(MessageItem messageItem, String deviceId, Long responseWriterId, Long questionWriterId) {
         boolean isQuestioner = messageItem.getIsQuestioner();
         String notificationType = isQuestioner ? "NEW_ADDITIONAL_QUESTION_ON_ANSWER" : "NEW_ANSWER_ON_ADDITIONAL_QUESTION";
         Long receiverId = isQuestioner ? responseWriterId : questionWriterId;
         String body = truncateContent(messageItem.getContent());
 
-        return SendNotificationRequestDto.builder()
-                .type(notificationType)
-                .receiverId(receiverId)
-                .body(body)
-                .targetId(messageItem.getMessageId())
-                .deviceId(deviceId)
-                .build();
+        return notificationGrpcMapper.getSendNotificationRequest(
+                body, notificationType, messageItem.getMessageId(), receiverId, deviceId);
     }
 
     private String truncateContent(String content) {
@@ -164,10 +164,8 @@ public class AdditionalQuestionService {
             recover = "recoverGenerateAiAnswer"
     )
     private void generateAiAnswerAsync(String additionalQuestion, Long questionId) {
-        // AI 답변 생성 요청
         String aiAnswer = aiGrpcClient.generateAiAnswer(additionalQuestion, questionId);
 
-        // AI 답변을 Response로 저장
         FollowUpMessage aiFollowUpMessage = FollowUpMessage.builder()
                 .followUpMessageContent(aiAnswer)
                 .followUpMessageWriterId(1L)

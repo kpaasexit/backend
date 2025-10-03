@@ -3,6 +3,7 @@ package com.exit.question.service;
 import com.exit.common.grpc.CreateCommentRequest;
 import com.exit.common.grpc.CreateCommentResponse;
 import com.exit.common.grpc.DeleteCommentRequest;
+import com.exit.common.grpc.SendNotificationRequest;
 import com.exit.common.util.time.TimeStampUtil;
 import com.exit.question.domain.Comment;
 import com.exit.question.domain.CommentType;
@@ -25,8 +26,8 @@ public class CommentService {
         Comment comment = factory.createAndSaveComment(request.getTargetId(), request.getWriterId(), request.getContent());
         String authorName = userGrpcClient.getUserName(comment.getAuthorId());
 
-        SendNotificationRequestDto requestDto = factory.createSendNotificationRequest(request.getTargetId(), request.getDeviceId());
-        notificationGrpcClient.sendNotification(requestDto);
+        SendNotificationRequest sendNotificationRequest = factory.createSendNotificationRequest(request.getTargetId(), request.getDeviceId());
+        notificationGrpcClient.sendNotification(sendNotificationRequest);
 
         return CreateCommentResponse.newBuilder()
                 .setCommentId(comment.getCommentId())
