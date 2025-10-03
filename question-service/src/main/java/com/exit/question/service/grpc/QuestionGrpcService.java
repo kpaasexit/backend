@@ -30,27 +30,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
                                StreamObserver<com.exit.common.grpc.QuestionCreateResponse> responseObserver) {
         try {
             log.info("Question create request received: {}", request.getQuestionTitle());
-            QuestionCreateRequestDto requestDto = QuestionCreateRequestDto.from(request);
-            QuestionCreateResponseDto responseDto = questionService.createQuestion(requestDto);
-
-            QuestionCreateResponse.Builder builder = QuestionCreateResponse.newBuilder();
-
-            if (responseDto.imageUrls() != null && !responseDto.imageUrls().isEmpty()) {
-                builder.addAllImageUrls(responseDto.imageUrls());
-            }
-
-            com.exit.common.grpc.QuestionCreateResponse response = builder
-                    .setQuestionId(responseDto.questionId())
-                    .setQuestionWriterId(responseDto.questionWriterId())
-                    .setQuestionWriterName(responseDto.questionWriterName())
-                    .setQuestionTitle(responseDto.questionTitle())
-                    .setQuestionContent(responseDto.questionContent())
-                    .setQuestionCategory(responseDto.questionCategory())
-                    .setQuestionUrgency(responseDto.questionUrgency())
-                    .setQuestionAnswerType(responseDto.questionAnswerType())
-                    .setQuestionDisclosureType(responseDto.questionDisclosureType())
-                    .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
-                    .build();
+            QuestionCreateResponse response = questionService.createQuestion(request);
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
@@ -68,15 +48,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
                             StreamObserver<com.exit.common.grpc.AnswerAdoptResponse> responseObserver) {
         try {
             log.info("Answer adopt request received for response ID: {}", request.getResponseId());
-
-            AnswerAdoptRequestDto requestDto = AnswerAdoptRequestDto.from(request);
-            AnswerAdoptResponseDto responseDto = questionService.answerAdopt(requestDto);
-
-            com.exit.common.grpc.AnswerAdoptResponse response = com.exit.common.grpc.AnswerAdoptResponse.newBuilder()
-                    .setResponseId(responseDto.responseId())
-                    .setResponseAdopt(responseDto.responseAdopt())
-                    .setUpdatedAt(toGrpcTimestamp(responseDto.updatedAt()))
-                    .build();
+            AnswerAdoptResponse response = questionService.answerAdopt(request);
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
@@ -148,19 +120,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
                                StreamObserver<com.exit.common.grpc.QuestionReportResponse> responseObserver) {
         try {
             log.info("Question report request received for question ID: {}", request.getQuestionId());
-
-            QuestionReportRequestDto requestDto = QuestionReportRequestDto.from(request);
-            QuestionReportResponseDto responseDto = questionService.questionReport(requestDto);
-
-            com.exit.common.grpc.QuestionReportResponse response = com.exit.common.grpc.QuestionReportResponse.newBuilder()
-                    .setQuestionReportId(responseDto.questionReportId())
-                    .setQuestionId(responseDto.questionId())
-                    .setQuestionReportTitle(responseDto.questionReportTitle())
-                    .setQuestionReportContent(responseDto.questionReportContent())
-                    .setQuestionReportWriterId(responseDto.questionReportWriterId())
-                    .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
-                    .setUpdatedAt(toGrpcTimestamp(responseDto.updatedAt()))
-                    .build();
+            QuestionReportResponse response = questionService.questionReport(request);
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
@@ -179,18 +139,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
         try {
             log.info("Answer report request received for response ID: {}", request.getResponseId());
 
-            AnswerReportRequestDto requestDto = AnswerReportRequestDto.from(request);
-            AnswerReportResponseDto responseDto = questionService.answerReport(requestDto);
-
-            com.exit.common.grpc.AnswerReportResponse response = com.exit.common.grpc.AnswerReportResponse.newBuilder()
-                    .setResponseReportId(responseDto.responseReportId())
-                    .setResponseId(responseDto.responseId())
-                    .setResponseReportTitle(responseDto.responseReportTitle())
-                    .setResponseReportContent(responseDto.responseReportContent())
-                    .setResponseReportWriterId(responseDto.responseReportWriterId())
-                    .setCreatedAt(toGrpcTimestamp(responseDto.createdAt()))
-                    .setUpdatedAt(toGrpcTimestamp(responseDto.updatedAt()))
-                    .build();
+            AnswerReportResponse response = questionService.answerReport(request);
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
@@ -208,32 +157,9 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
                              StreamObserver<com.exit.common.grpc.QuestionListResponse> responseObserver) {
         try {
             log.info("Question list request received");
+            QuestionListResponse response = questionService.questionList(request);
 
-            QuestionListRequestDto requestDto = QuestionListRequestDto.from(request);
-            QuestionListResponseDto responseDto = questionService.questionList(requestDto);
-
-            com.exit.common.grpc.QuestionListResponse.Builder responseBuilder = com.exit.common.grpc.QuestionListResponse.newBuilder()
-                    .setHasNext(responseDto.hasNext());
-
-            List<QuestionListItem> questionList = new ArrayList<>();
-            for (QuestionListQueryResponseDto question : responseDto.questionList()) {
-                com.exit.common.grpc.QuestionListItem grpcQuestion = com.exit.common.grpc.QuestionListItem.newBuilder()
-                        .setQuestionId(question.questionId())
-                        .setQuestionCategory(question.questionCategoryId())
-                        .setQuestionWriterId(question.questionWriterId())
-                        .setQuestionTitle(question.questionTitle())
-                        .setQuestionContent(question.questionContent())
-                        .setQuestionUrgency(question.questionUrgency())
-                        .setQuestionAnswerType(question.questionAnswerType().name())
-                        .setQuestionAnswerAdopt(question.questionAnswerAdopt())
-                        .setAnswerCount(question.answerCount())
-                        .setCreatedAt(toGrpcTimestamp(question.createdAt()))
-                        .build();
-                questionList.add(grpcQuestion);
-            }
-            responseBuilder.addAllQuestions(questionList);
-
-            responseObserver.onNext(responseBuilder.build());
+            responseObserver.onNext(response);
             responseObserver.onCompleted();
 
         } catch (Exception e) {
@@ -285,55 +211,9 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
                                   StreamObserver<com.exit.common.grpc.QuestionDetailResponse> responseObserver) {
         try {
             log.info("Question detail request received for question ID: {}", request.getQuestionId());
+            QuestionDetailResponse response = questionService.getQuestionDetail(request.getQuestionId());
 
-            QuestionDetailResponseDto responseDto = questionService.getQuestionDetail(request.getQuestionId());
-
-            // Convert QuestionCreateResponseDto to gRPC QuestionCreateResponse
-            com.exit.common.grpc.QuestionCreateResponse.Builder questionBuilder = com.exit.common.grpc.QuestionCreateResponse.newBuilder()
-                    .setQuestionId(responseDto.question().questionId())
-                    .setQuestionTitle(responseDto.question().questionTitle())
-                    .setQuestionContent(responseDto.question().questionContent())
-                    .setQuestionCategory(responseDto.question().questionCategory())
-                    .setQuestionUrgency(responseDto.question().questionUrgency())
-                    .setQuestionAnswerType(responseDto.question().questionAnswerType())
-                    .setQuestionDisclosureType(responseDto.question().questionDisclosureType())
-                    .setQuestionWriterId(responseDto.question().questionWriterId())
-                    .setQuestionWriterName(responseDto.question().questionWriterName())
-                    .setCreatedAt(toGrpcTimestamp(responseDto.question().createdAt()));
-
-            // Add question image URLs if they exist
-            if (responseDto.question().imageUrls() != null) {
-                questionBuilder.addAllImageUrls(responseDto.question().imageUrls());
-            }
-
-            // Convert ResponseDetailDto list to gRPC ResponseDetail list
-            List<com.exit.common.grpc.ResponseDetail> grpcResponses = new ArrayList<>();
-            for (ResponseDetailDto response : responseDto.responses()) {
-                com.exit.common.grpc.ResponseDetail.Builder responseDetailBuilder = com.exit.common.grpc.ResponseDetail.newBuilder()
-                        .setResponseId(response.responseId())
-                        .setResponseWriterId(response.responseWriterId())
-                        .setResponseWriterName(response.responseWriterName() != null ? response.responseWriterName() : "")
-                        .setResponseContent(response.responseContent())
-                        .setResponseAdopt(response.responseAdopt())
-                        .setLikeCount(response.likeCount())
-                        .setCreatedAt(response.createdAt().toString())
-                        .setUpdatedAt(response.updatedAt().toString());
-
-                // Add response image URLs if they exist
-                if (response.urls() != null) {
-                    responseDetailBuilder.addAllUrls(response.urls());
-                }
-
-                grpcResponses.add(responseDetailBuilder.build());
-            }
-
-            com.exit.common.grpc.QuestionDetailResponse grpcResponse = com.exit.common.grpc.QuestionDetailResponse.newBuilder()
-                    .setQuestion(questionBuilder.build())
-                    .addAllResponses(grpcResponses)
-                    .setHasNext(responseDto.hasNext())
-                    .build();
-
-            responseObserver.onNext(grpcResponse);
+            responseObserver.onNext(response);
             responseObserver.onCompleted();
 
         } catch (Exception e) {

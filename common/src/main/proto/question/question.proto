@@ -211,8 +211,8 @@ message ResponseDetail {
   bool response_adopt = 5;
   repeated string urls = 6;
   int32 like_count = 7;
-  string created_at = 8;
-  string updated_at = 9;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
 }
 
 message QuestionDetailResponse {

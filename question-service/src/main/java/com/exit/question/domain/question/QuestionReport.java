@@ -1,6 +1,7 @@
 package com.exit.question.domain.question;
 
 import com.exit.common.domain.BaseEntity;
+import com.exit.common.grpc.QuestionReportRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,5 +39,14 @@ public class QuestionReport extends BaseEntity {
         this.questionReportTitle = questionReportTitle;
         this.questionReportContent = questionReportContent;
         this.questionReportWriterId = questionReportWriterId;
+    }
+
+    public static QuestionReport from(QuestionReportRequest request) {
+        return QuestionReport.builder()
+                .questionId(request.getQuestionId())
+                .questionReportTitle(request.getQuestionReportTitle())
+                .questionReportContent(request.getQuestionReportContent())
+                .questionReportWriterId(request.getQuestionReportWriterId())
+                .build();
     }
 }
