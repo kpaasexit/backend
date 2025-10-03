@@ -10,6 +10,7 @@ import com.exit.user.domain.JwtToken;
 import com.exit.user.domain.Users;
 import com.exit.user.domain.repository.UserRepository;
 import com.exit.user.exception.GrpcUserErrorCode;
+import com.exit.user.util.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,6 @@ public class AuthService {
                     .orElseGet(() -> createNewUser(oauth2UserInfoRequestDto));
 
 
-            // JWT 토큰 생성
             JwtToken jwtToken = createJwtToken(user);
             jwtTokenRedisService.saveJwtToken(user.getUserId(), jwtToken);
 
@@ -53,13 +53,10 @@ public class AuthService {
 
     public LoginSuccessResponse refreshAuthToken(RefreshTokenRequestDto request) {
         try {
-            // Refresh Token에서 사용자 ID 추출
             Long userId = jwtTokenProvider.getUserIdFromToken(request.refreshToken());
 
-            // JWT 토큰 유효성 검증
             jwtTokenRedisService.validJwtToken(userId, request.refreshToken());
 
-            // 사용자 정보 조회
             Users user = userRepository.findById(userId)
                     .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
 
@@ -80,7 +77,6 @@ public class AuthService {
 
     public LoginSuccessResponse logout(UserIdRequest request) {
         try {
-            // Redis에서 JWT 토큰 삭제
             jwtTokenRedisService.deleteJwtToken(request.userId());
 
             return new LoginSuccessResponse(
@@ -95,16 +91,17 @@ public class AuthService {
         }
     }
 
-    // 헬퍼 메서드들
     private Users updateExistingUser(Users user, OAuth2UserInfoRequestDto dto) {
         user.updateProfile(dto.getName(), dto.getProfileImageUrl());
         return user;
     }
 
     private Users createNewUser(OAuth2UserInfoRequestDto dto) {
+        String nickname = NicknameGenerator.generate();
+
         return userRepository.save(Users.builder()
                 .userEmail(dto.getEmail())
-                .userNickname(dto.getName())
+                .userNickname(nickname)
                 .userProfileUrl(dto.getProfileImageUrl())
                 .socialId(dto.getSocialId())
                 .provider(dto.getProvider())
@@ -112,7 +109,6 @@ public class AuthService {
     }
 
     private JwtToken createJwtToken(Users user) {
-        // JWT 토큰 생성
         String accessToken = jwtTokenProvider.generateAccessToken(new UserIdRequest(user.getUserId()));
         String jti = UUID.randomUUID().toString();
         String refreshToken = jwtTokenProvider.generateRefreshToken(new UserIdRequest(user.getUserId()), jti);
