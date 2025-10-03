@@ -1,6 +1,7 @@
 package com.exit.gateway.controller.question.dto.response.question;
 
 import com.exit.common.grpc.ResponseDetail;
+import com.exit.common.util.time.TimeStampUtil;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -28,8 +29,8 @@ public record ResponseDetailDto(
                 .responseAdopt(grpcResponse.getResponseAdopt())
                 .urls(grpcResponse.getUrlsList())
                 .likeCount(grpcResponse.getLikeCount())
-                .createdAt(LocalDateTime.parse(grpcResponse.getCreatedAt(), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                .updatedAt(LocalDateTime.parse(grpcResponse.getUpdatedAt(), DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .createdAt(TimeStampUtil.timestampToLocalDateTime(grpcResponse.getCreatedAt()))
+                .updatedAt(TimeStampUtil.timestampToLocalDateTime(grpcResponse.getUpdatedAt()))
                 .build();
     }
 }

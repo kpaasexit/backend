@@ -62,7 +62,7 @@ public class AdditionalQuestionService {
 
         if (response.getResponseWriterId() != 1L) {
             SendNotificationRequest sendNotificationRequest = createSendNotificationRequest(
-                    messageItem, request.getDeviceId(), response.getResponseWriterId(), question.getQuestionWriterId());
+                    messageItem, response.getResponseWriterId(), question.getQuestionWriterId());
             notificationGrpcClient.sendNotification(sendNotificationRequest);
         }
 
@@ -137,14 +137,14 @@ public class AdditionalQuestionService {
                 .build();
     }
 
-    private SendNotificationRequest createSendNotificationRequest(MessageItem messageItem, String deviceId, Long responseWriterId, Long questionWriterId) {
+    private SendNotificationRequest createSendNotificationRequest(MessageItem messageItem, Long responseWriterId, Long questionWriterId) {
         boolean isQuestioner = messageItem.getIsQuestioner();
         String notificationType = isQuestioner ? "NEW_ADDITIONAL_QUESTION_ON_ANSWER" : "NEW_ANSWER_ON_ADDITIONAL_QUESTION";
         Long receiverId = isQuestioner ? responseWriterId : questionWriterId;
         String body = truncateContent(messageItem.getContent());
 
         return notificationGrpcMapper.getSendNotificationRequest(
-                body, notificationType, messageItem.getMessageId(), receiverId, deviceId);
+                body, notificationType, messageItem.getMessageId(), receiverId);
     }
 
     private String truncateContent(String content) {
