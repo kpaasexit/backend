@@ -1,6 +1,7 @@
 package com.exit.question.service.util.factory;
 
 import com.exit.common.exception.grpc.GrpcException;
+import com.exit.common.grpc.SendNotificationRequest;
 import com.exit.question.controller.dto.request.NotificationContentDto;
 import com.exit.question.domain.Comment;
 import com.exit.question.domain.question.Question;
@@ -40,16 +41,16 @@ public class QuestionCommentFactory extends CommentFactory {
     }
 
     @Override
-    public SendNotificationRequestDto createSendNotificationRequestDto(Long targetId, String deviceId) {
+    public SendNotificationRequest createSendNotificationRequest(Long targetId, String deviceId) {
         NotificationContentDto dto = questionRepository.findContentById(targetId)
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
 
-        return SendNotificationRequestDto.builder()
-                .body(dto.content())
-                .type("NEW_COMMENT")
-                .targetId(targetId)
-                .receiverId(dto.receiverId())
-                .deviceId(deviceId)
+        return SendNotificationRequest.newBuilder()
+                .setBody(dto.content())
+                .setType("NEW_COMMENT")
+                .setTargetId(targetId)
+                .setReceiverId(dto.receiverId())
+                .setDeviceId(deviceId)
                 .build();
     }
 

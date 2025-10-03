@@ -2,7 +2,6 @@ package com.exit.question.domain.response;
 
 import com.exit.common.domain.BaseEntity;
 import com.exit.common.grpc.AnswerReportRequest;
-import com.exit.question.controller.dto.request.AnswerReportRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

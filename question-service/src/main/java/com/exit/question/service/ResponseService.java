@@ -1,18 +1,11 @@
 package com.exit.question.service;
 
 import com.exit.common.exception.grpc.GrpcException;
-import com.exit.common.grpc.DeleteResponseRequest;
-import com.exit.common.grpc.UpdateResponseRequest;
-import com.exit.common.grpc.UpdateResponseResponse;
+import com.exit.common.grpc.*;
 import com.exit.common.util.file.FileUploadUtil;
-import com.exit.question.controller.dto.request.AnswerCreateRequestDto;
-import com.exit.question.controller.dto.request.AnswerRecommendRequestDto;
-import com.exit.question.controller.dto.request.AnswerReportRequestDto;
-import com.exit.question.controller.dto.response.AnswerCreateResponseDto;
-import com.exit.question.controller.dto.response.AnswerRecommendResponseDto;
-import com.exit.question.controller.dto.response.AnswerReportResponseDto;
 import com.exit.question.domain.question.Question;
-import com.exit.question.domain.question.repository.*;
+import com.exit.question.domain.question.repository.FollowUpRoomRepository;
+import com.exit.question.domain.question.repository.QuestionRepository;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.ResponseImage;
 import com.exit.question.domain.response.ResponseLike;
@@ -25,6 +18,8 @@ import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.exception.GrpcResponseErrorCode;
 import com.exit.question.service.client.NotificationGrpcClient;
 import com.exit.question.service.client.UserGrpcClient;
+import com.exit.question.service.util.NotificationGrpcMapper;
+import com.exit.question.service.util.ResponseGrpcMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,43 +44,41 @@ public class ResponseService {
     private final FileUploadUtil fileUploadUtil;
     private final UserGrpcClient userGrpcClient;
     private final NotificationGrpcClient notificationGrpcClient;
+    private final ResponseGrpcMapper responseGrpcMapper;
+    private final NotificationGrpcMapper notificationGrpcMapper;
 
-    public AnswerCreateResponseDto answerCreate(AnswerCreateRequestDto answerCreateRequestDto) {
-        Response newResponse = Response.createResponse(answerCreateRequestDto);
+
+    public AnswerCreateResponse answerCreate(AnswerCreateRequest request) {
+        Response newResponse = Response.createResponse(request);
         Response savedResponse = responseRepository.save(newResponse);
 
-        List<String> imageUrls = processAnswerImages(answerCreateRequestDto, savedResponse);
+        List<String> imageUrls = processAnswerImages(request, savedResponse);
         Question question = questionRepository.findById(savedResponse.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
 
         String subBody = truncateContent(savedResponse.getResponseContent());
-        SendNotificationRequestDto requestDto = SendNotificationRequestDto.builder()
-                .body(subBody)
-                .type("NEW_ANSWER_ON_QUESTION")
-                .targetId(question.getQuestionId())
-                .receiverId(question.getQuestionWriterId())
-                .deviceId(answerCreateRequestDto.deviceId())
-                .build();
-        notificationGrpcClient.sendNotification(requestDto);
+        SendNotificationRequest sendNotificationRequest = notificationGrpcMapper.getSendNotificationRequest(
+                "NEW_ANSWER_ON_QUESTION", "deviceId", subBody, question);
+        notificationGrpcClient.sendNotification(sendNotificationRequest);
 
-        return AnswerCreateResponseDto.from(savedResponse, imageUrls);
+        return responseGrpcMapper.getAnswerCreateResponse(savedResponse, imageUrls);
     }
 
-    public AnswerRecommendResponseDto toggleAnswerLike(AnswerRecommendRequestDto req) {
+    public AnswerRecommendResponse toggleAnswerLike(AnswerRecommendRequest request) {
         Optional<ResponseLike> existingLike =
-                responseLikeRepository.findByResponseIdAndUserId(req.responseId(), req.userId());
+                responseLikeRepository.findByResponseIdAndUserId(request.getResponseId(), request.getUserId());
 
-        boolean isLiked = handleLikeToggle(existingLike, req);
-        int likeCount = responseLikeRepository.countByResponseId(req.responseId());
+        boolean isLiked = handleLikeToggle(existingLike, request);
+        int likeCount = responseLikeRepository.countByResponseId(request.getResponseId());
 
-        return new AnswerRecommendResponseDto(likeCount, isLiked);
+        return responseGrpcMapper.getAnswerRecommendResponse(request.getResponseId(), likeCount, isLiked);
     }
 
     public UpdateResponseResponse updateResponse(UpdateResponseRequest request) {
         Response response = responseRepository.findById(request.getResponseId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
 
-        if(Boolean.TRUE.equals(response.getResponseAdopt()))
+        if (Boolean.TRUE.equals(response.getResponseAdopt()))
             throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
 
         response.updateContent(request.getContent());
@@ -97,11 +90,19 @@ public class ResponseService {
                 .build();
     }
 
+    public AnswerAdoptResponse answerAdopt(AnswerAdoptRequest request) {
+        Response adoptedResponse = adoptResponse(request.getResponseId());
+        markQuestionAsAdopted(adoptedResponse);
+        tryToSendAdoptionNotification(request, adoptedResponse);
+
+        return responseGrpcMapper.getAnswerAdoptResponse(adoptedResponse);
+    }
+
     public void deleteResponse(DeleteResponseRequest request) {
         Response response = responseRepository.findById(request.getResponseId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
 
-        if(Boolean.TRUE.equals(response.getResponseAdopt()))
+        if (Boolean.TRUE.equals(response.getResponseAdopt()))
             throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
 
         // FollowUpRoom이 있다면 먼저 삭제
@@ -111,39 +112,82 @@ public class ResponseService {
         responseRepository.delete(response);
     }
 
-    public AnswerReportResponseDto answerReport(AnswerReportRequestDto request) {
-        Response response = responseRepository.findById(request.responseId())
+    public AnswerReportResponse answerReport(AnswerReportRequest request) {
+        Response response = responseRepository.findById(request.getResponseId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
         ResponseReport responseReport = ResponseReport.from(request);
 
         ResponseReport savedResponseReport = responseReportRepository.save(responseReport);
         userGrpcClient.increaseReportCount(response.getResponseWriterId());
-
-        return AnswerReportResponseDto.from(savedResponseReport);
+        return responseGrpcMapper.getAnswerReportResponse(savedResponseReport);
     }
 
-    private boolean handleLikeToggle(Optional<ResponseLike> existingLike, AnswerRecommendRequestDto req) {
+    private Response adoptResponse(Long responseId) {
+        Response response = responseRepository.findById(responseId)
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+
+        validateQuestionNotAlreadyAdopted(response.getQuestionId());
+        response.updateResponseAdopt();
+        return responseRepository.save(response);
+    }
+
+    private void validateQuestionNotAlreadyAdopted(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        if (Boolean.TRUE.equals(question.getQuestionAnswerAdopt())) {
+            throw new GrpcException(GrpcQuestionErrorCode.EXIST_ADOPTED_RESPONSE);
+        }
+    }
+
+    private void tryToSendAdoptionNotification(AnswerAdoptRequest request, Response response) {
+        try {
+            Question question = questionRepository.findById(response.getQuestionId())
+                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+            String body = truncateContent(response.getResponseContent());
+            SendNotificationRequest notificationRequest =
+                    notificationGrpcMapper.getSendNotificationRequest("ANSWER_ADOPTED", request.getDeviceId(), body, question);
+            notificationGrpcClient.sendNotification(notificationRequest);
+        } catch (Exception e) {
+            log.error("Failed to send adoption notification for response {}: {}",
+                    response.getResponseId(), e.getMessage(), e);
+        }
+    }
+
+    private void markQuestionAsAdopted(Response response) {
+        Question question = questionRepository.findById(response.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+
+        question.updateAnswerAdopt();
+        questionRepository.save(question);
+    }
+
+    private String truncateContent(String content) {
+        String subBody;
+        if (content.length() <= 100) {
+            subBody = content.substring(0, content.length() - 1);
+        } else {
+            subBody = content.substring(0, 100);
+        }
+        return subBody;
+    }
+
+    private boolean handleLikeToggle(Optional<ResponseLike> existingLike, AnswerRecommendRequest request) {
         if (existingLike.isPresent()) {
             responseLikeRepository.delete(existingLike.get());
             return false; // 좋아요 취소됨
         }
 
-        ResponseLike newLike = createNewLike(req);
+        ResponseLike newLike = ResponseLike.from(request);
         responseLikeRepository.save(newLike);
         return true; // 새로운 좋아요
     }
 
-    private ResponseLike createNewLike(AnswerRecommendRequestDto req) {
-        return ResponseLike.builder()
-                .responseId(req.responseId())
-                .userId(req.userId())
-                .build();
-    }
-
-    private List<String> processAnswerImages(AnswerCreateRequestDto answerCreateRequestDto, Response savedResponse) {
+    private List<String> processAnswerImages(AnswerCreateRequest answerCreateRequest, Response savedResponse) {
         List<String> imageUrls = null;
-        if (answerCreateRequestDto.images() != null) {
-            imageUrls = fileUploadUtil.uploadImages(answerCreateRequestDto.images(), RESPONSE_FOLDER);
+        if (!answerCreateRequest.getImagesList().isEmpty()) {
+            imageUrls = fileUploadUtil.uploadImages(answerCreateRequest.getImagesList(), RESPONSE_FOLDER);
             for (String imageUrl : imageUrls) {
                 ResponseImage responseImage = ResponseImage.builder()
                         .responseId(savedResponse.getResponseId())
@@ -153,15 +197,5 @@ public class ResponseService {
             }
         }
         return imageUrls;
-    }
-
-    private String truncateContent(String content) {
-        String subBody;
-        if(content.length() <= 100) {
-            subBody = content.substring(0, content.length()-1);
-        } else {
-            subBody = content.substring(0, 100);
-        }
-        return subBody;
     }
 }

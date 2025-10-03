@@ -1,6 +1,7 @@
 package com.exit.question.domain.response;
 
 import com.exit.common.domain.BaseEntity;
+import com.exit.common.grpc.AnswerRecommendRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,5 +30,12 @@ public class ResponseLike extends BaseEntity {
     public ResponseLike(Long responseId, Long userId) {
         this.responseId = responseId;
         this.userId = userId;
+    }
+
+    public static ResponseLike from(AnswerRecommendRequest request) {
+        return ResponseLike.builder()
+                .responseId(request.getResponseId())
+                .userId(request.getUserId())
+                .build();
     }
 }

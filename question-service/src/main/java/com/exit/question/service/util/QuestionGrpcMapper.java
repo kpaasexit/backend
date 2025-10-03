@@ -2,14 +2,10 @@ package com.exit.question.service.util;
 
 import com.exit.common.grpc.*;
 import com.exit.common.util.time.TimeStampUtil;
-import com.exit.question.controller.dto.response.AnswerReportResponseDto;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
-import com.exit.question.controller.dto.response.QuestionReportResponseDto;
-import com.exit.question.controller.dto.response.ResponseDetailDto;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.QuestionReport;
 import com.exit.question.domain.response.Response;
-import com.exit.question.domain.response.ResponseReport;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,23 +14,6 @@ import static com.exit.common.util.time.TimeStampUtil.toGrpcTimestamp;
 
 @Component
 public class QuestionGrpcMapper {
-    public SendNotificationRequest getSendNotificationRequest(String deviceId, String body, Question question) {
-        return SendNotificationRequest.newBuilder()
-                .setBody(body)
-                .setType("ANSWER_ADOPTED")
-                .setTargetId(question.getQuestionId())
-                .setReceiverId(question.getQuestionWriterId())
-                .setDeviceId(deviceId)
-                .build();
-    }
-
-    public AnswerAdoptResponse getAnswerAdoptResponse(Response response) {
-        return AnswerAdoptResponse.newBuilder()
-                .setResponseId(response.getResponseId())
-                .setResponseAdopt(response.getResponseAdopt())
-                .setUpdatedAt(toGrpcTimestamp(response.getUpdatedAt()))
-                .build();
-    }
 
     public QuestionReportResponse getQuestionReportResponse(QuestionReport report) {
         return QuestionReportResponse.newBuilder()
@@ -43,18 +22,6 @@ public class QuestionGrpcMapper {
                 .setQuestionReportTitle(report.getQuestionReportTitle())
                 .setQuestionReportContent(report.getQuestionReportContent())
                 .setQuestionReportWriterId(report.getQuestionReportWriterId())
-                .setCreatedAt(toGrpcTimestamp(report.getCreatedAt()))
-                .setUpdatedAt(toGrpcTimestamp(report.getUpdatedAt()))
-                .build();
-    }
-
-    public AnswerReportResponse getAnswerReportResponse(ResponseReport report) {
-        return AnswerReportResponse.newBuilder()
-                .setResponseReportId(report.getResponseReportId())
-                .setResponseId(report.getResponseId())
-                .setResponseReportTitle(report.getResponseReportTitle())
-                .setResponseReportContent(report.getResponseReportContent())
-                .setResponseReportWriterId(report.getResponseReportWriterId())
                 .setCreatedAt(toGrpcTimestamp(report.getCreatedAt()))
                 .setUpdatedAt(toGrpcTimestamp(report.getUpdatedAt()))
                 .build();

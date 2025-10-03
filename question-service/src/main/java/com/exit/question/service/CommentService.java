@@ -25,7 +25,7 @@ public class CommentService {
         Comment comment = factory.createAndSaveComment(request.getTargetId(), request.getWriterId(), request.getContent());
         String authorName = userGrpcClient.getUserName(comment.getAuthorId());
 
-        SendNotificationRequestDto requestDto = factory.createSendNotificationRequestDto(request.getTargetId(), request.getDeviceId());
+        SendNotificationRequestDto requestDto = factory.createSendNotificationRequest(request.getTargetId(), request.getDeviceId());
         notificationGrpcClient.sendNotification(requestDto);
 
         return CreateCommentResponse.newBuilder()
