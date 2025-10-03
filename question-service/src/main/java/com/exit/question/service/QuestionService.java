@@ -17,10 +17,8 @@ import com.exit.question.domain.question.repository.QuestionReportRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.ResponseImage;
-import com.exit.question.domain.response.ResponseReport;
 import com.exit.question.domain.response.repository.ResponseImageRepository;
 import com.exit.question.domain.response.repository.ResponseLikeRepository;
-import com.exit.question.domain.response.repository.ResponseReportRepository;
 import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.service.client.AiGrpcClient;
@@ -59,7 +57,6 @@ public class QuestionService {
     private final ResponseRepository responseRepository;
     private final ResponseImageRepository responseImageRepository;
     private final ResponseLikeRepository responseLikeRepository;
-    private final ResponseReportRepository responseReportRepository;
     private final FileUploadUtil fileUploadUtil;
     private final UserGrpcClient userGrpcClient;
     private final NotificationGrpcClient notificationGrpcClient;
@@ -83,14 +80,6 @@ public class QuestionService {
         return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageUrls, questionWriterName);
     }
 
-    public AnswerAdoptResponse answerAdopt(AnswerAdoptRequest request) {
-        Response adoptedResponse = adoptResponse(request.getResponseId());
-        markQuestionAsAdopted(adoptedResponse);
-        tryToSendAdoptionNotification(request, adoptedResponse);
-
-        return questionGrpcMapper.getAnswerAdoptResponse(adoptedResponse);
-    }
-
     public QuestionReportResponse questionReport(QuestionReportRequest request) {
         Question question = questionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
@@ -100,16 +89,6 @@ public class QuestionService {
 
         QuestionReport savedQuestionReport = questionReportRepository.save(questionReport);
         return questionGrpcMapper.getQuestionReportResponse(savedQuestionReport);
-    }
-
-    public AnswerReportResponse answerReport(AnswerReportRequest request) {
-        Response response = responseRepository.findById(request.getResponseId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
-        ResponseReport responseReport = ResponseReport.from(request);
-
-        ResponseReport savedResponseReport = responseReportRepository.save(responseReport);
-        userGrpcClient.increaseReportCount(response.getResponseWriterId());
-        return questionGrpcMapper.getAnswerReportResponse(savedResponseReport);
     }
 
     @Transactional(readOnly = true)
@@ -230,24 +209,6 @@ public class QuestionService {
         return responseRepository.findAllByQuestionId(questionId, pageRequest).hasNext();
     }
 
-    private void validateQuestionNotAlreadyAdopted(Long questionId) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
-
-        if (Boolean.TRUE.equals(question.getQuestionAnswerAdopt())) {
-            throw new GrpcException(GrpcQuestionErrorCode.EXIST_ADOPTED_RESPONSE);
-        }
-    }
-
-    private Response adoptResponse(Long responseId) {
-        Response response = responseRepository.findById(responseId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
-
-        validateQuestionNotAlreadyAdopted(response.getQuestionId());
-        response.updateResponseAdopt();
-        return responseRepository.save(response);
-    }
-
     private SaveQuestionRequest createSaveQuestionToVectorDBRequest(Question question) {
         return SaveQuestionRequest.newBuilder()
                 .setQuestionId(question.getQuestionId())
@@ -330,38 +291,5 @@ public class QuestionService {
             questionImageRepository.saveAll(questionImages);
         }
         return imageUrls;
-    }
-
-    private void tryToSendAdoptionNotification(AnswerAdoptRequest request, Response response) {
-        try {
-            Question question = questionRepository.findById(response.getQuestionId())
-                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
-
-            String body = truncateContent(response.getResponseContent());
-            SendNotificationRequest notificationRequest =
-                    questionGrpcMapper.getSendNotificationRequest(request.getDeviceId(), body, question);
-            notificationGrpcClient.sendNotification(notificationRequest);
-        } catch (Exception e) {
-            log.error("Failed to send adoption notification for response {}: {}",
-                    response.getResponseId(), e.getMessage(), e);
-        }
-    }
-
-    private void markQuestionAsAdopted(Response response) {
-        Question question = questionRepository.findById(response.getQuestionId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
-
-        question.updateAnswerAdopt();
-        questionRepository.save(question);
-    }
-
-    private String truncateContent(String content) {
-        String subBody;
-        if (content.length() <= 100) {
-            subBody = content.substring(0, content.length() - 1);
-        } else {
-            subBody = content.substring(0, 100);
-        }
-        return subBody;
     }
 }

@@ -1,6 +1,8 @@
 package com.exit.question.service.client;
 
-import com.exit.common.grpc.*;
+import com.exit.common.grpc.NotificationServiceGrpc;
+import com.exit.common.grpc.SendNotificationRequest;
+import com.exit.common.grpc.SendNotificationResponse;
 import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;

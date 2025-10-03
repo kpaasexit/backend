@@ -1,7 +1,7 @@
 package com.exit.question.domain.response;
 
 import com.exit.common.domain.BaseEntity;
-import com.exit.question.controller.dto.request.AnswerCreateRequestDto;
+import com.exit.common.grpc.AnswerCreateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,23 +45,21 @@ public class Response extends BaseEntity {
         this.responseIsAnonymous = responseIsAnonymous;
     }
 
-    public static Response createResponse(AnswerCreateRequestDto answerCreateRequestDto) {
+    public static Response createResponse(AnswerCreateRequest request) {
         return Response.builder()
-                .questionId(answerCreateRequestDto.questionId())
-                .responseWriterId(answerCreateRequestDto.responseWriterId())
-                .responseContent(answerCreateRequestDto.responseContent())
+                .questionId(request.getQuestionId())
+                .responseWriterId(request.getResponseWriterId())
+                .responseContent(request.getResponseContent())
                 .responseAdopt(false)
-                .responseIsAnonymous(answerCreateRequestDto.responseIsAnonymous())
+                .responseIsAnonymous(request.getResponseIsAnonymous())
                 .build();
     }
 
-    public Response updateResponseAdopt() {
+    public void updateResponseAdopt() {
         this.responseAdopt = true;
-        return this;
     }
 
-    public Response updateContent(String content) {
+    public void updateContent(String content) {
         responseContent = content;
-        return this;
     }
 }

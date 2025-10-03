@@ -2,7 +2,6 @@ package com.exit.question.domain.question;
 
 import com.exit.common.domain.BaseEntity;
 import com.exit.common.grpc.QuestionCreateRequest;
-import com.exit.question.controller.dto.request.QuestionCreateRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

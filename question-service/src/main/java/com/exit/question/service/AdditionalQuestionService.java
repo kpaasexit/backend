@@ -34,6 +34,7 @@ import static com.exit.common.util.time.TimeStampUtil.toGrpcTimestamp;
 @Transactional
 @Slf4j
 public class AdditionalQuestionService {
+    private static final String ADDITIONAL_QUESTION_PATH = "ADDITIONAL";
     private final ResponseRepository responseRepository;
     private final FollowUpImageRepository followUpImageRepository;
     private final FollowUpMessageRepository followUpMessageRepository;
@@ -43,8 +44,6 @@ public class AdditionalQuestionService {
     private final NotificationGrpcClient notificationGrpcClient;
     private final AiGrpcClient aiGrpcClient;
 
-    private static final String ADDITIONAL_QUESTION_PATH = "ADDITIONAL";
-
     public CreateAdditionalQuestionMessageResponse createAdditionalQuestionMessage(CreateAdditionalQuestionMessageRequest request) {
         Response response = findResponseById(request.getResponseId());
         FollowUpRoom followUpRoom = findOrCreateFollowUpRoom(response);
@@ -53,12 +52,12 @@ public class AdditionalQuestionService {
 
         Question question = getQuestion(request.getQuestionId());
         boolean isQuestioner = isUserQuestioner(question.getQuestionWriterId(), request.getUserId());
-        if(isQuestioner && response.getResponseWriterId() == 1L){
+        if (isQuestioner && response.getResponseWriterId() == 1L) {
             generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question.getQuestionId());
         }
         MessageItem messageItem = buildMessageItem(savedMessage, imageUrls, isQuestioner);
 
-        if(response.getResponseWriterId() != 1L) {
+        if (response.getResponseWriterId() != 1L) {
             SendNotificationRequestDto requestDto = createSendNotificationRequestDto(messageItem, request.getDeviceId(), response.getResponseWriterId(), question.getQuestionWriterId());
             notificationGrpcClient.sendNotification(requestDto);
         }
@@ -150,8 +149,8 @@ public class AdditionalQuestionService {
 
     private String truncateContent(String content) {
         String subBody;
-        if(content.length() <= 100) {
-            subBody = content.substring(0, content.length()-1);
+        if (content.length() <= 100) {
+            subBody = content.substring(0, content.length() - 1);
         } else {
             subBody = content.substring(0, 100);
         }
@@ -165,17 +164,17 @@ public class AdditionalQuestionService {
             recover = "recoverGenerateAiAnswer"
     )
     private void generateAiAnswerAsync(String additionalQuestion, Long questionId) {
-            // AI 답변 생성 요청
-            String aiAnswer = aiGrpcClient.generateAiAnswer(additionalQuestion, questionId);
+        // AI 답변 생성 요청
+        String aiAnswer = aiGrpcClient.generateAiAnswer(additionalQuestion, questionId);
 
-            // AI 답변을 Response로 저장
-            FollowUpMessage aiFollowUpMessage = FollowUpMessage.builder()
-                    .followUpMessageContent(aiAnswer)
-                    .followUpMessageWriterId(1L)
-                    .build();
+        // AI 답변을 Response로 저장
+        FollowUpMessage aiFollowUpMessage = FollowUpMessage.builder()
+                .followUpMessageContent(aiAnswer)
+                .followUpMessageWriterId(1L)
+                .build();
 
-            FollowUpMessage saved = followUpMessageRepository.save(aiFollowUpMessage);
-            log.info("AI Additional answer generated and saved for additional question ID: {}", saved.getFollowUpMessageId());
+        FollowUpMessage saved = followUpMessageRepository.save(aiFollowUpMessage);
+        log.info("AI Additional answer generated and saved for additional question ID: {}", saved.getFollowUpMessageId());
     }
 
 

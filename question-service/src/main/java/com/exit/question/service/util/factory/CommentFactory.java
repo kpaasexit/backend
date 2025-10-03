@@ -1,5 +1,6 @@
 package com.exit.question.service.util.factory;
 
+import com.exit.common.grpc.SendNotificationRequest;
 import com.exit.question.domain.Comment;
 
 public abstract class CommentFactory {
@@ -7,5 +8,5 @@ public abstract class CommentFactory {
 
     public abstract void deleteComment(Long targetId, Long authorId);
 
-    public abstract SendNotificationRequestDto createSendNotificationRequestDto(Long targetId, String deviceId);
+    public abstract SendNotificationRequest createSendNotificationRequest(Long targetId, String deviceId);
 }
