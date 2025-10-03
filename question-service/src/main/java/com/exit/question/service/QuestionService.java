@@ -246,13 +246,8 @@ public class QuestionService {
             recover = "recoverGenerateAiAnswer"
     )
     private void generateAiAnswerAsync(Question question) {
-        // 질문 제목과 내용을 결합
-        String fullQuestion = String.format("제목: %s 내용: %s",
-                question.getQuestionTitle(),
-                question.getQuestionContent());
-
         // AI 답변 생성 요청
-        String aiAnswer = aiGrpcClient.generateAiAnswer(fullQuestion, question.getQuestionId());
+        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId());
 
         // AI 답변을 Response로 저장
         Response aiResponse = Response.builder()

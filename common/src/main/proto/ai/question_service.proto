@@ -38,8 +38,7 @@ message CategoryResponse {
 
 // AI 답변 생성 요청
 message AnswerRequest {
-    string question = 1;
-    int64 question_id = 2;
+    int64 question_id = 1;
 }
 
 // AI 답변 생성 응답

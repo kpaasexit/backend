@@ -23,7 +23,6 @@ message GetMagazineRequest {
   int64 magazine_id = 1;
 }
 
-
 // response
 message MagazineItem {
   int64 magazine_id = 1;

@@ -17,6 +17,7 @@ import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.exception.GrpcResponseErrorCode;
 import com.exit.question.service.client.AiGrpcClient;
 import com.exit.question.service.client.NotificationGrpcClient;
+import com.exit.question.service.util.AiGrpcMapper;
 import com.exit.question.service.util.NotificationGrpcMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,7 @@ public class AdditionalQuestionService {
     private final NotificationGrpcClient notificationGrpcClient;
     private final AiGrpcClient aiGrpcClient;
     private final NotificationGrpcMapper notificationGrpcMapper;
+    private final AiGrpcMapper aiGrpcMapper;
 
     public CreateAdditionalQuestionMessageResponse createAdditionalQuestionMessage(CreateAdditionalQuestionMessageRequest request) {
         Response response = findResponseById(request.getResponseId());
@@ -55,7 +57,7 @@ public class AdditionalQuestionService {
         Question question = getQuestion(request.getQuestionId());
         boolean isQuestioner = isUserQuestioner(question.getQuestionWriterId(), request.getUserId());
         if (isQuestioner && response.getResponseWriterId() == 1L) {
-            generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question.getQuestionId());
+            generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question);
         }
 
         MessageItem messageItem = buildMessageItem(savedMessage, imageUrls, isQuestioner);
@@ -163,8 +165,9 @@ public class AdditionalQuestionService {
             backoff = @Backoff(delay = 1000, multiplier = 2),
             recover = "recoverGenerateAiAnswer"
     )
-    private void generateAiAnswerAsync(String additionalQuestion, Long questionId) {
-        String aiAnswer = aiGrpcClient.generateAiAnswer(additionalQuestion, questionId);
+    private void generateAiAnswerAsync(String content, Question question) {
+        aiGrpcClient.saveQuestion(aiGrpcMapper.getSaveQuestionRequest(content, question));
+        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId());
 
         FollowUpMessage aiFollowUpMessage = FollowUpMessage.builder()
                 .followUpMessageContent(aiAnswer)
@@ -174,7 +177,6 @@ public class AdditionalQuestionService {
         FollowUpMessage saved = followUpMessageRepository.save(aiFollowUpMessage);
         log.info("AI Additional answer generated and saved for additional question ID: {}", saved.getFollowUpMessageId());
     }
-
 
     /**
      * AI 답변 생성 재시도 실패 시 폴백 메서드
