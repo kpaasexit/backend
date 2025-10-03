@@ -27,13 +27,11 @@ public class AiGrpcClient {
      * @param question 질문 내용 (제목 + 본문)
      * @return AI가 생성한 답변 텍스트
      */
-    public String generateAiAnswer(String question, Long questionId) {
+    public String generateAiAnswer(Long questionId) {
         try {
-            log.info("Requesting AI answer generation for question: {}",
-                    question.substring(0, Math.min(50, question.length())));
+            log.info("Requesting AI answer generation for question: {}", questionId);
 
             AnswerRequest request = AnswerRequest.newBuilder()
-                    .setQuestion(question)
                     .setQuestionId(questionId)
                     .build();
 
