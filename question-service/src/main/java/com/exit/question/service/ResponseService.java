@@ -58,7 +58,7 @@ public class ResponseService {
 
         String subBody = truncateContent(savedResponse.getResponseContent());
         SendNotificationRequest sendNotificationRequest = notificationGrpcMapper.getSendNotificationRequest(
-                "NEW_ANSWER_ON_QUESTION", "deviceId", subBody, question);
+                subBody, "NEW_ANSWER_ON_QUESTION", question);
         notificationGrpcClient.sendNotification(sendNotificationRequest);
 
         return responseGrpcMapper.getAnswerCreateResponse(savedResponse, imageUrls);
@@ -93,7 +93,7 @@ public class ResponseService {
     public AnswerAdoptResponse answerAdopt(AnswerAdoptRequest request) {
         Response adoptedResponse = adoptResponse(request.getResponseId());
         markQuestionAsAdopted(adoptedResponse);
-        tryToSendAdoptionNotification(request, adoptedResponse);
+        tryToSendAdoptionNotification(adoptedResponse);
 
         return responseGrpcMapper.getAnswerAdoptResponse(adoptedResponse);
     }
@@ -140,14 +140,14 @@ public class ResponseService {
         }
     }
 
-    private void tryToSendAdoptionNotification(AnswerAdoptRequest request, Response response) {
+    private void tryToSendAdoptionNotification(Response response) {
         try {
             Question question = questionRepository.findById(response.getQuestionId())
                     .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
 
             String body = truncateContent(response.getResponseContent());
             SendNotificationRequest notificationRequest =
-                    notificationGrpcMapper.getSendNotificationRequest("ANSWER_ADOPTED", request.getDeviceId(), body, question);
+                    notificationGrpcMapper.getSendNotificationRequest(body, "ANSWER_ADOPTED", question);
             notificationGrpcClient.sendNotification(notificationRequest);
         } catch (Exception e) {
             log.error("Failed to send adoption notification for response {}: {}",

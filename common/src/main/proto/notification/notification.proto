@@ -18,7 +18,6 @@ message SendNotificationRequest {
   string type = 3;
   int64 target_id = 4;
   int64 receiver_id = 5;
-  string device_id = 6;
 }
 
 // response

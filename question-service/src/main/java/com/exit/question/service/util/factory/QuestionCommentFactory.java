@@ -50,7 +50,6 @@ public class QuestionCommentFactory extends CommentFactory {
                 .setType("NEW_COMMENT")
                 .setTargetId(targetId)
                 .setReceiverId(dto.receiverId())
-                .setDeviceId(deviceId)
                 .build();
     }
 
