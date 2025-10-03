@@ -3,7 +3,7 @@ syntax = "proto3";
 package quiz;
 
 // 퀴즈 관리 서비스
-service QuizService {
+service AIQuizService {
     // 퀴즈 수정
     rpc UpdateQuiz(UpdateQuizRequest) returns (UpdateQuizResponse);
 

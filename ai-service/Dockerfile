@@ -56,9 +56,9 @@ RUN chmod +x scripts/*.sh && \
 
 # Create appuser and prepare directories with correct permissions
 RUN useradd -m -u 1000 appuser && \
-    mkdir -p /app/model_cache /app/logs && \
+    mkdir -p /app/model_cache /app/logs /app/app/models/embeddings_onnx /app/app/models/home_life_finetuned && \
     chown -R appuser:appuser /app && \
-    chmod 755 /app/model_cache /app/logs
+    chmod 755 /app/model_cache /app/logs /app/app/models/embeddings_onnx /app/app/models/home_life_finetuned
 
 USER appuser
 
@@ -72,4 +72,4 @@ ENV PYTHONUNBUFFERED=1 \
     WORKERS=4 \
     LOG_LEVEL=info
 
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8090", "--workers", "4", "--reload"]
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]

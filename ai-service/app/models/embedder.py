@@ -2,6 +2,9 @@ import hashlib
 import logging
 from typing import Dict, List, Optional, Union
 import numpy as np
+import onnxruntime as ort
+import os
+import json
 
 from app.config import get_settings
 from app.core.exceptions import EmbeddingError
@@ -20,6 +23,107 @@ from app.models.dimension_reducer import get_dimension_reducer
 
 logger = logging.getLogger(__name__)
 
+class ONNXEmbedder:
+    """ONNX-based embedding model wrapper."""
+
+    def __init__(self, model_path: str, tokenizer):
+        self.model_path = model_path
+        self.tokenizer = tokenizer
+        self.session = None
+        self.config = None
+        self._initialize()
+
+    def _initialize(self):
+        """Initialize ONNX session and load config."""
+        onnx_file = os.path.join(self.model_path, "model.onnx")
+        config_file = os.path.join(self.model_path, "config.json")
+
+        if not os.path.exists(onnx_file):
+            raise ValueError(f"ONNX model not found: {onnx_file}")
+
+        # Load ONNX model
+        self.session = ort.InferenceSession(
+            onnx_file,
+            providers=['CPUExecutionProvider']
+        )
+
+        # Load config
+        if os.path.exists(config_file):
+            with open(config_file, 'r') as f:
+                self.config = json.load(f)
+
+        logger.info(f"Loaded ONNX embedder from {self.model_path}")
+
+    def encode(
+        self,
+        sentences: Union[str, List[str]],
+        batch_size: int = 32,
+        convert_to_numpy: bool = True,
+        normalize_embeddings: bool = False
+    ) -> np.ndarray:
+        """
+        Encode sentences to embeddings using ONNX model.
+
+        Args:
+            sentences: Single sentence or list of sentences
+            batch_size: Batch size for processing
+            convert_to_numpy: Always returns numpy (for compatibility)
+            normalize_embeddings: Whether to normalize embeddings
+
+        Returns:
+            Embeddings as numpy array
+        """
+        is_single = isinstance(sentences, str)
+        if is_single:
+            sentences = [sentences]
+
+        all_embeddings = []
+
+        # Process in batches
+        for i in range(0, len(sentences), batch_size):
+            batch = sentences[i:i + batch_size]
+            batch_embeddings = self._encode_batch(batch)
+            all_embeddings.extend(batch_embeddings)
+
+        embeddings = np.array(all_embeddings)
+
+        if normalize_embeddings:
+            embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
+
+        return embeddings[0] if is_single else embeddings
+
+    def _encode_batch(self, sentences: List[str]) -> List[np.ndarray]:
+        """Encode a batch of sentences."""
+        # Tokenize
+        inputs = self.tokenizer(
+            sentences,
+            padding=True,
+            truncation=True,
+            max_length=self.config.get("max_seq_length", 128) if self.config else 128,
+            return_tensors="np"
+        )
+
+        # Prepare ONNX inputs
+        ort_inputs = {
+            "input_ids": inputs["input_ids"].astype(np.int64),
+            "attention_mask": inputs["attention_mask"].astype(np.int64)
+        }
+
+        # Run inference
+        outputs = self.session.run(None, ort_inputs)
+        last_hidden_state = outputs[0]  # (batch_size, seq_len, hidden_dim)
+
+        # Mean pooling
+        attention_mask = inputs["attention_mask"]
+        attention_mask_expanded = np.expand_dims(attention_mask, -1).astype(np.float32)
+
+        sum_embeddings = np.sum(last_hidden_state * attention_mask_expanded, axis=1)
+        sum_mask = np.clip(np.sum(attention_mask_expanded, axis=1), a_min=1e-9, a_max=None)
+        embeddings = sum_embeddings / sum_mask
+
+        return list(embeddings)
+
+
 class TextEmbedder:
     def __init__(self):
         self.settings = get_settings()
@@ -27,6 +131,7 @@ class TextEmbedder:
         self._cache = {}
         self.target_dim = DEFAULT_EMBEDDING_DIM
         self.dimension_reducer = get_dimension_reducer()
+        self._onnx_models = {}  # Cache for ONNX models
 
     def _get_cache_key(self, text: str, prefix: str = "embed") -> str:
         return f"{prefix}:{hashlib.md5(text.encode()).hexdigest()}"
@@ -39,6 +144,35 @@ class TextEmbedder:
 
     def _resize_embedding(self, embedding: np.ndarray, target_dim: int) -> np.ndarray:
         return self.dimension_reducer.reduce_dimension(embedding)
+
+    def _get_onnx_model(self, model_name: str) -> ONNXEmbedder:
+        """Get or load ONNX model."""
+        if model_name in self._onnx_models:
+            return self._onnx_models[model_name]
+
+        # Map model names to ONNX paths
+        onnx_path_map = {
+            "jhgan/ko-sroberta-multitask": "app/models/embeddings_onnx/ko-sroberta",
+            "sentence-transformers/all-MiniLM-L6-v2": "app/models/embeddings_onnx/all-MiniLM-L6-v2"
+        }
+
+        if model_name not in onnx_path_map:
+            raise ValueError(f"No ONNX model mapping for: {model_name}")
+
+        onnx_path = onnx_path_map[model_name]
+
+        # Load tokenizer
+        tokenizer_data = self.model_manager.load_model(
+            model_name=model_name,
+            model_type=ModelType.TOKENIZER
+        )
+        tokenizer = tokenizer_data["model"]
+
+        # Create ONNX embedder
+        onnx_model = ONNXEmbedder(onnx_path, tokenizer)
+        self._onnx_models[model_name] = onnx_model
+
+        return onnx_model
 
     def embed(
         self,
@@ -83,12 +217,7 @@ class TextEmbedder:
         else:
             model_name = self.settings.model.en_embedder_model
 
-        model_data = self.model_manager.load_model(
-            model_name=model_name,
-            model_type=ModelType.EMBEDDER
-        )
-
-        model = model_data["model"]
+        model = self._get_onnx_model(model_name)
 
         embedding = model.encode(
             text,
@@ -303,12 +432,7 @@ class TextEmbedder:
         else:
             model_name = self.settings.model.en_embedder_model
 
-        model_data = self.model_manager.load_model(
-            model_name=model_name,
-            model_type=ModelType.EMBEDDER
-        )
-
-        model = model_data["model"]
+        model = self._get_onnx_model(model_name)
 
         # Batch encode
         embeddings = model.encode(
@@ -368,11 +492,8 @@ class TextEmbedder:
 
         for model_name in models_to_load:
             try:
-                self.model_manager.load_model(
-                    model_name=model_name,
-                    model_type=ModelType.EMBEDDER
-                )
-                logger.info(f"Preloaded model: {model_name}")
+                self._get_onnx_model(model_name)
+                logger.info(f"Preloaded ONNX model: {model_name}")
             except Exception as e:
                 logger.warning(f"Failed to preload model {model_name}: {e}")
 

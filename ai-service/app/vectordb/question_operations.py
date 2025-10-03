@@ -317,3 +317,127 @@ class QuestionVectorOperations(BaseVectorOperations):
 
         except Exception as e:
             self._handle_qdrant_error("update_question", e)
+
+    def add_answer_to_question(
+        self,
+        question_id: int,
+        title: str,
+        answer: str
+    ) -> bool:
+        """
+        Add answer to a question (creates new entry with same question_id).
+
+        Args:
+            question_id: Question ID (same as original question for conversation thread)
+            title: Question title
+            answer: AI-generated answer
+
+        Returns:
+            Success boolean
+        """
+        try:
+            from qdrant_client.models import Filter, FieldCondition, MatchValue
+
+            # Get the original question to copy category_id
+            original = self.get_question(question_id)
+            category_id = original.get("category_id", 1) if original else 1
+
+            # Create embedding from title (for similarity search)
+            # Note: We don't import embedder here to avoid circular dependency
+            # The embedding will be created by the caller if needed
+            # For now, use a dummy vector
+            vector = [0.0] * 384
+
+            # Create payload
+            payload = {
+                "question_id": question_id,
+                "title": title,
+                "category_id": category_id,
+                "answer": answer,  # Store the answer
+                "embedding_type": "answer",
+                "created_at": datetime.utcnow().isoformat(),
+                "updated_at": datetime.utcnow().isoformat()
+            }
+
+            # Create point
+            point_id = str(uuid.uuid4())
+            point = self._create_point(point_id, vector, payload)
+
+            # Insert into Qdrant
+            operation_info = self.client.upsert(
+                collection_name=self.collection_name,
+                points=[point]
+            )
+
+            success = operation_info.status.name == "COMPLETED"
+            if success:
+                logger.info(f"Answer added to question_id: {question_id}")
+            else:
+                logger.error(f"Failed to add answer to question_id: {question_id}")
+
+            return success
+
+        except Exception as e:
+            self._handle_qdrant_error("add_answer_to_question", e)
+
+    def get_latest_question_by_id(self, question_id: int) -> Optional[Dict[str, Any]]:
+        """
+        Get the latest question (not answer) for a given question_id.
+
+        Args:
+            question_id: Question ID
+
+        Returns:
+            Latest question data or None
+        """
+        try:
+            from qdrant_client.models import Filter, FieldCondition, MatchValue
+
+            # Search for questions with this ID, excluding answers
+            result = self.client.scroll(
+                collection_name=self.collection_name,
+                scroll_filter=Filter(
+                    must=[
+                        FieldCondition(
+                            key="question_id",
+                            match=MatchValue(value=question_id)
+                        )
+                    ]
+                ),
+                limit=100,  # Get all items
+                with_payload=True,
+                with_vectors=False
+            )
+
+            if not result or not result[0]:
+                return None
+
+            points = result[0]
+
+            # Filter out answers, keep only questions
+            questions = []
+            for point in points:
+                if point.payload:
+                    payload_dict = dict(point.payload)
+                    embedding_type = payload_dict.get("embedding_type", "")
+                    # Only include actual questions, not answers
+                    if embedding_type != "answer":
+                        questions.append(payload_dict)
+
+            if not questions:
+                return None
+
+            # Sort by created_at and get the latest
+            questions.sort(
+                key=lambda x: x.get("created_at", ""),
+                reverse=True  # Latest first
+            )
+
+            latest = questions[0]
+            logger.info(f"Found latest question for question_id {question_id}: {latest.get('title', '')}")
+
+            return latest
+
+        except Exception as e:
+            logger.warning(f"Failed to get latest question: {e}")
+            return None

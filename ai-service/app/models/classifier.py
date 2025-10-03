@@ -1,8 +1,7 @@
 import os
 import threading
 from typing import List, Optional, Tuple
-import torch
-from torch.nn import functional as F
+import numpy as np
 
 from app.config import get_settings
 from app.core.exceptions import ClassificationError
@@ -36,8 +35,7 @@ class HomeLifeClassifier:
             return
 
         self.settings = get_settings()
-        self.device = torch.device("cpu")
-        self.model = None
+        self.session = None
         self.tokenizer = None
         self._initialized = False
         self._init_lock = threading.Lock()
@@ -52,53 +50,45 @@ class HomeLifeClassifier:
                 return
 
             try:
-                from transformers import RobertaForSequenceClassification, BertTokenizer
+                import onnxruntime as ort
+                from transformers import BertTokenizer
 
                 # Get the base directory for models
                 # In Docker container: /app/app/models/
                 # In local development: /home/ubuntu/backend/ai-service/app/models/
                 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-                finetuned_path = os.path.join(current_dir, "home_life_finetuned")
-                base_path = os.path.join(current_dir, "home_life_classifier")
+                # Fine-tuned model path (with final_model subdirectory)
+                finetuned_path = os.path.join(current_dir, "home_life_finetuned", "final_model")
+                onnx_path = os.path.join(finetuned_path, "model.onnx")
 
-                # Check which path exists and has required files
-                if os.path.exists(os.path.join(finetuned_path, 'config.json')):
-                    model_path = finetuned_path
-                elif os.path.exists(os.path.join(base_path, 'config.json')):
-                    model_path = base_path
-                else:
+                # Check if ONNX model exists
+                if not os.path.exists(onnx_path):
                     # Debug: print available files
                     print(f"Current directory: {current_dir}")
                     print(f"Files in current directory: {os.listdir(current_dir)}")
-                    print(f"Checking finetuned_path: {finetuned_path}, exists: {os.path.exists(finetuned_path)}")
-                    print(f"Checking base_path: {base_path}, exists: {os.path.exists(base_path)}")
-                    raise FileNotFoundError(f"Model files not found. Searched in: {finetuned_path} and {base_path}")
+                    print(f"Checking onnx_path: {onnx_path}, exists: {os.path.exists(onnx_path)}")
+                    raise FileNotFoundError(f"ONNX model not found at: {onnx_path}")
 
-                # Explicitly set to use local files only
-                os.environ['TRANSFORMERS_OFFLINE'] = '1'
-
-                # Load tokenizer using BertTokenizer (as specified in config)
+                # Load tokenizer
                 self.tokenizer = BertTokenizer.from_pretrained(
-                    model_path,
+                    finetuned_path,
                     local_files_only=True
                 )
 
-                torch.set_default_dtype(torch.float32)
+                # Create ONNX Runtime session
+                sess_options = ort.SessionOptions()
+                sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+                sess_options.intra_op_num_threads = 4
 
-                # Load the model
-                self.model = RobertaForSequenceClassification.from_pretrained(
-                    model_path,
-                    num_labels=8,
-                    local_files_only=True
+                self.session = ort.InferenceSession(
+                    onnx_path,
+                    sess_options=sess_options,
+                    providers=['CPUExecutionProvider']
                 )
-
-                self.model = self.model.float()
-
-                self.model = self.model.to(self.device)
-                self.model.eval()
 
                 self._initialized = True
+                print(f"✓ ONNX model loaded from: {onnx_path}")
 
             except Exception as e:
                 raise ClassificationError(text="", reason=f"Model initialization failed: {e}")
@@ -111,24 +101,29 @@ class HomeLifeClassifier:
             self.initialize()
 
         try:
+            # Tokenize input
             inputs = self.tokenizer(
                 text,
                 truncation=True,
-                padding=True,
+                padding="max_length",
                 max_length=128,
-                return_tensors="pt"
+                return_tensors="np"
             )
 
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            # Run inference
+            ort_inputs = {
+                "input_ids": inputs["input_ids"].astype(np.int64),
+                "attention_mask": inputs["attention_mask"].astype(np.int64)
+            }
+            logits = self.session.run(None, ort_inputs)[0]
 
-            with torch.no_grad():
-                outputs = self.model(**inputs)
-                logits = outputs.logits
+            # Apply softmax to get probabilities
+            logits_exp = np.exp(logits - np.max(logits, axis=-1, keepdims=True))
+            probabilities = logits_exp / np.sum(logits_exp, axis=-1, keepdims=True)
 
-                probabilities = F.softmax(logits, dim=-1)
-
-                predicted_idx = torch.argmax(probabilities, dim=-1).item()
-                confidence = probabilities[0, predicted_idx].item()
+            # Get prediction
+            predicted_idx = np.argmax(probabilities, axis=-1)[0]
+            confidence = probabilities[0, predicted_idx]
 
             category = HOME_LIFE_CATEGORIES[predicted_idx]
 
@@ -145,38 +140,48 @@ class HomeLifeClassifier:
             return []
 
         try:
+            # Tokenize all inputs
             inputs = self.tokenizer(
                 texts,
                 truncation=True,
-                padding=True,
+                padding="max_length",
                 max_length=128,
-                return_tensors="pt"
+                return_tensors="np"
             )
 
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            # Run inference
+            ort_inputs = {
+                "input_ids": inputs["input_ids"].astype(np.int64),
+                "attention_mask": inputs["attention_mask"].astype(np.int64)
+            }
+            logits = self.session.run(None, ort_inputs)[0]
 
-            with torch.no_grad():
-                outputs = self.model(**inputs)
-                logits = outputs.logits
+            # Apply softmax to get probabilities
+            logits_exp = np.exp(logits - np.max(logits, axis=-1, keepdims=True))
+            probabilities = logits_exp / np.sum(logits_exp, axis=-1, keepdims=True)
 
-                probabilities = F.softmax(logits, dim=-1)
-
-                predicted_indices = torch.argmax(probabilities, dim=-1)
-                confidences = torch.max(probabilities, dim=-1).values
+            # Get predictions
+            predicted_indices = np.argmax(probabilities, axis=-1)
+            confidences = np.max(probabilities, axis=-1)
 
             results = []
-            for idx, conf in zip(predicted_indices.tolist(), confidences.tolist()):
+            for idx, conf in zip(predicted_indices, confidences):
                 category = HOME_LIFE_CATEGORIES[idx]
                 results.append((category, float(conf)))
 
             return results
 
         except Exception as e:
+            # Fallback to single classification
             return [self.classify(text) for text in texts]
 
     def get_category_id(self, category_name: str) -> Optional[int]:
+        """
+        카테고리 이름을 ID로 변환 (API용 1-based)
+        학습 시에는 0-based를 사용하지만, API에서는 1-based ID를 사용
+        """
         try:
-            return HOME_LIFE_CATEGORIES.index(category_name)
+            return HOME_LIFE_CATEGORIES.index(category_name) + 1
         except ValueError:
             return None
 

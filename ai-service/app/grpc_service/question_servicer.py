@@ -20,7 +20,7 @@ from protos.generated import question_service_pb2
 logger = LoggerSetup.get_logger(__name__)
 
 
-class QuestionServicer(question_service_pb2_grpc.QuestionServiceServicer):
+class QuestionServicer(question_service_pb2_grpc.AIQuestionServiceServicer):
     """질문 처리 관련 gRPC 서비스 구현."""
 
     def __init__(self):
@@ -46,3 +46,7 @@ class QuestionServicer(question_service_pb2_grpc.QuestionServiceServicer):
     def SaveQuestion(self, request, context):
         """벡터 데이터베이스에 질문 저장."""
         return self.question_handler.save_question(request, context)
+
+    def GetQuestions(self, request, context):
+        """질문 ID로 질문 목록 조회."""
+        return self.question_handler.get_questions(request, context)

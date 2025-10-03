@@ -129,13 +129,14 @@ dmypy.json
 *.swo
 *~
 
-# Model cache
+# Model cache (temporary/downloaded models)
 model_cache/
-*.onnx
 *.bin
 *.h5
 *.pt
-*.pth
+*.safetensors
+
+# Note: ONNX models in app/models/home_life_finetuned/final_model/ are tracked for deployment
 
 # gRPC generated files
 protos/generated/
@@ -160,17 +161,19 @@ qdrant_storage/
 # Deploy configurations
 deploy/
 
-# Model files
-*.safetensors
-*.onnx
-
-# Local model files and data
+# Training and temporary model files (exclude final trained models)
 app/models/home_life_classifier/
-app/models/home_life_finetuned/
 app/models/data/
+app/models/fine_tuned/
+app/models/training_data/
 *.pth
 *.xlsx
 training_results.json
+checkpoints/
+
+# ONNX models (downloaded from HuggingFace)
+app/models/embeddings_onnx/
+app/models/home_life_finetuned/
 
 # Temporary files
 *.tmp

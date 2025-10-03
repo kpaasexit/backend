@@ -6,7 +6,6 @@ import time
 from typing import Dict, Any, Optional, Callable
 
 import psutil
-import torch
 
 from app.config import get_settings
 from app.core.logger import LoggerSetup
@@ -51,17 +50,6 @@ class MemoryMonitor:
             }
         }
 
-        # Add GPU memory if available
-        if torch.cuda.is_available():
-            try:
-                stats["gpu"] = {
-                    "allocated_mb": torch.cuda.memory_allocated() / 1024 / 1024,
-                    "reserved_mb": torch.cuda.memory_reserved() / 1024 / 1024,
-                    "max_memory_mb": torch.cuda.max_memory_allocated() / 1024 / 1024
-                }
-            except Exception as e:
-                logger.warning(f"Failed to get GPU memory stats: {e}")
-
         return stats
 
     def check_memory_threshold(self) -> bool:
@@ -104,11 +92,6 @@ class MemoryMonitor:
         # Python garbage collection
         gc.collect()
         gc.collect()  # Run twice to ensure cleanup
-
-        # Clear PyTorch cache if available
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-            torch.cuda.synchronize()
 
         after_stats = self.get_memory_stats()
 
