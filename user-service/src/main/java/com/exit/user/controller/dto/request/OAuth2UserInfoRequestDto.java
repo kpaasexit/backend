@@ -1,5 +1,6 @@
 package com.exit.user.controller.dto.request;
 
+import com.exit.user.domain.DeviceType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,6 @@ public class OAuth2UserInfoRequestDto {
     private String name;
     private String profileImageUrl;
     private String provider;
+    private String deviceId;
+    private DeviceType deviceType;
 }

@@ -4,6 +4,7 @@ import com.exit.gateway.controller.user.dto.response.auth.oauth2.KakaoOAuth2User
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.NaverOAuth2UserInfo;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
 import com.exit.gateway.entity.CustomOAuth2User;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +43,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         log.info("OAuth2 로그인 성공 - Provider: {}, User: {}", userInfo.getProvider(), userInfo.getName());
 
         try {
-            // User-service에 gRPC로 소셜로그인 처리 요청
-            // authorization code 대신 이미 획득한 사용자 정보를 전달
+            // Device 관련 Cookie 삭제
+            deleteCookie(response, "device_id");
+            deleteCookie(response, "device_type");
 
             // JWT 토큰과 함께 프론트엔드로 리다이렉트
             String finalRedirectUrl = String.format(
@@ -60,5 +62,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             log.error("OAuth2 로그인 처리 중 오류 발생", e);
             response.sendRedirect(redirectUrl + "?error=login_failed");
         }
+    }
+
+    private void deleteCookie(HttpServletResponse response, String name) {
+        Cookie cookie = new Cookie(name, null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }

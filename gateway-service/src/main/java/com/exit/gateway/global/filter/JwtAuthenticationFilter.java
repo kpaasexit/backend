@@ -1,4 +1,4 @@
-package com.exit.gateway.config.filter;
+package com.exit.gateway.global.filter;
 
 import com.exit.common.auth.jwt.JwtAuthenticationProvider;
 import com.exit.common.auth.jwt.JwtAuthenticationToken;

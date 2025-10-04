@@ -15,6 +15,7 @@ service UserService {
   rpc UpdateAdditionalUserInfo(UpdateAdditionalUserInfoRequest) returns (UpdateAdditionalUserInfoResponse);
   rpc GetUserNameAndProfile(GetUserNameRequest) returns (UpdateAdditionalUserInfoResponse);
   rpc GetFcmToken(GetFcmTokenRequest) returns (GetFcmTokenResponse);
+  rpc UpdateDevice(UpdateDeviceRequest) returns (UpdateDeviceResponse);
 }
 
 // request
@@ -38,6 +39,12 @@ message UpdateAdditionalUserInfoRequest {
 
 message GetFcmTokenRequest {
   int64 user_id = 1;
+}
+
+message UpdateDeviceRequest {
+  int64 user_id = 1;
+  string device_id = 2;
+  string device_type = 3;
 }
 
 // response
@@ -64,4 +71,10 @@ message UpdateAdditionalUserInfoResponse {
 
 message GetFcmTokenResponse {
   repeated string fcm_token = 1;
+}
+
+message UpdateDeviceResponse {
+  int64 user_id = 1;
+  string device_id = 2;
+  string device_type = 3;
 }

@@ -20,15 +20,18 @@ message SocialLoginRequest {
   string social_id = 2;
   string email = 3;
   string name = 4;
+  string device_id = 5;
+  string device_type = 6; // "WEB", "ANDROID", "IOS"
 }
 
 message RefreshTokenRequest {
   string refresh_token = 1;
+  string device_id = 2;
 }
 
 message LogoutRequest {
   int64 user_id = 1;
-  string refresh_token = 2;
+  string device_id = 2;
 }
 
 // 소셜로그인 응답 메시지들

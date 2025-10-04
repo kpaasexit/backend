@@ -7,6 +7,7 @@ import com.exit.user.domain.Users;
 import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
 import com.exit.user.exception.GrpcUserErrorCode;
+import com.exit.user.service.auth.JwtTokenRedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class UserService {
     private final FileUploadUtil fileUploadUtil;
 
     private final String PROFILE_FOLDER = "profile";
+    private final JwtTokenRedisService jwtTokenRedisService;
 
     public void increaseReportCount(IncreaseReportCountRequest request) {
         Users user = userRepository.findById(request.getUserId())

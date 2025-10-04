@@ -1,6 +1,6 @@
 package com.exit.common.auth.jwt;
 
-import com.exit.common.auth.jwt.dto.UserIdRequest;
+import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.properties.JwtProperties;
 import com.exit.common.response.error.rest.UserErrorCode;
@@ -24,28 +24,30 @@ public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
 
     // AccessToken 생성
-    public String generateAccessToken(UserIdRequest userDetail) {
+    public String generateAccessToken(UserDetailRequest userDetail) {
         Claims claims = getClaimsFrom(userDetail);
         return getTokenFrom(claims, jwtProperties.getAccessTokenExpiration() * 1000);
     }
 
     // AccessToken용 Claim 생성
-    private Claims getClaimsFrom(@Valid UserIdRequest userDetail) {
+    private Claims getClaimsFrom(@Valid UserDetailRequest userDetail) {
         Claims claims = Jwts.claims();
         claims.put("userId", userDetail.userId());
+        claims.put("deviceId", userDetail.userId());
         return claims;
     }
 
     // RefrshToken 생성
-    public String generateRefreshToken(@Valid UserIdRequest user, String tokenId) {
+    public String generateRefreshToken(@Valid UserDetailRequest user, String tokenId) {
         Claims claims = getClaimsFrom(user, tokenId);
         return getTokenFrom(claims, jwtProperties.getRefreshTokenExpiration() * 1000);
     }
 
     // RefreshToken용 Claim 생성
-    private Claims getClaimsFrom(@Valid UserIdRequest user, String tokenId) {
+    private Claims getClaimsFrom(@Valid UserDetailRequest user, String tokenId) {
         Claims claims = Jwts.claims();
         claims.put("userId", user.userId());
+        claims.put("deviceId", user.userId());
         claims.put("tokenId", tokenId);
         return claims;
     }
@@ -88,6 +90,32 @@ public class JwtTokenProvider {
         try {
             Claims claims = getClaimsByToken(token);
             return claims.get("userId", Long.class);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
+        } catch (Exception e) {
+            throw new RestApiException(UserErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    // 토큰으로부터 디바이스 ID 얻기
+    public String getDeviceIdFromToken(String token) {
+        try {
+            Claims claims = getClaimsByToken(token);
+            return claims.get("deviceId", String.class);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
+        } catch (Exception e) {
+            throw new RestApiException(UserErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    // 토큰으로부터 유저 상세 정보 얻기
+    public Member getUserDetailFromToken(String token) {
+        try {
+            Claims claims = getClaimsByToken(token);
+            Long userId = claims.get("userId", Long.class);
+            String deviceId = claims.get("deviceId", String.class);
+            return new Member(userId, deviceId);
         } catch (ExpiredJwtException e) {
             throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
         } catch (Exception e) {
