@@ -1,7 +1,8 @@
 package com.exit.gateway.service.question;
 
 import com.exit.common.grpc.*;
-import com.exit.gateway.controller.question.dto.response.question.*;
+import com.exit.gateway.controller.question.dto.response.question.CreateAdditionalQuestionMessageResponseDto;
+import com.exit.gateway.controller.question.dto.response.question.GetAdditionalQuestionResponseDto;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

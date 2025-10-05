@@ -3,19 +3,19 @@ package com.exit.common.auth.jwt;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
-    private Long userId;
+    private Member member;
     private String token;
 
     public JwtAuthenticationToken(String token) {
         super(null);
-        this.userId = null;
+        this.member = null;
         this.token = token;
         setAuthenticated(false);
     }
 
-    public JwtAuthenticationToken(Long userId, String token) {
+    public JwtAuthenticationToken(Member member, String token) {
         super(null);
-        this.userId = userId;
+        this.member = member;
         this.token = token;
         super.setAuthenticated(true);
     }
@@ -27,7 +27,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return userId;
+        return member;
     }
 
     @Override

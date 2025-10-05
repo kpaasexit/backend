@@ -5,13 +5,14 @@ import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.success.AuthSuccessCode;
 import com.exit.gateway.controller.user.dto.request.auth.RefreshTokenRequestDto;
 import com.exit.gateway.controller.user.dto.response.auth.TokenResponseDto;
+import com.exit.gateway.global.annotation.DeviceId;
+import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.user.UserGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,10 +27,12 @@ public class AuthController {
     private final UserGrpcClient userGrpcClient;
 
     @PostMapping("/refresh")
-    public SuccessResponse<TokenResponseDto> refresh(@Valid @RequestBody RefreshTokenRequestDto request) {
+    public SuccessResponse<TokenResponseDto> refresh(
+            @Valid @RequestBody RefreshTokenRequestDto request,
+            @DeviceId String deviceId) {
         try {
             log.info("Token refresh request received");
-            RefreshTokenResponse grpcResponse = userGrpcClient.refreshToken(request.getRefreshToken());
+            RefreshTokenResponse grpcResponse = userGrpcClient.refreshToken(request.getRefreshToken(), deviceId);
 
             TokenResponseDto response = new TokenResponseDto(
                     grpcResponse.getAccessToken(),
@@ -48,10 +51,13 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public SuccessResponse<String> logout(@AuthenticationPrincipal Long userId) {
+    public SuccessResponse<String> logout(
+            @LoginUser Long userId,
+            @DeviceId String deviceId
+    ) {
         try {
             log.info("Logout request received for userId: {}", userId);
-            userGrpcClient.logout(userId);
+            userGrpcClient.logout(userId, deviceId);
 
             return SuccessResponse.of(AuthSuccessCode.LOGIN_SUCCESS, "로그아웃이 완료되었습니다.");
         } catch (StatusRuntimeException e) {

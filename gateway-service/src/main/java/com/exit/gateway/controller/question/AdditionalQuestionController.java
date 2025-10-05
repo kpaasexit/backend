@@ -11,6 +11,7 @@ import com.exit.common.response.success.QuestionSuccessCode;
 import com.exit.gateway.controller.question.dto.request.question.CreateAdditionalQuestionMessageRequestDto;
 import com.exit.gateway.controller.question.dto.response.question.CreateAdditionalQuestionMessageResponseDto;
 import com.exit.gateway.controller.question.dto.response.question.GetAdditionalQuestionResponseDto;
+import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.AdditionalQuestionGrpcClient;
 import com.google.protobuf.ByteString;
 import io.grpc.Status;
@@ -18,7 +19,6 @@ import io.grpc.StatusRuntimeException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,7 +35,7 @@ public class AdditionalQuestionController {
 
     @PostMapping(value = "/message", consumes = "multipart/form-data")
     public SuccessResponse<CreateAdditionalQuestionMessageResponseDto> createAdditionalQuestionMessage(
-            @AuthenticationPrincipal Long userId,
+            @LoginUser Long userId,
             @Valid @ModelAttribute CreateAdditionalQuestionMessageRequestDto request) {
         try {
             log.info("Create additional question message request received");

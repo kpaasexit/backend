@@ -7,12 +7,12 @@ import com.exit.common.response.error.rest.QuizErrorCode;
 import com.exit.common.response.success.QuizSuccessCode;
 import com.exit.gateway.controller.quiz.dto.request.quiz.ReportQuizRequestDto;
 import com.exit.gateway.controller.quiz.dto.response.quiz.*;
+import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.quiz.QuizGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class QuizController {
     private final QuizGrpcClient quizGrpcClient;
 
     @GetMapping("/categories/statistics")
-    public SuccessResponse<List<GetCategoryStatisticsResponseDto>> getCategoryStatistics(@AuthenticationPrincipal Long userId) {
+    public SuccessResponse<List<GetCategoryStatisticsResponseDto>> getCategoryStatistics(@LoginUser Long userId) {
         try {
             log.info("Get category statistics request received for userId: {}", userId);
             GetCategoryStatisticsResponse response = quizGrpcClient.getCategoryStatistics(userId);
@@ -43,7 +43,7 @@ public class QuizController {
     }
 
     @GetMapping("/{categoryId}")
-    public SuccessResponse<GetQuizResponseDto> getQuiz(@PathVariable Long categoryId, @AuthenticationPrincipal Long userId) {
+    public SuccessResponse<GetQuizResponseDto> getQuiz(@PathVariable Long categoryId, @LoginUser Long userId) {
         try {
             log.info("Get quiz request received for categoryId: {}, userId: {}", categoryId, userId);
             GetQuizResponse response = quizGrpcClient.getQuiz(categoryId, userId);
@@ -65,7 +65,7 @@ public class QuizController {
     public SuccessResponse<SubmitAnswerResponseDto> submitAnswer(
             @PathVariable Long quizId,
             @RequestParam("answer") String answer,
-            @AuthenticationPrincipal Long userId) {
+            @LoginUser Long userId) {
         try {
             log.info("Submit answer request received for quizId: {}, userId: {}, answer:{}", quizId, userId, answer);
             SubmitAnswerResponse response = quizGrpcClient.submitAnswer(quizId, answer, userId);
@@ -87,7 +87,7 @@ public class QuizController {
     public SuccessResponse<ReportQuizResponseDto> reportQuiz(
             @PathVariable Long quizId,
             @RequestBody ReportQuizRequestDto requestDto,
-            @AuthenticationPrincipal Long userId) {
+            @LoginUser Long userId) {
         try {
             log.info("Report quiz request received for quizId: {}, userId: {}", quizId, userId);
             ReportQuizResponse response = quizGrpcClient.reportQuiz(quizId, userId, requestDto);
@@ -106,7 +106,7 @@ public class QuizController {
 
     @GetMapping("/solved")
     public SuccessResponse<GetSolvedQuizResponseDto> getSolvedQuiz(
-            @AuthenticationPrincipal Long userId,
+            @LoginUser Long userId,
             @RequestParam List<Long> categoryIds,
             @RequestParam Integer pageNum
     ) {

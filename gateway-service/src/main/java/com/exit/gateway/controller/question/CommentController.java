@@ -8,13 +8,13 @@ import com.exit.common.response.error.rest.QuestionErrorCode;
 import com.exit.common.response.success.QuestionSuccessCode;
 import com.exit.gateway.controller.question.dto.request.comment.CreateCommentRequestDto;
 import com.exit.gateway.controller.question.dto.response.question.CreateCommentResponseDto;
+import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.CommentGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,7 +28,7 @@ public class CommentController {
     @PostMapping
     public SuccessResponse<CreateCommentResponseDto> createComment(
             @Valid @RequestBody CreateCommentRequestDto request,
-            @AuthenticationPrincipal Long userId) {
+            @LoginUser Long userId) {
         try {
             log.info("Comment create request received for targetId: {}, commentType: {}",
                     request.targetId(), request.commentType());
@@ -55,7 +55,7 @@ public class CommentController {
     public SuccessResponse<Void> deleteComment(
             @PathVariable Long commentId,
             @RequestParam String commentType,
-            @AuthenticationPrincipal Long userId) {
+            @LoginUser Long userId) {
         try {
             log.info("Comment delete request received for commentId: {}, commentType: {}",
                     commentId, commentType);

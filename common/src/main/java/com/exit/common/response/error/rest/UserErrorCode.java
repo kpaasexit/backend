@@ -12,7 +12,9 @@ public enum UserErrorCode implements ErrorCode {
     EXPIRED_TOKEN("AUTH_ERR_003", HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     INVALID_REDIRECT_URI("AUTH_ERR_004", HttpStatus.BAD_REQUEST, "유효하지 않은 리다이렉트 경로입니다."),
     UNSUPPORTED_PROVIDER("AUTH_ERR_005", HttpStatus.BAD_REQUEST, "지원하지 않는 OAuth2 제공자입니다."),
-    UPDATE_ADDITIONAL_INFO_FAIL("AUTH_ERR_006", HttpStatus.BAD_REQUEST, "추가 정보 업데이트에 실패하였습니다.");
+    UPDATE_ADDITIONAL_INFO_FAIL("AUTH_ERR_006", HttpStatus.BAD_REQUEST, "추가 정보 업데이트에 실패하였습니다."),
+    UPDATE_DEVICE_FAIL("AUTH_ERR_007", HttpStatus.BAD_REQUEST, "디바이스 업데이트에 실패하였습니다."),
+    ;
 
     private final String developCode;
     private final HttpStatus httpStatus;

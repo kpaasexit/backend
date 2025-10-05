@@ -1,6 +1,5 @@
 package com.exit.user.service.auth;
 
-import com.exit.common.auth.jwt.dto.UserIdRequest;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.*;
 import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
@@ -23,13 +22,13 @@ public class AuthGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImpl
                             StreamObserver<SocialLoginResponse> responseObserver) {
         try {
             log.info("Social login with user info request received for provider: {}", request.getProvider());
-
             // SocialLoginWithUserInfoRequest를 OAuth2UserInfo로 변환
             OAuth2UserInfoRequestDto oauth2UserInfoRequestDto = OAuth2UserInfoRequestDto.builder()
                     .socialId(request.getSocialId())
                     .email(request.getEmail())
                     .name(request.getName())
                     .provider(request.getProvider())
+                    .deviceId(request.getDeviceId())
                     .build();
 
             // 소셜 로그인 처리 (회원가입 or 로그인)
@@ -103,12 +102,9 @@ public class AuthGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImpl
     @Override
     public void logout(LogoutRequest request, StreamObserver<LogoutResponse> responseObserver) {
         try {
-            log.info("Logout request received for userId: {}", request.getUserId());
+            log.info("Logout request received for userId: {}, deviceId: {}", request.getUserId(), request.getDeviceId());
 
-            // 기존 서비스 호출
-            UserIdRequest userIdRequest = new UserIdRequest(request.getUserId());
-
-            authService.logout(userIdRequest);
+            authService.logout(request.getUserId(), request.getDeviceId());
 
             // gRPC 응답
             LogoutResponse grpcResponse = LogoutResponse.newBuilder()

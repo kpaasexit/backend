@@ -13,7 +13,7 @@ public record MessageItemDto(
         Boolean isQuestioner,
         Long messageId,
         String content,
-        List<String>images,
+        List<String> images,
         LocalDateTime createdAt
 ) {
     public static MessageItemDto from(MessageItem messageItem) {

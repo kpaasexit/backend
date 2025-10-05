@@ -27,10 +27,6 @@ public class UserFcmToken extends BaseEntity {
     @Column(name = "token", length = 255)
     private String token;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "device_type")
-    private DeviceType deviceType;
-
     @Column(name = "device_id", length = 255)
     private String deviceId;
 
@@ -38,11 +34,9 @@ public class UserFcmToken extends BaseEntity {
     private Boolean active;
 
     @Builder
-    public UserFcmToken(Users user, String token, DeviceType deviceType,
-                        String deviceId, Boolean active) {
+    public UserFcmToken(Users user, String token, String deviceId, Boolean active) {
         this.user = user;
         this.token = token;
-        this.deviceType = deviceType;
         this.deviceId = deviceId;
         this.active = active != null ? active : true;
     }

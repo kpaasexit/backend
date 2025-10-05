@@ -1,6 +1,6 @@
-package com.exit.gateway.config;
+package com.exit.gateway.global.config;
 
-import com.exit.gateway.config.filter.JwtAuthenticationFilter;
+import com.exit.gateway.global.filter.JwtAuthenticationFilter;
 import com.exit.gateway.handler.OAuth2LoginFailureHandler;
 import com.exit.gateway.handler.OAuth2LoginSuccessHandler;
 import com.exit.gateway.service.user.CustomOAuth2UserService;

@@ -3,8 +3,10 @@ package com.exit.gateway.service.user;
 import com.exit.common.grpc.*;
 import com.exit.gateway.controller.user.dto.request.user.UpdateAdditionalUserInfoRequestDto;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
+import com.exit.gateway.service.user.util.UserGrpcMapper;
 import com.google.protobuf.ByteString;
 import io.grpc.StatusRuntimeException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
@@ -14,37 +16,41 @@ import java.io.IOException;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserGrpcClient {
+    private final UserGrpcMapper userGrpcMapper;
     @GrpcClient("user-service")
     private SocialAuthServiceGrpc.SocialAuthServiceBlockingStub socialAuthServiceStub;
     @GrpcClient("user-service")
     private UserServiceGrpc.UserServiceBlockingStub userServiceStub;
 
-    public SocialLoginResponse socialLogin(OAuth2UserInfo userInfo) {
+    public SocialLoginResponse socialLogin(OAuth2UserInfo userInfo, String deviceId) {
         try {
-            // OAuth2UserInfo를 gRPC SocialLoginWithUserInfoRequest로 변환
             SocialLoginRequest request = SocialLoginRequest.newBuilder()
                     .setProvider(userInfo.getProvider())
                     .setSocialId(userInfo.getProviderId())
                     .setEmail(userInfo.getEmail() != null ? userInfo.getEmail() : "")
                     .setName(userInfo.getName() != null ? userInfo.getName() : "")
+                    .setDeviceId(deviceId)
                     .build();
 
-            log.debug("Sending social login with user info via gRPC: {}", userInfo.getProvider());
+            log.debug("Sending social login via gRPC - provider: {}, deviceId: {}",
+                    userInfo.getProvider(), deviceId);
             SocialLoginResponse response = socialAuthServiceStub.socialLogin(request);
             log.debug("Received social login response via gRPC");
 
             return response;
         } catch (StatusRuntimeException e) {
-            log.error("gRPC social login with user info failed: {}", e.getStatus(), e);
+            log.error("gRPC social login failed: {}", e.getStatus(), e);
             throw e;
         }
     }
 
-    public RefreshTokenResponse refreshToken(String refreshToken) {
+    public RefreshTokenResponse refreshToken(String refreshToken, String deviceId) {
         try {
             RefreshTokenRequest request = RefreshTokenRequest.newBuilder()
                     .setRefreshToken(refreshToken)
+                    .setDeviceId(deviceId)
                     .build();
 
             log.debug("Sending refresh token request via gRPC: {}", request);
@@ -58,10 +64,11 @@ public class UserGrpcClient {
         }
     }
 
-    public LogoutResponse logout(Long userId) {
+    public LogoutResponse logout(Long userId, String deviceId) {
         try {
             LogoutRequest request = LogoutRequest.newBuilder()
                     .setUserId(userId)
+                    .setDeviceId(deviceId)
                     .build();
 
             log.debug("Sending logout request via gRPC: {}", request);
