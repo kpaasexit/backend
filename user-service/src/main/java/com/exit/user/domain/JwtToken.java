@@ -18,5 +18,4 @@ public class JwtToken implements Serializable {
     private Long userId;
     private Long expiresAt;
     private String deviceId;
-    private DeviceType deviceType;
 }

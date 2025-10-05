@@ -24,7 +24,7 @@ public class UserGrpcClient {
     @GrpcClient("user-service")
     private UserServiceGrpc.UserServiceBlockingStub userServiceStub;
 
-    public SocialLoginResponse socialLogin(OAuth2UserInfo userInfo, String deviceId, String deviceType) {
+    public SocialLoginResponse socialLogin(OAuth2UserInfo userInfo, String deviceId) {
         try {
             SocialLoginRequest request = SocialLoginRequest.newBuilder()
                     .setProvider(userInfo.getProvider())
@@ -32,11 +32,10 @@ public class UserGrpcClient {
                     .setEmail(userInfo.getEmail() != null ? userInfo.getEmail() : "")
                     .setName(userInfo.getName() != null ? userInfo.getName() : "")
                     .setDeviceId(deviceId)
-                    .setDeviceType(deviceType != null ? deviceType : "WEB")
                     .build();
 
-            log.debug("Sending social login via gRPC - provider: {}, deviceId: {}, deviceType: {}",
-                    userInfo.getProvider(), deviceId, deviceType);
+            log.debug("Sending social login via gRPC - provider: {}, deviceId: {}",
+                    userInfo.getProvider(), deviceId);
             SocialLoginResponse response = socialAuthServiceStub.socialLogin(request);
             log.debug("Received social login response via gRPC");
 

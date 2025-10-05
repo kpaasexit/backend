@@ -1,14 +1,15 @@
 package com.exit.user.service.auth;
 
 import com.exit.common.auth.jwt.JwtTokenProvider;
-import com.exit.common.auth.jwt.dto.UserIdRequest;
+import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
 import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
 import com.exit.user.controller.dto.response.LoginSuccessResponse;
-import com.exit.user.domain.DeviceType;
 import com.exit.user.domain.JwtToken;
+import com.exit.user.domain.UserFcmToken;
 import com.exit.user.domain.Users;
+import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
 import com.exit.user.exception.GrpcUserErrorCode;
 import com.exit.user.util.NicknameGenerator;
@@ -26,6 +27,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenRedisService jwtTokenRedisService;
+    private final UserFcmTokenRepository userFcmTokenRepository;
 
     public LoginSuccessResponse socialLogin(OAuth2UserInfoRequestDto oauth2UserInfoRequestDto) {
         try {
@@ -38,9 +40,8 @@ public class AuthService {
 
             String deviceId = oauth2UserInfoRequestDto.getDeviceId();
 
-            JwtToken jwtToken = createJwtToken(user, deviceId, oauth2UserInfoRequestDto.getDeviceType());
-            jwtTokenRedisService.saveJwtToken(user.getUserId(), deviceId, jwtToken);
-
+            JwtToken jwtToken = createAndSaveJwtToken(user, deviceId);
+            createAndSaveFcmToken(oauth2UserInfoRequestDto, user, deviceId);
             return new LoginSuccessResponse(
                     jwtToken.getAccessToken(),
                     jwtToken.getRefreshToken(),
@@ -58,20 +59,14 @@ public class AuthService {
             Long userId = jwtTokenProvider.getUserIdFromToken(request.refreshToken());
             String deviceId = request.deviceId();
 
-            if (deviceId == null || deviceId.isEmpty()) {
-                throw new GrpcException(GrpcUserErrorCode.INVALID_REFRESH_TOKEN);
-            }
-
             jwtTokenRedisService.validJwtToken(userId, deviceId, request.refreshToken());
 
             Users user = userRepository.findById(userId)
                     .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
 
-            JwtToken oldToken = jwtTokenRedisService.getJwtToken(userId, deviceId);
-            DeviceType deviceType = oldToken.getDeviceType();
+            jwtTokenRedisService.deleteJwtToken(userId, deviceId);
 
-            JwtToken newJwtToken = createJwtToken(user, deviceId, deviceType);
-            jwtTokenRedisService.saveJwtToken(userId, deviceId, newJwtToken);
+            JwtToken newJwtToken = createAndSaveJwtToken(user, deviceId);
 
             return new LoginSuccessResponse(
                     newJwtToken.getAccessToken(),
@@ -124,20 +119,33 @@ public class AuthService {
                 .build());
     }
 
-    private JwtToken createJwtToken(Users user, String deviceId, DeviceType deviceType) {
-        String accessToken = jwtTokenProvider.generateAccessToken(new UserIdRequest(user.getUserId()));
+    private JwtToken createAndSaveJwtToken(Users user, String deviceId) {
+        String accessToken = jwtTokenProvider.generateAccessToken(new UserDetailRequest(user.getUserId(), deviceId));
         String jti = UUID.randomUUID().toString();
-        String refreshToken = jwtTokenProvider.generateRefreshToken(new UserIdRequest(user.getUserId()), jti);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(new UserDetailRequest(user.getUserId(), deviceId), jti);
 
         // JWT 토큰을 Redis에 저장 (1일 만료)
-        return JwtToken.builder()
+        JwtToken jwtToken = JwtToken.builder()
                 .jwtId(jti)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(user.getUserId())
                 .expiresAt(System.currentTimeMillis() + Duration.ofDays(1).toMillis())
                 .deviceId(deviceId)
-                .deviceType(deviceType != null ? deviceType : DeviceType.WEB)
                 .build();
+
+        jwtTokenRedisService.saveJwtToken(user.getUserId(), deviceId, jwtToken);
+        return jwtToken;
+    }
+
+    private void createAndSaveFcmToken(OAuth2UserInfoRequestDto oauth2UserInfoRequestDto, Users user, String deviceId) {
+        UserFcmToken userFcmToken = UserFcmToken.builder()
+                .user(user)
+                .token(oauth2UserInfoRequestDto.getFirebaseToken())
+                .deviceId(deviceId)
+                .active(true)
+                .build();
+
+        userFcmTokenRepository.save(userFcmToken);
     }
 }

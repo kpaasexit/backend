@@ -21,7 +21,6 @@ message SocialLoginRequest {
   string email = 3;
   string name = 4;
   string device_id = 5;
-  string device_type = 6; // "WEB", "ANDROID", "IOS"
 }
 
 message RefreshTokenRequest {

@@ -33,7 +33,7 @@ public class JwtTokenProvider {
     private Claims getClaimsFrom(@Valid UserDetailRequest userDetail) {
         Claims claims = Jwts.claims();
         claims.put("userId", userDetail.userId());
-        claims.put("deviceId", userDetail.userId());
+        claims.put("deviceId", userDetail.deviceId());
         return claims;
     }
 
@@ -47,7 +47,7 @@ public class JwtTokenProvider {
     private Claims getClaimsFrom(@Valid UserDetailRequest user, String tokenId) {
         Claims claims = Jwts.claims();
         claims.put("userId", user.userId());
-        claims.put("deviceId", user.userId());
+        claims.put("deviceId", user.deviceId());
         claims.put("tokenId", tokenId);
         return claims;
     }

@@ -23,7 +23,6 @@ public class UserService {
     private final FileUploadUtil fileUploadUtil;
 
     private final String PROFILE_FOLDER = "profile";
-    private final JwtTokenRedisService jwtTokenRedisService;
 
     public void increaseReportCount(IncreaseReportCountRequest request) {
         Users user = userRepository.findById(request.getUserId())

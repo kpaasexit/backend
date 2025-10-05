@@ -34,21 +34,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oauth2User.getAttributes());
 
         // 2. Cookie에서 deviceId와 deviceType 추출
-        DeviceInfo deviceInfo = extractDeviceInfoFromCookie();
+        String deviceId = extractDeviceIdFromCookie();
 
         // 3. gRPC 호출 시 deviceId와 deviceType 전달
         SocialLoginResponse socialLoginResponse = userGrpcClient.socialLogin(
                 userInfo,
-                deviceInfo.deviceId(),
-                deviceInfo.deviceType()
+                deviceId
         );
 
         return createCustomOAuth2User(socialLoginResponse);
     }
 
-    private DeviceInfo extractDeviceInfoFromCookie() {
+    private String extractDeviceIdFromCookie() {
         String deviceId = null;
-        String deviceType = "WEB";
 
         try {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -60,15 +58,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     for (Cookie cookie : cookies) {
                         if ("device_id".equals(cookie.getName())) {
                             deviceId = cookie.getValue();
-                        } else if ("device_type".equals(cookie.getName())) {
-                            deviceType = cookie.getValue();
                         }
                     }
                 }
             }
 
             if (deviceId != null) {
-                log.info("Extracted device info from cookie - deviceId: {}, deviceType: {}", deviceId, deviceType);
+                log.info("Extracted device info from cookie - deviceId: {}", deviceId);
             }
         } catch (Exception e) {
             log.warn("Failed to extract device info from cookie", e);
@@ -80,7 +76,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             log.info("No deviceId in cookie, generated UUID: {}", deviceId);
         }
 
-        return new DeviceInfo(deviceId, deviceType);
+        return deviceId;
     }
 
     private CustomOAuth2User createCustomOAuth2User(SocialLoginResponse response) {
@@ -92,8 +88,5 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .accessToken(response.getAccessToken())
                 .refreshToken(response.getRefreshToken())
                 .build();
-    }
-
-    private record DeviceInfo(String deviceId, String deviceType) {
     }
 }
