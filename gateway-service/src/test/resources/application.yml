@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: gateway-service
+  config:
+    import:
+      - "optional:configserver:"
+      - "optional:classpath:application-secret.yml"
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
+            authorization-grant-type: authorization_code
+            scope: profile_nickname,profile_image
+          naver:
+            redirect-uri: "http://localhost:8080/login/oauth2/code/naver"
+            authorization-grant-type: authorization_code
+            scope: name,email,profile_image
+        provider:
+          kakao:
+            authorization-uri: "https://kauth.kakao.com/oauth/authorize"
+            token-uri: "https://kauth.kakao.com/oauth/token"
+            user-info-uri: "https://kapi.kakao.com/v2/user/me"
+            user-name-attribute: id
+          naver:
+            authorization-uri: "https://nid.naver.com/oauth2.0/authorize"
+            token-uri: "https://nid.naver.com/oauth2.0/token"
+            user-info-uri: "https://openapi.naver.com/v1/nid/me"
+            user-name-attribute: response
+
+jwt:
+  access_token:
+    valid_time: 3600000
+  refresh_token:
+    valid_time: 604800000
+
+grpc:
+  client:
+    user-service:
+      address: static://localhost:9090
+      negotiation-type: plaintext
+    question-service:
+      address: static://localhost:9091
+      negotiation-type: plaintext
+    quiz-service:
+      address: static://localhost:9092
+      negotiation-type: plaintext
+    magazine-service:
+      address: static://localhost:9093
+      negotiation-type: plaintext
+
+eureka:
+  client:
+    enabled: false
+
+app:
+  file-dir: /tmp/test-files
