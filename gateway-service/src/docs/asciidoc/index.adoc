@@ -1,0 +1,401 @@
+= Exit Gateway API Documentation
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+[[overview]]
+= 개요
+
+Exit Gateway API 문서입니다.
+
+[[overview-http-verbs]]
+== HTTP 동사
+
+본 REST API에서 사용하는 HTTP 동사(verbs)는 가능한 한 표준 HTTP와 REST 규약을 따릅니다.
+
+|===
+| 동사 | 용례
+
+| `GET`
+| 리소스를 가져올 때 사용
+
+| `POST`
+| 새 리소스를 만들 때 사용
+
+| `PUT`
+| 기존 리소스를 수정할 때 사용
+
+| `PATCH`
+| 기존 리소스의 일부를 수정할 때 사용
+
+| `DELETE`
+| 기존 리소스를 삭제할 때 사용
+|===
+
+[[overview-http-status-codes]]
+== HTTP 상태 코드
+
+본 REST API에서 사용하는 HTTP 상태 코드는 가능한 한 표준 HTTP와 REST 규약을 따릅니다.
+
+|===
+| 상태 코드 | 용례
+
+| `200 OK`
+| 요청을 성공적으로 처리함
+
+| `201 Created`
+| 새 리소스를 성공적으로 생성함
+
+| `204 No Content`
+| 기존 리소스를 성공적으로 수정함
+
+| `400 Bad Request`
+| 잘못된 요청을 보낸 경우
+
+| `401 Unauthorized`
+| 인증되지 않은 요청
+
+| `403 Forbidden`
+| 권한이 없는 요청
+
+| `404 Not Found`
+| 요청한 리소스가 없음
+
+| `500 Internal Server Error`
+| 서버 에러
+|===
+
+[[overview-headers]]
+== 공통 헤더
+
+=== 인증 헤더
+
+|===
+| Name | Description
+
+| `Authorization`
+| 액세스 토큰 (Bearer {token})
+
+| `X-Device-Id`
+| 디바이스 고유 ID
+|===
+
+[[auth-api]]
+= 인증 API
+
+[[oauth2-login]]
+== OAuth2 소셜 로그인
+
+=== 개요
+
+Exit 애플리케이션은 카카오와 네이버 OAuth2 소셜 로그인을 지원합니다.
+로그인 성공 시 JWT 액세스 토큰과 리프레시 토큰이 발급됩니다.
+
+[[oauth2-kakao-login]]
+=== 카카오 로그인
+
+==== 로그인 시작
+
+사용자를 카카오 로그인 페이지로 리다이렉트합니다.
+
+.Request
+[source,http]
+----
+GET /oauth2/authorization/kakao HTTP/1.1
+Host: api.exit.com
+----
+
+.Response
+[source,http]
+----
+HTTP/1.1 302 Found
+Location: https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code&state={state}
+----
+
+==== 로그인 콜백 (자동 처리)
+
+카카오 인증 완료 후 자동으로 처리되는 엔드포인트입니다. (사용자가 직접 호출하지 않음)
+
+.Request
+[source,http]
+----
+GET /login/oauth2/code/kakao?code={authorization_code}&state={state} HTTP/1.1
+Host: api.exit.com
+----
+
+==== 로그인 성공 리다이렉트
+
+인증 성공 시 클라이언트 애플리케이션으로 JWT 토큰과 함께 리다이렉트됩니다.
+
+.Response
+[source,http]
+----
+HTTP/1.1 302 Found
+Location: http://localhost:3000/oauth2/redirect?token={access_token}&refresh={refresh_token}
+----
+
+.Query Parameters
+|===
+| Parameter | Type | Description
+
+| `token`
+| String
+| JWT 액세스 토큰 (URL 인코딩됨)
+
+| `refresh`
+| String
+| JWT 리프레시 토큰 (URL 인코딩됨)
+|===
+
+==== 로그인 실패 리다이렉트
+
+인증 실패 시 에러 파라미터와 함께 리다이렉트됩니다.
+
+.Response
+[source,http]
+----
+HTTP/1.1 302 Found
+Location: http://localhost:3000/oauth2/redirect?error=login_failed
+----
+
+[[oauth2-naver-login]]
+=== 네이버 로그인
+
+네이버 로그인은 카카오와 동일한 플로우를 따르며, 엔드포인트만 다릅니다.
+
+==== 로그인 시작
+
+.Request
+[source,http]
+----
+GET /oauth2/authorization/naver HTTP/1.1
+Host: api.exit.com
+----
+
+.Response
+[source,http]
+----
+HTTP/1.1 302 Found
+Location: https://nid.naver.com/oauth2.0/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code&state={state}
+----
+
+==== 로그인 콜백 (자동 처리)
+
+.Request
+[source,http]
+----
+GET /login/oauth2/code/naver?code={authorization_code}&state={state} HTTP/1.1
+Host: api.exit.com
+----
+
+성공/실패 리다이렉트는 카카오와 동일합니다.
+
+[[auth-refresh]]
+== 토큰 갱신
+
+`POST` 요청을 사용하여 액세스 토큰을 갱신합니다.
+
+operation::auth/refresh[snippets='http-request,request-headers,request-fields,http-response,response-fields']
+
+[[auth-logout]]
+== 로그아웃
+
+`POST` 요청을 사용하여 로그아웃합니다.
+
+operation::auth/logout[snippets='http-request,request-headers,http-response,response-fields']
+
+[[user-api]]
+= 사용자 API
+
+[[user-update-additional-info]]
+== 사용자 추가 정보 수정
+
+`PUT` 요청을 사용하여 사용자의 추가 정보(닉네임, 프로필 이미지)를 수정합니다.
+
+operation::user/update-additional-info[snippets='http-request,request-headers,request-parts,http-response,response-fields']
+
+[[quiz-api]]
+= 퀴즈 API
+
+[[quiz-category-statistics]]
+== 카테고리별 통계 조회
+
+`GET` 요청을 사용하여 사용자의 카테고리별 퀴즈 통계를 조회합니다.
+
+operation::quiz/category-statistics[snippets='http-request,request-headers,http-response,response-fields']
+
+[[quiz-get]]
+== 퀴즈 조회
+
+`GET` 요청을 사용하여 특정 카테고리의 퀴즈를 조회합니다.
+
+operation::quiz/get[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
+
+[[quiz-submit-answer]]
+== 퀴즈 답안 제출
+
+`POST` 요청을 사용하여 퀴즈 답안을 제출하고 결과를 확인합니다.
+
+operation::quiz/submit-answer[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
+
+[[quiz-report]]
+== 퀴즈 신고
+
+`POST` 요청을 사용하여 퀴즈에 대한 오류나 부적절한 내용을 신고합니다.
+
+operation::quiz/report[snippets='http-request,request-headers,path-parameters,request-fields,http-response,response-fields']
+
+[[quiz-solved]]
+== 풀었던 퀴즈 목록 조회
+
+`GET` 요청을 사용하여 사용자가 이전에 풀었던 퀴즈 목록을 조회합니다.
+
+operation::quiz/solved[snippets='http-request,request-headers,http-response,response-fields']
+
+[[quiz-resolve]]
+== 퀴즈 정답 해설 조회
+
+`GET` 요청을 사용하여 퀴즈의 정답과 해설을 조회합니다.
+
+operation::quiz/resolve[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
+
+[[magazine-api]]
+= 매거진 API
+
+[[magazine-list]]
+== 카테고리별 매거진 목록 조회
+
+`GET` 요청을 사용하여 특정 카테고리의 매거진 목록을 조회합니다.
+
+operation::magazine/list[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
+
+[[magazine-detail]]
+== 매거진 상세 조회
+
+`GET` 요청을 사용하여 매거진의 상세 정보를 조회합니다.
+
+operation::magazine/detail[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[question-api]]
+= 질문 API
+
+[[question-create]]
+== 질문 생성
+
+`POST` 요청을 사용하여 새로운 질문을 생성합니다.
+
+operation::question/create[snippets='http-request,request-parts,http-response,response-fields']
+
+[[question-list]]
+== 질문 목록 조회
+
+`GET` 요청을 사용하여 질문 목록을 조회합니다. 카테고리 필터링 및 키워드 검색을 지원합니다.
+
+operation::question/list[snippets='http-request,query-parameters,http-response,response-fields']
+
+[[question-detail]]
+== 질문 상세 조회
+
+`GET` 요청을 사용하여 질문의 상세 정보와 답변 목록을 조회합니다.
+
+operation::question/detail[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[question-report]]
+== 질문 신고
+
+`POST` 요청을 사용하여 부적절한 질문을 신고합니다.
+
+operation::question/report[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[question-category-recommend]]
+== 카테고리 추천
+
+`GET` 요청을 사용하여 질문 제목을 기반으로 적절한 카테고리를 추천받습니다.
+
+operation::question/category-recommend[snippets='http-request,query-parameters,http-response,response-fields']
+
+[[question-answer-create]]
+== 답변 생성
+
+`POST` 요청을 사용하여 질문에 답변을 작성합니다.
+
+operation::question/answer-create[snippets='http-request,request-parts,http-response,response-fields']
+
+[[question-answer-adopt]]
+== 답변 채택
+
+`POST` 요청을 사용하여 답변을 채택합니다.
+
+operation::question/answer-adopt[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[question-answer-recommend]]
+== 답변 추천
+
+`POST` 요청을 사용하여 답변을 추천합니다.
+
+operation::question/answer-recommend[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[question-answer-report]]
+== 답변 신고
+
+`POST` 요청을 사용하여 부적절한 답변을 신고합니다.
+
+operation::question/answer-report[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[question-similar]]
+== 유사 질문 조회
+
+`GET` 요청을 사용하여 제목과 내용을 기반으로 유사한 질문 목록을 조회합니다.
+
+operation::question/similar[snippets='http-request,query-parameters,http-response,response-fields']
+
+[[question-answer-update]]
+== 답변 수정
+
+`PUT` 요청을 사용하여 답변 내용을 수정합니다.
+
+operation::question/answer-update[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[question-answer-delete]]
+== 답변 삭제
+
+`DELETE` 요청을 사용하여 답변을 삭제합니다.
+
+operation::question/answer-delete[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[comment-api]]
+= 댓글 API
+
+[[comment-create]]
+== 댓글 생성
+
+`POST` 요청을 사용하여 질문 또는 답변에 댓글을 작성합니다.
+
+operation::comment/create[snippets='http-request,request-fields,http-response,response-fields']
+
+[[comment-delete]]
+== 댓글 삭제
+
+`DELETE` 요청을 사용하여 댓글을 삭제합니다.
+
+operation::comment/delete[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[additional-question-api]]
+= 추가 질문 API
+
+[[additional-question-create]]
+== 추가 질문 메시지 생성
+
+`POST` 요청을 사용하여 추가 질문 메시지를 작성합니다.
+
+operation::additional-question/create[snippets='http-request,request-parts,http-response,response-fields']
+
+[[additional-question-get]]
+== 추가 질문 조회
+
+`GET` 요청을 사용하여 추가 질문 대화 내역을 조회합니다.
+
+operation::additional-question/get[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
