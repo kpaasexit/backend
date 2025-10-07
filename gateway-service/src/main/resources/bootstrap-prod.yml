@@ -1,4 +1,3 @@
-# bootstrap-prod.yml
 spring:
   cloud:
     config:

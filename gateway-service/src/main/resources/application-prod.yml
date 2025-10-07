@@ -1,53 +1,14 @@
-spring:
-  main:
-    cloud-platform: kubernetes
-
-  config:
-    import:
-      - "kubernetes:"
-      - "kubernetes:secrets"
-
-    kubernetes:
-      client:
-        namespace: default
-
-      config:
-        enabled: true
-        enableApi: true
-        fail-fast: true
-        retry:
-          enabled: true
-          initial-interval: 1000
-          max-attempts: 10
-          multiplier: 1.2
-        includeProfileSpecificSources: false
-        name-as-prefix: false
-        sources:
-          - name: gateway-config
-            namespace: default
-
-      secrets:
-        enabled: true
-        sources:
-          - name: gateway-secret
-            namespace: default
-
-      reload:
-        enabled: true
-        mode: polling
-        period: 5s
-
-server:
-  port: 8080
-
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,refresh
+        include: health,info
   endpoint:
-    refresh:
-      enabled: true
     health:
       probes:
         enabled: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.kubernetes: INFO
