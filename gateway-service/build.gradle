@@ -84,13 +84,9 @@ dependencies {
         implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
         implementation 'org.springframework.cloud:spring-cloud-starter-config'
         implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
-        developmentOnly 'org.springframework.boot:spring-boot-devtools'
     } else {
         // prod 전용
         implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-client-config'
-        implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-client'
-        implementation "org.springframework.cloud:spring-cloud-kubernetes-client-config"
-        implementation "org.springframework.cloud:spring-cloud-kubernetes-client-discovery"
     }
 }
 
