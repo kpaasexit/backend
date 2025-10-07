@@ -1,0 +1,10 @@
+|===
+|Part|Description
+
+|`+image+`
+|프로필 이미지 (optional)
+
+|`+nickname+`
+|닉네임 (optional)
+
+|===

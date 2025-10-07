@@ -1,0 +1,11 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUESTION_OK_014",
+  "message" : "답변 수정 성공",
+  "result" : {
+    "responseId" : 1,
+    "content" : "수정된 답변 내용입니다."
+  }
+}
+----

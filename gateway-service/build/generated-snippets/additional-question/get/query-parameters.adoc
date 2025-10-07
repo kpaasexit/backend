@@ -1,0 +1,7 @@
+|===
+|Parameter|Description
+
+|`+questionId+`
+|질문 ID
+
+|===

@@ -1,0 +1,44 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.quizId+`
+|`+Number+`
+|퀴즈 ID
+
+|`+result.quizCategoryId+`
+|`+Number+`
+|퀴즈 카테고리 ID
+
+|`+result.quizTitle+`
+|`+String+`
+|퀴즈 제목
+
+|`+result.quizContent+`
+|`+String+`
+|퀴즈 내용 (문제)
+
+|`+result.quizType+`
+|`+String+`
+|퀴즈 타입 (MULTIPLE_CHOICE, TRUE_FALSE 등)
+
+|`+result.quizCorrectAnswer+`
+|`+String+`
+|정답
+
+|`+result.quizAdditionalInformation+`
+|`+String+`
+|추가 정보 (선택지 등)
+
+|===

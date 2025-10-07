@@ -1,0 +1,28 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.userId+`
+|`+Number+`
+|사용자 ID
+
+|`+result.nickName+`
+|`+String+`
+|수정된 닉네임
+
+|`+result.profile+`
+|`+String+`
+|수정된 프로필 이미지 URL
+
+|===

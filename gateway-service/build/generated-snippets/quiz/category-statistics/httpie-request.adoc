@@ -1,0 +1,5 @@
+[source,bash]
+----
+$ http GET 'http://localhost:8080/api/quiz/categories/statistics' \
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NTk4MTY0NTMsImV4cCI6MTc2MzQxNjQ1M30.MBGrKs_yaUBNF6bk1RQQxXLxvH0KNM0r7IY8ZIfplxI'
+----

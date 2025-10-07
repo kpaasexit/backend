@@ -1,0 +1,108 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.question+`
+|`+Object+`
+|질문 정보
+
+|`+result.question.questionId+`
+|`+Number+`
+|질문 ID
+
+|`+result.question.questionTitle+`
+|`+String+`
+|질문 제목
+
+|`+result.question.questionContent+`
+|`+String+`
+|질문 내용
+
+|`+result.question.questionCategory+`
+|`+Number+`
+|질문 카테고리 ID
+
+|`+result.question.questionUrgency+`
+|`+Boolean+`
+|긴급 여부
+
+|`+result.question.questionAnswerType+`
+|`+String+`
+|답변 타입
+
+|`+result.question.questionDisclosureType+`
+|`+String+`
+|공개 타입
+
+|`+result.question.questionWriterId+`
+|`+Number+`
+|작성자 ID
+
+|`+result.question.questionWriterName+`
+|`+String+`
+|작성자 이름
+
+|`+result.question.imageUrls+`
+|`+Array+`
+|이미지 URL 목록
+
+|`+result.question.createdAt+`
+|`+String+`
+|작성일시
+
+|`+result.responses+`
+|`+Array+`
+|답변 목록
+
+|`+result.responses[].responseId+`
+|`+Number+`
+|답변 ID
+
+|`+result.responses[].responseWriterId+`
+|`+Number+`
+|답변 작성자 ID
+
+|`+result.responses[].responseWriterName+`
+|`+String+`
+|답변 작성자 이름
+
+|`+result.responses[].responseContent+`
+|`+String+`
+|답변 내용
+
+|`+result.responses[].responseAdopt+`
+|`+Boolean+`
+|채택 여부
+
+|`+result.responses[].urls+`
+|`+Array+`
+|첨부 파일 URL 목록
+
+|`+result.responses[].likeCount+`
+|`+Number+`
+|추천 수
+
+|`+result.responses[].createdAt+`
+|`+String+`
+|작성일시
+
+|`+result.responses[].updatedAt+`
+|`+String+`
+|수정일시
+
+|`+result.hasNext+`
+|`+Boolean+`
+|다음 페이지 존재 여부
+
+|===

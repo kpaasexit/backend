@@ -1,0 +1,32 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.quizId+`
+|`+Number+`
+|퀴즈 ID
+
+|`+result.quizTotalAttemptNum+`
+|`+Number+`
+|총 시도 횟수
+
+|`+result.quizCorrectNum+`
+|`+Number+`
+|정답 횟수
+
+|`+result.quizCorrectPercent+`
+|`+Number+`
+|정답률 (%)
+
+|===

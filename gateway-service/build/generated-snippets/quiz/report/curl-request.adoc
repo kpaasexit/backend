@@ -1,0 +1,10 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/api/quiz/1/report' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NTk4MTY0NTMsImV4cCI6MTc2MzQxNjQ1M30.MBGrKs_yaUBNF6bk1RQQxXLxvH0KNM0r7IY8ZIfplxI' \
+    -d '{
+  "title" : "오타가 있습니다",
+  "content" : "문제 내용에 오타가 있어 신고합니다."
+}'
+----

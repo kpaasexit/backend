@@ -47,6 +47,8 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
                         // HealthCheck 엔드포인트 허용
                         .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator").permitAll()
+                        // REST Docs 문서 접근 허용
+                        .requestMatchers("/docs/**", "/favicon.ico").permitAll()
                         // 기존 API 엔드포인트 허용 (JWT로 인증)
                         .requestMatchers("/api/**").authenticated()
                         // 기타 요청은 인증 필요
@@ -74,7 +76,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost:3000", "http://localhost:8080", "http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

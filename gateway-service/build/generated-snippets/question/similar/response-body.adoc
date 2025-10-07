@@ -1,0 +1,19 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUESTION_OK_010",
+  "message" : "유사 질문 조회 성공",
+  "result" : {
+    "similarQuestionResponseDto" : [ {
+      "questionId" : 1,
+      "questionTitle" : "Spring Boot JWT 인증 구현",
+      "questionContent" : "JWT 인증 방법에 대해 질문합니다...",
+      "questionCategory" : 1,
+      "questionUrgency" : false,
+      "questionAnswerType" : "GENERAL",
+      "questionAnswerAdopt" : true,
+      "createdAt" : "2024-01-01T00:00:00"
+    } ]
+  }
+}
+----

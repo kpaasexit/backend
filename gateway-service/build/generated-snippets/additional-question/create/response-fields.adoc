@@ -1,0 +1,44 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.followUpRoomId+`
+|`+Number+`
+|추가 질문 방 ID
+
+|`+result.message+`
+|`+Object+`
+|생성된 메시지
+
+|`+result.message.isQuestioner+`
+|`+Boolean+`
+|질문자 여부
+
+|`+result.message.messageId+`
+|`+Number+`
+|메시지 ID
+
+|`+result.message.content+`
+|`+String+`
+|메시지 내용
+
+|`+result.message.images+`
+|`+Array+`
+|이미지 URL 목록
+
+|`+result.message.createdAt+`
+|`+String+`
+|작성일시
+
+|===
