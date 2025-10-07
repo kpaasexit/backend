@@ -1,5 +1,6 @@
 [source,bash]
 ----
-$ http POST 'http://localhost:8080/api/questions/answers' \
-    'Content-Type:multipart/form-data;charset=UTF-8'
+$ http --multipart POST 'http://localhost:8080/api/questions/answers' \
+    'images'@'test-image1.jpg' \
+    'images'@'test-image2.png'
 ----

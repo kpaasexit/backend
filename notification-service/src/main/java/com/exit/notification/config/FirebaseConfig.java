@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Configuration
+@org.springframework.context.annotation.Profile("!test")
 public class FirebaseConfig {
 
     @Value("${firebase.project-id}")

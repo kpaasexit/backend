@@ -8,9 +8,19 @@ jwt:
   refresh_token:
     valid_time: 86400000
 
+grpc:
+  client:
+    user-service:
+      address: static://localhost:0
+      negotiation-type: plaintext
+
 firebase:
   project-id: test-project
   private-key-id: test-key-id
-  private-key: test-private-key
-  client-email: test@test.com
-  client-id: test-client-id
+  private-key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7VJTUt9Us8cKj\nMzEfYyjiWA4R4/M2bS1+fWIcPm15j9sQtQ5XxBJ1nJXnJNhJWvJd5aXOdXj2Eg6l\nfXV5XJLSKu5ckFXKfaYtLNJJLpv5UxPwBdgEXvB8cK7y0RQ5wWGy7KtS1cNhWmIz\nwx4LnN3fL8LncJQJ5s6kLpI3hLl5fGcJRHlNJkpKp6kJhKfqpKNKjHpfBknFGMy0\nLqRp6RqJfLGMqGJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGM\nJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJ6kGMJAgMBAAE=\n-----END PRIVATE KEY-----\n"
+  client-email: test@test-project.iam.gserviceaccount.com
+  client-id: "123456789"
+  auth-uri: https://accounts.google.com/o/oauth2/auth
+  token-uri: https://oauth2.googleapis.com/token
+  auth-provider-x509-cert-url: https://www.googleapis.com/oauth2/v1/certs
+  client-x509-cert-url: https://www.googleapis.com/robot/v1/metadata/x509/test%40test-project.iam.gserviceaccount.com
