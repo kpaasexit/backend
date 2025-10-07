@@ -168,6 +168,16 @@ asciidoctor {
     dependsOn test
 }
 
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file("${asciidoctor.outputDir}")
+    into file("src/main/resources/static/docs")
+}
+
+build {
+    dependsOn copyDocument
+}
+
 bootJar {
     dependsOn asciidoctor
     archiveBaseName = "${project.name}"

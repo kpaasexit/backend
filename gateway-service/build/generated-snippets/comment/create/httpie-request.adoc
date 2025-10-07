@@ -1,0 +1,9 @@
+[source,bash]
+----
+$ echo '{
+  "targetId" : 1,
+  "commentType" : "RESPONSE",
+  "content" : "도움이 되는 답변 감사합니다!"
+}' | http POST 'http://localhost:8080/api/comments' \
+    'Content-Type:application/json;charset=UTF-8'
+----

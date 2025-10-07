@@ -1,0 +1,9 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/api/questions/answers/1/report' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "responseReportTitle" : "부정확한 정보",
+  "responseReportContent" : "답변 내용이 부정확합니다."
+}'
+----

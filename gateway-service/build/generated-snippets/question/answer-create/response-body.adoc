@@ -1,0 +1,14 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUESTION_OK_004",
+  "message" : "답변 등록 성공",
+  "result" : {
+    "responseId" : 1,
+    "responseContent" : "JWT 토큰은 다음과 같이 구현할 수 있습니다...",
+    "questionId" : 1,
+    "responseWriterId" : 2,
+    "createdAt" : "2024-01-01T00:00:00"
+  }
+}
+----

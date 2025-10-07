@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/api/questions/answers/1/adopt' -i -X POST
+----

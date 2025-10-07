@@ -1,0 +1,9 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/api/auth/refresh' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -H 'X-Device-Id: test-device-id' \
+    -d '{
+  "refreshToken" : "test-refresh-token"
+}'
+----

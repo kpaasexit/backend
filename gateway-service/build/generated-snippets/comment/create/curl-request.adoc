@@ -1,0 +1,10 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/api/comments' -i -X POST \
+    -H 'Content-Type: application/json;charset=UTF-8' \
+    -d '{
+  "targetId" : 1,
+  "commentType" : "RESPONSE",
+  "content" : "도움이 되는 답변 감사합니다!"
+}'
+----

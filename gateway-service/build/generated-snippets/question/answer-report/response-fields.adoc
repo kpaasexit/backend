@@ -1,0 +1,40 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.responseReportId+`
+|`+Number+`
+|답변 신고 ID
+
+|`+result.responseId+`
+|`+Number+`
+|답변 ID
+
+|`+result.responseReportTitle+`
+|`+String+`
+|신고 제목
+
+|`+result.responseReportContent+`
+|`+String+`
+|신고 내용
+
+|`+result.responseReportWriterId+`
+|`+Number+`
+|신고자 ID
+
+|`+result.createdAt+`
+|`+String+`
+|신고일시
+
+|===

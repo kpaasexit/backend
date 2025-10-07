@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="test : gateway의 build 폴더만 깃에 포함되도록 수정">
+    <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="test : 게이트웨이 snippets 파일 커밋">
       <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/curl-request.adoc" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/http-request.adoc" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/http-response.adoc" afterDir="false" />
@@ -230,7 +230,9 @@
       <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/response-body.adoc" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/response-fields.adoc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/test/java/com/exit/notification/NotificationServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/test/java/com/exit/notification/NotificationServiceApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/global/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/global/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/global/filter/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/global/filter/JwtAuthenticationFilter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -251,6 +253,9 @@
       <ProjectState />
     </projectState>
     <projectState path="$PROJECT_DIR$/question">
+      <ProjectState />
+    </projectState>
+    <projectState path="$PROJECT_DIR$/question-service">
       <ProjectState />
     </projectState>
     <projectState path="$PROJECT_DIR$/user">
@@ -290,88 +295,6 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="backend" type="f1a62948:ProjectNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="gateway-service" type="2d1252cf:ModuleNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="gateway-service" type="2d1252cf:ModuleNode" />
-                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="gateway-service" type="2d1252cf:ModuleNode" />
-                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
-                <item name="runtimeClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="gateway-service" type="2d1252cf:ModuleNode" />
-                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
-                <item name="runtimeClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
-                <item name="org.springframework.boot:spring-boot-starter-security:3.3.9" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="gateway-service" type="2d1252cf:ModuleNode" />
-                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
-                <item name="runtimeClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
-                <item name="org.springframework.boot:spring-boot-starter-security:3.3.9" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-                <item name="org.springframework.security:spring-security-config:6.3.7" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="gateway-service" type="2d1252cf:ModuleNode" />
-                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
-                <item name="runtimeClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
-                <item name="org.springframework.boot:spring-boot-starter-security:3.3.9" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-                <item name="org.springframework.security:spring-security-config:6.3.7" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-                <item name="org.springframework.security:spring-security-core:6.3.7" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="gateway-service" type="2d1252cf:ModuleNode" />
-                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
-                <item name="runtimeClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
-                <item name="org.springframework.boot:spring-boot-starter-security:3.3.9" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-                <item name="org.springframework.security:spring-security-web:6.3.7" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="gateway-service" type="2d1252cf:ModuleNode" />
-                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
-                <item name="runtimeClasspath" type="62daadca:ExternalSystemViewDefaultContributor$DependencyScopeExternalSystemNode" />
-                <item name="org.springframework.boot:spring-boot-starter-security:3.3.9" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-                <item name="org.springframework.security:spring-security-web:6.3.7" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-                <item name="org.springframework:spring-web:6.1.17" type="b3323d55:ExternalSystemViewDefaultContributor$DependencyExternalSystemNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="user-service" type="2d1252cf:ModuleNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="user-service" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="backend" type="f1a62948:ProjectNode" />
-                <item name="user-service" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
               </path>
             </expand>
             <select />
@@ -518,7 +441,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.UserControllerTest.updateAdditionalUserInfo">
+  <component name="RunManager" selected="Spring Boot.GatewayApplication">
     <configuration name="msa" type="CompoundRunConfigurationType">
       <toRun name="GatewayApplication" type="SpringBootApplicationConfigurationType" />
       <toRun name="MagazineServiceApplication" type="SpringBootApplicationConfigurationType" />
@@ -697,6 +620,14 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="QuestionServiceApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="question.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.exit.question.QuestionServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="QuestionServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="backend.question-service.main~1" />
@@ -733,6 +664,7 @@
       <item itemvalue="Gradle.backend [bootJar]" />
       <item itemvalue="Gradle.backend [build]" />
       <item itemvalue="Gradle.backend [clean]" />
+      <item itemvalue="Spring Boot.QuestionServiceApplication (1)" />
       <item itemvalue="Spring Boot.NotificationServiceApplication" />
       <item itemvalue="Spring Boot.UserApplication" />
       <item itemvalue="Spring Boot.ConfigServerApplication" />
@@ -790,7 +722,7 @@
       <workItem from="1757905388443" duration="10934000" />
       <workItem from="1757988772534" duration="7133000" />
       <workItem from="1759636854686" duration="13192000" />
-      <workItem from="1759814077445" duration="1659000" />
+      <workItem from="1759814077445" duration="2412000" />
     </task>
     <task id="LOCAL-00001" summary="초기 환경 설정 V1">
       <option name="closed" value="true" />
@@ -840,7 +772,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759815342208</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="test : 게이트웨이 snippets 파일 커밋">
+      <option name="closed" value="true" />
+      <created>1759815945041</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1759815945041</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -865,7 +805,8 @@
     <MESSAGE value="feat : device_type 제거" />
     <MESSAGE value="test : RestDocs 설정 및 테스트 코드" />
     <MESSAGE value="test : gateway의 build 폴더만 깃에 포함되도록 수정" />
-    <option name="LAST_COMMIT_MESSAGE" value="test : gateway의 build 폴더만 깃에 포함되도록 수정" />
+    <MESSAGE value="test : 게이트웨이 snippets 파일 커밋" />
+    <option name="LAST_COMMIT_MESSAGE" value="test : 게이트웨이 snippets 파일 커밋" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

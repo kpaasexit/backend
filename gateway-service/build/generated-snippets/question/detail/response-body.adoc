@@ -1,0 +1,34 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUESTION_OK_003",
+  "message" : "질문 상세 조회 성공",
+  "result" : {
+    "question" : {
+      "questionId" : 1,
+      "questionTitle" : "Spring Boot에서 JWT 인증 구현하는 방법",
+      "questionContent" : "JWT 토큰을 사용한 인증을 구현하고 싶습니다...",
+      "questionCategory" : 1,
+      "questionUrgency" : true,
+      "questionAnswerType" : "GENERAL",
+      "questionDisclosureType" : "PUBLIC",
+      "questionWriterId" : 1,
+      "questionWriterName" : "김개발",
+      "imageUrls" : [ "https://example.com/image1.jpg" ],
+      "createdAt" : "2024-01-01T00:00:00"
+    },
+    "responses" : [ {
+      "responseId" : 1,
+      "responseWriterId" : 2,
+      "responseWriterName" : "이답변",
+      "responseContent" : "다음과 같이 구현하시면 됩니다...",
+      "responseAdopt" : true,
+      "urls" : [ ],
+      "likeCount" : 5,
+      "createdAt" : "2024-01-01T00:00:00",
+      "updatedAt" : "2024-01-01T00:00:00"
+    } ],
+    "hasNext" : false
+  }
+}
+----

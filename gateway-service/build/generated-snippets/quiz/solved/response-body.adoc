@@ -1,0 +1,17 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUIZ_OK_005",
+  "message" : "도전한 퀴즈 내역 조회 성공",
+  "result" : {
+    "attemptQuiz" : [ {
+      "quizId" : 1,
+      "quizTitle" : "연차 사용 시 승인 절차는?"
+    }, {
+      "quizId" : 2,
+      "quizTitle" : "퇴직금 지급 기준은?"
+    } ],
+    "hasNext" : true
+  }
+}
+----

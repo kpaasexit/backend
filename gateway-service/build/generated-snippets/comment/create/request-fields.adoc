@@ -1,0 +1,16 @@
+|===
+|Path|Type|Description
+
+|`+targetId+`
+|`+Number+`
+|대상 ID (질문 또는 답변 ID)
+
+|`+commentType+`
+|`+String+`
+|댓글 타입 (QUESTION, RESPONSE)
+
+|`+content+`
+|`+String+`
+|댓글 내용
+
+|===

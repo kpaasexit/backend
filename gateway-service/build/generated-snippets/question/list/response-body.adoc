@@ -1,0 +1,33 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUESTION_OK_002",
+  "message" : "질문 목록 조회 성공",
+  "result" : {
+    "questionList" : [ {
+      "questionId" : 1,
+      "questionCategoryId" : 1,
+      "questionWriterId" : 1,
+      "questionTitle" : "Spring Boot에서 JWT 인증 구현하는 방법",
+      "questionContent" : "JWT 토큰을 사용한 인증을 구현하고 싶습니다...",
+      "questionUrgency" : true,
+      "questionAnswerType" : "GENERAL",
+      "questionAnswerAdopt" : false,
+      "answerCount" : 3,
+      "createdAt" : "2024-01-01T00:00:00"
+    }, {
+      "questionId" : 2,
+      "questionCategoryId" : 2,
+      "questionWriterId" : 2,
+      "questionTitle" : "Docker Compose 설정 문의",
+      "questionContent" : "멀티 컨테이너 환경에서...",
+      "questionUrgency" : false,
+      "questionAnswerType" : "GENERAL",
+      "questionAnswerAdopt" : true,
+      "answerCount" : 5,
+      "createdAt" : "2024-01-01T00:00:00"
+    } ],
+    "hasNext" : true
+  }
+}
+----

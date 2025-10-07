@@ -1,0 +1,12 @@
+|===
+|Path|Type|Description
+
+|`+title+`
+|`+String+`
+|신고 제목
+
+|`+content+`
+|`+String+`
+|신고 내용
+
+|===

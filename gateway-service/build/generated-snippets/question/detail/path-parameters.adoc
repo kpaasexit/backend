@@ -1,0 +1,8 @@
+.+/api/questions/{questionId}+
+|===
+|Parameter|Description
+
+|`+questionId+`
+|질문 ID
+
+|===

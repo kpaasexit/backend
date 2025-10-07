@@ -1,0 +1,7 @@
+[source,json,options="nowrap"]
+----
+{
+  "title" : "오타가 있습니다",
+  "content" : "문제 내용에 오타가 있어 신고합니다."
+}
+----

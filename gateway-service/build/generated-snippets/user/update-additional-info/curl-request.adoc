@@ -1,0 +1,7 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/api/user/additional-info' -i -X PUT \
+    -H 'Content-Type: multipart/form-data;charset=UTF-8' \
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NTk4MTY0NTUsImV4cCI6MTc2MzQxNjQ1NX0.fGkgDDoJP_L3uN5qAxwpMu658Jok0oZFC5ENTeohvo0' \
+    -F 'image=@profile.jpg;type=image/jpeg'
+----

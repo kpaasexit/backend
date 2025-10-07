@@ -1,0 +1,56 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.magazineItems+`
+|`+Array+`
+|매거진 목록
+
+|`+result.magazineItems[].magazineId+`
+|`+Number+`
+|매거진 ID
+
+|`+result.magazineItems[].magazineCategoryId+`
+|`+Number+`
+|매거진 카테고리 ID
+
+|`+result.magazineItems[].magazineTitle+`
+|`+String+`
+|매거진 제목
+
+|`+result.magazineItems[].magazineSubtitle+`
+|`+String+`
+|매거진 부제목
+
+|`+result.magazineItems[].magazineContent+`
+|`+String+`
+|매거진 내용
+
+|`+result.magazineItems[].magazineAuthor+`
+|`+String+`
+|작성자
+
+|`+result.magazineItems[].authorProfileUrl+`
+|`+String+`
+|작성자 프로필 URL
+
+|`+result.magazineItems[].magazineThumbnailUrl+`
+|`+String+`
+|매거진 썸네일 URL
+
+|`+result.magazineItems[].createdAt+`
+|`+String+`
+|작성일시
+
+|===

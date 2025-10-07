@@ -1,0 +1,8 @@
+|===
+|Path|Type|Description
+
+|`+refreshToken+`
+|`+String+`
+|리프레시 토큰
+
+|===

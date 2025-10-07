@@ -1,0 +1,13 @@
+[source,http,options="nowrap"]
+----
+POST /api/quiz/1/report HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NTk4MTY0NTMsImV4cCI6MTc2MzQxNjQ1M30.MBGrKs_yaUBNF6bk1RQQxXLxvH0KNM0r7IY8ZIfplxI
+Content-Length: 111
+Host: localhost:8080
+
+{
+  "title" : "오타가 있습니다",
+  "content" : "문제 내용에 오타가 있어 신고합니다."
+}
+----

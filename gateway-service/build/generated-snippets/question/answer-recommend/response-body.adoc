@@ -1,0 +1,12 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUESTION_OK_006",
+  "message" : "답변 추천 성공",
+  "result" : {
+    "responseId" : 1,
+    "isRecommended" : true,
+    "recommendCount" : 10
+  }
+}
+----
