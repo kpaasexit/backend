@@ -7,15 +7,15 @@ import com.exit.common.response.error.rest.UserErrorCode;
 import com.exit.common.response.success.UserSuccessCode;
 import com.exit.gateway.controller.user.dto.request.user.UpdateAdditionalUserInfoRequestDto;
 import com.exit.gateway.controller.user.dto.response.user.UpdateAdditionalUserInfoResponseDto;
+import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.user.UserGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,15 +26,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserGrpcClient userGrpcClient;
 
-    @PostMapping(value = "/additional-info", consumes = "multipart/form-data")
+    @PutMapping(value = "/additional-info", consumes = "multipart/form-data")
     public SuccessResponse<UpdateAdditionalUserInfoResponseDto> updateAdditionalUserInfo(
-            @AuthenticationPrincipal Long userId,
+            @LoginUser Long userId,
             @Valid @ModelAttribute UpdateAdditionalUserInfoRequestDto request) {
         try {
             log.info("Update additional user info request received");
             UpdateAdditionalUserInfoResponse grpcResponse = userGrpcClient.updateAdditionalUserInfo(userId, request);
 
-            return SuccessResponse.of(UserSuccessCode.UPDATE_ADDITIONAL_INFO_SUCCESS, UpdateAdditionalUserInfoResponseDto.from(grpcResponse));
+            return SuccessResponse.of(UserSuccessCode.UPDATE_ADDITIONAL_INFO_SUCCESS,
+                    UpdateAdditionalUserInfoResponseDto.from(grpcResponse));
         } catch (StatusRuntimeException e) {
             log.error("Update additional user info failed via gRPC: {}", e.getStatus(), e);
             String errorMessage = getGrpcErrorMessage(e);

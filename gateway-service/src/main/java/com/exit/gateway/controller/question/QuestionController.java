@@ -5,12 +5,9 @@ import com.exit.common.grpc.*;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.QuestionErrorCode;
 import com.exit.common.response.success.QuestionSuccessCode;
-import com.exit.gateway.controller.question.dto.request.question.AnswerCreateRequestDto;
-import com.exit.gateway.controller.question.dto.request.question.AnswerReportRequestDto;
-import com.exit.gateway.controller.question.dto.request.question.AnswerUpdateRequestDto;
-import com.exit.gateway.controller.question.dto.request.question.QuestionCreateRequestDto;
-import com.exit.gateway.controller.question.dto.request.question.QuestionReportRequestDto;
+import com.exit.gateway.controller.question.dto.request.question.*;
 import com.exit.gateway.controller.question.dto.response.question.*;
+import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.QuestionGrpcClient;
 import com.exit.gateway.service.question.QuestionRequestMapper;
 import io.grpc.Status;
@@ -18,7 +15,6 @@ import io.grpc.StatusRuntimeException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -134,7 +130,7 @@ public class QuestionController {
     @PostMapping("/answers/{responseId}/recommend")
     public SuccessResponse<AnswerRecommendResponseDto> recommendAnswer(
             @PathVariable Long responseId,
-            @AuthenticationPrincipal Long userId) {
+            @LoginUser Long userId) {
         try {
             log.info("Answer recommend request received for responseId: {}, userId: {}", responseId, userId);
             AnswerRecommendRequest request = AnswerRecommendRequest.newBuilder()
@@ -155,7 +151,7 @@ public class QuestionController {
     @PostMapping("/{questionId}/report")
     public SuccessResponse<QuestionReportResponseDto> reportQuestion(
             @PathVariable Long questionId,
-            @AuthenticationPrincipal Long userId,
+            @LoginUser Long userId,
             @Valid @RequestBody QuestionReportRequestDto request) {
         try {
             log.info("Question report request received for questionId: {}", questionId);
@@ -210,11 +206,14 @@ public class QuestionController {
 
     @GetMapping("/similar")
     public SuccessResponse<SimilarQuestionResponseDto> getSimilarQuestion(
-            @RequestParam String title) {
+            @RequestParam String title,
+            @RequestParam String content
+    ) {
         try {
             log.info("Similar question request received for title: {}", title);
             SimilarQuestionRequest request = SimilarQuestionRequest.newBuilder()
                     .setTitle(title)
+                    .setContent(content)
                     .build();
             SimilarQuestionResponseDto response = questionGrpcClient.getSimilarQuestion(request);
             return SuccessResponse.of(QuestionSuccessCode.SIMILAR_QUESTION_SUCCESS, response);

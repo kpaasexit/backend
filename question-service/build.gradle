@@ -49,6 +49,10 @@ dependencies {
     implementation 'io.grpc:grpc-protobuf:1.63.0'
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
 
+    // Spring Retry
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

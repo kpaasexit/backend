@@ -48,6 +48,7 @@ public class NotificationService {
 
                 messageList.add(message);
             });
+
             BatchResponse batchResponse = firebaseMessaging.sendEach(messageList);
             List<String> messageIds = batchResponse.getResponses().stream()
                     .map(SendResponse::getMessageId)

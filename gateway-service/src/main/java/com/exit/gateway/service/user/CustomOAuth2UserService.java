@@ -4,6 +4,8 @@ import com.exit.common.grpc.SocialLoginResponse;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
 import com.exit.gateway.entity.CustomOAuth2User;
 import com.exit.gateway.entity.OAuth2UserInfoFactory;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -11,6 +13,10 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +33,50 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId = request.getClientRegistration().getRegistrationId();
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oauth2User.getAttributes());
 
-        SocialLoginResponse socialLoginResponse = userGrpcClient.socialLogin(userInfo);
+        // 2. Cookie에서 deviceId와 deviceType 추출
+        String deviceId = extractDeviceIdFromCookie();
+
+        // 3. gRPC 호출 시 deviceId와 deviceType 전달
+        SocialLoginResponse socialLoginResponse = userGrpcClient.socialLogin(
+                userInfo,
+                deviceId
+        );
 
         return createCustomOAuth2User(socialLoginResponse);
+    }
+
+    private String extractDeviceIdFromCookie() {
+        String deviceId = null;
+
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest httpRequest = attributes.getRequest();
+                Cookie[] cookies = httpRequest.getCookies();
+
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        if ("device_id".equals(cookie.getName())) {
+                            deviceId = cookie.getValue();
+                        }
+                    }
+                }
+            }
+
+            if (deviceId != null) {
+                log.info("Extracted device info from cookie - deviceId: {}", deviceId);
+            }
+        } catch (Exception e) {
+            log.warn("Failed to extract device info from cookie", e);
+        }
+
+        // deviceId가 없으면 UUID 생성
+        if (deviceId == null || deviceId.isEmpty()) {
+            deviceId = UUID.randomUUID().toString();
+            log.info("No deviceId in cookie, generated UUID: {}", deviceId);
+        }
+
+        return deviceId;
     }
 
     private CustomOAuth2User createCustomOAuth2User(SocialLoginResponse response) {

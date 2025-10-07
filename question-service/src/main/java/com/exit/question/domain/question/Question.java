@@ -1,7 +1,7 @@
 package com.exit.question.domain.question;
 
 import com.exit.common.domain.BaseEntity;
-import com.exit.question.controller.dto.request.QuestionCreateRequestDto;
+import com.exit.common.grpc.QuestionCreateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -64,17 +64,17 @@ public class Question extends BaseEntity {
         this.questionIsAnonymous = questionIsAnonymous;
     }
 
-    public static Question createQuestionFromRequest(QuestionCreateRequestDto questionCreateRequestDto, QuestionCategory questionCategory) {
+    public static Question createQuestionFromRequest(QuestionCreateRequest request, QuestionCategory questionCategory) {
         return Question.builder()
-                .questionWriterId(questionCreateRequestDto.questionWriterId())
-                .questionTitle(questionCreateRequestDto.questionTitle())
-                .questionContent(questionCreateRequestDto.questionContent())
+                .questionWriterId(request.getQuestionWriterId())
+                .questionTitle(request.getQuestionTitle())
+                .questionContent(request.getQuestionContent())
                 .questionCategory(questionCategory)
-                .questionUrgency(questionCreateRequestDto.questionUrgency())
-                .questionAnswerType(questionCreateRequestDto.questionAnswerType())
+                .questionUrgency(request.getQuestionUrgency())
+                .questionAnswerType(QuestionAnswerType.valueOf(request.getQuestionAnswerType()))
                 .questionAnswerAdopt(false)
-                .questionDisclosure(questionCreateRequestDto.questionDisclosure())
-                .questionIsAnonymous(questionCreateRequestDto.questionIsAnonymous())
+                .questionDisclosure(QuestionDisclosureType.valueOf(request.getQuestionDisclosureType()))
+                .questionIsAnonymous(request.getQuestionIsAnonymous())
                 .build();
     }
 

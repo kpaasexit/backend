@@ -3,7 +3,6 @@ package com.exit.question.service;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.*;
 import com.exit.common.util.file.FileUploadUtil;
-import com.exit.question.controller.dto.request.SendNotificationRequestDto;
 import com.exit.question.domain.question.FollowUpImage;
 import com.exit.question.domain.question.FollowUpMessage;
 import com.exit.question.domain.question.FollowUpRoom;
@@ -16,7 +15,15 @@ import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.exception.GrpcResponseErrorCode;
+import com.exit.question.service.client.AiGrpcClient;
+import com.exit.question.service.client.NotificationGrpcClient;
+import com.exit.question.service.util.AiGrpcMapper;
+import com.exit.question.service.util.NotificationGrpcMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +34,9 @@ import static com.exit.common.util.time.TimeStampUtil.toGrpcTimestamp;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AdditionalQuestionService {
+    private static final String ADDITIONAL_QUESTION_PATH = "ADDITIONAL";
     private final ResponseRepository responseRepository;
     private final FollowUpImageRepository followUpImageRepository;
     private final FollowUpMessageRepository followUpMessageRepository;
@@ -35,8 +44,9 @@ public class AdditionalQuestionService {
     private final FileUploadUtil fileUploadUtil;
     private final QuestionRepository questionRepository;
     private final NotificationGrpcClient notificationGrpcClient;
-
-    private final String ADDITIONAL_QUESTION_PATH = "ADDITIONAL";
+    private final AiGrpcClient aiGrpcClient;
+    private final NotificationGrpcMapper notificationGrpcMapper;
+    private final AiGrpcMapper aiGrpcMapper;
 
     public CreateAdditionalQuestionMessageResponse createAdditionalQuestionMessage(CreateAdditionalQuestionMessageRequest request) {
         Response response = findResponseById(request.getResponseId());
@@ -46,10 +56,18 @@ public class AdditionalQuestionService {
 
         Question question = getQuestion(request.getQuestionId());
         boolean isQuestioner = isUserQuestioner(question.getQuestionWriterId(), request.getUserId());
+        if (isQuestioner && response.getResponseWriterId() == 1L) {
+            generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question);
+        }
+
         MessageItem messageItem = buildMessageItem(savedMessage, imageUrls, isQuestioner);
 
-        SendNotificationRequestDto requestDto = createSendNotificationRequestDto(messageItem, request.getDeviceId(), response.getResponseWriterId(), question.getQuestionWriterId());
-        notificationGrpcClient.sendNotification(requestDto);
+        if (response.getResponseWriterId() != 1L) {
+            SendNotificationRequest sendNotificationRequest = createSendNotificationRequest(
+                    messageItem, response.getResponseWriterId(), question.getQuestionWriterId());
+            notificationGrpcClient.sendNotification(sendNotificationRequest);
+        }
+
         return CreateAdditionalQuestionMessageResponse.newBuilder()
                 .setFollowUpRoomId(followUpRoom.getFollowUpRoomId())
                 .setMessage(messageItem)
@@ -121,28 +139,52 @@ public class AdditionalQuestionService {
                 .build();
     }
 
-    private SendNotificationRequestDto createSendNotificationRequestDto(MessageItem messageItem, String deviceId, Long responseWriterId, Long questionWriterId) {
+    private SendNotificationRequest createSendNotificationRequest(MessageItem messageItem, Long responseWriterId, Long questionWriterId) {
         boolean isQuestioner = messageItem.getIsQuestioner();
         String notificationType = isQuestioner ? "NEW_ADDITIONAL_QUESTION_ON_ANSWER" : "NEW_ANSWER_ON_ADDITIONAL_QUESTION";
         Long receiverId = isQuestioner ? responseWriterId : questionWriterId;
         String body = truncateContent(messageItem.getContent());
 
-        return SendNotificationRequestDto.builder()
-                .type(notificationType)
-                .receiverId(receiverId)
-                .body(body)
-                .targetId(messageItem.getMessageId())
-                .deviceId(deviceId)
-                .build();
+        return notificationGrpcMapper.getSendNotificationRequest(
+                body, notificationType, messageItem.getMessageId(), receiverId);
     }
 
     private String truncateContent(String content) {
         String subBody;
-        if(content.length() <= 100) {
-            subBody = content.substring(0, content.length()-1);
+        if (content.length() <= 100) {
+            subBody = content.substring(0, content.length() - 1);
         } else {
             subBody = content.substring(0, 100);
         }
         return subBody;
+    }
+
+    @Retryable(
+            retryFor = {Exception.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000, multiplier = 2),
+            recover = "recoverGenerateAiAnswer"
+    )
+    private void generateAiAnswerAsync(String content, Question question) {
+        aiGrpcClient.saveQuestion(aiGrpcMapper.getSaveQuestionRequest(content, question));
+        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId());
+
+        FollowUpMessage aiFollowUpMessage = FollowUpMessage.builder()
+                .followUpMessageContent(aiAnswer)
+                .followUpMessageWriterId(1L)
+                .build();
+
+        FollowUpMessage saved = followUpMessageRepository.save(aiFollowUpMessage);
+        log.info("AI Additional answer generated and saved for additional question ID: {}", saved.getFollowUpMessageId());
+    }
+
+    /**
+     * AI 답변 생성 재시도 실패 시 폴백 메서드
+     */
+    @Recover
+    private void recoverGenerateAiAnswer(Exception e, Long questionId) {
+        log.error("Failed to generate AI answer after all retry attempts for question {}: {}",
+                questionId, e.getMessage(), e);
+        // TODO: 필요시 사용자에게 알림 전송 또는 재시도 큐에 추가
     }
 }

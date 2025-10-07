@@ -1,15 +1,18 @@
 package com.exit.user.service.auth;
 
 import com.exit.common.auth.jwt.JwtTokenProvider;
-import com.exit.common.auth.jwt.dto.UserIdRequest;
+import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
 import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
 import com.exit.user.controller.dto.response.LoginSuccessResponse;
 import com.exit.user.domain.JwtToken;
+import com.exit.user.domain.UserFcmToken;
 import com.exit.user.domain.Users;
+import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
 import com.exit.user.exception.GrpcUserErrorCode;
+import com.exit.user.util.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenRedisService jwtTokenRedisService;
+    private final UserFcmTokenRepository userFcmTokenRepository;
 
     public LoginSuccessResponse socialLogin(OAuth2UserInfoRequestDto oauth2UserInfoRequestDto) {
         try {
@@ -34,11 +38,10 @@ public class AuthService {
                     .map(existingUser -> updateExistingUser(existingUser, oauth2UserInfoRequestDto))
                     .orElseGet(() -> createNewUser(oauth2UserInfoRequestDto));
 
+            String deviceId = oauth2UserInfoRequestDto.getDeviceId();
 
-            // JWT 토큰 생성
-            JwtToken jwtToken = createJwtToken(user);
-            jwtTokenRedisService.saveJwtToken(user.getUserId(), jwtToken);
-
+            JwtToken jwtToken = createAndSaveJwtToken(user, deviceId);
+            createAndSaveFcmToken(oauth2UserInfoRequestDto, user, deviceId);
             return new LoginSuccessResponse(
                     jwtToken.getAccessToken(),
                     jwtToken.getRefreshToken(),
@@ -53,18 +56,17 @@ public class AuthService {
 
     public LoginSuccessResponse refreshAuthToken(RefreshTokenRequestDto request) {
         try {
-            // Refresh Token에서 사용자 ID 추출
             Long userId = jwtTokenProvider.getUserIdFromToken(request.refreshToken());
+            String deviceId = request.deviceId();
 
-            // JWT 토큰 유효성 검증
-            jwtTokenRedisService.validJwtToken(userId, request.refreshToken());
+            jwtTokenRedisService.validJwtToken(userId, deviceId, request.refreshToken());
 
-            // 사용자 정보 조회
             Users user = userRepository.findById(userId)
                     .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
 
-            JwtToken newJwtToken = createJwtToken(user);
-            jwtTokenRedisService.saveJwtToken(userId, newJwtToken);
+            jwtTokenRedisService.deleteJwtToken(userId, deviceId);
+
+            JwtToken newJwtToken = createAndSaveJwtToken(user, deviceId);
 
             return new LoginSuccessResponse(
                     newJwtToken.getAccessToken(),
@@ -78,15 +80,20 @@ public class AuthService {
         }
     }
 
-    public LoginSuccessResponse logout(UserIdRequest request) {
+    public LoginSuccessResponse logout(Long userId, String deviceId) {
         try {
-            // Redis에서 JWT 토큰 삭제
-            jwtTokenRedisService.deleteJwtToken(request.userId());
+            if (deviceId == null || deviceId.isEmpty()) {
+                // deviceId가 없으면 모든 디바이스 로그아웃
+                jwtTokenRedisService.deleteAllJwtTokens(userId);
+            } else {
+                // 특정 디바이스만 로그아웃
+                jwtTokenRedisService.deleteJwtToken(userId, deviceId);
+            }
 
             return new LoginSuccessResponse(
                     null,
                     null,
-                    request.userId(),
+                    userId,
                     null
             );
 
@@ -95,34 +102,50 @@ public class AuthService {
         }
     }
 
-    // 헬퍼 메서드들
     private Users updateExistingUser(Users user, OAuth2UserInfoRequestDto dto) {
         user.updateProfile(dto.getName(), dto.getProfileImageUrl());
         return user;
     }
 
     private Users createNewUser(OAuth2UserInfoRequestDto dto) {
+        String nickname = NicknameGenerator.generate();
+
         return userRepository.save(Users.builder()
                 .userEmail(dto.getEmail())
-                .userNickname(dto.getName())
+                .userNickname(nickname)
                 .userProfileUrl(dto.getProfileImageUrl())
                 .socialId(dto.getSocialId())
                 .provider(dto.getProvider())
                 .build());
     }
 
-    private JwtToken createJwtToken(Users user) {
-        // JWT 토큰 생성
-        String accessToken = jwtTokenProvider.generateAccessToken(new UserIdRequest(user.getUserId()));
+    private JwtToken createAndSaveJwtToken(Users user, String deviceId) {
+        String accessToken = jwtTokenProvider.generateAccessToken(new UserDetailRequest(user.getUserId(), deviceId));
         String jti = UUID.randomUUID().toString();
-        String refreshToken = jwtTokenProvider.generateRefreshToken(new UserIdRequest(user.getUserId()), jti);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(new UserDetailRequest(user.getUserId(), deviceId), jti);
 
         // JWT 토큰을 Redis에 저장 (1일 만료)
-        return JwtToken.builder()
+        JwtToken jwtToken = JwtToken.builder()
+                .jwtId(jti)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(user.getUserId())
                 .expiresAt(System.currentTimeMillis() + Duration.ofDays(1).toMillis())
+                .deviceId(deviceId)
                 .build();
+
+        jwtTokenRedisService.saveJwtToken(user.getUserId(), deviceId, jwtToken);
+        return jwtToken;
+    }
+
+    private void createAndSaveFcmToken(OAuth2UserInfoRequestDto oauth2UserInfoRequestDto, Users user, String deviceId) {
+        UserFcmToken userFcmToken = UserFcmToken.builder()
+                .user(user)
+                .token(oauth2UserInfoRequestDto.getFirebaseToken())
+                .deviceId(deviceId)
+                .active(true)
+                .build();
+
+        userFcmTokenRepository.save(userFcmToken);
     }
 }

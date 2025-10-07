@@ -12,7 +12,7 @@ public class JwtAuthenticationProvider {
 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String accessToken = authentication.getCredentials().toString();
-        Long userId = jwtTokenProvider.getUserIdFromToken(accessToken);
-        return new JwtAuthenticationToken(userId, accessToken);
+        Member member = jwtTokenProvider.getUserDetailFromToken(accessToken);
+        return new JwtAuthenticationToken(member, accessToken);
     }
 }
