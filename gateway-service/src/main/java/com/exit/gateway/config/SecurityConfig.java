@@ -47,11 +47,6 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
                         // HealthCheck 엔드포인트 허용
                         .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator").permitAll()
-                        .requestMatchers("/user/actuator/health/**").permitAll()
-                        .requestMatchers("/question/actuator/health/**").permitAll()
-                        .requestMatchers("/quiz/actuator/health/**").permitAll()
-                        .requestMatchers("/magazine/actuator/health/**").permitAll()
-                        .requestMatchers("/notification/actuator/health/**").permitAll()
                         // 기존 API 엔드포인트 허용 (JWT로 인증)
                         .requestMatchers("/api/**").authenticated()
                         // 기타 요청은 인증 필요
