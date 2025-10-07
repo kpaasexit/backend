@@ -1,0 +1,20 @@
+app:
+  file-dir: ./test-uploads
+
+jwt:
+  secret_key: test-secret-key-for-testing-only-minimum-256-bits-required
+  access_token:
+    valid_time: 3600000
+  refresh_token:
+    valid_time: 86400000
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
