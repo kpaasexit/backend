@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -117,6 +118,20 @@ class AdditionalQuestionControllerTest {
     @DisplayName("추가 질문 메시지 생성 API")
     void createAdditionalQuestionMessage() throws Exception {
         // given
+        MockMultipartFile image1 = new MockMultipartFile(
+                "images",                           // DTO의 필드명과 일치
+                "test-image1.jpg",
+                "image/jpeg",
+                "test image content".getBytes()
+        );
+
+        MockMultipartFile image2 = new MockMultipartFile(
+                "images",
+                "test-image2.png",
+                "image/png",
+                "another image".getBytes()
+        );
+
         LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
 
         MessageItemDto message = MessageItemDto.builder()
@@ -136,6 +151,8 @@ class AdditionalQuestionControllerTest {
 
         // when & then
         mockMvc.perform(multipart("/api/additional-question/message")
+                        .file(image1)
+                        .file(image2)
                         .param("questionId", "1")
                         .param("responseId", "2")
                         .param("content", "추가 질문드립니다."))
@@ -144,6 +161,11 @@ class AdditionalQuestionControllerTest {
                 .andExpect(jsonPath("$.result.message.messageId").value(3L))
                 .andExpect(jsonPath("$.result.message.content").value("추가 질문드립니다."))
                 .andDo(document("additional-question/create",
+                        requestParts(                              // 파일 문서화
+                                partWithName("images")
+                                        .description("업로드할 이미지 파일 목록 (선택)")
+                                        .optional()
+                        ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),

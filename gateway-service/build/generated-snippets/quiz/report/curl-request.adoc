@@ -2,7 +2,7 @@
 ----
 $ curl 'http://localhost:8080/api/quiz/1/report' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NTk4MTc3MDksImV4cCI6MTc2MzQxNzcwOX0.kGJNhLZaIPLfwLQptJEoAGdy6BLUjWo4csK4vvPh0vA' \
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NTk4MjE2OTksImV4cCI6MTc2MzQyMTY5OX0.vOe6es9gAtfcSohpz2Gh4KqpgljONXFlDPnUVglE84g' \
     -d '{
   "title" : "오타가 있습니다",
   "content" : "문제 내용에 오타가 있어 신고합니다."

@@ -4,12 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="test : restDocs 경로 허용 및 jwt 필터 통과 설정">
+    <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="test : RestDocs asciidoctor 확장자 추가">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/httpie-request.adoc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/curl-request.adoc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/http-request.adoc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/httpie-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/httpie-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/httpie-request.adoc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/curl-request.adoc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/http-request.adoc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/httpie-request.adoc" afterDir="false" />
@@ -31,6 +39,14 @@
       <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/curl-request.adoc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/http-request.adoc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/httpie-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/resources/static/docs/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/resources/static/docs/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/test/java/com/exit/gateway/controller/question/AdditionalQuestionControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/test/java/com/exit/gateway/controller/question/AdditionalQuestionControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/test/java/com/exit/gateway/controller/question/QuestionControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/test/java/com/exit/gateway/controller/question/QuestionControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/com/exit/notification/config/FirebaseConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/com/exit/notification/config/FirebaseConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/test/java/com/exit/notification/NotificationServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/test/java/com/exit/notification/NotificationServiceApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-service/src/test/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/test/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/question-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -250,7 +266,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.backend [bootJar]">
+  <component name="RunManager" selected="Spring Boot.EurekaServiceApplication">
     <configuration name="msa" type="CompoundRunConfigurationType">
       <toRun name="GatewayApplication" type="SpringBootApplicationConfigurationType" />
       <toRun name="MagazineServiceApplication" type="SpringBootApplicationConfigurationType" />
@@ -488,10 +504,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.backend [bootJar]" />
+        <item itemvalue="Gradle.backend [build]" />
         <item itemvalue="Gradle.backend [clean]" />
         <item itemvalue="Gradle.UserControllerTest.updateAdditionalUserInfo" />
         <item itemvalue="Gradle.AuthControllerTest.refreshToken" />
-        <item itemvalue="Gradle.backend [build]" />
       </list>
     </recent_temporary>
   </component>
@@ -531,7 +547,7 @@
       <workItem from="1757905388443" duration="10934000" />
       <workItem from="1757988772534" duration="7133000" />
       <workItem from="1759636854686" duration="13192000" />
-      <workItem from="1759814077445" duration="3640000" />
+      <workItem from="1759814077445" duration="6940000" />
     </task>
     <task id="LOCAL-00001" summary="초기 환경 설정 V1">
       <option name="closed" value="true" />
@@ -597,7 +613,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759816696488</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="test : RestDocs asciidoctor 확장자 추가">
+      <option name="closed" value="true" />
+      <created>1759818043672</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1759818043672</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -624,7 +648,8 @@
     <MESSAGE value="test : gateway의 build 폴더만 깃에 포함되도록 수정" />
     <MESSAGE value="test : 게이트웨이 snippets 파일 커밋" />
     <MESSAGE value="test : restDocs 경로 허용 및 jwt 필터 통과 설정" />
-    <option name="LAST_COMMIT_MESSAGE" value="test : restDocs 경로 허용 및 jwt 필터 통과 설정" />
+    <MESSAGE value="test : RestDocs asciidoctor 확장자 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="test : RestDocs asciidoctor 확장자 추가" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

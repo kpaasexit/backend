@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -415,6 +416,20 @@ class QuestionControllerTest {
     @DisplayName("질문 생성 API")
     void createQuestion() throws Exception {
         // given
+        MockMultipartFile image1 = new MockMultipartFile(
+                "images",                           // DTO의 필드명과 일치
+                "test-image1.jpg",
+                "image/jpeg",
+                "test image content".getBytes()
+        );
+
+        MockMultipartFile image2 = new MockMultipartFile(
+                "images",
+                "test-image2.png",
+                "image/png",
+                "another image".getBytes()
+        );
+
         LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
 
         QuestionCreateResponseDto response = QuestionCreateResponseDto.builder()
@@ -435,6 +450,8 @@ class QuestionControllerTest {
 
         // when & then
         mockMvc.perform(multipart("/api/questions")
+                        .file(image1)
+                        .file(image2)
                         .param("questionTitle", "Spring JWT 인증 구현")
                         .param("questionContent", "JWT 토큰 기반 인증을 구현하고 싶습니다.")
                         .param("questionCategory", "1")
@@ -446,6 +463,11 @@ class QuestionControllerTest {
                 .andExpect(jsonPath("$.result.questionId").value(1L))
                 .andExpect(jsonPath("$.result.questionTitle").value("Spring JWT 인증 구현"))
                 .andDo(document("question/create",
+                        requestParts(                              // 파일 문서화
+                                partWithName("images")
+                                        .description("업로드할 이미지 파일 목록 (선택)")
+                                        .optional()
+                        ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
@@ -514,6 +536,20 @@ class QuestionControllerTest {
     @DisplayName("답변 생성 API")
     void createAnswer() throws Exception {
         // given
+
+        MockMultipartFile image1 = new MockMultipartFile(
+                "images",                           // DTO의 필드명과 일치
+                "test-image1.jpg",
+                "image/jpeg",
+                "test image content".getBytes()
+        );
+
+        MockMultipartFile image2 = new MockMultipartFile(
+                "images",
+                "test-image2.png",
+                "image/png",
+                "another image".getBytes()
+        );
         LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
 
         AnswerCreateResponseDto response = AnswerCreateResponseDto.builder()
@@ -528,6 +564,8 @@ class QuestionControllerTest {
 
         // when & then
         mockMvc.perform(multipart("/api/questions/answers")
+                        .file(image1)
+                        .file(image2)
                         .param("questionId", "1")
                         .param("responseContent", "JWT 토큰은 다음과 같이 구현할 수 있습니다...")
                         .param("responseWriterId", "2"))
@@ -535,6 +573,11 @@ class QuestionControllerTest {
                 .andExpect(jsonPath("$.result.responseId").value(1L))
                 .andExpect(jsonPath("$.result.responseContent").value("JWT 토큰은 다음과 같이 구현할 수 있습니다..."))
                 .andDo(document("question/answer-create",
+                        requestParts(
+                                partWithName("images")
+                                        .description("업로드할 이미지 파일 목록 (선택)")
+                                        .optional()
+                        ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
