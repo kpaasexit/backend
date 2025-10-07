@@ -91,9 +91,6 @@ dependencies {
     } else {
         // prod 전용
         implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-client-config'
-        implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-client'
-        implementation "org.springframework.cloud:spring-cloud-kubernetes-client-config"
-        implementation "org.springframework.cloud:spring-cloud-kubernetes-client-discovery"
     }
 }
 
