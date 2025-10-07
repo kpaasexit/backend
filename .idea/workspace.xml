@@ -4,235 +4,33 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="test : 게이트웨이 snippets 파일 커밋">
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/get/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/get/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/get/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/get/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/get/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/get/query-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/get/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/get/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/get/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/request-headers.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/refresh/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/refresh/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/refresh/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/refresh/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/refresh/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/refresh/request-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/refresh/request-headers.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/refresh/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/refresh/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/create/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/create/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/create/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/create/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/create/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/create/request-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/create/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/create/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/delete/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/delete/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/delete/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/delete/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/delete/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/delete/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/delete/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/comment/delete/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/detail/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/detail/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/detail/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/detail/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/detail/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/detail/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/detail/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/detail/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/list/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/list/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/list/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/list/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/list/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/list/query-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/list/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/list/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/magazine/list/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-adopt/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-adopt/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-adopt/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-adopt/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-adopt/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-adopt/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-adopt/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-adopt/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-delete/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-delete/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-delete/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-delete/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-delete/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-delete/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-delete/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-delete/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-recommend/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-recommend/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-recommend/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-recommend/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-recommend/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-recommend/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-recommend/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-recommend/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-report/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-report/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-report/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-report/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-report/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-report/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-report/request-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-report/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-report/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-update/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-update/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-update/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-update/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-update/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-update/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-update/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-update/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/category-recommend/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/category-recommend/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/category-recommend/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/category-recommend/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/category-recommend/query-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/category-recommend/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/category-recommend/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/category-recommend/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/detail/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/detail/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/detail/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/detail/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/detail/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/detail/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/detail/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/detail/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/list/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/list/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/list/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/list/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/list/query-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/list/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/list/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/list/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/report/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/report/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/report/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/report/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/report/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/report/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/report/request-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/report/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/report/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/similar/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/similar/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/similar/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/similar/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/similar/query-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/similar/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/similar/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/similar/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/request-headers.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/request-headers.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/request-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/request-headers.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/request-headers.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/request-headers.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/path-parameters.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/request-headers.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/response-fields.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/curl-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/http-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/http-response.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/httpie-request.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/request-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/request-headers.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/request-parts.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/response-body.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/response-fields.adoc" afterDir="false" />
+    <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="test : restDocs 경로 허용 및 jwt 필터 통과 설정">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gateway-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/global/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/global/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/global/filter/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/global/filter/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/httpie-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/httpie-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/httpie-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/httpie-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/httpie-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/httpie-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/httpie-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/curl-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/http-request.adoc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/httpie-request.adoc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -295,6 +93,17 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="backend" type="f1a62948:ProjectNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="backend" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="backend" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
               </path>
             </expand>
             <select />
@@ -441,7 +250,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.GatewayApplication">
+  <component name="RunManager" selected="Gradle.backend [bootJar]">
     <configuration name="msa" type="CompoundRunConfigurationType">
       <toRun name="GatewayApplication" type="SpringBootApplicationConfigurationType" />
       <toRun name="MagazineServiceApplication" type="SpringBootApplicationConfigurationType" />
@@ -678,11 +487,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.backend [bootJar]" />
+        <item itemvalue="Gradle.backend [clean]" />
         <item itemvalue="Gradle.UserControllerTest.updateAdditionalUserInfo" />
         <item itemvalue="Gradle.AuthControllerTest.refreshToken" />
-        <item itemvalue="Gradle.backend [clean]" />
         <item itemvalue="Gradle.backend [build]" />
-        <item itemvalue="Gradle.backend [bootJar]" />
       </list>
     </recent_temporary>
   </component>
@@ -722,7 +531,7 @@
       <workItem from="1757905388443" duration="10934000" />
       <workItem from="1757988772534" duration="7133000" />
       <workItem from="1759636854686" duration="13192000" />
-      <workItem from="1759814077445" duration="2412000" />
+      <workItem from="1759814077445" duration="3640000" />
     </task>
     <task id="LOCAL-00001" summary="초기 환경 설정 V1">
       <option name="closed" value="true" />
@@ -780,7 +589,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759815945041</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="test : restDocs 경로 허용 및 jwt 필터 통과 설정">
+      <option name="closed" value="true" />
+      <created>1759816696488</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1759816696488</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -806,7 +623,8 @@
     <MESSAGE value="test : RestDocs 설정 및 테스트 코드" />
     <MESSAGE value="test : gateway의 build 폴더만 깃에 포함되도록 수정" />
     <MESSAGE value="test : 게이트웨이 snippets 파일 커밋" />
-    <option name="LAST_COMMIT_MESSAGE" value="test : 게이트웨이 snippets 파일 커밋" />
+    <MESSAGE value="test : restDocs 경로 허용 및 jwt 필터 통과 설정" />
+    <option name="LAST_COMMIT_MESSAGE" value="test : restDocs 경로 허용 및 jwt 필터 통과 설정" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

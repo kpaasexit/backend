@@ -1,0 +1,16 @@
+app:
+  file-dir: ./test-uploads
+
+jwt:
+  secret_key: test-secret-key-for-testing-only-minimum-256-bits-required
+  access_token:
+    valid_time: 3600000
+  refresh_token:
+    valid_time: 86400000
+
+firebase:
+  project-id: test-project
+  private-key-id: test-key-id
+  private-key: test-private-key
+  client-email: test@test.com
+  client-id: test-client-id
