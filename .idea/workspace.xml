@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="feat : api 응답값 iso-8601 형식으로 변경">
+    <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="feat : 응답값 변경으로 인한 adoc 파일 커밋">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/global/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/global/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/handler/OAuth2LoginSuccessHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/handler/OAuth2LoginSuccessHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,7 +173,7 @@
     "Spring Boot.QuestionServiceApplication.executor": "Run",
     "Spring Boot.QuizServiceApplication.executor": "Run",
     "Spring Boot.UserApplication.executor": "Run",
-    "git-widget-placeholder": "feat/iso-8601",
+    "git-widget-placeholder": "refactor/token-redirect",
     "last_opened_file_path": "C:/Users/User/Desktop/exit/backend/user-service",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -507,7 +509,7 @@
       <workItem from="1757988772534" duration="7133000" />
       <workItem from="1759636854686" duration="13192000" />
       <workItem from="1759814077445" duration="7854000" />
-      <workItem from="1759903021902" duration="2959000" />
+      <workItem from="1759903021902" duration="4294000" />
     </task>
     <task id="LOCAL-00001" summary="초기 환경 설정 V1">
       <option name="closed" value="true" />
@@ -597,7 +599,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759911621850</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="feat : 응답값 변경으로 인한 adoc 파일 커밋">
+      <option name="closed" value="true" />
+      <created>1759911819661</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1759911819661</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -627,7 +637,8 @@
     <MESSAGE value="test : RestDocs asciidoctor 확장자 추가" />
     <MESSAGE value="test : 개별 서비스 테스트 통과" />
     <MESSAGE value="feat : api 응답값 iso-8601 형식으로 변경" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat : api 응답값 iso-8601 형식으로 변경" />
+    <MESSAGE value="feat : 응답값 변경으로 인한 adoc 파일 커밋" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat : 응답값 변경으로 인한 adoc 파일 커밋" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

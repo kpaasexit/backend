@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    @Value("${app.oauth2.redirect-url:http://localhost:3000/oauth2/redirect}")
+    @Value("${app.oauth2.redirect-url:https://house-it.210-178-1-144.nip.io:5173/oauth2/redirect}")
     private String redirectUrl;
 
     @Override
