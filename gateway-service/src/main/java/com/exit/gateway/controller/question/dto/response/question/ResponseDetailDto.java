@@ -2,6 +2,7 @@ package com.exit.gateway.controller.question.dto.response.question;
 
 import com.exit.common.grpc.ResponseDetail;
 import com.exit.common.util.time.TimeStampUtil;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,9 @@ public record ResponseDetailDto(
         Boolean responseAdopt,
         List<String> urls,
         Integer likeCount,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime updatedAt
 ) {
     public static ResponseDetailDto from(ResponseDetail grpcResponse) {

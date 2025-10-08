@@ -1,6 +1,7 @@
 package com.exit.gateway.controller.question.dto.response.question;
 
 import com.exit.common.grpc.QuestionListItem;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ public record QuestionListQueryResponseDto(
         String questionAnswerType,
         Boolean questionAnswerAdopt,
         Integer answerCount,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt
 ) {
     public static QuestionListQueryResponseDto from(QuestionListItem questionListItem) {

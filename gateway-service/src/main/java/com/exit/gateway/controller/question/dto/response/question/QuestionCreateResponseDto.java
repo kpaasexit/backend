@@ -1,6 +1,7 @@
 package com.exit.gateway.controller.question.dto.response.question;
 
 import com.exit.common.grpc.QuestionCreateResponse;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public record QuestionCreateResponseDto(
         Long questionWriterId,
         String questionWriterName,
         List<String> imageUrls,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt
 ) {
     public static QuestionCreateResponseDto from(QuestionCreateResponse questionCreateResponse) {
