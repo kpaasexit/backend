@@ -1,6 +1,6 @@
 [source,bash]
 ----
 $ http --multipart PUT 'http://localhost:8080/api/user/additional-info' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NTk4MjE3MDEsImV4cCI6MTc2MzQyMTcwMX0.9q3ibAoJgbqqQZAdlsIXUzpHbtLXt-cfnDzL4Gmy0Iw' \
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NTk5MTE3NjAsImV4cCI6MTc2MzUxMTc2MH0.SYbYico7eCUAh1N2WQ5tZvB4d4hzvjPyYghsTPgBZDI' \
     'image'@'profile.jpg'
 ----
