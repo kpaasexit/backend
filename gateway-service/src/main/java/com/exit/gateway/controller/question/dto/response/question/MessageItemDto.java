@@ -1,6 +1,7 @@
 package com.exit.gateway.controller.question.dto.response.question;
 
 import com.exit.common.grpc.MessageItem;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ public record MessageItemDto(
         Long messageId,
         String content,
         List<String> images,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt
 ) {
     public static MessageItemDto from(MessageItem messageItem) {

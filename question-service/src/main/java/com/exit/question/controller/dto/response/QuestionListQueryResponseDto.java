@@ -3,6 +3,7 @@ package com.exit.question.controller.dto.response;
 import com.exit.common.grpc.QuestionListItem;
 import com.exit.common.util.time.TimeStampUtil;
 import com.exit.question.domain.question.QuestionAnswerType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ public record QuestionListQueryResponseDto(
         QuestionAnswerType questionAnswerType,
         Boolean questionAnswerAdopt,
         Integer answerCount,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt
 ) {
     public static QuestionListItem toQuestionListItem(QuestionListQueryResponseDto dto) {

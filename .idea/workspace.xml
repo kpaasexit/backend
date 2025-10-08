@@ -4,49 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="test : RestDocs asciidoctor 확장자 추가">
+    <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="feat : api 응답값 iso-8601 형식으로 변경">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/additional-question/create/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/auth/logout/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/answer-create/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/question/create/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/category-statistics/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/get/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/report/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/resolve/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/solved/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/quiz/submit-answer/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/curl-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/curl-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/http-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/http-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/httpie-request.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/build/generated-snippets/user/update-additional-info/httpie-request.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/resources/static/docs/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/resources/static/docs/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/src/test/java/com/exit/gateway/controller/question/AdditionalQuestionControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/test/java/com/exit/gateway/controller/question/AdditionalQuestionControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gateway-service/src/test/java/com/exit/gateway/controller/question/QuestionControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/test/java/com/exit/gateway/controller/question/QuestionControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/main/java/com/exit/notification/config/FirebaseConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/main/java/com/exit/notification/config/FirebaseConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/test/java/com/exit/notification/NotificationServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/test/java/com/exit/notification/NotificationServiceApplicationTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-service/src/test/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/notification-service/src/test/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/question-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/question-service/build.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,69 +130,69 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.AuthControllerTest.refreshToken.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.C:/Users/User/Desktop/exit/backend/user-service [build].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.UserControllerTest.updateAdditionalUserInfo.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend [bootJar].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend [build].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend [classes].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend 빌드.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend:common [build].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend:common [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend:gateway-service [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend:user-service [buildDependents].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend:user-service [build].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend:user-service [classes].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend:user-service [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.backend:user-service [jar].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.gateway [build].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.gateway [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.gateway 빌드.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.question 빌드.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.user [build].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.소스 다운로드.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
-    &quot;Spring Boot.CommonApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.ConfigServerApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.EurekaServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.GatewayApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.MagazineServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.QuestionServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.QuizServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.UserApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;test/rest-docs&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/User/Desktop/exit/backend/user-service&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs.protractor.protractor_package&quot;: &quot;&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;모듈&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.20574713&quot;,
-    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.AuthControllerTest.refreshToken.executor": "Run",
+    "Gradle.C:/Users/User/Desktop/exit/backend/user-service [build].executor": "Run",
+    "Gradle.UserControllerTest.updateAdditionalUserInfo.executor": "Run",
+    "Gradle.backend [bootJar].executor": "Run",
+    "Gradle.backend [build].executor": "Run",
+    "Gradle.backend [classes].executor": "Run",
+    "Gradle.backend [clean].executor": "Run",
+    "Gradle.backend 빌드.executor": "Run",
+    "Gradle.backend:common [build].executor": "Run",
+    "Gradle.backend:common [clean].executor": "Run",
+    "Gradle.backend:gateway-service [clean].executor": "Run",
+    "Gradle.backend:user-service [buildDependents].executor": "Run",
+    "Gradle.backend:user-service [build].executor": "Run",
+    "Gradle.backend:user-service [classes].executor": "Run",
+    "Gradle.backend:user-service [clean].executor": "Run",
+    "Gradle.backend:user-service [jar].executor": "Run",
+    "Gradle.gateway [build].executor": "Run",
+    "Gradle.gateway [clean].executor": "Run",
+    "Gradle.gateway 빌드.executor": "Run",
+    "Gradle.question 빌드.executor": "Run",
+    "Gradle.user [build].executor": "Run",
+    "Gradle.소스 다운로드.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "Spring Boot.CommonApplication.executor": "Run",
+    "Spring Boot.ConfigServerApplication.executor": "Run",
+    "Spring Boot.EurekaServiceApplication.executor": "Run",
+    "Spring Boot.GatewayApplication.executor": "Run",
+    "Spring Boot.MagazineServiceApplication.executor": "Run",
+    "Spring Boot.QuestionServiceApplication.executor": "Run",
+    "Spring Boot.QuizServiceApplication.executor": "Run",
+    "Spring Boot.UserApplication.executor": "Run",
+    "git-widget-placeholder": "feat/iso-8601",
+    "last_opened_file_path": "C:/Users/User/Desktop/exit/backend/user-service",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.protractor.protractor_package": "",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "모듈",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.20574713",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;redis&quot;,
-      &quot;mysql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "redis",
+      "mysql"
     ]
   }
-}</component>
+}]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -266,7 +225,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.EurekaServiceApplication">
+  <component name="RunManager" selected="Gradle.backend [bootJar]">
     <configuration name="msa" type="CompoundRunConfigurationType">
       <toRun name="GatewayApplication" type="SpringBootApplicationConfigurationType" />
       <toRun name="MagazineServiceApplication" type="SpringBootApplicationConfigurationType" />
@@ -504,8 +463,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.backend [bootJar]" />
-        <item itemvalue="Gradle.backend [build]" />
         <item itemvalue="Gradle.backend [clean]" />
+        <item itemvalue="Gradle.backend [build]" />
         <item itemvalue="Gradle.UserControllerTest.updateAdditionalUserInfo" />
         <item itemvalue="Gradle.AuthControllerTest.refreshToken" />
       </list>
@@ -547,7 +506,8 @@
       <workItem from="1757905388443" duration="10934000" />
       <workItem from="1757988772534" duration="7133000" />
       <workItem from="1759636854686" duration="13192000" />
-      <workItem from="1759814077445" duration="6940000" />
+      <workItem from="1759814077445" duration="7854000" />
+      <workItem from="1759903021902" duration="2959000" />
     </task>
     <task id="LOCAL-00001" summary="초기 환경 설정 V1">
       <option name="closed" value="true" />
@@ -621,7 +581,23 @@
       <option name="project" value="LOCAL" />
       <updated>1759818043672</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="test : 개별 서비스 테스트 통과">
+      <option name="closed" value="true" />
+      <created>1759822007654</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1759822007654</updated>
+    </task>
+    <task id="LOCAL-00011" summary="feat : api 응답값 iso-8601 형식으로 변경">
+      <option name="closed" value="true" />
+      <created>1759911621850</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1759911621850</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -649,7 +625,9 @@
     <MESSAGE value="test : 게이트웨이 snippets 파일 커밋" />
     <MESSAGE value="test : restDocs 경로 허용 및 jwt 필터 통과 설정" />
     <MESSAGE value="test : RestDocs asciidoctor 확장자 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="test : RestDocs asciidoctor 확장자 추가" />
+    <MESSAGE value="test : 개별 서비스 테스트 통과" />
+    <MESSAGE value="feat : api 응답값 iso-8601 형식으로 변경" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat : api 응답값 iso-8601 형식으로 변경" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

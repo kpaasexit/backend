@@ -1,6 +1,7 @@
 package com.exit.gateway.controller.magazine.dto.response;
 
 import com.exit.common.grpc.MagazineItem;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ public record MagazineItemDto(
         String magazineAuthor,
         String authorProfileUrl,
         String magazineThumbnailUrl,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt
 ) {
     public static MagazineItemDto from(MagazineItem response) {
