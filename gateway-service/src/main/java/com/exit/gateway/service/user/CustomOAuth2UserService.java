@@ -32,9 +32,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String registrationId = request.getClientRegistration().getRegistrationId();
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oauth2User.getAttributes());
-
-        // 2. Cookie에서 deviceId와 deviceType 추출
-        String deviceId = extractDeviceIdFromCookie();
+        String deviceId = UUID.randomUUID().toString();
 
         // 3. gRPC 호출 시 deviceId와 deviceType 전달
         SocialLoginResponse socialLoginResponse = userGrpcClient.socialLogin(
@@ -43,40 +41,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         );
 
         return createCustomOAuth2User(socialLoginResponse);
-    }
-
-    private String extractDeviceIdFromCookie() {
-        String deviceId = null;
-
-        try {
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (attributes != null) {
-                HttpServletRequest httpRequest = attributes.getRequest();
-                Cookie[] cookies = httpRequest.getCookies();
-
-                if (cookies != null) {
-                    for (Cookie cookie : cookies) {
-                        if ("device_id".equals(cookie.getName())) {
-                            deviceId = cookie.getValue();
-                        }
-                    }
-                }
-            }
-
-            if (deviceId != null) {
-                log.info("Extracted device info from cookie - deviceId: {}", deviceId);
-            }
-        } catch (Exception e) {
-            log.warn("Failed to extract device info from cookie", e);
-        }
-
-        // deviceId가 없으면 UUID 생성
-        if (deviceId == null || deviceId.isEmpty()) {
-            deviceId = UUID.randomUUID().toString();
-            log.info("No deviceId in cookie, generated UUID: {}", deviceId);
-        }
-
-        return deviceId;
     }
 
     private CustomOAuth2User createCustomOAuth2User(SocialLoginResponse response) {
