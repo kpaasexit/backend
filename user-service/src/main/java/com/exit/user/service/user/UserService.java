@@ -3,6 +3,8 @@ package com.exit.user.service.user;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.*;
 import com.exit.common.util.file.FileUploadUtil;
+import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
+import com.exit.user.domain.UserFcmToken;
 import com.exit.user.domain.Users;
 import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
@@ -65,6 +67,23 @@ public class UserService {
         return GetFcmTokenResponse.newBuilder()
                 .addAllFcmToken(fcmTokens)
                 .build();
+    }
+
+    public void updateDevice(UpdateDeviceRequest request) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
+        createAndSaveFcmToken(request.getFcmToken(), user, request.getDeviceId());
+    }
+
+    private void createAndSaveFcmToken(String fcmToken, Users user, String deviceId) {
+        UserFcmToken userFcmToken = UserFcmToken.builder()
+                .user(user)
+                .token(fcmToken)
+                .deviceId(deviceId)
+                .active(true)
+                .build();
+
+        userFcmTokenRepository.save(userFcmToken);
     }
 }
 

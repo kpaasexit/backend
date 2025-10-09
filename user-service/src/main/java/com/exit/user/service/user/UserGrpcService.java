@@ -147,4 +147,21 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
                     .asRuntimeException());
         }
     }
+
+    @Override
+    public void updateDevice(UpdateDeviceRequest request, StreamObserver<Empty> responseObserver) {
+        try {
+            log.info("Update device request received for userId: {}", request.getUserId());
+            userService.updateDevice(request);
+
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Update device failed for userId: {}", request.getUserId(), e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("디바이스 정보 업데이트 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
 }

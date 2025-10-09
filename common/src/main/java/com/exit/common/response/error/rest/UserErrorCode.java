@@ -14,6 +14,8 @@ public enum UserErrorCode implements ErrorCode {
     UNSUPPORTED_PROVIDER("AUTH_ERR_005", HttpStatus.BAD_REQUEST, "지원하지 않는 OAuth2 제공자입니다."),
     UPDATE_ADDITIONAL_INFO_FAIL("AUTH_ERR_006", HttpStatus.BAD_REQUEST, "추가 정보 업데이트에 실패하였습니다."),
     UPDATE_DEVICE_FAIL("AUTH_ERR_007", HttpStatus.BAD_REQUEST, "디바이스 업데이트에 실패하였습니다."),
+    UPDATE_DEVICE_FAIL("AUTH_ERR_007", HttpStatus.BAD_REQUEST, "디바이스 업데이트에 실패하였습니다."),
+    UPDATE_DEVICE_FAIL("AUTH_ERR_007", HttpStatus.BAD_REQUEST, "디바이스 업데이트에 실패하였습니다."),
     ;
 
     private final String developCode;

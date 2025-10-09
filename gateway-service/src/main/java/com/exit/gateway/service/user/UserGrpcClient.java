@@ -120,4 +120,21 @@ public class UserGrpcClient {
             throw e;
         }
     }
+
+    public void updateDevice(Long userId, String deviceId, String fcmToken) {
+        try {
+            UpdateDeviceRequest request = UpdateDeviceRequest.newBuilder()
+                    .setUserId(userId)
+                    .setDeviceId(deviceId)
+                    .setFcmToken(fcmToken)
+                    .build();
+
+            log.debug("Sending refresh token request via gRPC: {}", request);
+            userServiceStub.updateDevice(request);
+
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC refresh token failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
 }

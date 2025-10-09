@@ -5,7 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb4c8d83-1159-4f65-be2b-e4f99fb8d91f" name="변경" comment="feat : api 응답값 iso-8601 형식으로 변경">
+      <change afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/user/dto/request/auth/DeviceFcmTokenRequestDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/rest/UserErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/error/rest/UserErrorCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/success/AuthSuccessCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/java/com/exit/common/response/success/AuthSuccessCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/src/main/proto/user/user.proto" beforeDir="false" afterPath="$PROJECT_DIR$/common/src/main/proto/user/user.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/user/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/controller/user/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/service/user/UserGrpcClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/gateway-service/src/main/java/com/exit/gateway/service/user/UserGrpcClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/auth/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/auth/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/user/UserGrpcService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/user/UserGrpcService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/user/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/user-service/src/main/java/com/exit/user/service/user/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,6 +89,11 @@
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="build" type="c8890929:TasksNode$1" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="backend" type="f1a62948:ProjectNode" />
+                <item name="실행 구성" type="7b0102dc:RunConfigurationsNode" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -92,9 +106,9 @@
       <list>
         <option value="Interface" />
         <option value="Enum" />
-        <option value="Record" />
         <option value="Class" />
         <option value="AnnotationType" />
+        <option value="Record" />
       </list>
     </option>
   </component>
@@ -171,7 +185,7 @@
     "Spring Boot.QuestionServiceApplication.executor": "Run",
     "Spring Boot.QuizServiceApplication.executor": "Run",
     "Spring Boot.UserApplication.executor": "Run",
-    "git-widget-placeholder": "feat/iso-8601",
+    "git-widget-placeholder": "feat/post-firebase",
     "last_opened_file_path": "C:/Users/User/Desktop/exit/backend/user-service",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

@@ -3,6 +3,7 @@ package com.exit.gateway.controller.user;
 import com.exit.common.grpc.RefreshTokenResponse;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.success.AuthSuccessCode;
+import com.exit.gateway.controller.user.dto.request.auth.DeviceFcmTokenRequestDto;
 import com.exit.gateway.controller.user.dto.request.auth.RefreshTokenRequestDto;
 import com.exit.gateway.controller.user.dto.response.auth.TokenResponseDto;
 import com.exit.gateway.global.annotation.DeviceId;
@@ -25,6 +26,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserGrpcClient userGrpcClient;
+
+    @PostMapping("/device")
+    public SuccessResponse<Void> updateDevice(
+            @LoginUser Long userId,
+            @DeviceId String deviceId,
+            @Valid @RequestBody DeviceFcmTokenRequestDto request) {
+        try {
+            log.info("deviceId and fcmToken request received");
+            userGrpcClient.updateDevice(userId, deviceId, request.fcmToken());
+
+            return SuccessResponse.of(AuthSuccessCode.UPDATE_DEVICE_SUCCESS, null);
+        } catch (StatusRuntimeException e) {
+            log.error("Update Device failed via gRPC: {}", e.getStatus(), e);
+            String errorMessage = getGrpcErrorMessage(e);
+            throw new RestApiException(UserErrorCode.UPDATE_DEVICE_FAIL, errorMessage);
+        } catch (Exception e) {
+            log.error("Update Device failed", e);
+            throw new RestApiException(UserErrorCode.UPDATE_DEVICE_FAIL, e.getMessage());
+        }
+    }
 
     @PostMapping("/refresh")
     public SuccessResponse<TokenResponseDto> refresh(

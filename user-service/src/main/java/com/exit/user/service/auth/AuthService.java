@@ -41,7 +41,6 @@ public class AuthService {
             String deviceId = oauth2UserInfoRequestDto.getDeviceId();
 
             JwtToken jwtToken = createAndSaveJwtToken(user, deviceId);
-            createAndSaveFcmToken(oauth2UserInfoRequestDto, user, deviceId);
             return new LoginSuccessResponse(
                     jwtToken.getAccessToken(),
                     jwtToken.getRefreshToken(),
@@ -136,16 +135,5 @@ public class AuthService {
 
         jwtTokenRedisService.saveJwtToken(user.getUserId(), deviceId, jwtToken);
         return jwtToken;
-    }
-
-    private void createAndSaveFcmToken(OAuth2UserInfoRequestDto oauth2UserInfoRequestDto, Users user, String deviceId) {
-        UserFcmToken userFcmToken = UserFcmToken.builder()
-                .user(user)
-                .token(oauth2UserInfoRequestDto.getFirebaseToken())
-                .deviceId(deviceId)
-                .active(true)
-                .build();
-
-        userFcmTokenRepository.save(userFcmToken);
     }
 }
