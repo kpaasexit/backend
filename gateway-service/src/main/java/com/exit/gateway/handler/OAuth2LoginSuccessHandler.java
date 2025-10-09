@@ -13,18 +13,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
-    private String redirectUrl;
+
+    private final HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
+
+    @Value("${app.oauth2.client-url:https://localhost:5173}")
+    private String clientUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -43,30 +47,32 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         log.info("OAuth2 로그인 성공 - Provider: {}, User: {}", userInfo.getProvider(), userInfo.getName());
 
         try {
-            // Device 관련 Cookie 삭제
             deleteCookie(response, "device_id");
             deleteCookie(response, "device_type");
 
-            String returnTo = extractReturnToUrl(request);
-            String origin = extractOrigin(request);
+            String returnTo = getCookie(request, HttpCookieOAuth2AuthorizationRequestRepository.RETURN_TO_URI_PARAM_COOKIE_NAME)
+                    .map(Cookie::getValue)
+                    .orElse("/");
 
-            // origin + returnTo를 조합하여 최종 리다이렉트 URL 생성
-            String redirectUrl = origin + returnTo;
-
-            // JWT 토큰과 함께 프론트엔드로 리다이렉트
             String finalRedirectUrl = String.format(
-                    "%s?token=%s&refresh=%s",
-                    redirectUrl,
+                    "%s/oauth/callback?token=%s&refresh=%s&returnTo=%s",
+                    clientUrl,
                     URLEncoder.encode(oauth2User.getAccessToken(), StandardCharsets.UTF_8),
-                    URLEncoder.encode(oauth2User.getRefreshToken(), StandardCharsets.UTF_8)
+                    URLEncoder.encode(oauth2User.getRefreshToken(), StandardCharsets.UTF_8),
+                    URLEncoder.encode(returnTo, StandardCharsets.UTF_8)
             );
 
-            log.info("OAuth2 로그인 완료 - 리다이렉트: {}", finalRedirectUrl);
+            authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
+
+            log.info("OAuth2 로그인 완료 - Client URL: {}", clientUrl);
+            log.info("OAuth2 로그인 완료 - Return To: {}", returnTo);
+            log.info("OAuth2 로그인 완료 - 최종 리다이렉트: {}", finalRedirectUrl);
+
             response.sendRedirect(finalRedirectUrl);
 
         } catch (Exception e) {
             log.error("OAuth2 로그인 처리 중 오류 발생", e);
-            response.sendRedirect(redirectUrl + "?error=login_failed");
+            response.sendRedirect(clientUrl + "/login?error=login_failed");
         }
     }
 
@@ -77,37 +83,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.addCookie(cookie);
     }
 
-    private String extractReturnToUrl(HttpServletRequest request) {
-        String returnTo = request.getParameter("returnTo");
-
-        if (returnTo == null || returnTo.isEmpty()) {
-            returnTo = "/";
+    private Optional<Cookie> getCookie(HttpServletRequest request, String name) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            return Arrays.stream(cookies)
+                    .filter(cookie -> name.equals(cookie.getName()))
+                    .findFirst();
         }
-
-        log.info("Extracted returnTo from query parameter: {}", returnTo);
-        return returnTo;
-    }
-
-    private String extractOrigin(HttpServletRequest request) {
-        String referer = request.getHeader("referer");
-        String origin = "https://house-it.210-178-1-144.nip.io:5173"; // 기본값
-
-        if (referer != null && !referer.isEmpty()) {
-            try {
-                java.net.URL url = new java.net.URL(referer);
-                int port = url.getPort();
-                if (port == -1) {
-                    // 포트가 명시되지 않은 경우 (기본 포트 사용)
-                    origin = url.getProtocol() + "://" + url.getHost();
-                } else {
-                    origin = url.getProtocol() + "://" + url.getHost() + ":" + port;
-                }
-            } catch (Exception e) {
-                log.warn("Failed to parse referer header: {}", referer, e);
-            }
-        }
-
-        log.info("Extracted origin from referer: {}", origin);
-        return origin;
+        return Optional.empty();
     }
 }
