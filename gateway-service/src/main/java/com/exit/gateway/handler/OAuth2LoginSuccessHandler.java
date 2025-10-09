@@ -17,14 +17,18 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    @Value("${app.oauth2.redirect-url:http://localhost:3000/oauth2/redirect}")
-    private String redirectUrl;
+    private final HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
+
+    @Value("${app.oauth2.client-url:https://localhost:5173}")
+    private String clientUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -43,24 +47,32 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         log.info("OAuth2 로그인 성공 - Provider: {}, User: {}", userInfo.getProvider(), userInfo.getName());
 
         try {
-            // Device 관련 Cookie 삭제
             deleteCookie(response, "device_id");
             deleteCookie(response, "device_type");
 
-            // JWT 토큰과 함께 프론트엔드로 리다이렉트
+            String returnTo = getCookie(request, HttpCookieOAuth2AuthorizationRequestRepository.RETURN_TO_URI_PARAM_COOKIE_NAME)
+                    .map(Cookie::getValue)
+                    .orElse("/");
+
             String finalRedirectUrl = String.format(
-                    "%s?token=%s&refresh=%s",
-                    redirectUrl,
+                    "%s/oauth/callback?token=%s&refresh=%s&returnTo=%s",
+                    clientUrl,
                     URLEncoder.encode(oauth2User.getAccessToken(), StandardCharsets.UTF_8),
-                    URLEncoder.encode(oauth2User.getRefreshToken(), StandardCharsets.UTF_8)
+                    URLEncoder.encode(oauth2User.getRefreshToken(), StandardCharsets.UTF_8),
+                    URLEncoder.encode(returnTo, StandardCharsets.UTF_8)
             );
 
-            log.info("OAuth2 로그인 완료 - 리다이렉트: {}", redirectUrl);
+            authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
+
+            log.info("OAuth2 로그인 완료 - Client URL: {}", clientUrl);
+            log.info("OAuth2 로그인 완료 - Return To: {}", returnTo);
+            log.info("OAuth2 로그인 완료 - 최종 리다이렉트: {}", finalRedirectUrl);
+
             response.sendRedirect(finalRedirectUrl);
 
         } catch (Exception e) {
             log.error("OAuth2 로그인 처리 중 오류 발생", e);
-            response.sendRedirect(redirectUrl + "?error=login_failed");
+            response.sendRedirect(clientUrl + "/login?error=login_failed");
         }
     }
 
@@ -69,5 +81,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
+    }
+
+    private Optional<Cookie> getCookie(HttpServletRequest request, String name) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            return Arrays.stream(cookies)
+                    .filter(cookie -> name.equals(cookie.getName()))
+                    .findFirst();
+        }
+        return Optional.empty();
     }
 }

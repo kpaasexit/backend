@@ -1,6 +1,7 @@
 package com.exit.gateway.global.config;
 
 import com.exit.gateway.global.filter.JwtAuthenticationFilter;
+import com.exit.gateway.handler.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.exit.gateway.handler.OAuth2LoginFailureHandler;
 import com.exit.gateway.handler.OAuth2LoginSuccessHandler;
 import com.exit.gateway.service.user.CustomOAuth2UserService;
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -43,28 +45,21 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(new FailedAuthenticationEntryPoint()))
                 .authorizeHttpRequests(authorize -> authorize
-                        // OAuth2 관련 엔드포인트 허용
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
-                        // HealthCheck 엔드포인트 허용
                         .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator").permitAll()
-                        // REST Docs 문서 접근 허용
                         .requestMatchers("/docs/**", "/favicon.ico").permitAll()
-                        // 기존 API 엔드포인트 허용 (JWT로 인증)
                         .requestMatchers("/api/**").authenticated()
-                        // 기타 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        // 인증 시작 엔드포인트 설정
                         .authorizationEndpoint(authorizationEndpoint ->
-                                authorizationEndpoint.baseUri("/oauth2/authorization"))
-                        // 콜백 엔드포인트 설정
+                                authorizationEndpoint
+                                        .baseUri("/oauth2/authorization")
+                                        .authorizationRequestRepository(authorizationRequestRepository))
                         .redirectionEndpoint(redirectEndpoint ->
                                 redirectEndpoint.baseUri("/login/oauth2/code/*"))
-                        // 사용자 정보 로드 서비스
                         .userInfoEndpoint(userInfoEndpoint ->
                                 userInfoEndpoint.userService(customOAuth2UserService))
-                        // 성공/실패 핸들러
                         .successHandler(oAuth2LoginSuccessHandler)
                         .failureHandler(oAuth2LoginFailureHandler)
                 )
@@ -77,7 +72,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList(
-                "http://localhost:3000", "http://localhost:8080", "http://localhost:5173"));
+                "https://localhost:3000", "https://localhost:8080", "https://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
