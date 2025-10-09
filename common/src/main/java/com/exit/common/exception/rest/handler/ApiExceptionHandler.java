@@ -7,8 +7,9 @@ import net.devh.boot.grpc.server.advice.GrpcAdvice;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@GrpcAdvice
+@RestControllerAdvice
 @Order(value = Integer.MIN_VALUE)
 public class ApiExceptionHandler {
     @ExceptionHandler(RestApiException.class)
