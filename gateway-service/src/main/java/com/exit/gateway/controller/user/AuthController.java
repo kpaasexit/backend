@@ -64,10 +64,10 @@ public class AuthController {
         } catch (StatusRuntimeException e) {
             log.error("Token refresh failed via gRPC: {}", e.getStatus(), e);
             String errorMessage = getGrpcErrorMessage(e);
-            throw new RuntimeException(errorMessage);
+            throw new RestApiException(UserErrorCode.REFRESH_FAIL, errorMessage);
         } catch (Exception e) {
             log.error("Token refresh failed", e);
-            throw new RuntimeException("토큰 갱신에 실패했습니다.");
+            throw new RestApiException(UserErrorCode.REFRESH_FAIL, e.getMessage());
         }
     }
 
@@ -84,10 +84,10 @@ public class AuthController {
         } catch (StatusRuntimeException e) {
             log.error("Logout failed via gRPC: {}", e.getStatus(), e);
             String errorMessage = getGrpcErrorMessage(e);
-            throw new RuntimeException(errorMessage);
+            throw new RestApiException(UserErrorCode.LOGOUT_FAIL, errorMessage);
         } catch (Exception e) {
             log.error("Logout failed", e);
-            throw new RuntimeException("로그아웃에 실패했습니다.");
+            throw new RestApiException(UserErrorCode.LOGOUT_FAIL, e.getMessage());
         }
     }
 
