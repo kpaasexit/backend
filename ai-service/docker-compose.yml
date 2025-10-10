@@ -31,6 +31,33 @@ services:
     networks:
       - ai-service-network
 
+  # Elasticsearch for autocomplete
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: ai-service-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - ai-service-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   # AI Service
   ai-service:
     build:
@@ -62,6 +89,10 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_DB=0
+
+      # Elasticsearch configuration
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
 
       # MySQL configuration
       - MYSQL_HOST=${MYSQL_HOST}
@@ -96,6 +127,7 @@ services:
     depends_on:
       - qdrant
       - redis
+      - elasticsearch
     networks:
       - ai-service-network
     extra_hosts:
@@ -147,6 +179,8 @@ volumes:
   qdrant_data:
     driver: local
   redis_data:
+    driver: local
+  elasticsearch_data:
     driver: local
   model_cache:
     driver: local
