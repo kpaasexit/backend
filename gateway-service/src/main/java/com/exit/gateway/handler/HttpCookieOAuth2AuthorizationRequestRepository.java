@@ -17,6 +17,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
 
     public static final String OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME = "oauth2_auth_request";
     public static final String RETURN_TO_URI_PARAM_COOKIE_NAME = "return_to";
+    public static final String CLIENT_ORIGIN_COOKIE_NAME = "client_origin";
     private static final int cookieExpireSeconds = 180;
 
     @Override
@@ -33,6 +34,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
         if (authorizationRequest == null) {
             deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
             deleteCookie(request, response, RETURN_TO_URI_PARAM_COOKIE_NAME);
+            deleteCookie(request, response, CLIENT_ORIGIN_COOKIE_NAME);
             return;
         }
 
@@ -44,6 +46,12 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
             addCookie(response, RETURN_TO_URI_PARAM_COOKIE_NAME, returnTo, cookieExpireSeconds);
             log.info("Saved returnTo in cookie: {}", returnTo);
         }
+
+        String clientOrigin = extractClientOrigin(request);
+        if (clientOrigin != null) {
+            addCookie(response, CLIENT_ORIGIN_COOKIE_NAME, clientOrigin, cookieExpireSeconds);
+            log.info("Saved client origin in cookie: {}", clientOrigin);
+        }
     }
 
     @Override
@@ -54,6 +62,31 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
     public void removeAuthorizationRequestCookies(HttpServletRequest request, HttpServletResponse response) {
         deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
         deleteCookie(request, response, RETURN_TO_URI_PARAM_COOKIE_NAME);
+        deleteCookie(request, response, CLIENT_ORIGIN_COOKIE_NAME);
+    }
+
+    private String extractClientOrigin(HttpServletRequest request) {
+        String origin = request.getHeader("Origin");
+
+        if (origin == null || origin.isEmpty()) {
+            String referer = request.getHeader("Referer");
+            if (referer != null && !referer.isEmpty()) {
+                try {
+                    java.net.URL url = new java.net.URL(referer);
+                    int port = url.getPort();
+                    if (port == -1) {
+                        origin = url.getProtocol() + "://" + url.getHost();
+                    } else {
+                        origin = url.getProtocol() + "://" + url.getHost() + ":" + port;
+                    }
+                } catch (Exception e) {
+                    log.warn("Failed to parse referer: {}", referer);
+                }
+            }
+        }
+
+        log.info("Extracted client origin: {}", origin);
+        return origin;
     }
 
     private java.util.Optional<Cookie> getCookie(HttpServletRequest request, String name) {
