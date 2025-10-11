@@ -20,12 +20,13 @@ import static com.exit.common.util.time.TimeStampUtil.toGrpcTimestamp;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class MagazineService {
     private final MagazineRepository magazineRepository;
     private final MagazineScrapRepository magazineScrapRepository;
     private final UserGrpcClient  userGrpcClient;
 
+    @Transactional(readOnly = true)
     public GetMagazinesByCategoryResponse getMagazinesByCategory(GetMagazinesByCategoryRequest request) {
         PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
         List<MagazineItem> magazineItems = magazineRepository.findAllByMagazineCategoryMagazineCategoryId(request.getCategoryId(), pageRequest)
@@ -40,6 +41,7 @@ public class MagazineService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public GetMagazineResponse getMagazine(GetMagazineRequest request) {
         Magazines magazine = magazineRepository.findById(request.getMagazineId())
                 .orElseThrow(() -> new GrpcException(GrpcMagazineErrorCode.NULL_MAGAZINE));
@@ -62,6 +64,7 @@ public class MagazineService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public GetScrapBoxResponse getScrapBox(GetScrapBoxRequest request) {
         PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
         Slice<MagazineScraps> slice = magazineScrapRepository.findByUserId(request.getUserId(), pageRequest);

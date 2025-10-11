@@ -82,15 +82,15 @@ public class MagazineController {
                     .setUserId(userId)
                     .build();
 
-            return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_SUCCESS,
+            return SuccessResponse.of(MagazineSuccessCode.SCRAP_MAGAZINE_SUCCESS,
                     magazineGrpcClient.scrapMagazine(request));
         } catch (StatusRuntimeException e) {
             log.error("Scrap magazine failed via gRPC: {}", e.getStatus(), e);
             String errorMessage = getGrpcErrorMessage(e);
-            throw new RestApiException(MagazineErrorCode.NULL_MAGAZINE, errorMessage);
+            throw new RestApiException(MagazineErrorCode.SCRAP_MAGAZINE_FAIL, errorMessage);
         } catch (Exception e) {
             log.error("Scrap magazine failed", e);
-            throw new RestApiException(MagazineErrorCode.NULL_MAGAZINE);
+            throw new RestApiException(MagazineErrorCode.SCRAP_MAGAZINE_FAIL);
         }
     }
 
@@ -103,18 +103,18 @@ public class MagazineController {
             log.info("Get scrap-box request received");
             GetScrapBoxRequest request = GetScrapBoxRequest.newBuilder()
                     .setUserId(userId)
-                    .setPageNum(pageNum)
+                    .setPageNum(pageNum-1)
                     .build();
 
-            return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_SUCCESS,
+            return SuccessResponse.of(MagazineSuccessCode.GET_SCRAP_BOX_SUCCESS,
                     magazineGrpcClient.getScrapBox(request));
         } catch (StatusRuntimeException e) {
             log.error("Get magazine failed via gRPC: {}", e.getStatus(), e);
             String errorMessage = getGrpcErrorMessage(e);
-            throw new RestApiException(MagazineErrorCode.NULL_MAGAZINE, errorMessage);
+            throw new RestApiException(MagazineErrorCode.GET_SCRAPBOX_FAIL, errorMessage);
         } catch (Exception e) {
             log.error("Get magazine failed", e);
-            throw new RestApiException(MagazineErrorCode.NULL_MAGAZINE);
+            throw new RestApiException(MagazineErrorCode.GET_SCRAPBOX_FAIL);
         }
     }
 

@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class Magazines extends BaseEntity {
     @Id
     @Column(name = "magazine_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long magazineId;
 
     @ManyToOne(fetch = FetchType.LAZY)
