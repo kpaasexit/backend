@@ -5,6 +5,7 @@ import com.exit.common.grpc.*;
 import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
 import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
 import com.exit.user.controller.dto.response.LoginSuccessResponse;
+import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 @Slf4j
 @GrpcService
 @RequiredArgsConstructor
-public class AuthGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImplBase {
+public class AuthGrpcService extends AuthServiceGrpc.AuthServiceImplBase {
 
     private final AuthService authService;
 
@@ -113,6 +114,29 @@ public class AuthGrpcService extends SocialAuthServiceGrpc.SocialAuthServiceImpl
                     .build();
 
             responseObserver.onNext(grpcResponse);
+            responseObserver.onCompleted();
+
+        } catch (GrpcException e) {
+            log.error("User not found for logout: {}", request.getUserId());
+            responseObserver.onError(Status.NOT_FOUND
+                    .withDescription("사용자를 찾을 수 없습니다")
+                    .asRuntimeException());
+        } catch (Exception e) {
+            log.error("Logout failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("로그아웃 처리 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void withdraw(WithDrawRequest request, StreamObserver<Empty> responseObserver) {
+        try {
+            log.info("withdraw request received for userId: {}", request.getUserId());
+
+            authService.withdraw(request.getUserId());
+
+            responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
 
         } catch (GrpcException e) {

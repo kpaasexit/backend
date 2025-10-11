@@ -37,6 +37,9 @@ public class Users extends BaseEntity {
     @Column(name = "social_id")
     private String socialId;
 
+    @Column(name = "user_deleted")
+    private boolean userDeleted;
+
     @Builder
     public Users(String userName, String userNickname, String userPhoneNumber, String userEmail, String userProfileUrl, Short userReportCount, String provider, String socialId) {
         this.userNickname = userNickname;
@@ -45,6 +48,7 @@ public class Users extends BaseEntity {
         this.userReportCount = userReportCount != null ? userReportCount : 0;
         this.provider = provider;
         this.socialId = socialId;
+        this.userDeleted = false;
     }
 
     public void updateProfile(String nickname, String profileImageUrl) {
@@ -59,5 +63,11 @@ public class Users extends BaseEntity {
 
     public void increaseReportCount() {
         this.userReportCount++;
+    }
+
+    public void withdraw() {
+        this.userNickname = "탈퇴한 사용자";
+        this.userProfileUrl = null;
+        this.userDeleted = true;
     }
 }

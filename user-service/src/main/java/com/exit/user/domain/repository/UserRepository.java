@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<Users, Long> {
-    Optional<Users> findBySocialIdAndProvider(String socialId, String provider);
+    Optional<Users> findBySocialIdAndProviderAndUserDeletedFalse(String socialId, String provider);
 
     List<Users> findAllByUserIdIn(List<Long> userIds);
 }

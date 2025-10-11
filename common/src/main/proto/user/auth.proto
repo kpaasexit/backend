@@ -4,14 +4,16 @@ package com.exit.common;
 
 option java_multiple_files = true;
 option java_package = "com.exit.common.grpc";
-option java_outer_classname = "SocialAuthServiceProto";
+option java_outer_classname = "AuthServiceProto";
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-service SocialAuthService {
+service AuthService {
   rpc SocialLogin(SocialLoginRequest) returns (SocialLoginResponse);
   rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc Withdraw(WithDrawRequest) returns (google.protobuf.Empty);
 }
 
 // 소셜로그인 요청 메시지들
@@ -31,6 +33,10 @@ message RefreshTokenRequest {
 message LogoutRequest {
   int64 user_id = 1;
   string device_id = 2;
+}
+
+message WithDrawRequest {
+  int64 user_id = 1;
 }
 
 // 소셜로그인 응답 메시지들

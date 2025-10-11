@@ -3,11 +3,11 @@ package com.exit.user.service.auth;
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.common.exception.grpc.GrpcException;
+import com.exit.common.util.file.FileUploadUtil;
 import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
 import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
 import com.exit.user.controller.dto.response.LoginSuccessResponse;
 import com.exit.user.domain.JwtToken;
-import com.exit.user.domain.UserFcmToken;
 import com.exit.user.domain.Users;
 import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
@@ -28,10 +28,11 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenRedisService jwtTokenRedisService;
     private final UserFcmTokenRepository userFcmTokenRepository;
+    private final FileUploadUtil fileUploadUtil;
 
     public LoginSuccessResponse socialLogin(OAuth2UserInfoRequestDto oauth2UserInfoRequestDto) {
         try {
-            Users user = userRepository.findBySocialIdAndProvider(
+            Users user = userRepository.findBySocialIdAndProviderAndUserDeletedFalse(
                             oauth2UserInfoRequestDto.getSocialId(),
                             oauth2UserInfoRequestDto.getProvider()
                     )
@@ -135,5 +136,14 @@ public class AuthService {
 
         jwtTokenRedisService.saveJwtToken(user.getUserId(), deviceId, jwtToken);
         return jwtToken;
+    }
+
+    public void withdraw(Long userId) {
+        jwtTokenRedisService.deleteAllJwtTokens(userId);
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
+        fileUploadUtil.deleteFile(user.getUserProfileUrl());
+        user.withdraw();
+        userRepository.save(user);
     }
 }

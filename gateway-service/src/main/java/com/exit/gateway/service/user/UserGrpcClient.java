@@ -21,7 +21,7 @@ import java.io.IOException;
 public class UserGrpcClient {
     private final UserGrpcMapper userGrpcMapper;
     @GrpcClient("user-service")
-    private SocialAuthServiceGrpc.SocialAuthServiceBlockingStub socialAuthServiceStub;
+    private AuthServiceGrpc.AuthServiceBlockingStub authServiceStub;
     @GrpcClient("user-service")
     private UserServiceGrpc.UserServiceBlockingStub userServiceStub;
 
@@ -37,7 +37,7 @@ public class UserGrpcClient {
 
             log.debug("Sending social login via gRPC - provider: {}, deviceId: {}",
                     userInfo.getProvider(), deviceId);
-            SocialLoginResponse response = socialAuthServiceStub.socialLogin(request);
+            SocialLoginResponse response = authServiceStub.socialLogin(request);
             log.debug("Received social login response via gRPC");
 
             return response;
@@ -55,7 +55,7 @@ public class UserGrpcClient {
                     .build();
 
             log.debug("Sending refresh token request via gRPC: {}", request);
-            RefreshTokenResponse response = socialAuthServiceStub.refreshToken(request);
+            RefreshTokenResponse response = authServiceStub.refreshToken(request);
             log.debug("Received refresh token response via gRPC: {}", response);
 
             return response;
@@ -73,7 +73,7 @@ public class UserGrpcClient {
                     .build();
 
             log.debug("Sending logout request via gRPC: {}", request);
-            LogoutResponse response = socialAuthServiceStub.logout(request);
+            LogoutResponse response = authServiceStub.logout(request);
             log.debug("Received logout response via gRPC: {}", response);
 
             return response;
@@ -150,6 +150,20 @@ public class UserGrpcClient {
             return GetUserInfoResponseDto.from(userInfo);
         } catch (StatusRuntimeException e) {
             log.error("Get user info failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
+
+    public void withdraw(Long userId) {
+        try {
+            WithDrawRequest request = WithDrawRequest.newBuilder()
+                    .setUserId(userId)
+                    .build();
+
+            log.debug("Withdraw user request via gRPC: {}", request);
+            authServiceStub.withdraw(request);
+        } catch (StatusRuntimeException e) {
+            log.error("Withdraw user info failed: {}", e.getStatus(), e);
             throw e;
         }
     }
