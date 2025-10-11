@@ -3,6 +3,7 @@ package com.exit.gateway.service.user;
 import com.exit.common.grpc.*;
 import com.exit.gateway.controller.user.dto.request.user.UpdateAdditionalUserInfoRequestDto;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
+import com.exit.gateway.controller.user.dto.response.user.GetUserInfoResponseDto;
 import com.exit.gateway.service.user.util.UserGrpcMapper;
 import com.google.protobuf.ByteString;
 import io.grpc.StatusRuntimeException;
@@ -134,6 +135,21 @@ public class UserGrpcClient {
 
         } catch (StatusRuntimeException e) {
             log.error("gRPC refresh token failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
+
+    public GetUserInfoResponseDto getUserInfo(Long userId) {
+        try {
+            GetUserNameRequest request = GetUserNameRequest.newBuilder()
+                    .setUserId(userId)
+                    .build();
+
+            log.debug("Get user info request via gRPC: {}", request);
+            UpdateAdditionalUserInfoResponse userInfo = userServiceStub.getUserNameAndProfile(request);
+            return GetUserInfoResponseDto.from(userInfo);
+        } catch (StatusRuntimeException e) {
+            log.error("Get user info failed: {}", e.getStatus(), e);
             throw e;
         }
     }
