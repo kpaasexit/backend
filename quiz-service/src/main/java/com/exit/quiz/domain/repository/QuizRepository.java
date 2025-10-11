@@ -13,9 +13,9 @@ import java.util.Optional;
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
-    @Query("SELECT q FROM Quiz q WHERE q.quizCategory.id = :categoryId " +
-            "AND q.id NOT IN (SELECT qa.quiz.id FROM QuizAttempts qa WHERE qa.userId = :userId) " +
-            "ORDER BY FUNCTION('RAND')")
+    @Query(value = "SELECT q.* FROM quizs q WHERE q.quiz_category_id = :categoryId " +
+            "AND q.quiz_id NOT IN (SELECT qa.quiz_id FROM quiz_attempts qa WHERE qa.user_id = :userId) " +
+            "ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Optional<Quiz> findRandomUnsolvedByCategoryIdAndUserId(@Param("categoryId") Long categoryId, @Param("userId") Long userId);
 
     @Query("""
