@@ -72,6 +72,8 @@ spring:
 app:
   oauth2:
     redirect-url: http://localhost:3000/oauth2/redirect
+    allowed-origins: https://localhost:*,https://house-it.*,http://localhost:*
+    default-client-url: https://house-it.210-178-1-144.nip.io
 
 # gRPC Client 설정 (Eureka 기반 로드밸런싱)
 grpc:
