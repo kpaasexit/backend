@@ -11,7 +11,7 @@ public record GetUserInfoResponseDto(
     public static GetUserInfoResponseDto from(UpdateAdditionalUserInfoResponse userInfo) {
 
         GetUserInfoResponseDtoBuilder builder = GetUserInfoResponseDto.builder();
-        if(userInfo.getUserProfile() != null || !userInfo.getUserProfile().isEmpty()){
+        if(!userInfo.getUserProfile().isEmpty()) {
             builder.profileUrl(userInfo.getUserProfile());
         }
 

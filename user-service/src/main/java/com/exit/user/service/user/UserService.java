@@ -43,9 +43,10 @@ public class UserService {
 
         UpdateAdditionalUserInfoResponse.Builder builder = UpdateAdditionalUserInfoResponse.newBuilder();
 
-        if(savedUser.getUserProfileUrl() != null || !savedUser.getUserProfileUrl().isEmpty()) {
-            builder.setUserProfile(savedUser.getUserProfileUrl());
+        if(user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
+            builder.setUserProfile(user.getUserProfileUrl());
         }
+
         return builder
                 .setUserId(savedUser.getUserId())
                 .setUserName(savedUser.getUserNickname())
@@ -57,7 +58,7 @@ public class UserService {
                 .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
 
         UpdateAdditionalUserInfoResponse.Builder builder = UpdateAdditionalUserInfoResponse.newBuilder();
-        if(user.getUserProfileUrl() != null || !user.getUserProfileUrl().isEmpty()) {
+        if(user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
             builder.setUserProfile(user.getUserProfileUrl());
         }
 
