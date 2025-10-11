@@ -22,7 +22,9 @@ public enum QuestionSuccessCode implements SuccessCode {
     COMMENT_DELETE_SUCCESS("QUESTION_OK_013", HttpStatus.OK , "댓글 삭제 성공"),
     ANSWER_UPDATE_SUCCESS("QUESTION_OK_014", HttpStatus.OK, "답변 수정 성공"),
     ANSWER_DELETE_SUCCESS("QUESTION_OK_015", HttpStatus.OK, "답변 삭제 성공"),
-    COMMENT_GET_SUCCESS("QUESTION_OK_016", HttpStatus.OK , "댓글 조회 성공");
+    COMMENT_GET_SUCCESS("QUESTION_OK_016", HttpStatus.OK , "댓글 조회 성공"),
+    GET_POPULAR_POST("QUESTION_OK_017", HttpStatus.OK , "인기 게시글 조회 성공"),
+    ;
 
     private final String code;
     private final HttpStatus httpStatus;
