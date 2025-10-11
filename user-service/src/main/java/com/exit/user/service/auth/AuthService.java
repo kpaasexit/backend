@@ -8,7 +8,6 @@ import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
 import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
 import com.exit.user.controller.dto.response.LoginSuccessResponse;
 import com.exit.user.domain.JwtToken;
-import com.exit.user.domain.UserFcmToken;
 import com.exit.user.domain.Users;
 import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
@@ -33,7 +32,7 @@ public class AuthService {
 
     public LoginSuccessResponse socialLogin(OAuth2UserInfoRequestDto oauth2UserInfoRequestDto) {
         try {
-            Users user = userRepository.findBySocialIdAndProvider(
+            Users user = userRepository.findBySocialIdAndProviderAndUserDeletedFalse(
                             oauth2UserInfoRequestDto.getSocialId(),
                             oauth2UserInfoRequestDto.getProvider()
                     )
