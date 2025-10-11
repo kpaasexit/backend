@@ -6,6 +6,7 @@ import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.UserErrorCode;
 import com.exit.common.response.success.UserSuccessCode;
 import com.exit.gateway.controller.user.dto.request.user.UpdateAdditionalUserInfoRequestDto;
+import com.exit.gateway.controller.user.dto.response.user.GetUserInfoResponseDto;
 import com.exit.gateway.controller.user.dto.response.user.UpdateAdditionalUserInfoResponseDto;
 import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.user.UserGrpcClient;
@@ -14,10 +15,7 @@ import io.grpc.StatusRuntimeException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -43,6 +41,23 @@ public class UserController {
         } catch (Exception e) {
             log.error("Update additional user info failed", e);
             throw new RestApiException(UserErrorCode.UPDATE_ADDITIONAL_INFO_FAIL);
+        }
+    }
+
+
+    @GetMapping("/info")
+    public SuccessResponse<GetUserInfoResponseDto> getUserInfo(@LoginUser Long userId) {
+        try {
+            log.info("Get user info request received");
+            return SuccessResponse.of(UserSuccessCode.GET_USER_INFO_SUCCESS,
+                    userGrpcClient.getUserInfo(userId));
+        } catch (StatusRuntimeException e) {
+            log.error("Get user info failed via gRPC: {}", e.getStatus(), e);
+            String errorMessage = getGrpcErrorMessage(e);
+            throw new RestApiException(UserErrorCode.GET_USER_INFO_FAIL, errorMessage);
+        } catch (Exception e) {
+            log.error("Get user info failed", e);
+            throw new RestApiException(UserErrorCode.GET_USER_INFO_FAIL);
         }
     }
 
