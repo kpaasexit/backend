@@ -12,6 +12,7 @@ import "google/protobuf/timestamp.proto";
 service CommentService {
   rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse);
   rpc DeleteComment(DeleteCommentRequest) returns (google.protobuf.Empty);
+  rpc GetComment(GetCommentRequest) returns (GetCommentResponse);
 }
 
 // request
@@ -29,11 +30,30 @@ message DeleteCommentRequest {
   string comment_type = 3;
 }
 
-// response
+message GetCommentRequest {
+  int64 target_id = 1;
+  string target_type = 2;
+  int64 user_id = 3;
+  int32 page_num = 4;
+}
 
+// response
 message CreateCommentResponse {
   int64 comment_id = 1;
   string content = 2;
   string user_name = 3;
   google.protobuf.Timestamp created_at = 4;
+}
+
+message CommentItem {
+  int64 comment_id = 1;
+  string content = 2;
+  string nickname = 3;
+  string profile_image = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message GetCommentResponse {
+  repeated CommentItem comment = 1;
+  bool has_next = 2;
 }

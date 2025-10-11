@@ -64,4 +64,18 @@ public class UserGrpcClient {
             log.error("gRPC get user name failed for userId {}: {}", userId, e.getStatus(), e);
         }
     }
+
+    public GetUsersNameAndProfileResponse getUsersNameAndProfile(List<Long> userIds) {
+        try {
+            GetUsersNameAndProfileRequest request = GetUsersNameAndProfileRequest.newBuilder()
+                    .addAllUserId(userIds)
+                    .build();
+
+            log.debug("Sending get useName and profile request via gRPC for userId: {}", userIds);
+            return userServiceStub.getUsersNameAndProfile(request);
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC get useName and profile failed for userId {}: {}", userIds, e.getStatus(), e);
+            return null;
+        }
+    }
 }

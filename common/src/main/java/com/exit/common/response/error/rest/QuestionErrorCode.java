@@ -13,6 +13,7 @@ public enum QuestionErrorCode implements ErrorCode {
     DELETE_COMMENT_FAIL("QUESTION_ERR_004", HttpStatus.BAD_REQUEST, "댓글 삭제에 실패하였습니다."),
     UPDATE_RESPONSE_FAIL("QUESTION_ERR_005", HttpStatus.BAD_REQUEST, "답변 업데이트에 실패하였습니다."),
     DELETE_RESPONSE_FAIL("QUESTION_ERR_006", HttpStatus.BAD_REQUEST, "답변 삭제에 실패하였습니다."),
+    GET_COMMENT_FAIL("QUESTION_ERR_007", HttpStatus.BAD_REQUEST, "댓글 조회에 실패하였습니다."),
     ;
 
     private final String developCode;

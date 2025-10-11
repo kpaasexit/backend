@@ -3,16 +3,19 @@ package com.exit.gateway.controller.question;
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.CreateCommentRequest;
 import com.exit.common.grpc.DeleteCommentRequest;
+import com.exit.common.grpc.GetCommentRequest;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.QuestionErrorCode;
 import com.exit.common.response.success.QuestionSuccessCode;
 import com.exit.gateway.controller.question.dto.request.comment.CreateCommentRequestDto;
+import com.exit.gateway.controller.question.dto.response.comment.GetCommentResponseDto;
 import com.exit.gateway.controller.question.dto.response.question.CreateCommentResponseDto;
 import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.CommentGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -76,6 +79,35 @@ public class CommentController {
             throw new RestApiException(QuestionErrorCode.DELETE_COMMENT_FAIL);
         }
     }
+
+    @GetMapping("/{targetId}")
+    public SuccessResponse<GetCommentResponseDto> getComment(
+            @PathVariable Long targetId,
+            @RequestParam String targetType,
+            @RequestParam Integer pageNum,
+            @LoginUser Long userId) {
+        try {
+            log.info("Comment get request received for targetId: {}, targetType: {}",
+                    targetId, targetType);
+
+            GetCommentRequest request = GetCommentRequest.newBuilder()
+                    .setTargetId(targetId)
+                    .setTargetType(targetType)
+                    .setUserId(userId)
+                    .setPageNum(pageNum)
+                    .build();
+
+            return SuccessResponse.of(QuestionSuccessCode.COMMENT_GET_SUCCESS,
+                    commentGrpcClient.getComment(request));
+        } catch (StatusRuntimeException e) {
+            log.error("Comment get failed via gRPC: {}", e.getStatus(), e);
+            throw new RestApiException(QuestionErrorCode.GET_COMMENT_FAIL, getGrpcErrorMessage(e));
+        } catch (Exception e) {
+            log.error("Comment get failed", e);
+            throw new RestApiException(QuestionErrorCode.GET_COMMENT_FAIL);
+        }
+    }
+
 
     private String getGrpcErrorMessage(StatusRuntimeException e) {
         Status status = e.getStatus();
