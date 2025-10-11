@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(echo $SPRING_PROFILES_ACTIVE)"
-    ],
-    "deny": [],
-    "ask": []
-  }
-}
