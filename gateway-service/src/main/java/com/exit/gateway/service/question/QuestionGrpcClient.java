@@ -2,6 +2,7 @@ package com.exit.gateway.service.question;
 
 import com.exit.common.grpc.*;
 import com.exit.gateway.controller.question.dto.response.question.*;
+import com.google.protobuf.Empty;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -157,6 +158,18 @@ public class QuestionGrpcClient {
             log.debug("Sending delete response request via gRPC for responseId: {}", request.getResponseId());
             questionServiceStub.deleteResponse(request);
             log.debug("Received delete response response via gRPC");
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC delete response failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
+
+    public GetPopularPostResponseDto getPopularPost() {
+        try {
+            log.debug("Sending get Popular post response request via gRPC");
+            GetPopularPostResponse response = questionServiceStub.getPopularPost(Empty.getDefaultInstance());
+            log.debug("Received delete response response via gRPC");
+            return GetPopularPostResponseDto.from(response);
         } catch (StatusRuntimeException e) {
             log.error("gRPC delete response failed: {}", e.getStatus(), e);
             throw e;

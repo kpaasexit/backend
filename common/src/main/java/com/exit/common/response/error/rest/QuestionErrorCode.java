@@ -14,6 +14,7 @@ public enum QuestionErrorCode implements ErrorCode {
     UPDATE_RESPONSE_FAIL("QUESTION_ERR_005", HttpStatus.BAD_REQUEST, "답변 업데이트에 실패하였습니다."),
     DELETE_RESPONSE_FAIL("QUESTION_ERR_006", HttpStatus.BAD_REQUEST, "답변 삭제에 실패하였습니다."),
     GET_COMMENT_FAIL("QUESTION_ERR_007", HttpStatus.BAD_REQUEST, "댓글 조회에 실패하였습니다."),
+    GET_POPULAR_POST_FAIL("QUESTION_ERR_008", HttpStatus.BAD_REQUEST, "인기 게시글 조회에 실패하였습니다."),
     ;
 
     private final String developCode;

@@ -200,4 +200,23 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
                     .asRuntimeException());
         }
     }
+
+    @Override
+    public void getPopularPost(Empty request,
+                               StreamObserver<GetPopularPostResponse> responseObserver) {
+        try {
+            log.info("Get popular post request received");
+
+            GetPopularPostResponse response = questionService.getPopularPost();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Get popular post failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("인기 게시글 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
 }

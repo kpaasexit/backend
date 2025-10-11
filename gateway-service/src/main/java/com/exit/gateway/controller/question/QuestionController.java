@@ -266,6 +266,21 @@ public class QuestionController {
         }
     }
 
+    @GetMapping("/popular-post")
+    public SuccessResponse<GetPopularPostResponseDto> getPopularPost() {
+        try {
+            log.info("Get popular post");
+            return SuccessResponse.of(QuestionSuccessCode.GET_POPULAR_POST,
+                    questionGrpcClient.getPopularPost());
+        } catch (StatusRuntimeException e) {
+            log.error("Get popular post failed via gRPC: {}", e.getStatus(), e);
+            throw new RestApiException(QuestionErrorCode.GET_POPULAR_POST_FAIL, getGrpcErrorMessage(e));
+        } catch (Exception e) {
+            log.error("Get popular post failed", e);
+            throw new RestApiException(QuestionErrorCode.GET_POPULAR_POST_FAIL);
+        }
+    }
+
     private String getGrpcErrorMessage(StatusRuntimeException e) {
         Status status = e.getStatus();
         switch (status.getCode()) {
