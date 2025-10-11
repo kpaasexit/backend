@@ -94,7 +94,7 @@ public class CommentController {
                     .setTargetId(targetId)
                     .setTargetType(targetType)
                     .setUserId(userId)
-                    .setPageNum(pageNum)
+                    .setPageNum(pageNum-1)
                     .build();
 
             return SuccessResponse.of(QuestionSuccessCode.COMMENT_GET_SUCCESS,
