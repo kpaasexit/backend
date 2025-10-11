@@ -5,6 +5,7 @@ import com.exit.common.grpc.RefreshTokenResponse;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.UserErrorCode;
 import com.exit.common.response.success.AuthSuccessCode;
+import com.exit.common.response.success.UserSuccessCode;
 import com.exit.gateway.controller.user.dto.request.auth.DeviceFcmTokenRequestDto;
 import com.exit.gateway.controller.user.dto.request.auth.RefreshTokenRequestDto;
 import com.exit.gateway.controller.user.dto.response.auth.TokenResponseDto;
@@ -30,7 +31,7 @@ public class AuthController {
     private final UserGrpcClient userGrpcClient;
 
     @PostMapping("/device")
-    public SuccessResponse<Void> updateDevice(
+    public SuccessResponse<String> updateDevice(
             @LoginUser Long userId,
             @DeviceId String deviceId,
             @Valid @RequestBody DeviceFcmTokenRequestDto request) {
@@ -38,7 +39,7 @@ public class AuthController {
             log.info("deviceId and fcmToken request received");
             userGrpcClient.updateDevice(userId, deviceId, request.fcmToken());
 
-            return SuccessResponse.of(AuthSuccessCode.UPDATE_DEVICE_SUCCESS, null);
+            return SuccessResponse.of(UserSuccessCode.UPDATE_DEVICE_SUCCESS, "디바이스 정보 업데이트를 완료하였습니다.");
         } catch (StatusRuntimeException e) {
             log.error("Update Device failed via gRPC: {}", e.getStatus(), e);
             String errorMessage = getGrpcErrorMessage(e);
@@ -90,6 +91,23 @@ public class AuthController {
         } catch (Exception e) {
             log.error("Logout failed", e);
             throw new RestApiException(UserErrorCode.LOGOUT_FAIL, e.getMessage());
+        }
+    }
+
+    @PostMapping("/withdraw")
+    public SuccessResponse<String> withdraw(@LoginUser Long userId) {
+        try {
+            log.info("withdraw request received for userId: {}", userId);
+            userGrpcClient.withdraw(userId);
+
+            return SuccessResponse.of(AuthSuccessCode.DELETE_USER_SUCCESS, "회원탈퇴가 완료되었습니다.");
+        } catch (StatusRuntimeException e) {
+            log.error("Logout failed via gRPC: {}", e.getStatus(), e);
+            String errorMessage = getGrpcErrorMessage(e);
+            throw new RestApiException(UserErrorCode.DELETED_USER_FAIL, errorMessage);
+        } catch (Exception e) {
+            log.error("Logout failed", e);
+            throw new RestApiException(UserErrorCode.DELETED_USER_FAIL, e.getMessage());
         }
     }
 
