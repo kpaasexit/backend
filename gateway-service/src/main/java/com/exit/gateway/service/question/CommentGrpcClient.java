@@ -1,9 +1,7 @@
 package com.exit.gateway.service.question;
 
-import com.exit.common.grpc.CommentServiceGrpc;
-import com.exit.common.grpc.CreateCommentRequest;
-import com.exit.common.grpc.CreateCommentResponse;
-import com.exit.common.grpc.DeleteCommentRequest;
+import com.exit.common.grpc.*;
+import com.exit.gateway.controller.question.dto.response.comment.GetCommentResponseDto;
 import com.exit.gateway.controller.question.dto.response.question.CreateCommentResponseDto;
 import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +36,18 @@ public class CommentGrpcClient {
             log.debug("Comment deleted successfully via gRPC: commentId={}", request.getCommentId());
         } catch (StatusRuntimeException e) {
             log.error("gRPC delete comment failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
+
+    public GetCommentResponseDto getComment(GetCommentRequest request) {
+        try {
+            log.debug("Sending get comment request via gRPC: targetId={}, userId={}, targetType={}",
+                    request.getTargetId(), request.getUserId(), request.getTargetType());
+            GetCommentResponse response = commentServiceStub.getComment(request);
+            return GetCommentResponseDto.from(response);
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC get comment failed: {}", e.getStatus(), e);
             throw e;
         }
     }

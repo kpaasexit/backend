@@ -3,17 +3,16 @@ package com.exit.user.service.user;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.*;
 import com.exit.common.util.file.FileUploadUtil;
-import com.exit.user.controller.dto.request.OAuth2UserInfoRequestDto;
 import com.exit.user.domain.UserFcmToken;
 import com.exit.user.domain.Users;
 import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
 import com.exit.user.exception.GrpcUserErrorCode;
-import com.exit.user.service.auth.JwtTokenRedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -60,7 +59,6 @@ public class UserService {
                 .build();
     }
 
-
     public GetFcmTokenResponse getFcmToken(GetFcmTokenRequest request) {
         List<String> fcmTokens = userFcmTokenRepository.findFcmTokenByUserId(request.getUserId());
 
@@ -70,7 +68,7 @@ public class UserService {
     }
 
     public void updateDevice(UpdateDeviceRequest request) {
-        Users user = userRepository.findById(userId)
+        Users user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
         createAndSaveFcmToken(request.getFcmToken(), user, request.getDeviceId());
     }
@@ -85,5 +83,16 @@ public class UserService {
 
         userFcmTokenRepository.save(userFcmToken);
     }
-}
 
+    public GetUsersNameAndProfileResponse getUsersNameAndProfile(List<Long> userIdList) {
+        ArrayList<UpdateAdditionalUserInfoResponse> response = new ArrayList<>();
+        userIdList.forEach(userId -> {
+            UpdateAdditionalUserInfoResponse userNameAndProfile = getUserNameAndProfile(userId);
+            response.add(userNameAndProfile);
+        });
+
+        return GetUsersNameAndProfileResponse.newBuilder()
+                .addAllUserInfo(response)
+                .build();
+    }
+}

@@ -170,6 +170,10 @@ task copyDocument(type: Copy) {
     into file("src/main/resources/static/docs")
 }
 
+processResources {
+    dependsOn copyDocument
+}
+
 build {
     dependsOn copyDocument
 }

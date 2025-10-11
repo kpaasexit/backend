@@ -1,9 +1,6 @@
 package com.exit.question.service;
 
-import com.exit.common.grpc.CreateCommentRequest;
-import com.exit.common.grpc.CreateCommentResponse;
-import com.exit.common.grpc.DeleteCommentRequest;
-import com.exit.common.grpc.SendNotificationRequest;
+import com.exit.common.grpc.*;
 import com.exit.common.util.time.TimeStampUtil;
 import com.exit.question.domain.Comment;
 import com.exit.question.domain.CommentType;
@@ -13,6 +10,8 @@ import com.exit.question.service.util.factory.CommentFactory;
 import com.exit.question.service.util.factory.CommentFactoryManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,5 +39,10 @@ public class CommentService {
     public void deleteComment(DeleteCommentRequest request) {
         CommentFactory factory = commentFactoryManager.getFactory(CommentType.valueOf(request.getCommentType()));
         factory.deleteComment(request.getCommentId(), request.getUserId());
+    }
+
+    public GetCommentResponse getComment(GetCommentRequest request) {
+        CommentFactory factory = commentFactoryManager.getFactory(CommentType.valueOf(request.getTargetType()));
+        return factory.getCommentList(request.getTargetId(), request.getUserId(), request.getPageNum());
     }
 }

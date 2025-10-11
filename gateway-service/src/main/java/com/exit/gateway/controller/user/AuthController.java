@@ -1,7 +1,9 @@
 package com.exit.gateway.controller.user;
 
+import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.RefreshTokenResponse;
 import com.exit.common.response.SuccessResponse;
+import com.exit.common.response.error.rest.UserErrorCode;
 import com.exit.common.response.success.AuthSuccessCode;
 import com.exit.gateway.controller.user.dto.request.auth.DeviceFcmTokenRequestDto;
 import com.exit.gateway.controller.user.dto.request.auth.RefreshTokenRequestDto;
