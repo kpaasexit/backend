@@ -32,8 +32,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Value("${app.oauth2.allowed-origins}")
     private String allowedOriginsRaw;
 
-
-    @Value("${app.oauth2.default-client-url:https://localhost:5173}")
+    @Value("${app.oauth2.default-client-url:https://localhost:8080}")
     private String defaultClientUrl;
 
     private List<String> allowedOrigins;

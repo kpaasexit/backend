@@ -36,7 +36,6 @@ public class AuthService {
                             oauth2UserInfoRequestDto.getSocialId(),
                             oauth2UserInfoRequestDto.getProvider()
                     )
-                    .map(existingUser -> updateExistingUser(existingUser, oauth2UserInfoRequestDto))
                     .orElseGet(() -> createNewUser(oauth2UserInfoRequestDto));
 
             String deviceId = oauth2UserInfoRequestDto.getDeviceId();
@@ -100,11 +99,6 @@ public class AuthService {
         } catch (Exception e) {
             throw new GrpcException(GrpcUserErrorCode.LOGOUT_FAILED);
         }
-    }
-
-    private Users updateExistingUser(Users user, OAuth2UserInfoRequestDto dto) {
-        user.updateProfile(dto.getName(), dto.getProfileImageUrl());
-        return user;
     }
 
     private Users createNewUser(OAuth2UserInfoRequestDto dto) {
