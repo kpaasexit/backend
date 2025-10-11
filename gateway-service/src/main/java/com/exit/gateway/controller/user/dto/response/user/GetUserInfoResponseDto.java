@@ -9,9 +9,14 @@ public record GetUserInfoResponseDto(
         String profileUrl
 ) {
     public static GetUserInfoResponseDto from(UpdateAdditionalUserInfoResponse userInfo) {
-        return GetUserInfoResponseDto.builder()
+
+        GetUserInfoResponseDtoBuilder builder = GetUserInfoResponseDto.builder();
+        if(userInfo.getUserProfile() != null || !userInfo.getUserProfile().isEmpty()){
+            builder.profileUrl(userInfo.getUserProfile());
+        }
+
+        return builder
                 .nickname(userInfo.getUserName())
-                .profileUrl(userInfo.getUserProfile())
                 .build();
     }
 }
