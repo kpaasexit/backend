@@ -1,5 +1,7 @@
 # bootstrap-dev.yml
 spring:
+  application:
+    name: gateway-service
   cloud:
     config:
       uri: http://localhost:8888

@@ -2,7 +2,7 @@ package com.exit.question.service.grpc;
 
 import com.exit.common.grpc.AnswerAdoptResponse;
 import com.exit.common.grpc.AnswerReportResponse;
-import com.exit.common.grpc.QuestionServiceGrpc;
+import com.exit.common.grpc.ResponseServiceGrpc;
 import com.exit.question.service.ResponseService;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -13,7 +13,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 @Slf4j
 @GrpcService
 @RequiredArgsConstructor
-public class ResponseGrpcService extends QuestionServiceGrpc.QuestionServiceImplBase {
+public class ResponseGrpcService extends ResponseServiceGrpc.ResponseServiceImplBase {
     private final ResponseService responseService;
 
     @Override

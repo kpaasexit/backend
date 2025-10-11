@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 class QuizType(str, Enum):
     OX = "OX"
-    FOUR_LIMBS = "FOUR_LIMBS"
+    MULTIPLE = "MULTIPLE"
 
 
 class QuizBase(BaseModel):
@@ -14,8 +14,8 @@ class QuizBase(BaseModel):
     quiz_title: str = Field(..., max_length=100, description="Quiz title")
     quiz_content: str = Field(..., description="Quiz content/question")
     quiz_type: QuizType = Field(..., description="Quiz type")
-    quiz_correct_answer: str = Field(..., max_length=1, description="Correct answer (O/X or A/B/C/D)")
-    quiz_additional_information: Optional[str] = Field(None, description="Additional information")
+    quiz_correct_answer: str = Field(..., max_length=1, description="Correct answer (O/X or 1/2/3/4)")
+    explanation: Optional[str] = Field(None, description="Explanation for the correct answer")
 
 
 class QuizCreate(QuizBase):
@@ -28,7 +28,7 @@ class QuizUpdate(BaseModel):
     quiz_content: Optional[str] = None
     quiz_type: Optional[QuizType] = None
     quiz_correct_answer: Optional[str] = Field(None, max_length=1)
-    quiz_additional_information: Optional[str] = None
+    explanation: Optional[str] = None
 
 
 class Quiz(QuizBase):

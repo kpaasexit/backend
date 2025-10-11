@@ -54,7 +54,7 @@ class QuizScheduler:
                 logger.info(f"Generating {count} quizzes for category {self.categories[category_id]}")
 
                 for _ in range(count):
-                    quiz_type = random.choice([QuizType.OX, QuizType.FOUR_LIMBS])
+                    quiz_type = random.choice([QuizType.OX, QuizType.MULTIPLE])
 
                     try:
                         quiz = await self._generate_unique_quiz(quiz_service, category_id, quiz_type)

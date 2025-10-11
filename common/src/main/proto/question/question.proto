@@ -11,11 +11,9 @@ import "google/protobuf/timestamp.proto";
 
 service QuestionService {
   rpc QuestionCreate(QuestionCreateRequest) returns (QuestionCreateResponse);
-  rpc AnswerAdopt(AnswerAdoptRequest) returns (AnswerAdoptResponse);
   rpc AnswerCreate(AnswerCreateRequest) returns (AnswerCreateResponse);
   rpc AnswerRecommend(AnswerRecommendRequest) returns (AnswerRecommendResponse);
   rpc QuestionReport(QuestionReportRequest) returns (QuestionReportResponse);
-  rpc AnswerReport(AnswerReportRequest) returns (AnswerReportResponse);
   rpc QuestionList(QuestionListRequest) returns (QuestionListResponse);
   rpc CategoryRecommend(CategoryRecommendRequest) returns (CategoryRecommendationResponse);
   rpc SimilarQuestion(SimilarQuestionRequest) returns (SimilarQuestionResponse);
@@ -47,10 +45,6 @@ message QuestionCreateRequest {
   repeated UploadBytesRequest images = 9;
 }
 
-message AnswerAdoptRequest {
-  int64 response_id = 1;
-}
-
 message AnswerCreateRequest {
   int64 question_id = 1;
   string response_content = 2;
@@ -69,13 +63,6 @@ message QuestionReportRequest {
   int64 question_report_writer_id = 2;
   string question_report_title = 3;
   string question_report_content = 4;
-}
-
-message AnswerReportRequest {
-  int64 response_id = 1;
-  int64 response_report_writer_id = 2;
-  string response_report_title = 3;
-  string response_report_content = 4;
 }
 
 message QuestionListRequest {
@@ -122,12 +109,6 @@ message QuestionCreateResponse {
   google.protobuf.Timestamp created_at = 11;
 }
 
-message AnswerAdoptResponse {
-  int64 response_id = 1;
-  bool response_adopt = 2;
-  google.protobuf.Timestamp updated_at = 3;
-}
-
 message AnswerCreateResponse {
   int64 response_id = 1;
   int64 question_id = 2;
@@ -149,16 +130,6 @@ message QuestionReportResponse {
   string question_report_title = 3;
   string question_report_content = 4;
   int64 question_report_writer_id = 5;
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
-}
-
-message AnswerReportResponse {
-  int64 response_report_id = 1;
-  int64 response_id = 2;
-  string response_report_title = 3;
-  string response_report_content = 4;
-  int64 response_report_writer_id = 5;
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
 }

@@ -163,6 +163,8 @@ deploy/
 
 # Training and temporary model files (exclude final trained models)
 app/models/home_life_classifier/
+app/models/home_life_finetuned/
+app/models/embeddings_onnx/
 app/models/data/
 app/models/fine_tuned/
 app/models/training_data/

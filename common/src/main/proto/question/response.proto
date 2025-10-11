@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package com.exit.common;
+
+option java_multiple_files = true;
+option java_package = "com.exit.common.grpc";
+option java_outer_classname = "ResponseServiceProto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service ResponseService {
+  rpc AnswerAdopt(AnswerAdoptRequest) returns (AnswerAdoptResponse);
+  rpc AnswerReport(AnswerReportRequest) returns (AnswerReportResponse);
+}
+
+// Request messages
+message AnswerAdoptRequest {
+  int64 response_id = 1;
+}
+
+message AnswerReportRequest {
+  int64 response_id = 1;
+  int64 response_report_writer_id = 2;
+  string response_report_title = 3;
+  string response_report_content = 4;
+}
+
+// Response messages
+message AnswerAdoptResponse {
+  int64 response_id = 1;
+  bool response_adopt = 2;
+  google.protobuf.Timestamp updated_at = 3;
+}
+
+message AnswerReportResponse {
+  int64 response_report_id = 1;
+  int64 response_id = 2;
+  string response_report_title = 3;
+  string response_report_content = 4;
+  int64 response_report_writer_id = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}

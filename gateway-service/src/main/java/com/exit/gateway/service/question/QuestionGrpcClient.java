@@ -6,6 +6,7 @@ import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.apache.coyote.Response;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,9 @@ public class QuestionGrpcClient {
 
     @GrpcClient("question-service")
     private QuestionServiceGrpc.QuestionServiceBlockingStub questionServiceStub;
+    @GrpcClient("question-service")
+    private ResponseServiceGrpc.ResponseServiceBlockingStub responseServiceStub;
+
 
     public QuestionCreateResponseDto createQuestion(QuestionCreateRequest request) {
         try {
@@ -31,7 +35,7 @@ public class QuestionGrpcClient {
     public AnswerAdoptResponseDto adoptAnswer(AnswerAdoptRequest request) {
         try {
             log.debug("Sending answer adopt request via gRPC");
-            AnswerAdoptResponse response = questionServiceStub.answerAdopt(request);
+            AnswerAdoptResponse response = responseServiceStub.answerAdopt(request);
             log.debug("Received answer adopt response via gRPC");
             return AnswerAdoptResponseDto.from(response);
         } catch (StatusRuntimeException e) {
@@ -79,7 +83,7 @@ public class QuestionGrpcClient {
     public AnswerReportResponseDto reportAnswer(AnswerReportRequest request) {
         try {
             log.debug("Sending answer report request via gRPC");
-            AnswerReportResponse response = questionServiceStub.answerReport(request);
+            AnswerReportResponse response = responseServiceStub.answerReport(request);
             log.debug("Received answer report response via gRPC");
             return AnswerReportResponseDto.from(response);
         } catch (StatusRuntimeException e) {

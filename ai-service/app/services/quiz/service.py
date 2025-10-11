@@ -43,13 +43,14 @@ class QuizService:
     "quiz_title": "퀴즈의 간단한 제목 (50자 이내)",
     "quiz_content": "퀴즈 문제 내용 (명제 형태로 작성)",
     "quiz_correct_answer": "O 또는 X",
-    "quiz_additional_information": "정답에 대한 상세한 설명과 추가 정보"
+    "explanation": "정답이 왜 O(또는 X)인지에 대한 상세한 설명. 문제의 배경 지식, 정답의 근거, 오답일 경우의 이유 등을 포함하여 작성"
 }}
 
 주의사항:
 - quiz_correct_answer는 반드시 "O" 또는 "X" 중 하나여야 합니다
 - 문제는 명확하고 모호하지 않아야 합니다
-- 난이도는 일반 성인이 풀 수 있는 수준으로 합니다"""
+- 난이도는 일반 성인이 풀 수 있는 수준으로 합니다
+- explanation은 단순히 정답만 언급하지 말고, 왜 그것이 정답인지, 어떤 배경 지식이 필요한지 상세히 설명해야 합니다"""
         else:
             return f"""다음 조건에 맞는 4지선다 퀴즈를 1개 생성해주세요:
 
@@ -60,14 +61,16 @@ class QuizService:
 {{
     "quiz_title": "퀴즈의 간단한 제목 (50자 이내)",
     "quiz_content": "퀴즈 문제 내용\\n\\n1. 선택지 1\\n2. 선택지 2\\n3. 선택지 3\\n4. 선택지 4",
-    "quiz_correct_answer": "1, 2, 3, 4 중 하나",
-    "quiz_additional_information": "정답에 대한 상세한 설명과 추가 정보"
+    "quiz_correct_answer": "1",
+    "explanation": "정답이 왜 해당 번호인지에 대한 상세한 설명. 정답의 근거와 배경 지식, 다른 선택지가 오답인 이유 등을 포함하여 작성"
 }}
 
 주의사항:
-- quiz_correct_answer는 반드시 "1", "2", "3", "4" 중 하나여야 합니다
+- quiz_content에는 반드시 문제 내용과 함께 4개의 보기가 "1. ", "2. ", "3. ", "4. " 형식으로 포함되어야 합니다
+- quiz_correct_answer는 반드시 "1", "2", "3", "4" 중 정확히 하나의 숫자만 입력해야 합니다 (예: "1")
 - 선택지는 명확하게 구분되어야 합니다
-- 난이도는 일반 성인이 풀 수 있는 수준으로 합니다"""
+- 난이도는 일반 성인이 풀 수 있는 수준으로 합니다
+- explanation은 단순히 정답만 언급하지 말고, 왜 그것이 정답인지, 관련 배경 지식과 오답 분석을 포함하여 상세히 설명해야 합니다"""
 
     async def retrieve_recent_quizzes(self, category_id: int, limit: int = 20) -> List[Dict[str, Any]]:
         try:
@@ -124,7 +127,7 @@ class QuizService:
     "quiz_title": "퀴즈의 간단한 제목 (50자 이내)",
     "quiz_content": "퀴즈 문제 내용 (명제 형태로 작성)",
     "quiz_correct_answer": "O 또는 X",
-    "quiz_additional_information": "정답에 대한 상세한 설명과 추가 정보"
+    "explanation": "정답이 왜 O(또는 X)인지에 대한 상세한 설명. 문제의 배경 지식, 정답의 근거, 오답일 경우의 이유 등을 포함하여 작성"
 }}
 
 주의사항:
@@ -132,6 +135,7 @@ class QuizService:
 - 문제는 명확하고 모호하지 않아야 합니다
 - 난이도는 일반 성인이 풀 수 있는 수준으로 합니다
 - 기존 퀴즈와 중복되지 않는 참신한 문제를 만들어주세요
+- explanation은 단순히 정답만 언급하지 말고, 왜 그것이 정답인지, 어떤 배경 지식이 필요한지 상세히 설명해야 합니다
 
 문제 예시 방향:
 - "요리/식품관리": 자취 필수 (계란 신선도, 밥 보관, 냉장고 정리), 요리 기초 (양념 비율, 칼질법), 장보기 (제철 식재료, 유통기한)
@@ -161,15 +165,17 @@ class QuizService:
 {{
     "quiz_title": "퀴즈의 간단한 제목 (50자 이내)",
     "quiz_content": "퀴즈 문제 내용\\n\\n1. 선택지 1\\n2. 선택지 2\\n3. 선택지 3\\n4. 선택지 4",
-    "quiz_correct_answer": "1, 2, 3, 4 중 하나",
-    "quiz_additional_information": "정답에 대한 상세한 설명과 추가 정보"
+    "quiz_correct_answer": "1",
+    "explanation": "정답이 왜 해당 번호인지에 대한 상세한 설명. 정답의 근거와 배경 지식, 다른 선택지가 오답인 이유 등을 포함하여 작성"
 }}
 
 주의사항:
-- quiz_correct_answer는 반드시 "1", "2", "3", "4" 중 하나여야 합니다
+- quiz_content에는 반드시 문제 내용과 함께 4개의 보기가 "1. ", "2. ", "3. ", "4. " 형식으로 포함되어야 합니다
+- quiz_correct_answer는 반드시 "1", "2", "3", "4" 중 정확히 하나의 숫자만 입력해야 합니다 (예: "1")
 - 선택지는 명확하게 구분되어야 합니다
 - 난이도는 일반 성인이 풀 수 있는 수준으로 합니다
 - 기존 퀴즈와 중복되지 않는 참신한 문제를 만들어주세요
+- explanation은 단순히 정답만 언급하지 말고, 왜 그것이 정답인지, 관련 배경 지식과 오답 분석을 포함하여 상세히 설명해야 합니다
 
 문제 예시 방향:
 - "요리/식품관리": 자취 필수 (계란 신선도, 밥 보관, 냉장고 정리), 요리 기초 (양념 비율, 칼질법), 장보기 (제철 식재료, 유통기한)
@@ -269,7 +275,7 @@ class QuizService:
                         quiz_content=quiz_data["quiz_content"],
                         quiz_type=quiz_type,
                         quiz_correct_answer=quiz_data["quiz_correct_answer"],
-                        quiz_additional_information=quiz_data["quiz_additional_information"]
+                        explanation=quiz_data["explanation"]
                     )
 
                     saved_quiz = await self.create_quiz(quiz)
@@ -308,7 +314,7 @@ class QuizService:
                     "quiz_content": quiz.quiz_content,
                     "quiz_type": quiz.quiz_type.value,
                     "quiz_correct_answer": quiz.quiz_correct_answer,
-                    "quiz_additional_information": quiz.quiz_additional_information,
+                    "explanation": quiz.explanation,
                     "created_at": int(datetime.now().timestamp()),
                     "updated_at": int(datetime.now().timestamp())
                 }
@@ -326,7 +332,7 @@ class QuizService:
                 quiz_content=quiz.quiz_content,
                 quiz_type=quiz.quiz_type,
                 quiz_correct_answer=quiz.quiz_correct_answer,
-                quiz_additional_information=quiz.quiz_additional_information,
+                explanation=quiz.explanation,
                 quiz_created_at=datetime.now(),
                 quiz_updated_at=datetime.now()
             )
@@ -396,7 +402,7 @@ class QuizService:
                 quiz_content=existing_quiz["quiz_content"],
                 quiz_type=QuizType(existing_quiz["quiz_type"]),
                 quiz_correct_answer=existing_quiz["quiz_correct_answer"],
-                quiz_additional_information=existing_quiz.get("quiz_additional_information"),
+                explanation=existing_quiz.get("explanation"),
                 quiz_created_at=datetime.fromtimestamp(existing_quiz["created_at"]),
                 quiz_updated_at=datetime.fromtimestamp(existing_quiz["updated_at"])
             )
@@ -432,7 +438,7 @@ class QuizService:
                 quiz_content=payload["quiz_content"],
                 quiz_type=QuizType(payload["quiz_type"]),
                 quiz_correct_answer=payload["quiz_correct_answer"],
-                quiz_additional_information=payload.get("quiz_additional_information"),
+                explanation=payload.get("explanation"),
                 quiz_created_at=datetime.fromtimestamp(payload["created_at"]),
                 quiz_updated_at=datetime.fromtimestamp(payload["updated_at"])
             )
@@ -469,7 +475,7 @@ class QuizService:
                     quiz_content=payload["quiz_content"],
                     quiz_type=QuizType(payload["quiz_type"]),
                     quiz_correct_answer=payload["quiz_correct_answer"],
-                    quiz_additional_information=payload.get("quiz_additional_information"),
+                    explanation=payload.get("explanation"),
                     quiz_created_at=datetime.fromtimestamp(payload["created_at"]),
                     quiz_updated_at=datetime.fromtimestamp(payload["updated_at"])
                 )
