@@ -44,7 +44,7 @@ class MySQLQuizService:
     "quiz_title": "퀴즈의 간단한 제목 (50자 이내)",
     "quiz_content": "퀴즈 문제 내용 (명제 형태로 작성)",
     "quiz_correct_answer": "O 또는 X",
-    "quiz_additional_information": "정답에 대한 상세한 설명과 추가 정보"
+    "explanation": "정답에 대한 상세한 설명과 추가 정보"
 }}
 
 주의사항:
@@ -62,7 +62,7 @@ class MySQLQuizService:
     "quiz_title": "퀴즈의 간단한 제목 (50자 이내)",
     "quiz_content": "퀴즈 문제 내용\\n\\n1. 선택지 1\\n2. 선택지 2\\n3. 선택지 3\\n4. 선택지 4",
     "quiz_correct_answer": "1, 2, 3, 4 중 하나",
-    "quiz_additional_information": "정답에 대한 상세한 설명과 추가 정보"
+    "explanation": "정답에 대한 상세한 설명과 추가 정보"
 }}
 
 주의사항:
@@ -114,7 +114,7 @@ class MySQLQuizService:
     "quiz_title": "퀴즈의 간단한 제목 (50자 이내)",
     "quiz_content": "퀴즈 문제 내용 (명제 형태로 작성)",
     "quiz_correct_answer": "O 또는 X",
-    "quiz_additional_information": "정답에 대한 상세한 설명과 추가 정보"
+    "explanation": "정답에 대한 상세한 설명과 추가 정보"
 }}
 
 주의사항:
@@ -135,7 +135,7 @@ class MySQLQuizService:
     "quiz_title": "퀴즈의 간단한 제목 (50자 이내)",
     "quiz_content": "퀴즈 문제 내용\\n\\n1. 선택지 1\\n2. 선택지 2\\n3. 선택지 3\\n4. 선택지 4",
     "quiz_correct_answer": "1, 2, 3, 4 중 하나",
-    "quiz_additional_information": "정답에 대한 상세한 설명과 추가 정보"
+    "explanation": "정답에 대한 상세한 설명과 추가 정보"
 }}
 
 주의사항:
@@ -211,7 +211,7 @@ class MySQLQuizService:
                         quiz_content=quiz_data["quiz_content"],
                         quiz_type=quiz_type,
                         quiz_correct_answer=quiz_data["quiz_correct_answer"],
-                        quiz_additional_information=quiz_data["quiz_additional_information"]
+                        explanation=quiz_data["explanation"]
                     )
 
                     saved_quiz = await self.create_quiz(quiz)

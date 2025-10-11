@@ -28,9 +28,8 @@ service AIQuizService {
 
 // 퀴즈 타입
 enum QuizType {
-    QUIZ_TYPE_UNSPECIFIED = 0;
-    OX = 1;
-    FOUR_LIMBS = 2;
+    OX = 0;  // O/X 퀴즈
+    MULTIPLE = 1;  // 4지선다 (1, 2, 3, 4)
 }
 
 // 퀴즈 메시지
@@ -41,7 +40,7 @@ message Quiz {
     string quiz_content = 4;
     QuizType quiz_type = 5;
     string quiz_correct_answer = 6;
-    string quiz_additional_information = 7;
+    string explanation = 7;
     int64 quiz_created_at = 8;  // Unix 타임스탬프
     int64 quiz_updated_at = 9;  // Unix 타임스탬프
 }
@@ -49,14 +48,7 @@ message Quiz {
 // 퀴즈 업데이트 요청
 message UpdateQuizRequest {
     int64 quiz_id = 1;
-    optional int32 quiz_category_id = 2;
-    optional string quiz_title = 3;
-    optional string quiz_content = 4;
-    optional QuizType quiz_type = 5;
-    optional string quiz_correct_answer = 6;
-    optional string quiz_additional_information = 7;
-    optional bool auto_correct = 8;  // GPT를 사용한 자동 오류 수정 여부
-    optional string error_description = 9;  // 오류 설명 (자동 수정 시 사용)
+    string error_description = 2;
 }
 
 // 퀴즈 업데이트 응답

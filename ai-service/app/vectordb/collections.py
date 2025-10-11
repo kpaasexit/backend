@@ -98,9 +98,9 @@ class Collections:
                 "quiz_category_id": PayloadSchemaType.INTEGER,
                 "quiz_title": PayloadSchemaType.TEXT,
                 "quiz_content": PayloadSchemaType.TEXT,
-                "quiz_type": PayloadSchemaType.KEYWORD,  # "OX", "FOUR_LIMBS"
-                "quiz_correct_answer": PayloadSchemaType.KEYWORD,  # "O", "X", "A", "B", "C", "D"
-                "quiz_additional_information": PayloadSchemaType.TEXT,
+                "quiz_type": PayloadSchemaType.KEYWORD,  # "OX", "MULTIPLE"
+                "quiz_correct_answer": PayloadSchemaType.KEYWORD,  # "O", "X", "1", "2", "3", "4"
+                "explanation": PayloadSchemaType.TEXT,
                 "created_at": PayloadSchemaType.INTEGER,  # Unix timestamp
                 "updated_at": PayloadSchemaType.INTEGER,  # Unix timestamp
                 "category_id": PayloadSchemaType.INTEGER,  # For backward compatibility
