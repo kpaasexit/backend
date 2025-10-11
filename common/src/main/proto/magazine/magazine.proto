@@ -59,7 +59,7 @@ message GetMagazineResponse {
 
 message ScrapMagazineResponse {
   int64 magazine_id = 1;
-  bool is_scraped = 2;
+  bool is_scrapped = 2;
 }
 
 message MagazineScrapBoxItem {

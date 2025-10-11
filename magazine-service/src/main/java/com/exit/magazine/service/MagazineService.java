@@ -54,11 +54,11 @@ public class MagazineService {
     public ScrapMagazineResponse scrapMagazine(ScrapMagazineRequest request) {
 
         Optional<MagazineScraps> existingScrap = magazineScrapRepository.findByMagazine_MagazineIdAndUserId(request.getMagazineId(), request.getUserId());
-        boolean isScraped = handleScrapToggle(existingScrap, request);
+        boolean isScrapped = handleScrapToggle(existingScrap, request);
 
         return ScrapMagazineResponse.newBuilder()
                 .setMagazineId(request.getMagazineId())
-                .setIsScraped(isScraped)
+                .setIsScrapped(isScrapped)
                 .build();
     }
 

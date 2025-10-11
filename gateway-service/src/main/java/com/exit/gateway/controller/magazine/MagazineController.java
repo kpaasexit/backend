@@ -8,8 +8,10 @@ import com.exit.common.grpc.ScrapMagazineRequest;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.MagazineErrorCode;
 import com.exit.common.response.success.MagazineSuccessCode;
+import com.exit.gateway.controller.magazine.dto.response.GetScrapBoxResponseDto;
 import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
 import com.exit.gateway.controller.magazine.dto.response.MagazineItemListDto;
+import com.exit.gateway.controller.magazine.dto.response.ScrapMagazineResponseDto;
 import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
 import io.grpc.Status;
@@ -70,7 +72,7 @@ public class MagazineController {
     }
 
     @PostMapping("/{magazineId}/scrap")
-    public SuccessResponse<MagazineItemDto> scrapMagazine(
+    public SuccessResponse<ScrapMagazineResponseDto> scrapMagazine(
             @PathVariable Long magazineId,
             @LoginUser Long userId) {
         try {
@@ -93,12 +95,15 @@ public class MagazineController {
     }
 
     @GetMapping("/scrap-box")
-    public SuccessResponse<MagazineItemDto> getScrapBox(
-            @PathVariable Long magazineId) {
+    public SuccessResponse<GetScrapBoxResponseDto> getScrapBox(
+            @LoginUser Long userId,
+            @RequestParam Integer pageNum
+    ) {
         try {
-            log.info("Get magazine request received: magazineId={}", magazineId);
+            log.info("Get scrap-box request received");
             GetScrapBoxRequest request = GetScrapBoxRequest.newBuilder()
-                    .setMagazineId(magazineId)
+                    .setUserId(userId)
+                    .setPageNum(pageNum)
                     .build();
 
             return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_SUCCESS,

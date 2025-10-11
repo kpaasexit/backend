@@ -62,7 +62,7 @@ public class MagazineGrpcService extends MagazineServiceGrpc.MagazineServiceImpl
             responseObserver.onCompleted();
 
         } catch (Exception e) {
-            log.error("Get Magazine failed", e);
+            log.error("Scrap Magazine failed", e);
             responseObserver.onError(Status.INTERNAL
                     .withDescription("매거진 스크랩 중 오류가 발생했습니다")
                     .asRuntimeException());
@@ -80,7 +80,7 @@ public class MagazineGrpcService extends MagazineServiceGrpc.MagazineServiceImpl
             responseObserver.onCompleted();
 
         } catch (Exception e) {
-            log.error("Get Magazine failed", e);
+            log.error("Get ScrapBox failed", e);
             responseObserver.onError(Status.INTERNAL
                     .withDescription("매거진 스크랩 박스 조회 중 오류가 발생했습니다")
                     .asRuntimeException());
