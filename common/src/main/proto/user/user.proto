@@ -15,7 +15,7 @@ service UserService {
   rpc UpdateAdditionalUserInfo(UpdateAdditionalUserInfoRequest) returns (UpdateAdditionalUserInfoResponse);
   rpc GetUserNameAndProfile(GetUserNameRequest) returns (UpdateAdditionalUserInfoResponse);
   rpc GetFcmToken(GetFcmTokenRequest) returns (GetFcmTokenResponse);
-  rpc UpdateDevice(UpdateDeviceRequest) returns (UpdateDeviceResponse);
+  rpc UpdateDevice(UpdateDeviceRequest) returns (google.protobuf.Empty);
 }
 
 // request
@@ -44,6 +44,7 @@ message GetFcmTokenRequest {
 message UpdateDeviceRequest {
   int64 user_id = 1;
   string device_id = 2;
+  string fcm_token = 3;
 }
 
 // response
@@ -70,9 +71,4 @@ message UpdateAdditionalUserInfoResponse {
 
 message GetFcmTokenResponse {
   repeated string fcm_token = 1;
-}
-
-message UpdateDeviceResponse {
-  int64 user_id = 1;
-  string device_id = 2;
 }

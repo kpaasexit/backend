@@ -82,6 +82,11 @@
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="build" type="c8890929:TasksNode$1" />
               </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="backend" type="f1a62948:ProjectNode" />
+                <item name="실행 구성" type="7b0102dc:RunConfigurationsNode" />
+              </path>
             </expand>
             <select />
           </tree_state>
@@ -94,9 +99,9 @@
       <list>
         <option value="Interface" />
         <option value="Enum" />
-        <option value="Record" />
         <option value="Class" />
         <option value="AnnotationType" />
+        <option value="Record" />
       </list>
     </option>
   </component>
@@ -173,7 +178,7 @@
     "Spring Boot.QuestionServiceApplication.executor": "Run",
     "Spring Boot.QuizServiceApplication.executor": "Run",
     "Spring Boot.UserApplication.executor": "Run",
-    "git-widget-placeholder": "refactor/token-redirect",
+    "git-widget-placeholder": "feat/post-firebase",
     "last_opened_file_path": "C:/Users/User/Desktop/exit/backend/user-service",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -599,15 +604,23 @@
       <option name="project" value="LOCAL" />
       <updated>1759911621850</updated>
     </task>
-    <task id="LOCAL-00012" summary="feat : 응답값 변경으로 인한 adoc 파일 커밋">
+    <task id="LOCAL-00012" summary="feat : fcmToken 업데이트 api 구현">
       <option name="closed" value="true" />
-      <created>1759911819661</created>
+      <created>1759987175883</created>
       <option name="number" value="00012" />
       <option name="presentableId" value="LOCAL-00012" />
       <option name="project" value="LOCAL" />
-      <updated>1759911819661</updated>
+      <updated>1759987175883</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="feat : 소셜 로그인 시 fcmToken 업데이트 로직 및 쿠키에서 deviceId 뽑는 로직 제거">
+      <option name="closed" value="true" />
+      <created>1759987373309</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1759987373309</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -637,8 +650,9 @@
     <MESSAGE value="test : RestDocs asciidoctor 확장자 추가" />
     <MESSAGE value="test : 개별 서비스 테스트 통과" />
     <MESSAGE value="feat : api 응답값 iso-8601 형식으로 변경" />
-    <MESSAGE value="feat : 응답값 변경으로 인한 adoc 파일 커밋" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat : 응답값 변경으로 인한 adoc 파일 커밋" />
+    <MESSAGE value="feat : fcmToken 업데이트 api 구현" />
+    <MESSAGE value="feat : 소셜 로그인 시 fcmToken 업데이트 로직 및 쿠키에서 deviceId 뽑는 로직 제거" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat : 소셜 로그인 시 fcmToken 업데이트 로직 및 쿠키에서 deviceId 뽑는 로직 제거" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -16,5 +16,4 @@ public class OAuth2UserInfoRequestDto {
     private String profileImageUrl;
     private String provider;
     private String deviceId;
-    private String firebaseToken;
 }
