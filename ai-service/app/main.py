@@ -12,6 +12,7 @@ from app.config import get_settings
 from app.grpc_service.question_server import QuestionGRPCServer
 from app.grpc_service.quiz_server import QuizGRPCServer
 from app.core.eureka import get_eureka_client
+from app.api import search_router
 from app.services.quiz import get_quiz_scheduler
 from app.core.logger import LoggerSetup
 from app.vectordb.collections import Collections
@@ -163,6 +164,7 @@ def create_app() -> FastAPI:
 
 Question Service gRPC: 50051
 Quiz Service gRPC: 50052
+Search Service REST: /api/search/*
 
         """.strip(),
         version="1.0.0",
@@ -182,52 +184,8 @@ Quiz Service gRPC: 50052
         allow_headers=["*"],
     )
 
-    @app.get("/", summary="서비스 정보", tags=["Root"])
-    async def root():
-        """
-        서비스 상태 및 엔드포인트 정보를 반환합니다.
-
-        ### 제공 정보:
-        - 서비스 이름 및 버전
-        - HTTP/gRPC 엔드포인트
-        - API 문서 링크
-        - gRPC 서비스 목록
-        """
-        return {
-            "service": "Quiz Service",
-            "version": "1.0.0",
-            "status": "running",
-            "endpoints": {
-                "http": f"http://localhost:{settings.server.http_port}",
-                "grpc_question": f"localhost:{settings.server.question_service_port}",
-                "grpc_quiz": f"localhost:{settings.server.quiz_service_port}",
-                "docs": f"http://localhost:{settings.server.http_port}/docs",
-                "redoc": f"http://localhost:{settings.server.http_port}/redoc"
-            },
-            "grpc_services": {
-                "question_service": {
-                    "port": settings.server.question_service_port,
-                    "methods": [
-                        "ClassifyCategory",
-                        "GenerateAIAnswer",
-                        "FindSimilarQuestions",
-                        "SaveQuestion"
-                    ]
-                },
-                "quiz_service": {
-                    "port": settings.server.quiz_service_port,
-                    "methods": [
-                        "UpdateQuiz",
-                        "GetQuiz",
-                        "ListQuizzes",
-                        "GenerateDailyQuizzes",
-                        "StartScheduler",
-                        "StopScheduler",
-                        "GetCategories"
-                    ]
-                }
-            }
-        }
+    # REST API 라우터 등록
+    app.include_router(search_router)
 
     @app.get("/health", summary="상태 확인", tags=["Health"])
     async def health_check():

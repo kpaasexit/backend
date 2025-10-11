@@ -25,6 +25,8 @@ docker-compose down > /dev/null 2>&1
 echo -e "${YELLOW}Removing dangling images...${NC}"
 docker image prune -f > /dev/null 2>&1
 
+# Proto 컴파일은 Dockerfile에서 처리됨
+
 # Build all services
 echo -e "${YELLOW}Building services...${NC}"
 docker-compose build ai-service
@@ -63,6 +65,14 @@ for collection, created in results.items():
         echo -e "${GREEN}✓ Deploy complete!${NC}"
         echo -e "  Docs: http://localhost:8090/docs"
         echo -e "  Health: http://localhost:8090/health"
+        echo ""
+        echo -e "${YELLOW}Next steps:${NC}"
+        echo -e "  1. Index Naver KIN data:"
+        echo -e "     ${GREEN}poetry run python scripts/index_naver_kin.py${NC}"
+        echo -e "  2. Test REST autocomplete:"
+        echo -e "     ${GREEN}curl 'http://localhost:8090/api/search/autocomplete?query=침실&limit=5'${NC}"
+        echo -e "  3. View API docs:"
+        echo -e "     ${GREEN}http://localhost:8090/docs${NC}"
         echo ""
         echo "Starting logs..."
         echo "----------------------------------------"
