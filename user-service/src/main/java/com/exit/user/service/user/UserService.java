@@ -41,10 +41,14 @@ public class UserService {
         user.updateProfile(request.getUserName(), imagePath);
         Users savedUser = userRepository.save(user);
 
-        return UpdateAdditionalUserInfoResponse.newBuilder()
+        UpdateAdditionalUserInfoResponse.Builder builder = UpdateAdditionalUserInfoResponse.newBuilder();
+
+        if(savedUser.getUserProfileUrl() != null || !savedUser.getUserProfileUrl().isEmpty()) {
+            builder.setUserProfile(savedUser.getUserProfileUrl());
+        }
+        return builder
                 .setUserId(savedUser.getUserId())
                 .setUserName(savedUser.getUserNickname())
-                .setUserProfile(savedUser.getUserProfileUrl())
                 .build();
     }
 
@@ -52,10 +56,14 @@ public class UserService {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
 
-        return UpdateAdditionalUserInfoResponse.newBuilder()
+        UpdateAdditionalUserInfoResponse.Builder builder = UpdateAdditionalUserInfoResponse.newBuilder();
+        if(user.getUserProfileUrl() != null || !user.getUserProfileUrl().isEmpty()) {
+            builder.setUserProfile(user.getUserProfileUrl());
+        }
+
+        return builder
                 .setUserId(user.getUserId())
                 .setUserName(user.getUserNickname())
-                .setUserProfile(user.getUserProfileUrl())
                 .build();
     }
 
