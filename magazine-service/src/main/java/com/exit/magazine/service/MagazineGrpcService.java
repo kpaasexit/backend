@@ -1,8 +1,7 @@
 package com.exit.magazine.service;
 
-import com.exit.common.grpc.GetMagazineResponse;
-import com.exit.common.grpc.GetMagazinesByCategoryResponse;
-import com.exit.common.grpc.MagazineServiceGrpc;
+import com.exit.common.grpc.*;
+import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +47,42 @@ public class MagazineGrpcService extends MagazineServiceGrpc.MagazineServiceImpl
             log.error("Get Magazine failed", e);
             responseObserver.onError(Status.INTERNAL
                     .withDescription("매거진 상세 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void scrapMagazine(com.exit.common.grpc.ScrapMagazineRequest request,
+                            StreamObserver<ScrapMagazineResponse> responseObserver) {
+        try {
+            log.info("Scrap Magazine request received: {}", request.getUserId());
+            ScrapMagazineResponse response = magazineService.scrapMagazine(request);
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Scrap Magazine failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("매거진 스크랩 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void getScrapBox(com.exit.common.grpc.GetScrapBoxRequest request,
+                            StreamObserver<GetScrapBoxResponse> responseObserver) {
+        try {
+            log.info("Get Magazine Scrap Box request received: {}", request.getUserId());
+            GetScrapBoxResponse response = magazineService.getScrapBox(request);
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Get ScrapBox failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("매거진 스크랩 박스 조회 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
     }

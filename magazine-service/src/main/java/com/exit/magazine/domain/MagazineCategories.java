@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class MagazineCategories extends BaseEntity {
     @Id
     @Column(name = "magazine_category_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long magazineCategoryId;
 
     @Column(name = "magazine_category_name", length = 20)

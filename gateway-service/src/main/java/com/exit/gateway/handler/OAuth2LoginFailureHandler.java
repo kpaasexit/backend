@@ -14,7 +14,7 @@ import java.io.IOException;
 @Slf4j
 public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 
-    @Value("${app.oauth2.redirect-url:http://localhost:3000/oauth2/redirect}")
+    @Value("${app.oauth2.redirect-url:http://localhost:5761/oauth2/redirect}")
     private String redirectUrl;
 
     @Override

@@ -7,10 +7,13 @@ option java_package = "com.exit.common.grpc";
 option java_outer_classname = "MagazineServiceProto";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 service MagazineService {
   rpc GetMagazinesByCategory(GetMagazinesByCategoryRequest) returns (GetMagazinesByCategoryResponse);
   rpc GetMagazine(GetMagazineRequest) returns (GetMagazineResponse);
+  rpc ScrapMagazine(ScrapMagazineRequest) returns (ScrapMagazineResponse);
+  rpc GetScrapBox(GetScrapBoxRequest) returns (GetScrapBoxResponse);
 }
 
 // request
@@ -21,6 +24,16 @@ message GetMagazinesByCategoryRequest {
 
 message GetMagazineRequest {
   int64 magazine_id = 1;
+}
+
+message ScrapMagazineRequest {
+  int64 magazine_id = 1;
+  int64 user_id = 2;
+}
+
+message GetScrapBoxRequest {
+  int64 user_id = 1;
+  int32 page_num = 2;
 }
 
 // response
@@ -35,6 +48,7 @@ message MagazineItem {
   string magazine_thumbnail_url = 8;
   google.protobuf.Timestamp created_at = 9;
 }
+
 message GetMagazinesByCategoryResponse {
   repeated MagazineItem magazine_item = 1;
 }
@@ -43,3 +57,20 @@ message GetMagazineResponse {
     MagazineItem magazine_item = 1;
 }
 
+message ScrapMagazineResponse {
+  int64 magazine_id = 1;
+  bool is_scrapped = 2;
+}
+
+message MagazineScrapBoxItem {
+  int64 magazine_id = 1;
+  string magazine_title = 2;
+  string magazine_subtitle = 3;
+  string magazine_thumbnail_url = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message GetScrapBoxResponse {
+  repeated MagazineScrapBoxItem magazine_scrap_box_item = 1;
+  bool has_next = 2;
+}
