@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 from openai import AsyncOpenAI
 
 from app.models.quiz import Quiz, QuizUpdate, QuizType
-from app.services.quiz.service import QuizService
+from app.services.quiz.mysql_service import MySQLQuizService
 from app.core.logger import LoggerSetup
 from app.config import get_settings
 
@@ -16,7 +16,7 @@ class QuizCorrectorService:
 
     def __init__(self):
         self.openai_client = AsyncOpenAI(api_key=settings.openai.openai_api_key)
-        self.quiz_service = QuizService()
+        self.quiz_service = MySQLQuizService()
 
     async def correct_quiz(self, quiz_id: int, error_description: Optional[str] = None) -> Optional[Quiz]:
         """
@@ -46,7 +46,7 @@ class QuizCorrectorService:
                 quiz_title=corrected_data.get("quiz_title"),
                 quiz_content=corrected_data.get("quiz_content"),
                 quiz_correct_answer=corrected_data.get("quiz_correct_answer"),
-                quiz_additional_information=corrected_data.get("quiz_additional_information")
+                explanation=corrected_data.get("explanation")
             )
 
             updated_quiz = await self.quiz_service.update_quiz(quiz_id, quiz_update)
@@ -89,7 +89,7 @@ class QuizCorrectorService:
         if quiz.quiz_type == QuizType.OX:
             quiz_type_desc = "OX 퀴즈 (O 또는 X)"
         else:
-            quiz_type_desc = "4지선다 (A, B, C, D 중 택1)"
+            quiz_type_desc = "4지선다 (1, 2, 3, 4 중 택1)"
 
         error_info = f"\n\n보고된 오류: {error_description}" if error_description else ""
 
@@ -102,7 +102,7 @@ class QuizCorrectorService:
 - 제목: {quiz.quiz_title}
 - 내용: {quiz.quiz_content}
 - 정답: {quiz.quiz_correct_answer}
-- 추가 정보: {quiz.quiz_additional_information or "없음"}
+- 추가 정보: {quiz.explanation or "없음"}
 {error_info}
 
 다음을 확인하고 수정해주세요:
@@ -110,20 +110,20 @@ class QuizCorrectorService:
 2. 답변의 정확성 (정답이 맞는지)
 3. 문장의 명확성 (모호하지 않고 이해하기 쉬운지)
 4. 카테고리 적합성 ({category_name} 카테고리에 맞는지)
-5. 형식 준수 (OX는 O/X, 4지선다는 A/B/C/D)
+5. 형식 준수 (OX는 O/X, 4지선다는 1/2/3/4)
 
 수정된 퀴즈를 다음 JSON 형식으로 응답해주세요:
 {{
     "quiz_title": "수정된 제목",
     "quiz_content": "수정된 내용",
-    "quiz_correct_answer": "수정된 정답 (O/X 또는 A/B/C/D)",
-    "quiz_additional_information": "수정된 추가 정보",
+    "quiz_correct_answer": "수정된 정답 (O/X 또는 1/2/3/4)",
+    "explanation": "수정된 추가 정보",
     "changes_made": "수정한 내용 요약"
 }}
 
 주의사항:
 - 퀴즈의 본질적인 내용은 유지하되, 오류만 수정하세요
-- quiz_correct_answer는 반드시 형식에 맞게 (OX면 O 또는 X, 4지선다면 A/B/C/D 중 하나)
+- quiz_correct_answer는 반드시 형식에 맞게 (OX면 O 또는 X, 4지선다면 1/2/3/4 중 하나)
 - 카테고리를 벗어나지 않도록 주의하세요"""
 
 

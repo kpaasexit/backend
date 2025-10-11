@@ -5,8 +5,9 @@ import enum
 
 
 class QuizTypeEnum(enum.Enum):
-    FOUR_LIMBS = "FOUR_LIMBS"
+    MULTIPLE = "MULTIPLE"
     OX = "OX"
+    FOUR_LIMBS = "FOUR_LIMBS"
 
 
 class QuizModel(Base):
@@ -16,7 +17,7 @@ class QuizModel(Base):
     quiz_id = Column(BigInteger, primary_key=True, autoincrement=True)
     quiz_created_at = Column(DateTime(6), nullable=True, default=func.now())
     quiz_updated_at = Column(DateTime(6), nullable=True, default=func.now(), onupdate=func.now())
-    quiz_additional_information = Column(Text, nullable=True)
+    quiz_additional_information = Column(Text, nullable=True)  # MySQL column name
     quiz_content = Column(Text, nullable=True)
     quiz_correct_answer = Column(String(1), nullable=True)
     quiz_title = Column(String(100), nullable=True)

@@ -18,16 +18,16 @@ class QuizHandler:
     def _convert_quiz_type_to_model(self, quiz_type: quiz_service_pb2.QuizType) -> ModelQuizType:
         if quiz_type == quiz_service_pb2.OX:
             return ModelQuizType.OX
-        elif quiz_type == quiz_service_pb2.FOUR_LIMBS:
-            return ModelQuizType.FOUR_LIMBS
+        elif quiz_type == quiz_service_pb2.MULTIPLE:
+            return ModelQuizType.MULTIPLE
         else:
             return ModelQuizType.OX
 
     def _convert_quiz_type_to_proto(self, quiz_type: ModelQuizType) -> quiz_service_pb2.QuizType:
         if quiz_type == ModelQuizType.OX:
             return quiz_service_pb2.OX
-        elif quiz_type == ModelQuizType.FOUR_LIMBS:
-            return quiz_service_pb2.FOUR_LIMBS
+        elif quiz_type == ModelQuizType.MULTIPLE:
+            return quiz_service_pb2.MULTIPLE
         else:
             return quiz_service_pb2.QUIZ_TYPE_UNSPECIFIED
 
@@ -39,63 +39,28 @@ class QuizHandler:
             quiz_content=quiz.quiz_content,
             quiz_type=self._convert_quiz_type_to_proto(quiz.quiz_type),
             quiz_correct_answer=quiz.quiz_correct_answer,
-            quiz_additional_information=quiz.quiz_additional_information or "",
+            explanation=quiz.explanation or "",
             quiz_created_at=int(quiz.quiz_created_at.timestamp()),
             quiz_updated_at=int(quiz.quiz_updated_at.timestamp())
         )
 
     async def UpdateQuiz(self, request: quiz_service_pb2.UpdateQuizRequest, context) -> quiz_service_pb2.UpdateQuizResponse:
         try:
-            # GPT를 사용한 자동 오류 수정 처리
-            if request.HasField("auto_correct") and request.auto_correct:
-                from app.services.quiz import QuizCorrectorService
-                corrector = QuizCorrectorService()
+            from app.services.quiz import QuizCorrectorService
+            corrector = QuizCorrectorService()
 
-                error_description = request.error_description if request.HasField('error_description') else None
-                corrected_quiz = await corrector.correct_quiz(request.quiz_id, error_description)
+            corrected_quiz = await corrector.correct_quiz(request.quiz_id, request.error_description)
 
-                if not corrected_quiz:
-                    return quiz_service_pb2.UpdateQuizResponse(
-                        success=False,
-                        message=f"퀴즈 ID {request.quiz_id}를 찾을 수 없거나 수정에 실패했습니다."
-                    )
-
-                return quiz_service_pb2.UpdateQuizResponse(
-                    quiz=self._quiz_to_proto(corrected_quiz),
-                    success=True,
-                    message=f"GPT를 사용하여 퀴즈가 성공적으로 수정되었습니다."
-                )
-
-            # 수동 수정 처리
-            from app.models.quiz import QuizUpdate
-
-            update_dict = {}
-            if request.HasField("quiz_category_id"):
-                update_dict["quiz_category_id"] = request.quiz_category_id
-            if request.HasField("quiz_title"):
-                update_dict["quiz_title"] = request.quiz_title
-            if request.HasField("quiz_content"):
-                update_dict["quiz_content"] = request.quiz_content
-            if request.HasField("quiz_type"):
-                update_dict["quiz_type"] = self._convert_quiz_type_to_model(request.quiz_type)
-            if request.HasField("quiz_correct_answer"):
-                update_dict["quiz_correct_answer"] = request.quiz_correct_answer
-            if request.HasField("quiz_additional_information"):
-                update_dict["quiz_additional_information"] = request.quiz_additional_information
-
-            quiz_update = QuizUpdate(**update_dict)
-            quiz = await self.quiz_service.update_quiz(request.quiz_id, quiz_update)
-
-            if not quiz:
+            if not corrected_quiz:
                 return quiz_service_pb2.UpdateQuizResponse(
                     success=False,
-                    message=f"퀴즈 ID {request.quiz_id}를 찾을 수 없습니다."
+                    message=f"퀴즈 ID {request.quiz_id}를 찾을 수 없거나 수정에 실패했습니다."
                 )
 
             return quiz_service_pb2.UpdateQuizResponse(
-                quiz=self._quiz_to_proto(quiz),
+                quiz=self._quiz_to_proto(corrected_quiz),
                 success=True,
-                message="퀴즈가 성공적으로 수정되었습니다."
+                message=f"AI를 사용하여 퀴즈가 성공적으로 수정되었습니다."
             )
         except Exception as e:
             logger.error(f"Error updating quiz: {e}")
@@ -153,10 +118,8 @@ class QuizHandler:
             from app.services.quiz import get_quiz_scheduler
             scheduler = get_quiz_scheduler()
 
-            # Generate quizzes
             generated_quizzes = await scheduler.generate_daily_quizzes()
 
-            # Extract quiz IDs
             quiz_ids = [quiz.quiz_id for quiz in generated_quizzes]
 
             return quiz_service_pb2.GenerateDailyQuizzesResponse(
@@ -173,7 +136,6 @@ class QuizHandler:
             )
 
     async def StartScheduler(self, request, context) -> quiz_service_pb2.SchedulerStatusResponse:
-        """Start quiz generation scheduler."""
         try:
             from app.services.quiz import get_quiz_scheduler
             scheduler = get_quiz_scheduler()
@@ -193,7 +155,6 @@ class QuizHandler:
             )
 
     async def StopScheduler(self, request, context) -> quiz_service_pb2.SchedulerStatusResponse:
-        """Stop quiz generation scheduler."""
         try:
             from app.services.quiz import get_quiz_scheduler
             scheduler = get_quiz_scheduler()
@@ -214,7 +175,6 @@ class QuizHandler:
 
 
     async def GetCategories(self, request, context) -> quiz_service_pb2.GetCategoriesResponse:
-        """Get list of available categories."""
         try:
             from app.core.constants import CATEGORY_MAP
 
