@@ -13,7 +13,7 @@ public record UpdateAdditionalUserInfoResponseDto(
         return UpdateAdditionalUserInfoResponseDto.builder()
                 .userId(response.getUserId())
                 .nickName(response.getUserName())
-                .profile(response.getUserProfile())
+                .profile(response.getUserProfile().isEmpty() ?  null : response.getUserProfile())
                 .build();
     }
 }

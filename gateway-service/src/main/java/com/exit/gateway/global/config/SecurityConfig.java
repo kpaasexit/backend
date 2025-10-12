@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
@@ -42,10 +43,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(new FailedAuthenticationEntryPoint()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/oauth2/**", "/login/**", "/api/auth/refresh").permitAll()
                         .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator").permitAll()
                         .requestMatchers("/docs/**", "/favicon.ico").permitAll()
                         .requestMatchers("/api/**").authenticated()

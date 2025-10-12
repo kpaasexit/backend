@@ -86,7 +86,8 @@ public class UserGrpcClient {
     public UpdateAdditionalUserInfoResponse updateAdditionalUserInfo(Long userId, UpdateAdditionalUserInfoRequestDto requestDto) throws IOException {
         try {
             MultipartFile image = requestDto.image();
-            UpdateAdditionalUserInfoRequest request;
+            UpdateAdditionalUserInfoRequest.Builder builder = UpdateAdditionalUserInfoRequest.newBuilder();
+
             if (image != null) {
                 ImageMetadata metaData = ImageMetadata.newBuilder()
                         .setFilename(image.getOriginalFilename())
@@ -96,17 +97,18 @@ public class UserGrpcClient {
                         .setMeta(metaData)
                         .setData(ByteString.copyFrom(image.getBytes()))
                         .build();
-                request = UpdateAdditionalUserInfoRequest.newBuilder()
-                        .setUserId(userId)
-                        .setUserName(requestDto.nickname())
-                        .setImageFile(uploadBytesRequest)
-                        .build();
-            } else {
-                request = UpdateAdditionalUserInfoRequest.newBuilder()
-                        .setUserId(userId)
-                        .setUserName(requestDto.nickname())
-                        .build();
+
+                builder.setImageFile(uploadBytesRequest);
             }
+
+            if(requestDto.nickname() != null && !requestDto.nickname().isEmpty()){
+                builder.setUserName(requestDto.nickname());
+            }
+
+            UpdateAdditionalUserInfoRequest request = builder
+                    .setUserId(userId)
+                    .setIsProfileImageDeleted(requestDto.isProfileImageDeleted())
+                    .build();
 
             log.debug("Sending updateAdditionalUserInfo request via gRPC: {}", request);
             UpdateAdditionalUserInfoResponse response = userServiceStub.updateAdditionalUserInfo(request);

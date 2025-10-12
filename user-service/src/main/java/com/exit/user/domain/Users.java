@@ -51,14 +51,12 @@ public class Users extends BaseEntity {
         this.userDeleted = false;
     }
 
-    public void updateProfile(String nickname, String profileImageUrl) {
-        if (nickname != null && !nickname.isEmpty()) {
-            this.userNickname = nickname;
-        }
+    public void updateProfile(String profileImageUrl) {
+        this.userProfileUrl = profileImageUrl;
+    }
 
-        if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
-            this.userProfileUrl = profileImageUrl;
-        }
+    public void updateNickname(String nickname) {
+        this.userNickname = nickname;
     }
 
     public void increaseReportCount() {

@@ -1,5 +1,6 @@
 package com.exit.gateway.controller.user;
 
+import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.RefreshTokenResponse;
 import com.exit.common.response.SuccessResponse;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserGrpcClient userGrpcClient;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/device")
     public SuccessResponse<String> updateDevice(
@@ -52,12 +54,12 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public SuccessResponse<TokenResponseDto> refresh(
-            @Valid @RequestBody RefreshTokenRequestDto request,
-            @DeviceId String deviceId) {
+            @Valid @RequestBody RefreshTokenRequestDto request) {
         try {
             log.info("Token refresh request received");
+            String deviceId = jwtTokenProvider.getDeviceIdFromToken(request.getRefreshToken());
+            log.debug("Refresh token received : {}", deviceId);
             RefreshTokenResponse grpcResponse = userGrpcClient.refreshToken(request.getRefreshToken(), deviceId);
-
             TokenResponseDto response = new TokenResponseDto(
                     grpcResponse.getAccessToken(),
                     grpcResponse.getRefreshToken()

@@ -17,19 +17,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -94,19 +93,22 @@ class UserControllerTest {
                 "test image content".getBytes()
         );
 
-        UpdateAdditionalUserInfoResponse grpcResponse = UpdateAdditionalUserInfoResponse.newBuilder()
-                .setUserId(1L)
-                .setUserName("테스트사용자")
-                .setUserProfile("https://example.com/profile.jpg")
-                .build();
+        UpdateAdditionalUserInfoResponse grpcResponse =
+                UpdateAdditionalUserInfoResponse.newBuilder()
+                        .setUserId(1L)
+                        .setUserName("테스트사용자")
+                        .setUserProfile("https://example.com/profile.jpg")
+                        .build();
 
-        given(userGrpcClient.updateAdditionalUserInfo(anyLong(), any())).willReturn(grpcResponse);
+        given(userGrpcClient.updateAdditionalUserInfo(anyLong(), any()))
+                .willReturn(grpcResponse);
 
         // when & then
         mockMvc.perform(multipart("/api/user/additional-info")
                         .file(imageFile)
                         .param("nickname", "테스트사용자")
                         .header("Authorization", "Bearer " + validAccessToken)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(request -> {
                             request.setMethod("PUT");
                             return request;
@@ -116,12 +118,21 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.result.nickName").value("테스트사용자"))
                 .andExpect(jsonPath("$.result.profile").value("https://example.com/profile.jpg"))
                 .andDo(document("user/update-additional-info",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         requestHeaders(
-                                headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
+                                headerWithName("Authorization")
+                                        .description("액세스 토큰 (Bearer {token})")
                         ),
                         requestParts(
-                                partWithName("image").description("프로필 이미지 (optional)").optional(),
-                                partWithName("nickname").description("닉네임 (optional)").optional()
+                                partWithName("image")
+                                        .description("프로필 이미지 파일 (JPG, PNG)")
+                                        .optional()
+                        ),
+                        formParameters(
+                                parameterWithName("nickname")
+                                        .description("사용자 닉네임 (2-20자)")
+                                        .optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
@@ -129,7 +140,7 @@ class UserControllerTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.userId").description("사용자 ID"),
                                 fieldWithPath("result.nickName").description("수정된 닉네임"),
-                                fieldWithPath("result.profile").description("수정된 프로필 이미지 URL")
+                                fieldWithPath("result.profile").description("프로필 이미지 URL")
                         )
                 ));
     }
