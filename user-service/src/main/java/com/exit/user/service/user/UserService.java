@@ -37,6 +37,8 @@ public class UserService {
         Users user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
 
+
+
         String imagePath = fileUploadUtil.uploadImage(request.getImageFile(), PROFILE_FOLDER);
         user.updateProfile(request.getUserName(), imagePath);
         Users savedUser = userRepository.save(user);
