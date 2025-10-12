@@ -1,5 +1,7 @@
 package com.exit.gateway.controller.question;
 
+import com.exit.common.auth.jwt.JwtTokenProvider;
+import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.gateway.config.RestDocsConfiguration;
 import com.exit.gateway.controller.question.dto.response.question.*;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
@@ -18,9 +20,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -34,11 +38,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration.class
         })
 @AutoConfigureRestDocs
-@Import(RestDocsConfiguration.class)
+@Import({
+        RestDocsConfiguration.class,
+        JwtTokenProvider.class
+})
 class QuestionControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @MockBean
     private QuestionGrpcClient questionGrpcClient;
@@ -49,8 +59,13 @@ class QuestionControllerTest {
     @MockBean
     private UserIdArgumentResolver userIdArgumentResolver;
 
+    private String validAccessToken;
+
     @BeforeEach
     void setUp() {
+        UserDetailRequest userDetail = new UserDetailRequest(1L, "test-device-id");
+        validAccessToken = jwtTokenProvider.generateAccessToken(userDetail);
+
         // Mock UserIdArgumentResolver
         given(userIdArgumentResolver.supportsParameter(any())).willAnswer(invocation -> {
             org.springframework.core.MethodParameter param = invocation.getArgument(0);
@@ -205,6 +220,7 @@ class QuestionControllerTest {
                                 fieldWithPath("result.responses[].responseId").description("답변 ID"),
                                 fieldWithPath("result.responses[].responseWriterId").description("답변 작성자 ID"),
                                 fieldWithPath("result.responses[].responseWriterName").description("답변 작성자 이름"),
+                                fieldWithPath("result.responses[].responseWriterProfile").description("답변 작성자 프로필 URL").optional(),
                                 fieldWithPath("result.responses[].responseContent").description("답변 내용"),
                                 fieldWithPath("result.responses[].responseAdopt").description("채택 여부"),
                                 fieldWithPath("result.responses[].urls").description("첨부 파일 URL 목록"),
@@ -632,6 +648,117 @@ class QuestionControllerTest {
                                 fieldWithPath("result.responseReportContent").description("신고 내용"),
                                 fieldWithPath("result.responseReportWriterId").description("신고자 ID"),
                                 fieldWithPath("result.createdAt").description("신고일시")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("인기 게시물 조회 API")
+    void getPopularPost() throws Exception {
+        // given
+        LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
+
+        GetPopularPostResponseDto.PopularPost item1 = GetPopularPostResponseDto.PopularPost.builder()
+                .categoryId(1L)
+                .nickname("김개발")
+                .profileUrl("https://example.com/profile.jpg")
+                .createdAt(now)
+                .title("Spring Boot 성능 최적화 방법")
+                .content("대용량 트래픽 처리를 위한 최적화 방법을 알고 싶습니다...")
+                .answerAdopt(true)
+                .answerCount(15)
+                .build();
+
+        GetPopularPostResponseDto.PopularPost item2 = GetPopularPostResponseDto.PopularPost.builder()
+                .categoryId(2L)
+                .nickname("이프론트")
+                .createdAt(now)
+                .title("React vs Vue 선택 기준")
+                .content("프로젝트에 적합한 프레임워크 선택 기준이 궁금합니다...")
+                .answerAdopt(true)
+                .answerCount(12)
+                .build();
+
+        GetPopularPostResponseDto response = GetPopularPostResponseDto.builder()
+                .popularPostList(List.of(item1, item2))
+                .build();
+
+        given(questionGrpcClient.getPopularPost()).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/questions/popular-post"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.result.popularPostList[0].title").value("Spring Boot 성능 최적화 방법"))
+                .andExpect(jsonPath("$.result.popularPostList[1].title").value("React vs Vue 선택 기준"))
+                .andDo(document("question/popular-post",
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.popularPostList").description("인기 게시물 목록"),
+                                fieldWithPath("result.popularPostList[].categoryId").description("카테고리 ID"),
+                                fieldWithPath("result.popularPostList[].profileUrl").description("작성자 프로필 URL").optional(),
+                                fieldWithPath("result.popularPostList[].nickname").description("작성자 닉네임"),
+                                fieldWithPath("result.popularPostList[].createdAt").description("작성일시"),
+                                fieldWithPath("result.popularPostList[].title").description("질문 제목"),
+                                fieldWithPath("result.popularPostList[].content").description("질문 내용"),
+                                fieldWithPath("result.popularPostList[].answerAdopt").description("답변 채택 여부"),
+                                fieldWithPath("result.popularPostList[].answerCount").description("답변 개수")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("내 질문 조회 API")
+    void getMyQuestion() throws Exception {
+        // given
+        LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
+
+        GetPopularPostResponseDto.PopularPost item1 = GetPopularPostResponseDto.PopularPost.builder()
+                .categoryId(1L)
+                .nickname("김사용자")
+                .createdAt(now)
+                .title("내가 작성한 첫 번째 질문")
+                .content("질문 내용입니다...")
+                .answerAdopt(true)
+                .answerCount(5)
+                .build();
+
+        GetMyQuestionResponseDto response = GetMyQuestionResponseDto.builder()
+                .questions(List.of(item1))
+                .hasNext(false)
+                .build();
+
+        given(questionGrpcClient.getMyQuestion(anyLong(), anyInt())).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/questions/my")
+                        .header("Authorization", "Bearer " + validAccessToken)
+                        .param("pageNum", "1"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.result.questions[0].title").value("내가 작성한 첫 번째 질문"))
+                .andExpect(jsonPath("$.result.hasNext").value(false))
+                .andDo(document("question/my-question",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
+                        ),
+                        queryParameters(
+                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작)")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.questions").description("내 질문 목록"),
+                                fieldWithPath("result.questions[].categoryId").description("카테고리 ID"),
+                                fieldWithPath("result.questions[].profileUrl").description("작성자 프로필 URL").optional(),
+                                fieldWithPath("result.questions[].nickname").description("작성자 닉네임"),
+                                fieldWithPath("result.questions[].createdAt").description("작성일시"),
+                                fieldWithPath("result.questions[].title").description("질문 제목"),
+                                fieldWithPath("result.questions[].content").description("질문 내용"),
+                                fieldWithPath("result.questions[].answerAdopt").description("답변 채택 여부"),
+                                fieldWithPath("result.questions[].answerCount").description("답변 개수"),
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
                         )
                 ));
     }

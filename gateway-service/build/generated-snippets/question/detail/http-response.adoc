@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 1044
+Content-Length: 1083
 
 {
   "code" : "QUESTION_OK_003",
@@ -31,6 +31,7 @@ Content-Length: 1044
       "responseId" : 1,
       "responseWriterId" : 2,
       "responseWriterName" : "이답변",
+      "responseWriterProfile" : null,
       "responseContent" : "다음과 같이 구현하시면 됩니다...",
       "responseAdopt" : true,
       "urls" : [ ],

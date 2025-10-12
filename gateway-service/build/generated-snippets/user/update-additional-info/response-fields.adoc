@@ -23,6 +23,6 @@
 
 |`+result.profile+`
 |`+String+`
-|수정된 프로필 이미지 URL
+|프로필 이미지 URL
 
 |===

@@ -2,8 +2,11 @@ package com.exit.gateway.controller.user;
 
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
+import com.exit.common.grpc.CheckNicknameDuplicateResponse;
 import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
 import com.exit.gateway.config.RestDocsConfiguration;
+import com.exit.gateway.controller.user.dto.response.user.CheckNicknameDuplicateResponseDto;
+import com.exit.gateway.controller.user.dto.response.user.GetUserInfoResponseDto;
 import com.exit.gateway.global.resolver.DeviceIdArgumentResolver;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.user.UserGrpcClient;
@@ -20,8 +23,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -29,7 +31,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -141,6 +143,108 @@ class UserControllerTest {
                                 fieldWithPath("result.userId").description("사용자 ID"),
                                 fieldWithPath("result.nickName").description("수정된 닉네임"),
                                 fieldWithPath("result.profile").description("프로필 이미지 URL")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("사용자 정보 조회 API")
+    void getUserInfo() throws Exception {
+        // given
+        GetUserInfoResponseDto responseDto = GetUserInfoResponseDto.builder()
+                .nickname("테스트사용자")
+                .profileUrl("https://example.com/profile.jpg")
+                .build();
+
+        given(userGrpcClient.getUserInfo(anyLong()))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/user/info")
+                        .header("Authorization", "Bearer " + validAccessToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result.nickname").value("테스트사용자"))
+                .andExpect(jsonPath("$.result.profileUrl").value("https://example.com/profile.jpg"))
+                .andDo(document("user/get-user-info",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization")
+                                        .description("액세스 토큰 (Bearer {token})")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.nickname").description("사용자 닉네임"),
+                                fieldWithPath("result.profileUrl").description("프로필 이미지 URL")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 체크 API - 사용 가능")
+    void checkNicknameDuplicate_Available() throws Exception {
+        // given
+        CheckNicknameDuplicateResponseDto responseDto = CheckNicknameDuplicateResponseDto.builder()
+                .isAvailable(true)
+                .build();
+
+        given(userGrpcClient.checkNicknameDuplicate(anyString()))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/user/check-nickname")
+                        .param("nickname", "사용가능닉네임")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result.isAvailable").value(true))
+                .andDo(document("user/check-nickname-available",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("nickname")
+                                        .description("중복 체크할 닉네임")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.isAvailable").description("사용 가능 여부 (true: 사용 가능, false: 중복)")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 체크 API - 중복됨")
+    void checkNicknameDuplicate_Duplicate() throws Exception {
+        // given
+        CheckNicknameDuplicateResponseDto responseDto = CheckNicknameDuplicateResponseDto.builder()
+                .isAvailable(false)
+                .build();
+
+        given(userGrpcClient.checkNicknameDuplicate(anyString()))
+                .willReturn(responseDto);
+
+        // when & then
+        mockMvc.perform(get("/api/user/check-nickname")
+                        .param("nickname", "중복된닉네임")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result.isAvailable").value(false))
+                .andDo(document("user/check-nickname-duplicate",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("nickname")
+                                        .description("중복 체크할 닉네임")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.isAvailable").description("사용 가능 여부 (true: 사용 가능, false: 중복)")
                         )
                 ));
     }
