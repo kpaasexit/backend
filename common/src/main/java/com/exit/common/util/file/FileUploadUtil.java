@@ -38,11 +38,11 @@ public class FileUploadUtil {
             String dateFolder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
             String fullFolderPath = folderPath + "/" + dateFolder;
 
+            // 업로드 전체 파일 경로 생성
+            Path uploadDir = Paths.get(properties.getUploadPath(), fullFolderPath);
+
             // 고유한 파일명 생성
             String fileName = generateUniqueFileName(request.getMeta().getFilename());
-
-            // 전체 파일 경로 생성
-            Path uploadDir = Paths.get(properties.getUploadPath(), fullFolderPath);
             Path filePath = uploadDir.resolve(fileName);
 
             // 디렉토리가 없으면 생성
@@ -53,7 +53,7 @@ public class FileUploadUtil {
             // 파일 저장
             Files.write(filePath, request.getData().toByteArray(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
 
-            // 공개 URL 생성
+            // 공개 URL 생성 (Upload Path 제외)
             String relativePath = fullFolderPath + "/" + fileName;
             String fileUrl = generateFileUrl(relativePath);
 

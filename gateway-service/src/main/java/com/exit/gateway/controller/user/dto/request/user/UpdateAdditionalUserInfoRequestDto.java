@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public record UpdateAdditionalUserInfoRequestDto(
         String nickname,
-        MultipartFile image
+        MultipartFile image,
+        Boolean isProfileImageDeleted
 ) {
 }

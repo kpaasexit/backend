@@ -9,12 +9,14 @@ import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
 import com.exit.user.exception.GrpcUserErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -37,15 +39,43 @@ public class UserService {
         Users user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
 
+        // 1. 먼저 이미지 삭제 처리
+        if(request.getIsProfileImageDeleted()){
+            if(user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
+                try {
+                    fileUploadUtil.deleteFile(user.getUserProfileUrl());
+                } catch (Exception e) {
+                    // 삭제 실패해도 계속 진행 (파일이 이미 없을 수 있음)
+                    log.warn("Failed to delete old profile image: {}", user.getUserProfileUrl(), e);
+                }
+            }
+            user.updateProfile(null);
+        }
 
+        // 2. 새 이미지 업로드 (기존 이미지가 있으면 먼저 삭제)
+        if(request.hasImageFile()) {
+            // 기존 프로필 이미지가 있으면 삭제
+            if(user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
+                try {
+                    fileUploadUtil.deleteFile(user.getUserProfileUrl());
+                } catch (Exception e) {
+                    log.warn("Failed to delete old profile image: {}", user.getUserProfileUrl(), e);
+                }
+            }
+            String imagePath = fileUploadUtil.uploadImage(request.getImageFile(), PROFILE_FOLDER);
+            user.updateProfile(imagePath);
+        }
 
-        String imagePath = fileUploadUtil.uploadImage(request.getImageFile(), PROFILE_FOLDER);
-        user.updateProfile(request.getUserName(), imagePath);
+        // 3. 닉네임 업데이트
+        if(request.hasUserName()) {
+            user.updateNickname(request.getUserName());
+        }
+
         Users savedUser = userRepository.save(user);
 
         UpdateAdditionalUserInfoResponse.Builder builder = UpdateAdditionalUserInfoResponse.newBuilder();
 
-        if(user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
+        if(savedUser.getUserProfileUrl() != null && !savedUser.getUserProfileUrl().isEmpty()) {
             builder.setUserProfile(user.getUserProfileUrl());
         }
 

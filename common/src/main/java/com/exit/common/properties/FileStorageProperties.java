@@ -13,6 +13,6 @@ import org.springframework.stereotype.Component;
 public class FileStorageProperties {
     @Value("${app.file-dir}")
     private String uploadPath;
-    private String baseUrl = "https://your-domain.com/files";
+    private String baseUrl = "https://house-it.210-178-1-144.nip.io/files";
     private Boolean createDirectories = true;
 }
