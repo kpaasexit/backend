@@ -150,7 +150,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
                                   StreamObserver<com.exit.common.grpc.QuestionDetailResponse> responseObserver) {
         try {
             log.info("Question detail request received for question ID: {}", request.getQuestionId());
-            QuestionDetailResponse response = questionService.getQuestionDetail(request.getQuestionId());
+            QuestionDetailResponse response = questionService.getQuestionDetail(request);
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();

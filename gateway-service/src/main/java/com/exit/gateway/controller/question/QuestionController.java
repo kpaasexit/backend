@@ -79,11 +79,15 @@ public class QuestionController {
     }
 
     @GetMapping("/{questionId}")
-    public SuccessResponse<QuestionDetailResponseDto> getQuestionDetail(@PathVariable Long questionId) {
+    public SuccessResponse<QuestionDetailResponseDto> getQuestionDetail(
+        @PathVariable Long questionId,
+        @RequestParam(defaultValue = "1") Integer pageNum
+    ) {
         try {
             log.info("Question detail request received for questionId: {}", questionId);
             QuestionDetailRequest request = QuestionDetailRequest.newBuilder()
                     .setQuestionId(questionId)
+                    .setPageNum(pageNum-1)
                     .build();
             QuestionDetailResponseDto response = questionGrpcClient.getQuestionDetail(request);
             return SuccessResponse.of(QuestionSuccessCode.QUESTION_DETAIL_SUCCESS, response);
