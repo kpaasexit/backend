@@ -98,7 +98,11 @@ public class QuestionService {
     @Transactional(readOnly = true)
     public QuestionListResponse questionList(QuestionListRequest filter) {
         PageRequest pageRequest = PageRequest.of(filter.getPage(), filter.getSize());
-        Slice<QuestionListQueryResponseDto> slice = questionRepository.findQuestionsByFilter(filter.getCategoryIdsList(), filter.getKeyword(), pageRequest);
+
+        Slice<QuestionListQueryResponseDto> slice = questionRepository.findQuestionsByFilter(
+                filter.getCategoryIdsList(),
+                filter.getKeyword().isEmpty() ? null : filter.getKeyword(),
+                filter.getIsAdopted(), pageRequest);
         return questionGrpcMapper.getQuestionListResponse(slice.getContent(), slice.hasNext());
     }
 

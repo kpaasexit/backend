@@ -71,6 +71,7 @@ message QuestionListRequest {
   string keyword = 2;
   int32 page = 3;
   int32 size = 4;
+  bool is_adopted = 5;
 }
 
 message CategoryRecommendRequest {
