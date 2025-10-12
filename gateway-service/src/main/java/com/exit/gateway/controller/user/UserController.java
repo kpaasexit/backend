@@ -6,6 +6,7 @@ import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.UserErrorCode;
 import com.exit.common.response.success.UserSuccessCode;
 import com.exit.gateway.controller.user.dto.request.user.UpdateAdditionalUserInfoRequestDto;
+import com.exit.gateway.controller.user.dto.response.user.CheckNicknameDuplicateResponseDto;
 import com.exit.gateway.controller.user.dto.response.user.GetUserInfoResponseDto;
 import com.exit.gateway.controller.user.dto.response.user.UpdateAdditionalUserInfoResponseDto;
 import com.exit.gateway.global.annotation.LoginUser;
@@ -58,6 +59,23 @@ public class UserController {
         } catch (Exception e) {
             log.error("Get user info failed", e);
             throw new RestApiException(UserErrorCode.GET_USER_INFO_FAIL);
+        }
+    }
+
+    @GetMapping("/check-nickname")
+    public SuccessResponse<CheckNicknameDuplicateResponseDto> checkNicknameDuplicate(
+            @RequestParam String nickname) {
+        try {
+            log.info("Check nickname duplicate request received for nickname: {}", nickname);
+            return SuccessResponse.of(UserSuccessCode.CHECK_NICKNAME_DUPLICATE_SUCCESS,
+                    userGrpcClient.checkNicknameDuplicate(nickname));
+        } catch (StatusRuntimeException e) {
+            log.error("Check nickname duplicate failed via gRPC: {}", e.getStatus(), e);
+            String errorMessage = getGrpcErrorMessage(e);
+            throw new RestApiException(UserErrorCode.CHECK_NICKNAME_DUPLICATE_FAIL, errorMessage);
+        } catch (Exception e) {
+            log.error("Check nickname duplicate failed", e);
+            throw new RestApiException(UserErrorCode.CHECK_NICKNAME_DUPLICATE_FAIL);
         }
     }
 

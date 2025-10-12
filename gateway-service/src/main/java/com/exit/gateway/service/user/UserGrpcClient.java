@@ -3,6 +3,7 @@ package com.exit.gateway.service.user;
 import com.exit.common.grpc.*;
 import com.exit.gateway.controller.user.dto.request.user.UpdateAdditionalUserInfoRequestDto;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
+import com.exit.gateway.controller.user.dto.response.user.CheckNicknameDuplicateResponseDto;
 import com.exit.gateway.controller.user.dto.response.user.GetUserInfoResponseDto;
 import com.exit.gateway.service.user.util.UserGrpcMapper;
 import com.google.protobuf.ByteString;
@@ -166,6 +167,21 @@ public class UserGrpcClient {
             authServiceStub.withdraw(request);
         } catch (StatusRuntimeException e) {
             log.error("Withdraw user info failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
+
+    public CheckNicknameDuplicateResponseDto checkNicknameDuplicate(String nickname) {
+        try {
+            CheckNicknameDuplicateRequest request = CheckNicknameDuplicateRequest.newBuilder()
+                    .setNickname(nickname)
+                    .build();
+
+            log.debug("Check Nickname Duplicate request via gRPC: {}", request);
+            CheckNicknameDuplicateResponse response = userServiceStub.checkNicknameDuplicate(request);
+            return CheckNicknameDuplicateResponseDto.from(response);
+        } catch (StatusRuntimeException e) {
+            log.error("Check Nickname Duplicate failed: {}", e.getStatus(), e);
             throw e;
         }
     }
