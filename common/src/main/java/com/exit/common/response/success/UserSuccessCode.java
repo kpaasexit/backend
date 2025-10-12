@@ -10,6 +10,7 @@ public enum UserSuccessCode implements SuccessCode {
     UPDATE_ADDITIONAL_INFO_SUCCESS("USER_OK_001", HttpStatus.OK, "추가 정보 업데이트 성공"),
     UPDATE_DEVICE_SUCCESS("USER_OK_002", HttpStatus.OK, "디바이스 업데이트 성공"),
     GET_USER_INFO_SUCCESS("USER_OK_003", HttpStatus.OK, "유저 정보 조회 성공"),
+    CHECK_NICKNAME_DUPLICATE_SUCCESS("USER_OK_004", HttpStatus.OK, "닉네임 중복 체크 성공"),
     ;
 
     private final String code;

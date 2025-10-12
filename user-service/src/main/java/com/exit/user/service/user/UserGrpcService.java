@@ -181,4 +181,21 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
                     .asRuntimeException());
         }
     }
+
+    @Override
+    public void checkNicknameDuplicate(CheckNicknameDuplicateRequest request, StreamObserver<CheckNicknameDuplicateResponse> responseObserver) {
+        try {
+            log.info("Check Nickname Duplicate received for nickname: {}", request.getNickname());
+            CheckNicknameDuplicateResponse response = userService.checkNicknameDuplicate(request.getNickname());
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Check Nickname Duplicate failed for nickname: {}", request.getNickname(), e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("닉네임 중복 검사 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
 }

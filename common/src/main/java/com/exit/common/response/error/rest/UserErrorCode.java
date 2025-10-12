@@ -18,6 +18,7 @@ public enum UserErrorCode implements ErrorCode {
     LOGOUT_FAIL("AUTH_ERR_009", HttpStatus.BAD_REQUEST, "로그아웃에 실패하였습니다."),
     GET_USER_INFO_FAIL("AUTH_ERR_010", HttpStatus.BAD_REQUEST, "유저 정보 조회에 실패하였습니다."),
     DELETED_USER_FAIL("AUTH_ERR_011", HttpStatus.BAD_REQUEST, "회원 탈퇴에 실패하였습니다."),
+    CHECK_NICKNAME_DUPLICATE_FAIL("AUTH_ERR_012", HttpStatus.BAD_REQUEST, "닉네임 중복 체크에 실패하였습니다."),
     ;
 
     private final String developCode;

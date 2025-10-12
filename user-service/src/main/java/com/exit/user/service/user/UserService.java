@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -40,8 +41,8 @@ public class UserService {
                 .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
 
         // 1. 먼저 이미지 삭제 처리
-        if(request.getIsProfileImageDeleted()){
-            if(user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
+        if (request.getIsProfileImageDeleted()) {
+            if (user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
                 try {
                     fileUploadUtil.deleteFile(user.getUserProfileUrl());
                 } catch (Exception e) {
@@ -53,9 +54,9 @@ public class UserService {
         }
 
         // 2. 새 이미지 업로드 (기존 이미지가 있으면 먼저 삭제)
-        if(request.hasImageFile()) {
+        if (request.hasImageFile()) {
             // 기존 프로필 이미지가 있으면 삭제
-            if(user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
+            if (user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
                 try {
                     fileUploadUtil.deleteFile(user.getUserProfileUrl());
                 } catch (Exception e) {
@@ -67,7 +68,7 @@ public class UserService {
         }
 
         // 3. 닉네임 업데이트
-        if(request.hasUserName()) {
+        if (request.hasUserName()) {
             user.updateNickname(request.getUserName());
         }
 
@@ -75,7 +76,7 @@ public class UserService {
 
         UpdateAdditionalUserInfoResponse.Builder builder = UpdateAdditionalUserInfoResponse.newBuilder();
 
-        if(savedUser.getUserProfileUrl() != null && !savedUser.getUserProfileUrl().isEmpty()) {
+        if (savedUser.getUserProfileUrl() != null && !savedUser.getUserProfileUrl().isEmpty()) {
             builder.setUserProfile(user.getUserProfileUrl());
         }
 
@@ -85,12 +86,13 @@ public class UserService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public UpdateAdditionalUserInfoResponse getUserNameAndProfile(Long userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
 
         UpdateAdditionalUserInfoResponse.Builder builder = UpdateAdditionalUserInfoResponse.newBuilder();
-        if(user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
+        if (user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
             builder.setUserProfile(user.getUserProfileUrl());
         }
 
@@ -100,6 +102,7 @@ public class UserService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public GetFcmTokenResponse getFcmToken(GetFcmTokenRequest request) {
         List<String> fcmTokens = userFcmTokenRepository.findFcmTokenByUserId(request.getUserId());
 
@@ -125,6 +128,7 @@ public class UserService {
         userFcmTokenRepository.save(userFcmToken);
     }
 
+    @Transactional(readOnly = true)
     public GetUsersNameAndProfileResponse getUsersNameAndProfile(List<Long> userIdList) {
         ArrayList<UpdateAdditionalUserInfoResponse> response = new ArrayList<>();
         userIdList.forEach(userId -> {
@@ -134,6 +138,16 @@ public class UserService {
 
         return GetUsersNameAndProfileResponse.newBuilder()
                 .addAllUserInfo(response)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public CheckNicknameDuplicateResponse checkNicknameDuplicate(String nickname) {
+        Optional<Users> exists = userRepository.findByUserNickname(nickname);
+        boolean flag = exists.isEmpty();
+
+        return CheckNicknameDuplicateResponse.newBuilder()
+                .setIsAvailable(flag)
                 .build();
     }
 }
