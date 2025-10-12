@@ -219,4 +219,22 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
                     .asRuntimeException());
         }
     }
+
+    @Override
+    public void getMyQuestion(GetMyQuestionRequest request,
+                               StreamObserver<GetMyQuestionResponse> responseObserver) {
+        try {
+            log.info("Get my question request received");
+            GetMyQuestionResponse response = questionService.getMyQuestion(request);
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Get my question failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("나의 Q&A 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
 }

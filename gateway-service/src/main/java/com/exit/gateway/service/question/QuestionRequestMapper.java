@@ -1,6 +1,8 @@
 package com.exit.gateway.service.question;
 
+import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.*;
+import com.exit.common.response.error.rest.QuestionErrorCode;
 import com.exit.gateway.controller.question.dto.request.question.AnswerCreateRequestDto;
 import com.exit.gateway.controller.question.dto.request.question.AnswerReportRequestDto;
 import com.exit.gateway.controller.question.dto.request.question.QuestionCreateRequestDto;
@@ -89,7 +91,7 @@ public class QuestionRequestMapper {
 
                 } catch (IOException e) {
                     log.error("Failed to convert MultipartFile to UploadBytesRequest: {}", file.getOriginalFilename(), e);
-                    throw new RuntimeException("파일 변환 중 오류가 발생했습니다: " + file.getOriginalFilename(), e);
+                    throw new RestApiException(QuestionErrorCode.FILE_CONVERSION_FAIL, "파일 변환 중 오류가 발생했습니다: " + file.getOriginalFilename());
                 }
             }
         }

@@ -4,6 +4,7 @@ import com.exit.question.controller.dto.request.NotificationContentDto;
 import com.exit.question.controller.dto.response.PopularPostDto;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,22 +22,24 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     Optional<NotificationContentDto> findContentById(Long targetId);
 
     @Query(value = """
-            select new com.exit.question.controller.dto.response.PopularPostDto(
-                q.questionId,
-                qc.questionCategoryId,
-                q.questionWriterId,
-                q.questionTitle,
-                q.questionContent,
-                q.questionAnswerAdopt,
-                cast((select count(r1) from Response r1 where r1.questionId = q.questionId) as int),
-                q.createdAt
-            )
-            from Question q
-            join q.questionCategory qc
-            order by (select count(r1) from Response r1 where r1.questionId = q.questionId) desc
-            limit 5
+                    select new com.exit.question.controller.dto.response.PopularPostDto(
+                            q.questionId,
+                            qc.questionCategoryId,
+                            q.questionWriterId,
+                            q.questionTitle,
+                            q.questionContent,
+                            q.questionAnswerAdopt,
+                            cast(count(r) as int),
+                            q.createdAt
+                    )
+                    from Question q
+                    join q.questionCategory qc
+                    left join Response r on r.questionId = q.questionId
+                    group by q.questionId, qc.questionCategoryId, q.questionWriterId,
+                             q.questionTitle, q.questionContent, q.questionAnswerAdopt, q.createdAt
+                    order by count(r) desc
             """)
-    List<PopularPostDto> findTop5ByResponseCount();
+    List<PopularPostDto> findTop5By();
 
     @Query("""
             select new com.exit.question.controller.dto.response.QuestionListQueryResponseDto(
@@ -68,4 +71,24 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             @Param("adoptedOnly") Boolean adoptedOnly,
             Pageable pageable
     );
+
+    @Query(value = """
+            select new com.exit.question.controller.dto.response.PopularPostDto(
+                q.questionId,
+                qc.questionCategoryId,
+                q.questionWriterId,
+                q.questionTitle,
+                q.questionContent,
+                q.questionAnswerAdopt,
+                cast(count(r) as int),
+                q.createdAt
+            )
+            from Question q
+            join q.questionCategory qc
+            left join Response r on r.questionId = q.questionId
+            where q.questionWriterId = :questionWriterId
+            group by q.questionId, qc.questionCategoryId, q.questionWriterId,
+                     q.questionTitle, q.questionContent, q.questionAnswerAdopt, q.createdAt
+            """)
+    Slice<PopularPostDto> findByQuestionWriterId(Long questionWriterId, PageRequest pageRequest);
 }

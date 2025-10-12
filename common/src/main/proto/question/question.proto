@@ -21,6 +21,7 @@ service QuestionService {
   rpc UpdateResponse(UpdateResponseRequest) returns (UpdateResponseResponse);
   rpc DeleteResponse(DeleteResponseRequest) returns (google.protobuf.Empty);
   rpc GetPopularPost(google.protobuf.Empty) returns (GetPopularPostResponse);
+  rpc GetMyQuestion(GetMyQuestionRequest) returns (GetMyQuestionResponse);
 }
 
 message ImageMetadata {
@@ -94,6 +95,11 @@ message UpdateResponseRequest {
 
 message DeleteResponseRequest {
   int64 response_id = 1;
+}
+
+message GetMyQuestionRequest {
+  int64 user_id = 1;
+  int32 page_num = 2;
 }
 
 // Response messages
@@ -210,5 +216,10 @@ message PopularPostItem {
 
 message GetPopularPostResponse {
   repeated PopularPostItem post = 1;
+}
+
+message GetMyQuestionResponse {
+  repeated PopularPostItem post = 1;
+  bool has_next = 2;
 }
 
