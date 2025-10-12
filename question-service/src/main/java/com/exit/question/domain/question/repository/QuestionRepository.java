@@ -16,31 +16,6 @@ import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    @Query(value = """
-            select new com.exit.question.controller.dto.response.QuestionListQueryResponseDto(
-                q.questionId,
-                qc.questionCategoryId,
-                q.questionWriterId,
-                q.questionTitle,
-                q.questionContent,
-                q.questionUrgency,
-                q.questionAnswerType,
-                q.questionAnswerAdopt,
-                cast((select count(r1) from Response r1 where r1.questionId = q.questionId) as int),
-                q.createdAt
-            )
-            from Question q
-            join q.questionCategory qc
-            where (qc.questionCategoryId in :categoryIds)
-              and (
-                    :keyword is null or :keyword = ''
-                    or lower(q.questionTitle)  like lower(concat('%', :keyword, '%'))
-                    or lower(q.questionContent) like lower(concat('%', :keyword, '%'))
-                  )
-            order by q.createdAt desc
-            """)
-    Slice<QuestionListQueryResponseDto> findQuestionsByFilter(@Param("categoryIds") List<Long> categoryIds, @Param("keyword") String keyword, Pageable pageable);
-
     @Query("select new com.exit.question.controller.dto.request.NotificationContentDto(substring(q.questionContent, 1, 100), q.questionWriterId) " +
             "from Question q where q.questionId = :targetId")
     Optional<NotificationContentDto> findContentById(Long targetId);
@@ -63,4 +38,34 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             """)
     List<PopularPostDto> findTop5ByResponseCount();
 
+    @Query("""
+            select new com.exit.question.controller.dto.response.QuestionListQueryResponseDto(
+                q.questionId,
+                qc.questionCategoryId,
+                q.questionWriterId,
+                q.questionTitle,
+                q.questionContent,
+                q.questionUrgency,
+                q.questionAnswerType,
+                q.questionAnswerAdopt,
+                count(distinct r.responseId),
+                q.createdAt
+            )
+            from Question q
+            join q.questionCategory qc
+            left join Response r on r.questionId = q.questionId
+            where (qc.questionCategoryId in :categoryIds)
+              and (:kw is null
+                          or lower(q.questionTitle)  like :kw
+                          or lower(q.questionContent) like :kw)
+              and (coalesce(:adoptedOnly, false) = false or q.questionAnswerAdopt = true)
+            group by q.questionId, qc.questionCategoryId, q.questionWriterId, q.questionTitle, q.questionContent,
+                     q.questionUrgency, q.questionAnswerType, q.questionAnswerAdopt, q.createdAt
+            """)
+    Slice<QuestionListQueryResponseDto> findQuestionsByFilter(
+            @Param("categoryIds") List<Long> categoryIds,
+            @Param("kw") String keywordLike,
+            @Param("adoptedOnly") Boolean adoptedOnly,
+            Pageable pageable
+    );
 }

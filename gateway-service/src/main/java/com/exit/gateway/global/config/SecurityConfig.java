@@ -5,6 +5,7 @@ import com.exit.gateway.handler.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.exit.gateway.handler.OAuth2LoginFailureHandler;
 import com.exit.gateway.handler.OAuth2LoginSuccessHandler;
 import com.exit.gateway.service.user.CustomOAuth2UserService;
+import io.grpc.netty.shaded.io.netty.handler.codec.http.HttpMethod;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
@@ -47,6 +49,7 @@ public class SecurityConfig {
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(new FailedAuthenticationEntryPoint()))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                         .requestMatchers("/oauth2/**", "/login/**", "/api/auth/refresh").permitAll()
                         .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator").permitAll()
                         .requestMatchers("/docs/**", "/favicon.ico").permitAll()

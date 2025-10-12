@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -50,18 +51,21 @@ public class QuestionController {
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "false", required = false) boolean isAdopted) {
         try {
             log.info("Question list request received");
 
+            if(categoryIds == null || categoryIds.isEmpty()) {
+                categoryIds = new ArrayList<>(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L));
+            }
+
             QuestionListRequest.Builder requestBuilder = QuestionListRequest.newBuilder()
+                    .addAllCategoryIds(categoryIds)
                     .setKeyword(keyword != null ? keyword : "")
                     .setPage(page)
-                    .setSize(size);
-
-            if (categoryIds != null) {
-                requestBuilder.addAllCategoryIds(categoryIds);
-            }
+                    .setSize(size)
+                    .setIsAdopted(isAdopted);
 
             QuestionListResponseDto response = questionGrpcClient.getQuestionList(requestBuilder.build());
             return SuccessResponse.of(QuestionSuccessCode.QUESTION_LIST_SUCCESS, response);

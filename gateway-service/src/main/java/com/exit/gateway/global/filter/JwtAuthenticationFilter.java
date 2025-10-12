@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -63,6 +65,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     "errorCodeResponse", ex.getErrorCode(),
                     "errorMessage", ex.getErrorCode().getErrorDescription()
             );
+
+            response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+        } catch (org.springframework.security.core.AuthenticationException ex) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            // 표준 인증 예외도 동일 포맷으로 응답 (원하면 401로)
+            Map<String, Object> errorResponse = Map.of("httpStatus", 401,
+                            "errorCodeResponse", UserErrorCode.INVALID_TOKEN, // 프로젝트 코드에 맞게
+                            "errorMessage", "Invalid authentication token");
 
             response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
         } finally {

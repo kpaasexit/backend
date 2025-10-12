@@ -16,7 +16,7 @@ public record QuestionListQueryResponseDto(
         Boolean questionUrgency,
         QuestionAnswerType questionAnswerType,
         Boolean questionAnswerAdopt,
-        Integer answerCount,
+        Long answerCount,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt
 ) {
@@ -30,7 +30,7 @@ public record QuestionListQueryResponseDto(
                 .setQuestionUrgency(dto.questionUrgency)
                 .setQuestionAnswerType(dto.questionAnswerType.name())
                 .setQuestionAnswerAdopt(dto.questionAnswerAdopt)
-                .setAnswerCount(dto.answerCount)
+                .setAnswerCount(dto.answerCount.intValue())
                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(dto.createdAt))
                 .build();
     }
