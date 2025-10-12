@@ -13,6 +13,7 @@ public record ResponseDetailDto(
         Long responseId,
         Long responseWriterId,
         String responseWriterName,
+        String responseWriterProfile,
         String responseContent,
         Boolean responseAdopt,
         List<String> urls,
@@ -23,7 +24,11 @@ public record ResponseDetailDto(
         LocalDateTime updatedAt
 ) {
     public static ResponseDetailDto from(ResponseDetail grpcResponse) {
-        return ResponseDetailDto.builder()
+        ResponseDetailDtoBuilder builder = ResponseDetailDto.builder();
+        if(!grpcResponse.getProfile().isEmpty())
+            builder.responseWriterProfile(grpcResponse.getProfile());
+
+        return builder
                 .responseId(grpcResponse.getResponseId())
                 .responseWriterId(grpcResponse.getResponseWriterId())
                 .responseWriterName(grpcResponse.getResponseWriterName())

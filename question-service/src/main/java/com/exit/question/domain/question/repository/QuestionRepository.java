@@ -4,6 +4,7 @@ import com.exit.question.controller.dto.request.NotificationContentDto;
 import com.exit.question.controller.dto.response.PopularPostDto;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
+import com.exit.question.domain.response.Response;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

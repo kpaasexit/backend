@@ -86,6 +86,7 @@ message SimilarQuestionRequest {
 
 message QuestionDetailRequest {
   int64 question_id = 1;
+  int32 page_num = 2;
 }
 
 message UpdateResponseRequest {
@@ -190,6 +191,7 @@ message ResponseDetail {
   int32 like_count = 7;
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
+  string profile = 10;
 }
 
 message QuestionDetailResponse {

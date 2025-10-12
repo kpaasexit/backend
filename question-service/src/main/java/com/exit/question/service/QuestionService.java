@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -131,11 +132,12 @@ public class QuestionService {
         return questionGrpcMapper.getSimilarQuestionResponse(similarQuestions);
     }
 
+    // 질문 게시글 상세 보기
     @Transactional(readOnly = true)
-    public QuestionDetailResponse getQuestionDetail(Long questionId) {
-        QuestionCreateResponse questionCreateResponse = buildQuestionCreateResponse(questionId);
-        List<ResponseDetail> responseDetails = buildResponseDetail(questionId);
-        boolean hasMore = hasMoreResponses(questionId);
+    public QuestionDetailResponse getQuestionDetail(QuestionDetailRequest request) {
+        QuestionCreateResponse questionCreateResponse = buildQuestionCreateResponse(request.getQuestionId());
+        List<ResponseDetail> responseDetails = buildResponseDetail(request);
+        boolean hasMore = hasMoreResponses(request.getQuestionId());
 
         return questionGrpcMapper.getQuestionDetailResponse(questionCreateResponse, responseDetails, hasMore);
     }
@@ -235,26 +237,43 @@ public class QuestionService {
         return userInfoMap;
     }
 
-    private List<ResponseDetail> buildResponseDetail(Long questionId) {
-        PageRequest pageRequest = PageRequest.of(0, 5);
-        Slice<Response> responseSlice = responseRepository.findAllByQuestionId(questionId, pageRequest);
+    private List<ResponseDetail> buildResponseDetail(QuestionDetailRequest request) {
+        List<Response> responses = new ArrayList<>();
 
-        List<Response> responses = responseSlice.getContent();
+        // 1. 채택된 답변 조회 (첫 페이지에만)
+        if (request.getPageNum() == 0) {
+            Optional<Response> adoptedResponse = responseRepository.findByQuestionIdAndResponseAdoptTrue(request.getQuestionId());
+            if (adoptedResponse.isPresent()) {
+                responses.add(adoptedResponse.get());
+            }
+        }
+
+        // 2. 일반 답변 조회 (채택된 답변 제외)
+        int size = request.getPageNum() == 0 ? 4 : 5;
+        PageRequest pageRequest = PageRequest.of(request.getPageNum(), size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Slice<Response> responseSlice = responseRepository.findAllByQuestionIdAndResponseAdoptFalse(request.getQuestionId(), pageRequest);
+
+        // 일반 답변을 리스트에 추가
+        responses.addAll(responseSlice.getContent());
+
         if (responses.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // 배치로 필요한 데이터 미리 조회 (N+1 문제 해결)
+        // 3. 배치로 필요한 데이터 미리 조회 (N+1 문제 해결)
         Map<Long, List<String>> responseImageUrlsMap = getResponseImageUrlsMap(responses);
         Map<Long, Integer> likeCountMap = getLikeCountMap(responses);
-        Map<Long, String> writerNameMap = getWriterNameMap(responses);
+        Map<Long, UpdateAdditionalUserInfoResponse> writerNameProfileMap = getWriterNameAndProfileMap(responses);
 
+        // 4. ResponseDetail 생성
         return responses.stream()
                 .map(response -> questionGrpcMapper.getResponseDetail(
                         response,
                         responseImageUrlsMap.getOrDefault(response.getResponseId(), Collections.emptyList()),
                         likeCountMap.getOrDefault(response.getResponseId(), 0),
-                        writerNameMap.getOrDefault(response.getResponseWriterId(), "Unknown")
+                        writerNameProfileMap.getOrDefault(response.getResponseWriterId(), UpdateAdditionalUserInfoResponse.newBuilder()
+                                .setUserName("UNDEFINED")
+                                .build())
                 ))
                 .toList();
     }
@@ -280,16 +299,16 @@ public class QuestionService {
         return responseLikeRepository.countByResponseIdIn(responseIds);
     }
 
-    private Map<Long, String> getWriterNameMap(List<Response> responses) {
+    private Map<Long, UpdateAdditionalUserInfoResponse> getWriterNameAndProfileMap(List<Response> responses) {
         Set<Long> writerIds = responses.stream()
                 .map(Response::getResponseWriterId)
                 .collect(toSet());
 
-        List<UserIdAndNameInfo> userInfos = userGrpcClient.getUserNames(new ArrayList<>(writerIds));
-        return userInfos.stream()
+        GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(new ArrayList<>(writerIds));
+        return usersNameAndProfile.getUserInfoList().stream()
                 .collect(toMap(
-                        UserIdAndNameInfo::getUserId,
-                        UserIdAndNameInfo::getUserName
+                        UpdateAdditionalUserInfoResponse::getUserId,
+                        Function.identity()
                 ));
     }
 
