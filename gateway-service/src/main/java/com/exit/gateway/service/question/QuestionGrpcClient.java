@@ -175,4 +175,20 @@ public class QuestionGrpcClient {
             throw e;
         }
     }
+
+    public GetMyQuestionResponseDto getMyQuestion(Long userId, Integer pageNum) {
+        try {
+            log.debug("Sending get my question response request via gRPC");
+            GetMyQuestionRequest request = GetMyQuestionRequest.newBuilder()
+                    .setPageNum(pageNum)
+                    .setUserId(userId)
+                    .build();
+            GetMyQuestionResponse response = questionServiceStub.getMyQuestion(request);
+            log.debug("Received my question response response via gRPC");
+            return GetMyQuestionResponseDto.from(response);
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC my question response failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
 }

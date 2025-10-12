@@ -27,7 +27,6 @@ import com.exit.question.service.client.AiGrpcClient;
 import com.exit.question.service.client.NotificationGrpcClient;
 import com.exit.question.service.client.UserGrpcClient;
 import com.exit.question.service.util.QuestionGrpcMapper;
-import com.google.protobuf.Empty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -141,6 +140,81 @@ public class QuestionService {
         return questionGrpcMapper.getQuestionDetailResponse(questionCreateResponse, responseDetails, hasMore);
     }
 
+    @Transactional(readOnly = true)
+    public GetPopularPostResponse getPopularPost() {
+        List<PopularPostDto> popularPosts = questionRepository.findTop5By();
+
+        if (popularPosts.isEmpty()) {
+            return GetPopularPostResponse.newBuilder().build();
+        }
+
+        // 모든 작성자 ID 수집
+        Set<Long> writerIds = popularPosts.stream()
+                .map(PopularPostDto::questionWriterId)
+                .collect(toSet());
+
+        // 배치로 사용자 정보 조회
+        Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserNicknameAndProfileByWriterIds(writerIds);
+
+        // PopularPostItem 생성
+        List<PopularPostItem> items = popularPosts.stream()
+                .map(post -> {
+                    UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());
+                    return PopularPostItem.newBuilder()
+                            .setCategoryId(post.questionCategoryId())
+                            .setProfileUrl(!userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
+                            .setNickname(userInfo.getUserName())
+                            .setTitle(post.questionTitle())
+                            .setContent(post.questionContent())
+                            .setAnswerAdopt(post.questionAnswerAdopt())
+                            .setAnswerCount(post.answerCount())
+                            .setCreatedAt(TimeStampUtil.toGrpcTimestamp(post.createdAt()))
+                            .build();
+                })
+                .toList();
+
+        return GetPopularPostResponse.newBuilder()
+                .addAllPost(items)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public GetMyQuestionResponse getMyQuestion(GetMyQuestionRequest request) {
+        PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
+        Slice<PopularPostDto> myQuestionDtos = questionRepository.findByQuestionWriterId(request.getUserId(), pageRequest);
+
+        Set<Long> writerIds = myQuestionDtos.getContent().stream()
+                .map(PopularPostDto::questionWriterId)
+                .collect(toSet());
+
+        Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserNicknameAndProfileByWriterIds(writerIds);
+
+        List<PopularPostItem> popularPostItemList = getPopularPostItemList(myQuestionDtos, userInfoMap);
+
+        return GetMyQuestionResponse.newBuilder()
+                .addAllPost(popularPostItemList)
+                .setHasNext(myQuestionDtos.hasNext())
+                .build();
+    }
+
+    private List<PopularPostItem> getPopularPostItemList(Slice<PopularPostDto> myQuestionDtos, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
+        return myQuestionDtos.getContent().stream()
+                .map(post -> {
+                    UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());
+                    return PopularPostItem.newBuilder()
+                            .setCategoryId(post.questionCategoryId())
+                            .setProfileUrl(!userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
+                            .setNickname(userInfo.getUserName())
+                            .setTitle(post.questionTitle())
+                            .setContent(post.questionContent())
+                            .setAnswerAdopt(post.questionAnswerAdopt())
+                            .setAnswerCount(post.answerCount())
+                            .setCreatedAt(TimeStampUtil.toGrpcTimestamp(post.createdAt()))
+                            .build();
+                })
+                .toList();
+    }
+
     private QuestionCreateResponse buildQuestionCreateResponse(Long questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
@@ -152,6 +226,13 @@ public class QuestionService {
         String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
 
         return questionGrpcMapper.getQuestionCreateResponse(question, questionUrls, questionWriterName);
+    }
+
+    private Map<Long, UpdateAdditionalUserInfoResponse> getUserNicknameAndProfileByWriterIds(Set<Long> writerIds) {
+        List<UpdateAdditionalUserInfoResponse> userInfoList = userGrpcClient.getUsersNameAndProfile(new ArrayList<>(writerIds)).getUserInfoList();
+        Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = userInfoList.stream()
+                .collect(toMap(UpdateAdditionalUserInfoResponse::getUserId, Function.identity()));
+        return userInfoMap;
     }
 
     private List<ResponseDetail> buildResponseDetail(Long questionId) {
@@ -294,45 +375,5 @@ public class QuestionService {
             questionImageRepository.saveAll(questionImages);
         }
         return imageUrls;
-    }
-
-    @Transactional(readOnly = true)
-    public GetPopularPostResponse getPopularPost() {
-        List<PopularPostDto> popularPosts = questionRepository.findTop5ByResponseCount();
-
-        if (popularPosts.isEmpty()) {
-            return GetPopularPostResponse.newBuilder().build();
-        }
-
-        // 모든 작성자 ID 수집
-        Set<Long> writerIds = popularPosts.stream()
-                .map(PopularPostDto::questionWriterId)
-                .collect(toSet());
-
-        // 배치로 사용자 정보 조회
-        List<UpdateAdditionalUserInfoResponse> userInfoList = userGrpcClient.getUsersNameAndProfile(new ArrayList<>(writerIds)).getUserInfoList();
-        Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = userInfoList.stream()
-                .collect(toMap(UpdateAdditionalUserInfoResponse::getUserId, Function.identity()));
-
-        // PopularPostItem 생성
-        List<PopularPostItem> items = popularPosts.stream()
-                .map(post -> {
-                    UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());
-                    return PopularPostItem.newBuilder()
-                            .setCategoryId(post.questionCategoryId())
-                            .setProfileUrl(!userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
-                            .setNickname(userInfo.getUserName())
-                            .setTitle(post.questionTitle())
-                            .setContent(post.questionContent())
-                            .setAnswerAdopt(post.questionAnswerAdopt())
-                            .setAnswerCount(post.answerCount())
-                            .setCreatedAt(TimeStampUtil.toGrpcTimestamp(post.createdAt()))
-                            .build();
-                })
-                .toList();
-
-        return GetPopularPostResponse.newBuilder()
-                .addAllPost(items)
-                .build();
     }
 }

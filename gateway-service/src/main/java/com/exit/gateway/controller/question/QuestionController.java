@@ -39,10 +39,10 @@ public class QuestionController {
             return SuccessResponse.of(QuestionSuccessCode.QUESTION_CREATE_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Question create failed via gRPC: {}", e.getStatus(), e);
-            throw new RuntimeException(getGrpcErrorMessage(e));
+            throw new RestApiException(QuestionErrorCode.CREATE_QUESTION_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Question create failed", e);
-            throw new RuntimeException("질문 등록에 실패했습니다.");
+            throw new RestApiException(QuestionErrorCode.CREATE_QUESTION_FAIL);
         }
     }
 
@@ -71,10 +71,10 @@ public class QuestionController {
             return SuccessResponse.of(QuestionSuccessCode.QUESTION_LIST_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Question list failed via gRPC: {}", e.getStatus(), e);
-            throw new RuntimeException(getGrpcErrorMessage(e));
+            throw new RestApiException(QuestionErrorCode.GET_QUESTION_LIST_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Question list failed", e);
-            throw new RuntimeException("질문 목록 조회에 실패했습니다.");
+            throw new RestApiException(QuestionErrorCode.GET_QUESTION_LIST_FAIL);
         }
     }
 
@@ -89,10 +89,10 @@ public class QuestionController {
             return SuccessResponse.of(QuestionSuccessCode.QUESTION_DETAIL_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Question detail failed via gRPC: {}", e.getStatus(), e);
-            throw new RuntimeException(getGrpcErrorMessage(e));
+            throw new RestApiException(QuestionErrorCode.GET_QUESTION_DETAIL_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Question detail failed", e);
-            throw new RuntimeException("질문 상세 조회에 실패했습니다.");
+            throw new RestApiException(QuestionErrorCode.GET_QUESTION_DETAIL_FAIL);
         }
     }
 
@@ -106,10 +106,10 @@ public class QuestionController {
             return SuccessResponse.of(QuestionSuccessCode.ANSWER_CREATE_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Answer create failed via gRPC: {}", e.getStatus(), e);
-            throw new RuntimeException(getGrpcErrorMessage(e));
+            throw new RestApiException(QuestionErrorCode.CREATE_RESPONSE_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Answer create failed", e);
-            throw new RuntimeException("답변 등록에 실패했습니다.");
+            throw new RestApiException(QuestionErrorCode.CREATE_RESPONSE_FAIL);
         }
     }
 
@@ -124,10 +124,10 @@ public class QuestionController {
             return SuccessResponse.of(QuestionSuccessCode.ANSWER_ADOPT_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Answer adopt failed via gRPC: {}", e.getStatus(), e);
-            throw new RuntimeException(getGrpcErrorMessage(e));
+            throw new RestApiException(QuestionErrorCode.ADOPT_RESPONSE_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Answer adopt failed", e);
-            throw new RuntimeException("답변 채택에 실패했습니다.");
+            throw new RestApiException(QuestionErrorCode.ADOPT_RESPONSE_FAIL);
         }
     }
 
@@ -145,10 +145,10 @@ public class QuestionController {
             return SuccessResponse.of(QuestionSuccessCode.ANSWER_RECOMMEND_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Answer recommend failed via gRPC: {}", e.getStatus(), e);
-            throw new RuntimeException(getGrpcErrorMessage(e));
+            throw new RestApiException(QuestionErrorCode.RECOMMEND_RESPONSE_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Answer recommend failed", e);
-            throw new RuntimeException("답변 추천에 실패했습니다.");
+            throw new RestApiException(QuestionErrorCode.RECOMMEND_RESPONSE_FAIL);
         }
     }
 
@@ -164,10 +164,10 @@ public class QuestionController {
             return SuccessResponse.of(QuestionSuccessCode.QUESTION_REPORT_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Question report failed via gRPC: {}", e.getStatus(), e);
-            throw new RuntimeException(getGrpcErrorMessage(e));
+            throw new RestApiException(QuestionErrorCode.QUESTION_REPORT_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Question report failed", e);
-            throw new RuntimeException("질문 신고에 실패했습니다.");
+            throw new RestApiException(QuestionErrorCode.QUESTION_REPORT_FAIL);
         }
     }
 
@@ -182,10 +182,10 @@ public class QuestionController {
             return SuccessResponse.of(QuestionSuccessCode.ANSWER_REPORT_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Answer report failed via gRPC: {}", e.getStatus(), e);
-            throw new RuntimeException(getGrpcErrorMessage(e));
+            throw new RestApiException(QuestionErrorCode.RESPONSE_REPORT_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Answer report failed", e);
-            throw new RuntimeException("답변 신고에 실패했습니다.");
+            throw new RestApiException(QuestionErrorCode.RESPONSE_REPORT_FAIL);
         }
     }
 
@@ -201,10 +201,10 @@ public class QuestionController {
             return SuccessResponse.of(QuestionSuccessCode.CATEGORY_RECOMMEND_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Category recommend failed via gRPC: {}", e.getStatus(), e);
-            throw new RuntimeException(getGrpcErrorMessage(e));
+            throw new RestApiException(QuestionErrorCode.CATEGORY_RECOMMEND_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Category recommend failed", e);
-            throw new RuntimeException("카테고리 추천에 실패했습니다.");
+            throw new RestApiException(QuestionErrorCode.CATEGORY_RECOMMEND_FAIL);
         }
     }
 
@@ -223,10 +223,10 @@ public class QuestionController {
             return SuccessResponse.of(QuestionSuccessCode.SIMILAR_QUESTION_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Similar question failed via gRPC: {}", e.getStatus(), e);
-            throw new RuntimeException(getGrpcErrorMessage(e));
+            throw new RestApiException(QuestionErrorCode.SIMILAR_QUESTION_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Similar question failed", e);
-            throw new RuntimeException("유사 질문 조회에 실패했습니다.");
+            throw new RestApiException(QuestionErrorCode.SIMILAR_QUESTION_FAIL);
         }
     }
 
@@ -282,6 +282,24 @@ public class QuestionController {
         } catch (Exception e) {
             log.error("Get popular post failed", e);
             throw new RestApiException(QuestionErrorCode.GET_POPULAR_POST_FAIL);
+        }
+    }
+
+    @GetMapping("/my")
+    public SuccessResponse<GetMyQuestionResponseDto> getMyQuestion(
+            @LoginUser Long userId,
+            @RequestParam Integer pageNum
+    ) {
+        try {
+            log.info("Get my question for userId: {}, pageNum: {}", userId, pageNum);
+            return SuccessResponse.of(QuestionSuccessCode.GET_MY_QUESTION_SUCCESS,
+                    questionGrpcClient.getMyQuestion(userId, pageNum-1));
+        } catch (StatusRuntimeException e) {
+            log.error("Get my question failed via gRPC: {}", e.getStatus(), e);
+            throw new RestApiException(QuestionErrorCode.GET_MY_QUESTION_FAIL, getGrpcErrorMessage(e));
+        } catch (Exception e) {
+            log.error("Get my question failed", e);
+            throw new RestApiException(QuestionErrorCode.GET_MY_QUESTION_FAIL);
         }
     }
 
