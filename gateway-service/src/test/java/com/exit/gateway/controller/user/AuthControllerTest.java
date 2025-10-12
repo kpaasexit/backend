@@ -4,6 +4,7 @@ import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.common.grpc.RefreshTokenResponse;
 import com.exit.gateway.config.RestDocsConfiguration;
+import com.exit.gateway.controller.user.dto.request.auth.DeviceFcmTokenRequestDto;
 import com.exit.gateway.controller.user.dto.request.auth.RefreshTokenRequestDto;
 import com.exit.gateway.global.resolver.DeviceIdArgumentResolver;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
@@ -20,12 +21,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -87,8 +89,11 @@ class AuthControllerTest {
     @DisplayName("토큰 갱신 API")
     void refreshToken() throws Exception {
         // given
+        UserDetailRequest userDetail = new UserDetailRequest(1L, "test-device-id");
+        String testRefreshToken = jwtTokenProvider.generateRefreshToken(userDetail, "test-device-id");
+
         RefreshTokenRequestDto request = new RefreshTokenRequestDto();
-        request.setRefreshToken("test-refresh-token");
+        request.setRefreshToken(testRefreshToken);
 
         RefreshTokenResponse grpcResponse = RefreshTokenResponse.newBuilder()
                 .setAccessToken("new-access-token")
@@ -98,7 +103,7 @@ class AuthControllerTest {
         given(userGrpcClient.refreshToken(anyString(), anyString())).willReturn(grpcResponse);
 
         // when & then
-        mockMvc.perform(post("/api/auth/refresh")
+mockMvc.perform(post("/api/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Device-Id", "test-device-id")
                         .content(objectMapper.writeValueAsString(request)))
@@ -106,6 +111,8 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.result.accessToken").value("new-access-token"))
                 .andExpect(jsonPath("$.result.refreshToken").value("new-refresh-token"))
                 .andDo(document("auth/refresh",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName("X-Device-Id").description("디바이스 ID")
                         ),
@@ -135,6 +142,8 @@ class AuthControllerTest {
                         .header("Authorization", "Bearer " + validAccessToken))
                 .andExpect(status().isOk())
                 .andDo(document("auth/logout",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName("X-Device-Id").description("디바이스 ID"),
                                 headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
@@ -143,6 +152,63 @@ class AuthControllerTest {
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터 (로그아웃 완료 메시지)")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("디바이스 정보 업데이트 API")
+    void updateDevice() throws Exception {
+        // given
+        DeviceFcmTokenRequestDto request = new DeviceFcmTokenRequestDto("test-fcm-token");
+
+        willDoNothing().given(userGrpcClient).updateDevice(anyLong(), anyString(), anyString());
+
+        // when & then
+        mockMvc.perform(post("/api/auth/device")
+                        .header("Authorization", "Bearer " + validAccessToken)
+                        .header("X-Device-Id", "test-device-id")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andDo(document("auth/update-device",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰 (Bearer {token})"),
+                                headerWithName("X-Device-Id").description("디바이스 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("fcmToken").description("FCM 푸시 알림 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터 (업데이트 완료 메시지)")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 API")
+    void withdraw() throws Exception {
+        // given
+        willDoNothing().given(userGrpcClient).withdraw(anyLong());
+
+        // when & then
+        mockMvc.perform(post("/api/auth/withdraw")
+                        .header("Authorization", "Bearer " + validAccessToken))
+                .andExpect(status().isOk())
+                .andDo(document("auth/withdraw",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터 (회원탈퇴 완료 메시지)")
                         )
                 ));
     }

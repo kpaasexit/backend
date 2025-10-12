@@ -1,9 +1,15 @@
 package com.exit.gateway.controller.magazine;
 
+import com.exit.common.auth.jwt.JwtTokenProvider;
+import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.gateway.config.RestDocsConfiguration;
+import com.exit.gateway.controller.magazine.dto.response.GetScrapBoxResponseDto;
 import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
 import com.exit.gateway.controller.magazine.dto.response.MagazineItemListDto;
+import com.exit.gateway.controller.magazine.dto.response.ScrapMagazineResponseDto;
+import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +23,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -32,14 +44,38 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration.class
         })
 @AutoConfigureRestDocs
-@Import(RestDocsConfiguration.class)
+@Import({
+        RestDocsConfiguration.class,
+        JwtTokenProvider.class
+})
 class MagazineControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @MockBean
     private MagazineGrpcClient magazineGrpcClient;
+
+    @MockBean
+    private UserIdArgumentResolver userIdArgumentResolver;
+
+    private String validAccessToken;
+
+    @BeforeEach
+    void setUp() {
+        UserDetailRequest userDetail = new UserDetailRequest(1L, "test-device-id");
+        validAccessToken = jwtTokenProvider.generateAccessToken(userDetail);
+
+        // Mock UserIdArgumentResolver
+        given(userIdArgumentResolver.supportsParameter(any())).willAnswer(invocation -> {
+            org.springframework.core.MethodParameter param = invocation.getArgument(0);
+            return param.hasParameterAnnotation(com.exit.gateway.global.annotation.LoginUser.class);
+        });
+        given(userIdArgumentResolver.resolveArgument(any(), any(), any(), any())).willReturn(1L);
+    }
 
     @Test
     @DisplayName("카테고리별 매거진 목록 조회 API")
@@ -150,6 +186,104 @@ class MagazineControllerTest {
                                 fieldWithPath("result.authorProfileUrl").description("작성자 프로필 URL"),
                                 fieldWithPath("result.magazineThumbnailUrl").description("매거진 썸네일 URL"),
                                 fieldWithPath("result.createdAt").description("작성일시")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("매거진 스크랩 API")
+    void scrapMagazine() throws Exception {
+        // given
+        ScrapMagazineResponseDto response = ScrapMagazineResponseDto.builder()
+                .magazineId(1L)
+                .isScrapped(true)
+                .build();
+
+        given(magazineGrpcClient.scrapMagazine(any())).willReturn(response);
+
+        // when & then
+        mockMvc.perform(post("/api/magazine/{magazineId}/scrap", 1L)
+                        .header("Authorization", "Bearer " + validAccessToken))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.result.magazineId").value(1L))
+                .andExpect(jsonPath("$.result.isScrapped").value(true))
+                .andDo(document("magazine/scrap",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
+                        ),
+                        pathParameters(
+                                parameterWithName("magazineId").description("매거진 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.magazineId").description("매거진 ID"),
+                                fieldWithPath("result.isScrapped").description("스크랩 여부 (true: 스크랩됨, false: 스크랩 취소됨)")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("스크랩 박스 조회 API")
+    void getScrapBox() throws Exception {
+        // given
+        LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
+
+        GetScrapBoxResponseDto.MagazineScrapBoxItem item1 = GetScrapBoxResponseDto.MagazineScrapBoxItem.builder()
+                .magazineId(1L)
+                .magazineTitle("스크랩한 매거진 1")
+                .magazineSubtitle("유용한 정보")
+                .magazineThumbnailUrl("https://example.com/thumb1.jpg")
+                .createdAt(now)
+                .build();
+
+        GetScrapBoxResponseDto.MagazineScrapBoxItem item2 = GetScrapBoxResponseDto.MagazineScrapBoxItem.builder()
+                .magazineId(2L)
+                .magazineTitle("스크랩한 매거진 2")
+                .magazineSubtitle("흥미로운 이야기")
+                .magazineThumbnailUrl("https://example.com/thumb2.jpg")
+                .createdAt(now)
+                .build();
+
+        GetScrapBoxResponseDto response = GetScrapBoxResponseDto.builder()
+                .scrapBoxItems(List.of(item1, item2))
+                .hasNext(false)
+                .build();
+
+        given(magazineGrpcClient.getScrapBox(any())).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/magazine/scrap-box")
+                        .header("Authorization", "Bearer " + validAccessToken)
+                        .param("pageNum", "1"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.result.scrapBoxItems[0].magazineId").value(1L))
+                .andExpect(jsonPath("$.result.scrapBoxItems[0].magazineTitle").value("스크랩한 매거진 1"))
+                .andExpect(jsonPath("$.result.scrapBoxItems[1].magazineId").value(2L))
+                .andExpect(jsonPath("$.result.hasNext").value(false))
+                .andDo(document("magazine/scrap-box",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
+                        ),
+                        queryParameters(
+                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작)")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.scrapBoxItems").description("스크랩한 매거진 목록"),
+                                fieldWithPath("result.scrapBoxItems[].magazineId").description("매거진 ID"),
+                                fieldWithPath("result.scrapBoxItems[].magazineTitle").description("매거진 제목"),
+                                fieldWithPath("result.scrapBoxItems[].magazineSubtitle").description("매거진 부제목"),
+                                fieldWithPath("result.scrapBoxItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
+                                fieldWithPath("result.scrapBoxItems[].createdAt").description("작성일시"),
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
                         )
                 ));
     }

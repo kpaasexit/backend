@@ -77,6 +77,10 @@
 |`+String+`
 |답변 작성자 이름
 
+|`+result.responses[].responseWriterProfile+`
+|`+Null+`
+|답변 작성자 프로필 URL
+
 |`+result.responses[].responseContent+`
 |`+String+`
 |답변 내용

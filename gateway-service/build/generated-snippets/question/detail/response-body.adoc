@@ -21,6 +21,7 @@
       "responseId" : 1,
       "responseWriterId" : 2,
       "responseWriterName" : "이답변",
+      "responseWriterProfile" : null,
       "responseContent" : "다음과 같이 구현하시면 됩니다...",
       "responseAdopt" : true,
       "urls" : [ ],
