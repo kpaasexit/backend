@@ -6,7 +6,10 @@ spring:
   datasource:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-
+  servlet:
+    multipart:
+      max-file-size=10MB
+      max-request-size=10MB
 
 # Eureka 클라이언트 공통 설정
 eureka:
