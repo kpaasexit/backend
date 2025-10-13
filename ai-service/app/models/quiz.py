@@ -14,7 +14,7 @@ class QuizBase(BaseModel):
     quiz_title: str = Field(..., max_length=100, description="Quiz title")
     quiz_content: str = Field(..., description="Quiz content/question")
     quiz_type: QuizType = Field(..., description="Quiz type")
-    quiz_correct_answer: str = Field(..., max_length=1, description="Correct answer (O/X or 1/2/3/4)")
+    quiz_correct_answer: int = Field(..., ge=0, le=3, description="Correct answer (OX: 0(정답), 1(오답) / MULTIPLE: 0-3)")
     explanation: Optional[str] = Field(None, description="Explanation for the correct answer")
 
 
@@ -27,7 +27,7 @@ class QuizUpdate(BaseModel):
     quiz_title: Optional[str] = Field(None, max_length=100)
     quiz_content: Optional[str] = None
     quiz_type: Optional[QuizType] = None
-    quiz_correct_answer: Optional[str] = Field(None, max_length=1)
+    quiz_correct_answer: Optional[int] = Field(None, ge=0, le=3)
     explanation: Optional[str] = None
 
 
