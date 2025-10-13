@@ -56,7 +56,7 @@ public class QuestionController {
         try {
             log.info("Question list request received");
 
-            if(categoryIds == null || categoryIds.isEmpty()) {
+            if (categoryIds == null || categoryIds.isEmpty()) {
                 categoryIds = new ArrayList<>(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L));
             }
 
@@ -80,14 +80,14 @@ public class QuestionController {
 
     @GetMapping("/{questionId}")
     public SuccessResponse<QuestionDetailResponseDto> getQuestionDetail(
-        @PathVariable Long questionId,
-        @RequestParam(defaultValue = "1") Integer pageNum
+            @PathVariable Long questionId,
+            @LoginUser Long userId
     ) {
         try {
             log.info("Question detail request received for questionId: {}", questionId);
             QuestionDetailRequest request = QuestionDetailRequest.newBuilder()
                     .setQuestionId(questionId)
-                    .setPageNum(pageNum-1)
+                    .setUserId(userId)
                     .build();
             QuestionDetailResponseDto response = questionGrpcClient.getQuestionDetail(request);
             return SuccessResponse.of(QuestionSuccessCode.QUESTION_DETAIL_SUCCESS, response);
@@ -297,13 +297,32 @@ public class QuestionController {
         try {
             log.info("Get my question for userId: {}, pageNum: {}", userId, pageNum);
             return SuccessResponse.of(QuestionSuccessCode.GET_MY_QUESTION_SUCCESS,
-                    questionGrpcClient.getMyQuestion(userId, pageNum-1));
+                    questionGrpcClient.getMyQuestion(userId, pageNum - 1));
         } catch (StatusRuntimeException e) {
             log.error("Get my question failed via gRPC: {}", e.getStatus(), e);
             throw new RestApiException(QuestionErrorCode.GET_MY_QUESTION_FAIL, getGrpcErrorMessage(e));
         } catch (Exception e) {
             log.error("Get my question failed", e);
             throw new RestApiException(QuestionErrorCode.GET_MY_QUESTION_FAIL);
+        }
+    }
+
+    @GetMapping("/{questionId}/responses")
+    public SuccessResponse<GetDetailResponseResponseDto> getDetailResponse(
+            @PathVariable Long questionId,
+            @LoginUser Long userId,
+            @RequestParam(defaultValue = "1") Integer pageNum
+    ) {
+        try {
+            log.info("Get detail response for userId: {}, pageNum: {}", userId, pageNum);
+            return SuccessResponse.of(QuestionSuccessCode.GET_DETAIL_RESPONSE,
+                    questionGrpcClient.getDetailResponse(questionId, userId, pageNum - 1));
+        } catch (StatusRuntimeException e) {
+            log.error("Get my question failed via gRPC: {}", e.getStatus(), e);
+            throw new RestApiException(QuestionErrorCode.GET_DETAIL_RESPONSE_FAIL, getGrpcErrorMessage(e));
+        } catch (Exception e) {
+            log.error("Get my question failed", e);
+            throw new RestApiException(QuestionErrorCode.GET_DETAIL_RESPONSE_FAIL);
         }
     }
 

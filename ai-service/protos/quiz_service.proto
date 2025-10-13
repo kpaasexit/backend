@@ -39,7 +39,7 @@ message Quiz {
     string quiz_title = 3;
     string quiz_content = 4;
     QuizType quiz_type = 5;
-    string quiz_correct_answer = 6;
+    int32 quiz_correct_answer = 6;  // OX: 0(O), 1(X) / MULTIPLE: 0-3
     string explanation = 7;
     int64 quiz_created_at = 8;  // Unix 타임스탬프
     int64 quiz_updated_at = 9;  // Unix 타임스탬프

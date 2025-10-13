@@ -19,7 +19,7 @@ class QuizModel(Base):
     quiz_updated_at = Column(DateTime(6), nullable=True, default=func.now(), onupdate=func.now())
     quiz_additional_information = Column(Text, nullable=True)  # MySQL column name
     quiz_content = Column(Text, nullable=True)
-    quiz_correct_answer = Column(String(1), nullable=True)
+    quiz_correct_answer = Column(SmallInteger, nullable=True)  # OX: 0(정답), 1(오답) / MULTIPLE: 0-3 (선택지 인덱스)
     quiz_title = Column(String(100), nullable=True)
     quiz_type = Column(Enum(QuizTypeEnum), nullable=True)
     quiz_category_id = Column(SmallInteger, nullable=True)

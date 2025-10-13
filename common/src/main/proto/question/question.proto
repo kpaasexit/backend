@@ -86,7 +86,7 @@ message SimilarQuestionRequest {
 
 message QuestionDetailRequest {
   int64 question_id = 1;
-  int32 page_num = 2;
+  int64 user_id = 2;
 }
 
 message UpdateResponseRequest {
@@ -196,8 +196,6 @@ message ResponseDetail {
 
 message QuestionDetailResponse {
   QuestionCreateResponse question = 1;
-  repeated ResponseDetail responses = 2;
-  bool has_next = 3;
 }
 
 message UpdateResponseResponse {
@@ -224,4 +222,3 @@ message GetMyQuestionResponse {
   repeated PopularPostItem post = 1;
   bool has_next = 2;
 }
-

@@ -15,7 +15,6 @@ import com.exit.gateway.service.question.CommentGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -94,7 +93,7 @@ public class CommentController {
                     .setTargetId(targetId)
                     .setTargetType(targetType)
                     .setUserId(userId)
-                    .setPageNum(pageNum-1)
+                    .setPageNum(pageNum - 1)
                     .build();
 
             return SuccessResponse.of(QuestionSuccessCode.COMMENT_GET_SUCCESS,

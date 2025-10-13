@@ -7,7 +7,6 @@ import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import org.apache.coyote.Response;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -188,6 +187,23 @@ public class QuestionGrpcClient {
             return GetMyQuestionResponseDto.from(response);
         } catch (StatusRuntimeException e) {
             log.error("gRPC my question response failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
+
+    public GetDetailResponseResponseDto getDetailResponse(Long questionId, Long userId, Integer pageNum) {
+        try {
+            log.debug("Sending get detail response request via gRPC");
+            GetDetailResponseRequest request = GetDetailResponseRequest.newBuilder()
+                    .setQuestionId(questionId)
+                    .setUserId(userId)
+                    .setPageNum(pageNum)
+                    .build();
+            GetDetailResponseResponse response = responseServiceStub.getDetailResponse(request);
+            log.debug("Received get detail response response via gRPC");
+            return GetDetailResponseResponseDto.from(response);
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC get detail response failed: {}", e.getStatus(), e);
             throw e;
         }
     }

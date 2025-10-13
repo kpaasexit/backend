@@ -76,34 +76,9 @@ public class QuestionGrpcMapper {
                 .build();
     }
 
-    public ResponseDetail getResponseDetail(Response response, List<String> urls, Integer likeCount, UpdateAdditionalUserInfoResponse writerNameProfile) {
-        ResponseDetail.Builder builder = ResponseDetail.newBuilder();
-
-        if (urls != null && !urls.isEmpty()) {
-            builder.addAllUrls(urls);
-        }
-
-        if(!writerNameProfile.getUserProfile().isEmpty()){
-            builder.setProfile(writerNameProfile.getUserProfile());
-        }
-
-        return builder
-                .setResponseId(response.getResponseId())
-                .setResponseWriterId(response.getResponseWriterId())
-                .setResponseWriterName(writerNameProfile.getUserName())
-                .setResponseContent(response.getResponseContent())
-                .setResponseAdopt(response.getResponseAdopt())
-                .setLikeCount(likeCount)
-                .setCreatedAt(toGrpcTimestamp(response.getCreatedAt()))
-                .setUpdatedAt(toGrpcTimestamp(response.getUpdatedAt()))
-                .build();
-    }
-
-    public QuestionDetailResponse getQuestionDetailResponse(QuestionCreateResponse questionCreateResponse, List<ResponseDetail> responseDetails, boolean hasMore) {
+    public QuestionDetailResponse getQuestionDetailResponse(QuestionCreateResponse questionCreateResponse) {
         return QuestionDetailResponse.newBuilder()
                 .setQuestion(questionCreateResponse)
-                .addAllResponses(responseDetails)
-                .setHasNext(hasMore)
                 .build();
     }
 }
