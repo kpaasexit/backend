@@ -8,10 +8,12 @@ option java_outer_classname = "ResponseServiceProto";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "question/question.proto";
 
 service ResponseService {
   rpc AnswerAdopt(AnswerAdoptRequest) returns (AnswerAdoptResponse);
   rpc AnswerReport(AnswerReportRequest) returns (AnswerReportResponse);
+  rpc GetDetailResponse(GetDetailResponseRequest) returns (GetDetailResponseResponse);
 }
 
 // Request messages
@@ -24,6 +26,12 @@ message AnswerReportRequest {
   int64 response_report_writer_id = 2;
   string response_report_title = 3;
   string response_report_content = 4;
+}
+
+message GetDetailResponseRequest {
+  int64 question_id = 1;
+  int64 user_id = 2;
+  int32 page_num = 3;
 }
 
 // Response messages
@@ -41,4 +49,9 @@ message AnswerReportResponse {
   int64 response_report_writer_id = 5;
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
+}
+
+message GetDetailResponseResponse {
+  repeated ResponseDetail responses = 2;
+  bool has_next = 3;
 }

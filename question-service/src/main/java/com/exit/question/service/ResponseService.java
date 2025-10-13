@@ -22,11 +22,18 @@ import com.exit.question.service.util.NotificationGrpcMapper;
 import com.exit.question.service.util.ResponseGrpcMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 @RequiredArgsConstructor
@@ -197,5 +204,96 @@ public class ResponseService {
             }
         }
         return imageUrls;
+    }
+
+    @Transactional(readOnly = true)
+    public GetDetailResponseResponse getDetailResponse(GetDetailResponseRequest request) {
+        List<ResponseDetail> responseDetails = buildResponseDetail(request);
+        boolean hasMore = hasMoreResponses(request.getQuestionId());
+
+        return GetDetailResponseResponse.newBuilder()
+                .addAllResponses(responseDetails)
+                .setHasNext(hasMore)
+                .build();
+    }
+
+    private List<ResponseDetail> buildResponseDetail(GetDetailResponseRequest request) {
+        List<Response> responses = new ArrayList<>();
+
+        // 1. 채택된 답변 조회 (첫 페이지에만)
+        if (request.getPageNum() == 0) {
+            Optional<Response> adoptedResponse = responseRepository.findByQuestionIdAndResponseAdoptTrue(request.getQuestionId());
+            if (adoptedResponse.isPresent()) {
+                responses.add(adoptedResponse.get());
+            }
+        }
+
+        // 2. 일반 답변 조회 (채택된 답변 제외)
+        int size = request.getPageNum() == 0 ? 4 : 5;
+        PageRequest pageRequest = PageRequest.of(request.getPageNum(), size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Slice<Response> responseSlice = responseRepository.findAllByQuestionIdAndResponseAdoptFalse(request.getQuestionId(), pageRequest);
+
+        // 일반 답변을 리스트에 추가
+        responses.addAll(responseSlice.getContent());
+
+        if (responses.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 3. 배치로 필요한 데이터 미리 조회 (N+1 문제 해결)
+        Map<Long, List<String>> responseImageUrlsMap = getResponseImageUrlsMap(responses);
+        Map<Long, Integer> likeCountMap = getLikeCountMap(responses);
+        Map<Long, UpdateAdditionalUserInfoResponse> writerNameProfileMap = getWriterNameAndProfileMap(responses);
+
+        // 4. ResponseDetail 생성
+        return responses.stream()
+                .map(response -> responseGrpcMapper.getResponseDetail(
+                        response,
+                        responseImageUrlsMap.getOrDefault(response.getResponseId(), Collections.emptyList()),
+                        likeCountMap.getOrDefault(response.getResponseId(), 0),
+                        writerNameProfileMap.getOrDefault(response.getResponseWriterId(), UpdateAdditionalUserInfoResponse.newBuilder()
+                                .setUserName("UNDEFINED")
+                                .build())
+                ))
+                .toList();
+    }
+
+    private boolean hasMoreResponses(Long questionId) {
+        PageRequest pageRequest = PageRequest.of(0, 5);
+        return responseRepository.findAllByQuestionId(questionId, pageRequest).hasNext();
+    }
+
+    private Map<Long, List<String>> getResponseImageUrlsMap(List<Response> responses) {
+        List<Long> responseIds = responses.stream()
+                .map(Response::getResponseId)
+                .toList();
+
+        return responseImageRepository.findAllByResponseIdIn(responseIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        ResponseImage::getResponseId,
+                        Collectors.mapping(ResponseImage::getResponseImageUrl, Collectors.toList())
+                ));
+    }
+
+    private Map<Long, Integer> getLikeCountMap(List<Response> responses) {
+        List<Long> responseIds = responses.stream()
+                .map(Response::getResponseId)
+                .toList();
+
+        return responseLikeRepository.countByResponseIdIn(responseIds);
+    }
+
+    private Map<Long, UpdateAdditionalUserInfoResponse> getWriterNameAndProfileMap(List<Response> responses) {
+        Set<Long> writerIds = responses.stream()
+                .map(Response::getResponseWriterId)
+                .collect(toSet());
+
+        GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(new ArrayList<>(writerIds));
+        return usersNameAndProfile.getUserInfoList().stream()
+                .collect(toMap(
+                        UpdateAdditionalUserInfoResponse::getUserId,
+                        Function.identity()
+                ));
     }
 }

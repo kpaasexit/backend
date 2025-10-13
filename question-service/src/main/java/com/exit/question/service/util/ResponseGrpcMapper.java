@@ -1,9 +1,6 @@
 package com.exit.question.service.util;
 
-import com.exit.common.grpc.AnswerAdoptResponse;
-import com.exit.common.grpc.AnswerCreateResponse;
-import com.exit.common.grpc.AnswerRecommendResponse;
-import com.exit.common.grpc.AnswerReportResponse;
+import com.exit.common.grpc.*;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.ResponseReport;
 import org.springframework.stereotype.Component;
@@ -57,6 +54,29 @@ public class ResponseGrpcMapper {
                 .setResponseId(responseId)
                 .setCount(likeCount)
                 .setIsRecommended(isLiked)
+                .build();
+    }
+
+    public ResponseDetail getResponseDetail(Response response, List<String> urls, Integer likeCount, UpdateAdditionalUserInfoResponse writerNameProfile) {
+        ResponseDetail.Builder builder = ResponseDetail.newBuilder();
+
+        if (urls != null && !urls.isEmpty()) {
+            builder.addAllUrls(urls);
+        }
+
+        if(!writerNameProfile.getUserProfile().isEmpty()){
+            builder.setProfile(writerNameProfile.getUserProfile());
+        }
+
+        return builder
+                .setResponseId(response.getResponseId())
+                .setResponseWriterId(response.getResponseWriterId())
+                .setResponseWriterName(writerNameProfile.getUserName())
+                .setResponseContent(response.getResponseContent())
+                .setResponseAdopt(response.getResponseAdopt())
+                .setLikeCount(likeCount)
+                .setCreatedAt(toGrpcTimestamp(response.getCreatedAt()))
+                .setUpdatedAt(toGrpcTimestamp(response.getUpdatedAt()))
                 .build();
     }
 }

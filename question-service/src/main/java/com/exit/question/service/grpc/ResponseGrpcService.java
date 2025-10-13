@@ -2,6 +2,7 @@ package com.exit.question.service.grpc;
 
 import com.exit.common.grpc.AnswerAdoptResponse;
 import com.exit.common.grpc.AnswerReportResponse;
+import com.exit.common.grpc.GetDetailResponseResponse;
 import com.exit.common.grpc.ResponseServiceGrpc;
 import com.exit.question.service.ResponseService;
 import io.grpc.Status;
@@ -49,6 +50,24 @@ public class ResponseGrpcService extends ResponseServiceGrpc.ResponseServiceImpl
             log.error("Answer adopt failed", e);
             responseObserver.onError(Status.INTERNAL
                     .withDescription("답변 채택 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void getDetailResponse(com.exit.common.grpc.GetDetailResponseRequest request,
+                            StreamObserver<com.exit.common.grpc.GetDetailResponseResponse> responseObserver) {
+        try {
+            log.info("Get Detail Response request received for question ID: {}", request.getQuestionId());
+            GetDetailResponseResponse response = responseService.getDetailResponse(request);
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+
+        } catch (Exception e) {
+            log.error("Get Detail Response failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("답변 상세 조회 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
     }
