@@ -136,10 +136,8 @@ public class QuestionService {
     @Transactional(readOnly = true)
     public QuestionDetailResponse getQuestionDetail(QuestionDetailRequest request) {
         QuestionCreateResponse questionCreateResponse = buildQuestionCreateResponse(request.getQuestionId());
-        List<ResponseDetail> responseDetails = buildResponseDetail(request);
-        boolean hasMore = hasMoreResponses(request.getQuestionId());
 
-        return questionGrpcMapper.getQuestionDetailResponse(questionCreateResponse, responseDetails, hasMore);
+        return questionGrpcMapper.getQuestionDetailResponse(questionCreateResponse);
     }
 
     @Transactional(readOnly = true)
@@ -235,86 +233,6 @@ public class QuestionService {
         Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = userInfoList.stream()
                 .collect(toMap(UpdateAdditionalUserInfoResponse::getUserId, Function.identity()));
         return userInfoMap;
-    }
-
-    private List<ResponseDetail> buildResponseDetail(QuestionDetailRequest request) {
-        List<Response> responses = new ArrayList<>();
-
-        // 1. 채택된 답변 조회 (첫 페이지에만)
-        if (request.getPageNum() == 0) {
-            Optional<Response> adoptedResponse = responseRepository.findByQuestionIdAndResponseAdoptTrue(request.getQuestionId());
-            if (adoptedResponse.isPresent()) {
-                responses.add(adoptedResponse.get());
-            }
-        }
-
-        // 2. 일반 답변 조회 (채택된 답변 제외)
-        int size = request.getPageNum() == 0 ? 4 : 5;
-        PageRequest pageRequest = PageRequest.of(request.getPageNum(), size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Slice<Response> responseSlice = responseRepository.findAllByQuestionIdAndResponseAdoptFalse(request.getQuestionId(), pageRequest);
-
-        // 일반 답변을 리스트에 추가
-        responses.addAll(responseSlice.getContent());
-
-        if (responses.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        // 3. 배치로 필요한 데이터 미리 조회 (N+1 문제 해결)
-        Map<Long, List<String>> responseImageUrlsMap = getResponseImageUrlsMap(responses);
-        Map<Long, Integer> likeCountMap = getLikeCountMap(responses);
-        Map<Long, UpdateAdditionalUserInfoResponse> writerNameProfileMap = getWriterNameAndProfileMap(responses);
-
-        // 4. ResponseDetail 생성
-        return responses.stream()
-                .map(response -> questionGrpcMapper.getResponseDetail(
-                        response,
-                        responseImageUrlsMap.getOrDefault(response.getResponseId(), Collections.emptyList()),
-                        likeCountMap.getOrDefault(response.getResponseId(), 0),
-                        writerNameProfileMap.getOrDefault(response.getResponseWriterId(), UpdateAdditionalUserInfoResponse.newBuilder()
-                                .setUserName("UNDEFINED")
-                                .build())
-                ))
-                .toList();
-    }
-
-    private Map<Long, List<String>> getResponseImageUrlsMap(List<Response> responses) {
-        List<Long> responseIds = responses.stream()
-                .map(Response::getResponseId)
-                .toList();
-
-        return responseImageRepository.findAllByResponseIdIn(responseIds)
-                .stream()
-                .collect(Collectors.groupingBy(
-                        ResponseImage::getResponseId,
-                        Collectors.mapping(ResponseImage::getResponseImageUrl, Collectors.toList())
-                ));
-    }
-
-    private Map<Long, Integer> getLikeCountMap(List<Response> responses) {
-        List<Long> responseIds = responses.stream()
-                .map(Response::getResponseId)
-                .toList();
-
-        return responseLikeRepository.countByResponseIdIn(responseIds);
-    }
-
-    private Map<Long, UpdateAdditionalUserInfoResponse> getWriterNameAndProfileMap(List<Response> responses) {
-        Set<Long> writerIds = responses.stream()
-                .map(Response::getResponseWriterId)
-                .collect(toSet());
-
-        GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(new ArrayList<>(writerIds));
-        return usersNameAndProfile.getUserInfoList().stream()
-                .collect(toMap(
-                        UpdateAdditionalUserInfoResponse::getUserId,
-                        Function.identity()
-                ));
-    }
-
-    private boolean hasMoreResponses(Long questionId) {
-        PageRequest pageRequest = PageRequest.of(0, 5);
-        return responseRepository.findAllByQuestionId(questionId, pageRequest).hasNext();
     }
 
     private SaveQuestionRequest createSaveQuestionToVectorDBRequest(Question question) {

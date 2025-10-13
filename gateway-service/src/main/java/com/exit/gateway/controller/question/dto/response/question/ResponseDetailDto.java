@@ -25,7 +25,7 @@ public record ResponseDetailDto(
 ) {
     public static ResponseDetailDto from(ResponseDetail grpcResponse) {
         ResponseDetailDtoBuilder builder = ResponseDetailDto.builder();
-        if(!grpcResponse.getProfile().isEmpty())
+        if (!grpcResponse.getProfile().isEmpty())
             builder.responseWriterProfile(grpcResponse.getProfile());
 
         return builder

@@ -22,6 +22,7 @@ public enum QuestionErrorCode implements ErrorCode {
     ADOPT_RESPONSE_FAIL("QUESTION_ERR_013", HttpStatus.BAD_REQUEST, "답변 채택에 실패하였습니다."),
     RECOMMEND_RESPONSE_FAIL("QUESTION_ERR_014", HttpStatus.BAD_REQUEST, "답변 추천에 실패하였습니다."),
     RESPONSE_REPORT_FAIL("QUESTION_ERR_015", HttpStatus.BAD_REQUEST, "답변 신고에 실패하였습니다."),
+    GET_DETAIL_RESPONSE_FAIL("QUESTION_ERR_016", HttpStatus.BAD_REQUEST, "답변 목록 조회에 실패하였습니다."),
 
     // 추가 질문 관련
     CREATE_ADDITIONAL_QUESTION_FAIL("QUESTION_ERR_020", HttpStatus.BAD_REQUEST, "추가 질문 생성에 실패하였습니다."),
