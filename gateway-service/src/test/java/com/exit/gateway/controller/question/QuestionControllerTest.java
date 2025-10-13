@@ -170,22 +170,9 @@ class QuestionControllerTest {
                 .createdAt(now)
                 .build();
 
-        ResponseDetailDto response1 = ResponseDetailDto.builder()
-                .responseId(1L)
-                .responseWriterId(2L)
-                .responseWriterName("이답변")
-                .responseContent("다음과 같이 구현하시면 됩니다...")
-                .responseAdopt(true)
-                .urls(List.of())
-                .likeCount(5)
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
 
         QuestionDetailResponseDto response = new QuestionDetailResponseDto(
-                question,
-                List.of(response1),
-                false
+                question
         );
 
         given(questionGrpcClient.getQuestionDetail(any())).willReturn(response);
@@ -195,7 +182,6 @@ class QuestionControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.question.questionId").value(1L))
                 .andExpect(jsonPath("$.result.question.questionTitle").value("Spring Boot에서 JWT 인증 구현하는 방법"))
-                .andExpect(jsonPath("$.result.responses[0].responseId").value(1L))
                 .andDo(document("question/detail",
                         pathParameters(
                                 parameterWithName("questionId").description("질문 ID")
@@ -215,19 +201,7 @@ class QuestionControllerTest {
                                 fieldWithPath("result.question.questionWriterId").description("작성자 ID"),
                                 fieldWithPath("result.question.questionWriterName").description("작성자 이름"),
                                 fieldWithPath("result.question.imageUrls").description("이미지 URL 목록"),
-                                fieldWithPath("result.question.createdAt").description("작성일시"),
-                                fieldWithPath("result.responses").description("답변 목록"),
-                                fieldWithPath("result.responses[].responseId").description("답변 ID"),
-                                fieldWithPath("result.responses[].responseWriterId").description("답변 작성자 ID"),
-                                fieldWithPath("result.responses[].responseWriterName").description("답변 작성자 이름"),
-                                fieldWithPath("result.responses[].responseWriterProfile").description("답변 작성자 프로필 URL").optional(),
-                                fieldWithPath("result.responses[].responseContent").description("답변 내용"),
-                                fieldWithPath("result.responses[].responseAdopt").description("채택 여부"),
-                                fieldWithPath("result.responses[].urls").description("첨부 파일 URL 목록"),
-                                fieldWithPath("result.responses[].likeCount").description("추천 수"),
-                                fieldWithPath("result.responses[].createdAt").description("작성일시"),
-                                fieldWithPath("result.responses[].updatedAt").description("수정일시"),
-                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
+                                fieldWithPath("result.question.createdAt").description("작성일시")
                         )
                 ));
     }
