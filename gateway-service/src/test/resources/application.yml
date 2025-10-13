@@ -61,3 +61,6 @@ eureka:
 
 app:
   file-dir: /tmp/test-files
+  oauth2:
+    allowed-origins: http://localhost:3000,http://localhost:8080
+    default-client-url: http://localhost:3000
