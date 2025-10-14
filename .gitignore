@@ -27,17 +27,21 @@ replay_pid*
 .idea/
 *.iml
 
-# gateway-service의 build만 예외
-build
-common/build
-config-server/build
-eureka-service/build
-ai-service/build
-magazine-service/build
-notification-service/build
-question-service/build
-quiz-service/build
-user-service/build
+# 각 서비스별 build 디렉토리 무시
+common/build/
+config-server/build/
+eureka-service/build/
+ai-service/build/
+magazine-service/build/
+notification-service/build/
+question-service/build/
+quiz-service/build/
+user-service/build/
+
+# gateway-service는 generated-snippets만 제외하고 무시
+gateway-service/build/*
+!gateway-service/build/generated-snippets/
+
 target/
 
 # Gradle

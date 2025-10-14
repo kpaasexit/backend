@@ -1,6 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/api/auth/logout' -i -X POST \
-    -H 'X-Device-Id: test-device-id' \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjAzNzMyMjksImV4cCI6MTc2Mzk3MzIyOX0.GcvGXseOhxbFiPC4DjQ7bg4PUwKdVXBqWXyeL2lbA4c'
-----

@@ -1,6 +1,0 @@
-[source,json,options="nowrap"]
-----
-{
-  "content" : "수정된 답변 내용입니다."
-}
-----

@@ -1,7 +1,0 @@
-|===
-|Parameter|Description
-
-|`+pageNum+`
-|페이지 번호 (기본값: 1)
-
-|===

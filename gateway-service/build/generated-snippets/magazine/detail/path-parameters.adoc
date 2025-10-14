@@ -1,8 +1,0 @@
-.+/api/magazine/{magazineId}+
-|===
-|Parameter|Description
-
-|`+magazineId+`
-|매거진 ID
-
-|===

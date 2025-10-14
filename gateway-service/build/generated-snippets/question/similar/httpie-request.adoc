@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ http GET 'http://localhost:8080/api/questions/similar?title=Spring+JWT&content=%EC%9D%B8%EC%A6%9D+%EA%B5%AC%ED%98%84'
-----

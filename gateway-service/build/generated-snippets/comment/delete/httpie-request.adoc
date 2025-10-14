@@ -1,5 +1,0 @@
-[source,bash]
-----
-$ http --form DELETE 'http://localhost:8080/api/comments/1' \
-    'commentType=RESPONSE'
-----

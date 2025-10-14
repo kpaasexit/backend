@@ -1,8 +1,0 @@
-[source,json,options="nowrap"]
-----
-{
-  "code" : "QUESTION_OK_015",
-  "message" : "답변 삭제 성공",
-  "result" : "성공적으로 삭제하였습니다."
-}
-----

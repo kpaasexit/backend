@@ -1,6 +1,0 @@
-[source,json,options="nowrap"]
-----
-{
-  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjAzNzMyMjksImV4cCI6MjM2NTE3MzIyOX0._rDBxDPNO7Lk9JjVEbDNeSrdrKg5yKCAQTl9gCzgYoo"
-}
-----
