@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         RestDocsConfiguration.class,
         JwtTokenProvider.class
 })
-class QuestionControllerTest {
+class QuestionControllerRestDocsTest {
 
     @Autowired
     private MockMvc mockMvc;

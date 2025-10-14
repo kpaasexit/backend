@@ -4,13 +4,10 @@ import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.common.grpc.*;
 import com.exit.gateway.config.RestDocsConfiguration;
-import com.exit.gateway.controller.quiz.dto.response.quiz.GetSolvedQuizResponseDto;
-import com.exit.gateway.controller.quiz.dto.response.quiz.ReportQuizResponseDto;
 import com.exit.gateway.global.resolver.DeviceIdArgumentResolver;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.quiz.QuizGrpcClient;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "jwt.access_token.valid_time=3600000",
         "jwt.refresh_token.valid_time=604800000"
 })
-class QuizControllerTest {
+class QuizControllerRestDocsTest {
 
     @Autowired
     private MockMvc mockMvc;

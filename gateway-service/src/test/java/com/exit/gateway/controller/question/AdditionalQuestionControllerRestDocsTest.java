@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         })
 @AutoConfigureRestDocs
 @Import(RestDocsConfiguration.class)
-class AdditionalQuestionControllerTest {
+class AdditionalQuestionControllerRestDocsTest {
 
     @Autowired
     private MockMvc mockMvc;

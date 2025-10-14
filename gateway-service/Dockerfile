@@ -6,13 +6,15 @@ RUN chmod +x gradlew
 COPY common common
 COPY gateway-service gateway-service
 
-# dev Build Stage
+# dev Build Stage - Use pre-built docs from local build
 FROM base AS build-dev
-RUN ./gradlew :common:jar :gateway-service:bootJar -Pprofile=dev -x test --no-daemon
+COPY gateway-service/build/generated-snippets gateway-service/build/generated-snippets
+RUN ./gradlew :common:jar :gateway-service:asciidoctor :gateway-service:bootJar -Pprofile=dev --no-daemon -x test -x restDocsTest
 
-# prod Build Stage
+# prod Build Stage - Use pre-built docs from local build
 FROM base AS build-prod
-RUN ./gradlew :common:jar :gateway-service:bootJar -Pprofile=prod -x test --no-daemon
+COPY gateway-service/build/generated-snippets gateway-service/build/generated-snippets
+RUN ./gradlew :common:jar :gateway-service:asciidoctor :gateway-service:bootJar -Pprofile=prod --no-daemon -x test -x restDocsTest
 
 # dev Runtime Stage
 FROM bellsoft/liberica-runtime-container:jre-17.0.12-musl AS dev
