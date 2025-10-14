@@ -1,0 +1,5 @@
+[source,bash]
+----
+$ http POST 'http://localhost:8080/api/magazine/1/scrap' \
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0MTQ5MDYsImV4cCI6MTc2NDAxNDkwNn0.TKylLzX3KcfYu1jwALf2bySIk3LHRHw0XSna7wl3cYw'
+----

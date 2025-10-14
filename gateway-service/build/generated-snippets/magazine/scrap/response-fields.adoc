@@ -1,0 +1,24 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.magazineId+`
+|`+Number+`
+|매거진 ID
+
+|`+result.isScrapped+`
+|`+Boolean+`
+|스크랩 여부 (true: 스크랩됨, false: 스크랩 취소됨)
+
+|===

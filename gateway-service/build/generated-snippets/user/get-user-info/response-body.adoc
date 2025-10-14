@@ -1,0 +1,11 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "USER_OK_003",
+  "message" : "유저 정보 조회 성공",
+  "result" : {
+    "nickname" : "테스트사용자",
+    "profileUrl" : "https://example.com/profile.jpg"
+  }
+}
+----

@@ -1,0 +1,8 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "USER_OK_002",
+  "message" : "디바이스 업데이트 성공",
+  "result" : "디바이스 정보 업데이트를 완료하였습니다."
+}
+----

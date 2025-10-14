@@ -1,0 +1,8 @@
+[source,http,options="nowrap"]
+----
+POST /api/auth/withdraw HTTP/1.1
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0MTQ5MTQsImV4cCI6MTc2NDAxNDkxNH0.7jJ93oIovuinP4szxM0XH-K4nTnwE_iJvyXrl9hOVP0
+Host: localhost:8080
+Content-Type: application/x-www-form-urlencoded
+
+----

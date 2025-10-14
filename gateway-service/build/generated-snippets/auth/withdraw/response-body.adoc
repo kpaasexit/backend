@@ -1,0 +1,8 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "AUTH_OK_004",
+  "message" : "유저 탈퇴 성공",
+  "result" : "회원탈퇴가 완료되었습니다."
+}
+----

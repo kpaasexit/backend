@@ -1,0 +1,5 @@
+[source,bash]
+----
+$ http GET 'http://localhost:8080/api/comments/1?targetType=RESPONSE&pageNum=1' \
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0MTQ5MTAsImV4cCI6MTc2NDAxNDkxMH0.jmoXCdLc10ZyrGtUwAIh9kV8xxyZKGFEtjQJJ42KhMM'
+----
