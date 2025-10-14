@@ -1,0 +1,12 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "USER_OK_001",
+  "message" : "추가 정보 업데이트 성공",
+  "result" : {
+    "userId" : 1,
+    "nickName" : "테스트사용자",
+    "profile" : "https://example.com/profile.jpg"
+  }
+}
+----

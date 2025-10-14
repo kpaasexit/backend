@@ -1,0 +1,8 @@
+.+/api/additional-question/{followUpRoomId}+
+|===
+|Parameter|Description
+
+|`+followUpRoomId+`
+|추가 질문 방 ID
+
+|===

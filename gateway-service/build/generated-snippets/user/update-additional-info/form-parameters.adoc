@@ -1,0 +1,7 @@
+|===
+|Parameter|Description
+
+|`+nickname+`
+|사용자 닉네임 (2-20자)
+
+|===

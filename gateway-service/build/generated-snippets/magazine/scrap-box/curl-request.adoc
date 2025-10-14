@@ -1,0 +1,5 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/api/magazine/scrap-box?pageNum=1' -i -X GET \
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0MTQ5MDcsImV4cCI6MTc2NDAxNDkwN30.JqJANZga3C-RVfNXm6d92XiaPOYHBeZf2Doj4QXq6sI'
+----

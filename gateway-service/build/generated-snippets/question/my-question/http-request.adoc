@@ -1,0 +1,7 @@
+[source,http,options="nowrap"]
+----
+GET /api/questions/my?pageNum=1 HTTP/1.1
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0MTQ5MTEsImV4cCI6MTc2NDAxNDkxMX0.VC6EtpZVYl_DP44Fi8zu5kahUeIFdzre110VVALRyUI
+Host: localhost:8080
+
+----

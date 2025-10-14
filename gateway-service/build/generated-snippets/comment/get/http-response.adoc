@@ -1,0 +1,33 @@
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 614
+
+{
+  "code" : "QUESTION_OK_016",
+  "message" : "댓글 조회 성공",
+  "result" : {
+    "commentItemList" : [ {
+      "commentId" : 1,
+      "content" : "도움이 되는 답변 감사합니다!",
+      "nickname" : "김사용자",
+      "profileImage" : "https://example.com/profile1.jpg",
+      "createdAt" : "2024-01-01T00:00:00"
+    }, {
+      "commentId" : 2,
+      "content" : "저도 궁금했던 내용이에요",
+      "nickname" : "이사용자",
+      "profileImage" : "https://example.com/profile2.jpg",
+      "createdAt" : "2024-01-01T00:30:00"
+    } ],
+    "hasNext" : false
+  }
+}
+----

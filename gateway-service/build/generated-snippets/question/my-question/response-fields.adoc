@@ -1,0 +1,56 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.questions+`
+|`+Array+`
+|내 질문 목록
+
+|`+result.questions[].categoryId+`
+|`+Number+`
+|카테고리 ID
+
+|`+result.questions[].profileUrl+`
+|`+Null+`
+|작성자 프로필 URL
+
+|`+result.questions[].nickname+`
+|`+String+`
+|작성자 닉네임
+
+|`+result.questions[].createdAt+`
+|`+String+`
+|작성일시
+
+|`+result.questions[].title+`
+|`+String+`
+|질문 제목
+
+|`+result.questions[].content+`
+|`+String+`
+|질문 내용
+
+|`+result.questions[].answerAdopt+`
+|`+Boolean+`
+|답변 채택 여부
+
+|`+result.questions[].answerCount+`
+|`+Number+`
+|답변 개수
+
+|`+result.hasNext+`
+|`+Boolean+`
+|다음 페이지 존재 여부
+
+|===

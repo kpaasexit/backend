@@ -1,0 +1,7 @@
+[source,http,options="nowrap"]
+----
+GET /api/user/check-nickname?nickname=%EC%A4%91%EB%B3%B5%EB%90%9C%EB%8B%89%EB%84%A4%EC%9E%84 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080
+
+----

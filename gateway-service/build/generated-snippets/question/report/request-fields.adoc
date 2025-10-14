@@ -1,0 +1,12 @@
+|===
+|Path|Type|Description
+
+|`+questionReportTitle+`
+|`+String+`
+|신고 제목
+
+|`+questionReportContent+`
+|`+String+`
+|신고 내용
+
+|===

@@ -1,0 +1,26 @@
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 453
+
+{
+  "code" : "QUIZ_OK_006",
+  "message" : "재도전 퀴즈 조회 성공",
+  "result" : {
+    "quizId" : 1,
+    "quizCategoryId" : 1,
+    "quizTitle" : "연차 사용",
+    "quizContent" : "연차 사용 시 승인 절차는?",
+    "quizType" : "MULTIPLE_CHOICE",
+    "quizCorrectAnswer" : "1",
+    "quizAdditionalInformation" : "1. 사전 승인 필요\n2. 사후 신고만 필요\n3. 승인 불필요\n4. 부서장 승인만 필요"
+  }
+}
+----

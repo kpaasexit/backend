@@ -1,0 +1,16 @@
+|===
+|Parameter|Description
+
+|`+categoryIds+`
+|카테고리 ID 목록 (선택)
+
+|`+keyword+`
+|검색 키워드 (선택)
+
+|`+page+`
+|페이지 번호 (기본값: 0)
+
+|`+size+`
+|페이지 크기 (기본값: 10)
+
+|===

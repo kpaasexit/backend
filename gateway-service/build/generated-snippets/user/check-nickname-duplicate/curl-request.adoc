@@ -1,0 +1,5 @@
+[source,bash]
+----
+$ curl 'http://localhost:8080/api/user/check-nickname?nickname=%EC%A4%91%EB%B3%B5%EB%90%9C%EB%8B%89%EB%84%A4%EC%9E%84' -i -X GET \
+    -H 'Content-Type: application/json;charset=UTF-8'
+----

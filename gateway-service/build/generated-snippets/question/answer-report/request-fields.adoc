@@ -1,0 +1,12 @@
+|===
+|Path|Type|Description
+
+|`+responseReportTitle+`
+|`+String+`
+|신고 제목
+
+|`+responseReportContent+`
+|`+String+`
+|신고 내용
+
+|===

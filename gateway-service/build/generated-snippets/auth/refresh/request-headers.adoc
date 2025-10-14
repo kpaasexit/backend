@@ -1,0 +1,7 @@
+|===
+|Name|Description
+
+|`+X-Device-Id+`
+|디바이스 ID
+
+|===

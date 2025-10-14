@@ -1,0 +1,8 @@
+.+/api/comments/{targetId}+
+|===
+|Parameter|Description
+
+|`+targetId+`
+|대상 ID (질문 또는 답변 ID)
+
+|===

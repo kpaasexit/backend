@@ -1,0 +1,7 @@
+|===
+|Name|Description
+
+|`+Authorization+`
+|액세스 토큰 (Bearer {token})
+
+|===

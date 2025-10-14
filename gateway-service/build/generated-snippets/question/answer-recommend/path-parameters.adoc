@@ -1,0 +1,8 @@
+.+/api/questions/answers/{responseId}/recommend+
+|===
+|Parameter|Description
+
+|`+responseId+`
+|답변 ID
+
+|===
