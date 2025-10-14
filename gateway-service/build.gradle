@@ -1,3 +1,5 @@
+import org.asciidoctor.gradle.jvm.AsciidoctorTask
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.9'
@@ -20,24 +22,16 @@ def profile = project.findProperty('profile') ?: 'dev'
 def isProd = profile == 'prod'
 
 configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
+    compileOnly { extendsFrom annotationProcessor }
     asciidoctorExt
 }
 
-repositories {
-    mavenCentral()
-}
+repositories { mavenCentral() }
 
-ext {
-    set('springCloudVersion', "2023.0.5")
-}
+ext { set('springCloudVersion', "2023.0.5") }
 
 dependencies {
     /* 공통 의존성 */
-
-    // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -56,7 +50,7 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // AsciiDoctor extension for REST Docs
+    // Asciidoctor extension for REST Docs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
     // JWT
@@ -84,12 +78,10 @@ dependencies {
 
     /* 환경별 조건부 의존성 */
     if (!isProd) {
-        // dev 전용
         implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
         implementation 'org.springframework.cloud:spring-cloud-starter-config'
         implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
     } else {
-        // prod 전용
         implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-client-config'
     }
 }
@@ -100,17 +92,15 @@ dependencyManagement {
     }
 }
 
-// Common 모듈 빌드 의존성
+/* Common 모듈 빌드 의존성 */
 tasks.withType(JavaCompile) {
     dependsOn ':common:jar'
 }
-
-// Protobuf 태스크들의 의존성 설정
 tasks.withType(com.google.protobuf.gradle.ProtobufExtract) {
     dependsOn ':common:jar'
 }
 
-// 중복 파일 처리 전략
+/* 중복 파일 처리 전략 */
 tasks.withType(Copy) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -125,51 +115,70 @@ sourceSets {
 }
 
 protobuf {
-    protoc {
-        artifact = 'com.google.protobuf:protoc:3.25.2'
-    }
-    plugins {
-        grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.63.0'
-        }
-    }
+    protoc { artifact = 'com.google.protobuf:protoc:3.25.2' }
+    plugins { grpc { artifact = 'io.grpc:protoc-gen-grpc-java:1.63.0' } }
     generateProtoTasks {
-        all().each { task ->
-            task.plugins {
-                grpc {}
-            }
-        }
+        all().each { task -> task.plugins { grpc {} } }
     }
-    // 테스트용 proto 작업 비활성화
-    extractIncludeTestProto {
-        enabled = false
-    }
-    generateTestProto {
-        enabled = false
-    }
+    extractIncludeTestProto { enabled = false }
+    generateTestProto { enabled = false }
 }
 
-ext {
-    snippetsDir = file('build/generated-snippets')
-}
+/* === REST Docs === */
+ext { snippetsDir = file('build/generated-snippets') }
 
-test {
-    outputs.dir snippetsDir
+// test 태스크가 REST Docs snippet을 생성하도록 설정
+tasks.named('test') {
     useJUnitPlatform()
+    outputs.dir snippetsDir
+    systemProperty 'org.springframework.restdocs.outputDir', snippetsDir
 }
 
-asciidoctor {
-    inputs.dir snippetsDir
+// REST Docs 테스트만 실행하는 별도 태스크
+tasks.register('restDocsTest', Test) {
+    dependsOn tasks.named('compileTestJava')
+    useJUnitPlatform()
+    outputs.dir snippetsDir
+    systemProperty 'org.springframework.restdocs.outputDir', snippetsDir
+
+    // RestDocsTest로 끝나는 테스트만 실행
+    include '**/*RestDocsTest.class'
+}
+
+// asciidoctor는 test와 restDocsTest 후에 실행
+tasks.named('asciidoctor', org.asciidoctor.gradle.jvm.AsciidoctorTask).configure {
+    dependsOn tasks.named('test')
+    dependsOn tasks.named('restDocsTest')
     configurations 'asciidoctorExt'
-    dependsOn test
+    inputs.dir snippetsDir
+    sourceDir file('src/docs/asciidoc')
+    outputDir = file("$buildDir/docs/asciidoc")
+    attributes 'snippets': snippetsDir
+}
+
+// 없으면 추가
+tasks.register('syncRestDocsToStatic', Sync) {
+    dependsOn tasks.named('asciidoctor')
+    from("$buildDir/docs/asciidoc")
+    into("$projectDir/src/main/resources/static/docs")
+
+    // Gradle 캐싱을 무시하고 항상 실행
+    outputs.upToDateWhen { false }
 }
 
 bootJar {
-    dependsOn asciidoctor
-    archiveBaseName = "${project.name}"
-    archiveVersion = "${version}"
-    archiveClassifier = profile
-    from ("${asciidoctor.outputDir}") {
-        into 'static/docs'
-    }
+    // asciidoctor의 출력을 사용하므로 의존성 필요
+    dependsOn tasks.named('asciidoctor')
+
+    archiveBaseName.set("${project.name}")
+    archiveVersion.set("${version}")
+    archiveClassifier.set(profile)
+
+    // JAR에 REST Docs 포함 (빌드 디렉토리에서)
+    from("$buildDir/docs/asciidoc") { into 'static/docs' }
+}
+
+// build 태스크가 REST Docs를 항상 생성하도록 설정
+tasks.named('build') {
+    dependsOn tasks.named('syncRestDocsToStatic')
 }

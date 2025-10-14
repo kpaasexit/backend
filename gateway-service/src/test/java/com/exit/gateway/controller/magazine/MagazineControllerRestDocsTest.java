@@ -23,8 +23,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -48,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         RestDocsConfiguration.class,
         JwtTokenProvider.class
 })
-class MagazineControllerTest {
+class MagazineControllerRestDocsTest {
 
     @Autowired
     private MockMvc mockMvc;

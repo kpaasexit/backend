@@ -1,5 +1,5 @@
 [source,bash]
 ----
 $ http GET 'http://localhost:8080/api/quiz/categories/statistics' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0MTQ5MTIsImV4cCI6MTc2NDAxNDkxMn0.445Rk0u12-5ccuXd79dUWtWkQzRMMAmcNYUtHMyHFYU'
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzUsImV4cCI6MTc2NDA2NDM3NX0.LtFjyTBQ3W7OJqdN_Gs9uAMiyBIoArzJURLlbHAeT6w'
 ----

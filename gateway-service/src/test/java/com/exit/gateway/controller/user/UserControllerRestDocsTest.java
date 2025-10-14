@@ -2,7 +2,6 @@ package com.exit.gateway.controller.user;
 
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
-import com.exit.common.grpc.CheckNicknameDuplicateResponse;
 import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
 import com.exit.gateway.config.RestDocsConfiguration;
 import com.exit.gateway.controller.user.dto.response.user.CheckNicknameDuplicateResponseDto;
@@ -45,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         RestDocsConfiguration.class,
         JwtTokenProvider.class
 })
-class UserControllerTest {
+class UserControllerRestDocsTest {
 
     @Autowired
     private MockMvc mockMvc;

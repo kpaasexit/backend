@@ -1,0 +1,54 @@
+# Build output directories
+**/build/
+!gateway-service/build/generated-snippets/
+**/target/
+**/.gradle/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+**/*.md
+!README.md
+
+# Logs
+*.log
+**/logs/
+
+# Secrets
+**/*secret*
+secrets.yml
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Other services (exclude services not being built)
+# When building gateway-service, we only need common and gateway-service
+ai-service/
+config-server/
+eureka-service/
+magazine-service/
+notification-service/
+question-service/
+quiz-service/
+user-service/
+
+# But we need to include the service being built
+!gateway-service/
+!common/
+
+# Temporary files
+nul
+*.tmp
