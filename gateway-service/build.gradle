@@ -160,7 +160,7 @@ tasks.named('asciidoctor', org.asciidoctor.gradle.jvm.AsciidoctorTask).configure
 tasks.register('syncRestDocsToStatic', Sync) {
     dependsOn tasks.named('asciidoctor')
     from("$buildDir/docs/asciidoc")
-    into("$projectDir/src/main/resources/static/docs")
+    into("$projectDir/src/main/resources/static/back-docs")
 
     // Gradle 캐싱을 무시하고 항상 실행
     outputs.upToDateWhen { false }
