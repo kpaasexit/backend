@@ -24,7 +24,7 @@ import static com.exit.common.util.time.TimeStampUtil.toGrpcTimestamp;
 public class MagazineService {
     private final MagazineRepository magazineRepository;
     private final MagazineScrapRepository magazineScrapRepository;
-    private final UserGrpcClient  userGrpcClient;
+    private final UserGrpcClient userGrpcClient;
 
     @Transactional(readOnly = true)
     public GetMagazinesByCategoryResponse getMagazinesByCategory(GetMagazinesByCategoryRequest request) {
@@ -110,6 +110,22 @@ public class MagazineService {
                 .setAuthorProfileUrl(userInfo.getUserProfile())
                 .setMagazineThumbnailUrl(magazine.getMagazineThumbnailUrl())
                 .setCreatedAt(toGrpcTimestamp(magazine.getCreatedAt()))
+                .build();
+    }
+
+    public GetRecommendedMagazineResponse getRecommendedMagazine(GetRecommendedMagazineRequest request) {
+        List<Magazines> recommendedMagazine = magazineRepository.findAllByMagazineIdIn(List.of(1L, 2L, 3L, 4L, 5L));
+
+        List<MagazineScrapBoxItem> recommendedMagazineItems = recommendedMagazine.stream().map(magazine -> MagazineScrapBoxItem.newBuilder()
+                .setMagazineId(magazine.getMagazineId())
+                .setMagazineTitle(magazine.getMagazineTitle())
+                .setMagazineSubtitle(magazine.getMagazineSubtitle())
+                .setMagazineThumbnailUrl(magazine.getMagazineThumbnailUrl())
+                .setCreatedAt(toGrpcTimestamp(magazine.getCreatedAt()))
+                .build()).toList();
+
+        return GetRecommendedMagazineResponse.newBuilder()
+                .addAllRecommendMagazine(recommendedMagazineItems)
                 .build();
     }
 }

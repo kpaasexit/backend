@@ -1,10 +1,7 @@
 package com.exit.gateway.service.magazine;
 
 import com.exit.common.grpc.*;
-import com.exit.gateway.controller.magazine.dto.response.GetScrapBoxResponseDto;
-import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
-import com.exit.gateway.controller.magazine.dto.response.MagazineItemListDto;
-import com.exit.gateway.controller.magazine.dto.response.ScrapMagazineResponseDto;
+import com.exit.gateway.controller.magazine.dto.response.*;
 import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
@@ -65,6 +62,19 @@ public class MagazineGrpcClient {
             log.debug("Received getScrapBox response via gRPC");
 
             return GetScrapBoxResponseDto.from(response);
+        } catch (StatusRuntimeException e) {
+            log.error("gRPC getMagazine failed: {}", e.getStatus(), e);
+            throw e;
+        }
+    }
+
+    public GetRecommendedMagazineResponseDto getRecommendedMagazine(GetRecommendedMagazineRequest request) {
+        try {
+            log.debug("Sending getRecommendedMagazine request via gRPC: userId={}", request.getUserId());
+            GetRecommendedMagazineResponse response = magazineServiceStub.getRecommendedMagazine(request);
+            log.debug("Received getRecommendedMagazine response via gRPC");
+
+            return GetRecommendedMagazineResponseDto.from(response);
         } catch (StatusRuntimeException e) {
             log.error("gRPC getMagazine failed: {}", e.getStatus(), e);
             throw e;
