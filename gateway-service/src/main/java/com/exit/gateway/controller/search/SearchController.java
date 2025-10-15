@@ -9,6 +9,7 @@ import com.exit.common.response.success.SearchSuccessCode;
 import com.exit.gateway.controller.search.dto.response.IntegratedSearchResponseDto;
 import com.exit.gateway.controller.search.dto.response.MagazineSearchItemDto;
 import com.exit.gateway.controller.search.dto.response.QuestionSearchItemDto;
+import com.exit.gateway.controller.search.dto.response.RecommendedSearchTermsDto;
 import com.exit.gateway.service.search.SearchGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -88,6 +89,12 @@ public class SearchController {
             log.error("Search failed", e);
             throw new RestApiException(SearchErrorCode.SEARCH_FAIL);
         }
+    }
+
+    @GetMapping("/recommend")
+    public SuccessResponse<RecommendedSearchTermsDto> integratedSearch(){
+        List<String> terms = List.of("감자", "고구마", "강아지", "고양이");
+        return SuccessResponse.of(SearchSuccessCode.SEARCH_SUCCESS, new RecommendedSearchTermsDto(terms));
     }
 
     private String getGrpcErrorMessage(StatusRuntimeException e) {

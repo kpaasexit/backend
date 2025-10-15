@@ -12,9 +12,8 @@ import com.exit.gateway.controller.user.dto.request.auth.RefreshTokenRequestDto;
 import com.exit.gateway.controller.user.dto.response.auth.TokenResponseDto;
 import com.exit.gateway.global.annotation.DeviceId;
 import com.exit.gateway.global.annotation.LoginUser;
+import com.exit.gateway.global.util.GrpcExceptionConverter;
 import com.exit.gateway.service.user.UserGrpcClient;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,7 @@ public class AuthController {
 
     private final UserGrpcClient userGrpcClient;
     private final JwtTokenProvider jwtTokenProvider;
-    private final ObjectMapper objectMapper;
+    private final GrpcExceptionConverter grpcExceptionConverter;
 
     @PostMapping("/device")
     public SuccessResponse<String> updateDevice(
@@ -46,8 +45,7 @@ public class AuthController {
             return SuccessResponse.of(UserSuccessCode.UPDATE_DEVICE_SUCCESS, "디바이스 정보 업데이트를 완료하였습니다.");
         } catch (StatusRuntimeException e) {
             log.error("Update Device failed via gRPC: {}", e.getStatus(), e);
-            String errorMessage = getGrpcErrorMessage(e);
-            throw new RestApiException(UserErrorCode.UPDATE_DEVICE_FAIL, errorMessage);
+            throw grpcExceptionConverter.convert(e, UserErrorCode.UPDATE_DEVICE_FAIL);
         } catch (Exception e) {
             log.error("Update Device failed", e);
             throw new RestApiException(UserErrorCode.UPDATE_DEVICE_FAIL, e.getMessage());
@@ -59,7 +57,7 @@ public class AuthController {
             @Valid @RequestBody RefreshTokenRequestDto request) {
         try {
             log.info("Token refresh request received");
-            String deviceId = jwtTokenProvider.getDeviceIdFromToken(request.getRefreshToken());
+            String deviceId = jwtTokenProvider.getDeviceIdFromRefreshToken(request.getRefreshToken());
             log.debug("Refresh token received : {}", deviceId);
             RefreshTokenResponse grpcResponse = userGrpcClient.refreshToken(request.getRefreshToken(), deviceId);
             TokenResponseDto response = new TokenResponseDto(
@@ -70,8 +68,7 @@ public class AuthController {
             return SuccessResponse.of(AuthSuccessCode.LOGIN_SUCCESS, response);
         } catch (StatusRuntimeException e) {
             log.error("Token refresh failed via gRPC: {}", e.getStatus(), e);
-            String errorMessage = getGrpcErrorMessage(e);
-            throw new RestApiException(UserErrorCode.REFRESH_FAIL, errorMessage);
+            throw grpcExceptionConverter.convert(e, UserErrorCode.REFRESH_FAIL);
         }
     }
 
@@ -87,8 +84,7 @@ public class AuthController {
             return SuccessResponse.of(AuthSuccessCode.LOGIN_SUCCESS, "로그아웃이 완료되었습니다.");
         } catch (StatusRuntimeException e) {
             log.error("Logout failed via gRPC: {}", e.getStatus(), e);
-            String errorMessage = getGrpcErrorMessage(e);
-            throw new RestApiException(UserErrorCode.LOGOUT_FAIL, errorMessage);
+            throw grpcExceptionConverter.convert(e, UserErrorCode.LOGOUT_FAIL);
         } catch (Exception e) {
             log.error("Logout failed", e);
             throw new RestApiException(UserErrorCode.LOGOUT_FAIL, e.getMessage());
@@ -103,28 +99,11 @@ public class AuthController {
 
             return SuccessResponse.of(AuthSuccessCode.DELETE_USER_SUCCESS, "회원탈퇴가 완료되었습니다.");
         } catch (StatusRuntimeException e) {
-            log.error("Logout failed via gRPC: {}", e.getStatus(), e);
-            String errorMessage = getGrpcErrorMessage(e);
-            throw new RestApiException(UserErrorCode.DELETED_USER_FAIL, errorMessage);
+            log.error("Withdraw failed via gRPC: {}", e.getStatus(), e);
+            throw grpcExceptionConverter.convert(e, UserErrorCode.DELETED_USER_FAIL);
         } catch (Exception e) {
-            log.error("Logout failed", e);
+            log.error("Withdraw failed", e);
             throw new RestApiException(UserErrorCode.DELETED_USER_FAIL, e.getMessage());
-        }
-    }
-
-    private String getGrpcErrorMessage(StatusRuntimeException e) {
-        Status status = e.getStatus();
-        switch (status.getCode()) {
-            case INVALID_ARGUMENT:
-                return "잘못된 요청입니다.";
-            case UNAUTHENTICATED:
-                return "인증에 실패했습니다.";
-            case PERMISSION_DENIED:
-                return "권한이 없습니다.";
-            case NOT_FOUND:
-                return "사용자를 찾을 수 없습니다.";
-            default:
-                return status.getDescription() != null ? status.getDescription() : "서버 오류가 발생했습니다.";
         }
     }
 }
