@@ -3,10 +3,7 @@ package com.exit.gateway.controller.magazine;
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.gateway.config.RestDocsConfiguration;
-import com.exit.gateway.controller.magazine.dto.response.GetScrapBoxResponseDto;
-import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
-import com.exit.gateway.controller.magazine.dto.response.MagazineItemListDto;
-import com.exit.gateway.controller.magazine.dto.response.ScrapMagazineResponseDto;
+import com.exit.gateway.controller.magazine.dto.response.*;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -282,6 +279,61 @@ class MagazineControllerRestDocsTest {
                                 fieldWithPath("result.scrapBoxItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
                                 fieldWithPath("result.scrapBoxItems[].createdAt").description("작성일시"),
                                 fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("추천 매거진 조회 API")
+    void getRecommendedMagazine() throws Exception {
+        // given
+        LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
+
+        GetRecommendedMagazineResponseDto.RecommendedMagazineItem item1 = GetRecommendedMagazineResponseDto.RecommendedMagazineItem.builder()
+                .magazineId(1L)
+                .magazineTitle("추천 매거진 1")
+                .magazineSubtitle("유용한 정보")
+                .magazineThumbnailUrl("https://example.com/thumb1.jpg")
+                .createdAt(now)
+                .build();
+
+        GetRecommendedMagazineResponseDto.RecommendedMagazineItem item2 = GetRecommendedMagazineResponseDto.RecommendedMagazineItem.builder()
+                .magazineId(2L)
+                .magazineTitle("추천 매거진 2")
+                .magazineSubtitle("흥미로운 이야기")
+                .magazineThumbnailUrl("https://example.com/thumb2.jpg")
+                .createdAt(now)
+                .build();
+
+        GetRecommendedMagazineResponseDto response = GetRecommendedMagazineResponseDto.builder()
+                .recommendedMagazineItems(List.of(item1, item2))
+                .build();
+
+        given(magazineGrpcClient.getRecommendedMagazine(any())).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/magazine/recommend")
+                        .header("Authorization", "Bearer " + validAccessToken))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.result.recommendedMagazineItems[0].magazineId").value(1L))
+                .andExpect(jsonPath("$.result.recommendedMagazineItems[0].magazineTitle").value("추천 매거진 1"))
+                .andExpect(jsonPath("$.result.recommendedMagazineItems[1].magazineId").value(2L))
+                .andDo(document("magazine/recommend",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.recommendedMagazineItems").description("추천 매거진 목록"),
+                                fieldWithPath("result.recommendedMagazineItems[].magazineId").description("매거진 ID"),
+                                fieldWithPath("result.recommendedMagazineItems[].magazineTitle").description("매거진 제목"),
+                                fieldWithPath("result.recommendedMagazineItems[].magazineSubtitle").description("매거진 부제목"),
+                                fieldWithPath("result.recommendedMagazineItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
+                                fieldWithPath("result.recommendedMagazineItems[].createdAt").description("작성일시")
                         )
                 ));
     }
