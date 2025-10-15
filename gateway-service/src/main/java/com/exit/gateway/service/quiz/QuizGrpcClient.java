@@ -2,6 +2,7 @@ package com.exit.gateway.service.quiz;
 
 import com.exit.common.grpc.*;
 import com.exit.gateway.controller.quiz.dto.request.quiz.ReportQuizRequestDto;
+import com.google.protobuf.Empty;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,26 +73,6 @@ public class QuizGrpcClient {
         }
     }
 
-    public ReportQuizResponse reportQuiz(Long quizId, Long userId, ReportQuizRequestDto requestDto) {
-        try {
-            ReportQuizRequest request = ReportQuizRequest.newBuilder()
-                    .setQuizId(quizId)
-                    .setQuizReportTitle(requestDto.title())
-                    .setQuizReportContent(requestDto.content())
-                    .setUserId(userId)
-                    .build();
-
-            log.debug("Sending report quiz request via gRPC: quizId={}, userId={}", quizId, userId);
-            ReportQuizResponse response = quizServiceStub.reportQuiz(request);
-            log.debug("Received report quiz response via gRPC");
-
-            return response;
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC report quiz failed: {}", e.getStatus(), e);
-            throw e;
-        }
-    }
-
     public GetSolvedQuizResponse getSolvedQuiz(Long userId, List<Long> categoryIds, Integer pageNum) {
         try {
             GetSolvedQuizRequest request = GetSolvedQuizRequest.newBuilder()
@@ -111,19 +92,13 @@ public class QuizGrpcClient {
         }
     }
 
-    public GetQuizResponse resolveQuiz(Long quizId) {
+    public GetTodayQuizResponse getTodayQuiz() {
         try {
-            ResolveQuizRequest request = ResolveQuizRequest.newBuilder()
-                    .setQuizId(quizId)
-                    .build();
-
-            log.debug("Sending resolve quiz request via gRPC: quizId={}", quizId);
-            GetQuizResponse response = quizServiceStub.resolveQuiz(request);
-            log.debug("Received resolve quiz response via gRPC");
-
+            GetTodayQuizResponse response = quizServiceStub.getTodayQuiz(Empty.getDefaultInstance());
+            log.debug("Received get today quiz response via gRPC");
             return response;
         } catch (StatusRuntimeException e) {
-            log.error("gRPC resolve quiz failed: {}", e.getStatus(), e);
+            log.error("gRPC get today quiz failed: {}", e.getStatus(), e);
             throw e;
         }
     }

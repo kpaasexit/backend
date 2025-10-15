@@ -5,7 +5,6 @@ import com.exit.common.grpc.*;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.QuizErrorCode;
 import com.exit.common.response.success.QuizSuccessCode;
-import com.exit.gateway.controller.quiz.dto.request.quiz.ReportQuizRequestDto;
 import com.exit.gateway.controller.quiz.dto.response.quiz.*;
 import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.quiz.QuizGrpcClient;
@@ -83,27 +82,6 @@ public class QuizController {
         }
     }
 
-    @PostMapping("/{quizId}/report")
-    public SuccessResponse<ReportQuizResponseDto> reportQuiz(
-            @PathVariable Long quizId,
-            @RequestBody ReportQuizRequestDto requestDto,
-            @LoginUser Long userId) {
-        try {
-            log.info("Report quiz request received for quizId: {}, userId: {}", quizId, userId);
-            ReportQuizResponse response = quizGrpcClient.reportQuiz(quizId, userId, requestDto);
-
-            return SuccessResponse.of(QuizSuccessCode.REPORT_QUIZ_SUCCESS,
-                    ReportQuizResponseDto.from(response));
-        } catch (StatusRuntimeException e) {
-            log.error("Report quiz failed via gRPC: {}", e.getStatus(), e);
-            String errorMessage = getGrpcErrorMessage(e);
-            throw new RestApiException(QuizErrorCode.REPORT_QUIZ_FAIL, errorMessage);
-        } catch (Exception e) {
-            log.error("Report quiz failed", e);
-            throw new RestApiException(QuizErrorCode.REPORT_QUIZ_FAIL);
-        }
-    }
-
     @GetMapping("/solved")
     public SuccessResponse<GetSolvedQuizResponseDto> getSolvedQuiz(
             @LoginUser Long userId,
@@ -126,21 +104,21 @@ public class QuizController {
         }
     }
 
-    @GetMapping("/{quizId}/resolve")
-    public SuccessResponse<GetQuizResponseDto> resolveQuiz(@PathVariable Long quizId) {
+    @GetMapping("/today")
+    public SuccessResponse<GetTodayQuizResponseDto> getTodayQuiz() {
         try {
-            log.info("Resolve quiz request received for quizId: {}", quizId);
-            GetQuizResponse response = quizGrpcClient.resolveQuiz(quizId);
+            log.info("Resolve get today quiz received");
+            GetTodayQuizResponse response = quizGrpcClient.getTodayQuiz();
 
-            return SuccessResponse.of(QuizSuccessCode.RESOLVE_QUIZ_SUCCESS,
-                    GetQuizResponseDto.from(response));
+            return SuccessResponse.of(QuizSuccessCode.GET_TODAY_QUIZ,
+                    GetTodayQuizResponseDto.from(response));
         } catch (StatusRuntimeException e) {
             log.error("Resolve quiz failed via gRPC: {}", e.getStatus(), e);
             String errorMessage = getGrpcErrorMessage(e);
-            throw new RestApiException(QuizErrorCode.RESOLVE_QUIZ_FAIL, errorMessage);
+            throw new RestApiException(QuizErrorCode.GET_TODAY_QUIZ_FAIL, errorMessage);
         } catch (Exception e) {
             log.error("Resolve quiz failed", e);
-            throw new RestApiException(QuizErrorCode.RESOLVE_QUIZ_FAIL);
+            throw new RestApiException(QuizErrorCode.GET_TODAY_QUIZ_FAIL);
         }
     }
 

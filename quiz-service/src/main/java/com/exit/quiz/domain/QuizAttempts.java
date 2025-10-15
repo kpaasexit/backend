@@ -27,17 +27,9 @@ public class QuizAttempts extends BaseEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "user_selection_answer", length = 1)
-    private String userSelectionAnswer;
-
-    @Column(name = "is_correct")
-    private Boolean isCorrect;
-
     @Builder
-    public QuizAttempts(Quiz quiz, Long userId, String userSelectionAnswer, Boolean isCorrect) {
+    public QuizAttempts(Quiz quiz, Long userId) {
         this.quiz = quiz;
         this.userId = userId;
-        this.userSelectionAnswer = userSelectionAnswer;
-        this.isCorrect = isCorrect;
     }
 }

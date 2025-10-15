@@ -13,20 +13,8 @@
 |`+Object+`
 |응답 데이터
 
-|`+result.quizId+`
-|`+Number+`
-|퀴즈 ID
-
-|`+result.quizTotalAttemptNum+`
-|`+Number+`
-|총 시도 횟수
-
-|`+result.quizCorrectNum+`
-|`+Number+`
-|정답 횟수
-
-|`+result.quizCorrectPercent+`
-|`+Number+`
-|정답률 (%)
+|`+result.hasNext+`
+|`+Boolean+`
+|다음 퀴즈 존재 유무
 
 |===

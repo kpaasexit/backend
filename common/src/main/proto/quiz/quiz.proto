@@ -6,13 +6,14 @@ option java_multiple_files = true;
 option java_package = "com.exit.common.grpc";
 option java_outer_classname = "QuizServiceProto";
 
+import "google/protobuf/empty.proto";
+
 service QuizService {
   rpc GetCategoryStatistics(GetCategoryStatisticsRequest) returns (GetCategoryStatisticsResponse);
   rpc GetQuiz(GetQuizRequest) returns (GetQuizResponse);
   rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
-  rpc ReportQuiz(ReportQuizRequest) returns (ReportQuizResponse);
   rpc GetSolvedQuiz(GetSolvedQuizRequest) returns (GetSolvedQuizResponse);
-  rpc ResolveQuiz(ResolveQuizRequest) returns (GetQuizResponse);
+  rpc GetTodayQuiz(google.protobuf.Empty) returns (GetTodayQuizResponse);
 }
 
 // request
@@ -31,21 +32,10 @@ message SubmitAnswerRequest {
   string answer = 3;
 }
 
-message ReportQuizRequest {
-  int64 user_id = 1;
-  int64 quiz_id = 2;
-  string quiz_report_title = 3;
-  string  quiz_report_content = 4;
-}
-
 message GetSolvedQuizRequest {
   int64 user_id = 1;
   repeated int64 category_id = 2;
   int32 page_num = 3;
-}
-
-message ResolveQuizRequest{
-  int64 quiz_id = 1;
 }
 
 // response
@@ -63,21 +53,14 @@ message GetQuizResponse {
   int64 quiz_id = 1;
   int64 quiz_category_id = 2;
   string quiz_title = 3;
-  string quiz_content = 4;
+  repeated string quiz_content = 4;
   string quiz_type = 5;
   string quiz_correct_answer = 6;
   string quiz_additional_information = 7;
 }
 
 message SubmitAnswerResponse {
-  int64 quiz_id = 1;
-  int32 quiz_total_attempt_num = 2;
-  int32 quiz_correct_num = 3;
-  double quiz_correct_percent = 4;
-}
-
-message ReportQuizResponse {
-  int64 quiz_report_id = 1;
+  bool has_next = 1;
 }
 
 message AttemptQuiz {
@@ -88,4 +71,8 @@ message AttemptQuiz {
 message GetSolvedQuizResponse {
   repeated AttemptQuiz attempt_quiz = 1;
   bool has_next = 2;
+}
+
+message GetTodayQuizResponse {
+  int64 quiz_id = 1;
 }

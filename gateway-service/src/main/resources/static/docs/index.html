@@ -580,14 +580,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#quiz-submit-answer_response_fields">Response fields</a></li>
 </ul>
 </li>
-<li><a href="#quiz-report">퀴즈 신고</a>
+<li><a href="#quiz-today">오늘의 퀴즈</a>
 <ul class="sectlevel2">
-<li><a href="#quiz-report_http_request">HTTP request</a></li>
-<li><a href="#quiz-report_request_headers">Request headers</a></li>
-<li><a href="#quiz-report_path_parameters">Path parameters</a></li>
-<li><a href="#quiz-report_request_fields">Request fields</a></li>
-<li><a href="#quiz-report_http_response">HTTP response</a></li>
-<li><a href="#quiz-report_response_fields">Response fields</a></li>
+<li><a href="#quiz-today_http_request">HTTP request</a></li>
+<li><a href="#quiz-today_request_headers">Request headers</a></li>
+<li><a href="#quiz-today_request_fields">Request fields</a></li>
+<li><a href="#quiz-today_http_response">HTTP response</a></li>
+<li><a href="#quiz-today_response_fields">Response fields</a></li>
 </ul>
 </li>
 <li><a href="#quiz-solved">풀었던 퀴즈 목록 조회</a>
@@ -596,15 +595,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#quiz-solved_request_headers">Request headers</a></li>
 <li><a href="#quiz-solved_http_response">HTTP response</a></li>
 <li><a href="#quiz-solved_response_fields">Response fields</a></li>
-</ul>
-</li>
-<li><a href="#quiz-resolve">퀴즈 정답 해설 조회</a>
-<ul class="sectlevel2">
-<li><a href="#quiz-resolve_http_request">HTTP request</a></li>
-<li><a href="#quiz-resolve_request_headers">Request headers</a></li>
-<li><a href="#quiz-resolve_path_parameters">Path parameters</a></li>
-<li><a href="#quiz-resolve_http_response">HTTP response</a></li>
-<li><a href="#quiz-resolve_response_fields">Response fields</a></li>
 </ul>
 </li>
 </ul>
@@ -1108,7 +1098,7 @@ Content-Length: 245
 Host: localhost:8080
 
 {
-  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzYsImV4cCI6MjM2NTI2NDM3Nn0.5I5-Xo_cQH0tvz7THVgMBTC-tDQTtAllxS2vABwmCgs"
+  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTUsImV4cCI6MjM2NTMyMDk1NX0.2EbicbrBixTZ_awULrGkEwit6aXYPMt0DzDgmV-i8SI"
 }</code></pre>
 </div>
 </div>
@@ -1241,7 +1231,7 @@ Content-Length: 170
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/logout HTTP/1.1
 X-Device-Id: test-device-id
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzYsImV4cCI6MTc2NDA2NDM3Nn0.z6yO5wEwMG_kyqR6zbG4oMzI71fD5JURY9-7jiuRi2A
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTUsImV4cCI6MTc2NDEyMDk1NX0.e4WkPhgWUVyAf-HZso1ehoprTEBCyG8AHbTcHHC5eLQ
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
@@ -1342,7 +1332,7 @@ Content-Length: 121
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/device HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzYsImV4cCI6MTc2NDA2NDM3Nn0.z6yO5wEwMG_kyqR6zbG4oMzI71fD5JURY9-7jiuRi2A
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTUsImV4cCI6MTc2NDEyMDk1NX0.e4WkPhgWUVyAf-HZso1ehoprTEBCyG8AHbTcHHC5eLQ
 X-Device-Id: test-device-id
 Content-Length: 37
 Host: localhost:8080
@@ -1471,7 +1461,7 @@ Content-Length: 157
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/withdraw HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzYsImV4cCI6MTc2NDA2NDM3Nn0.z6yO5wEwMG_kyqR6zbG4oMzI71fD5JURY9-7jiuRi2A
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTUsImV4cCI6MTc2NDEyMDk1NX0.e4WkPhgWUVyAf-HZso1ehoprTEBCyG8AHbTcHHC5eLQ
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
@@ -1569,7 +1559,7 @@ Content-Length: 125
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/user/info HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzcsImV4cCI6MTc2NDA2NDM3N30.evy8zpbbKFqwfPWmSUEJ03ZNnu8RT5FBlJiL-gruZ0A
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTYsImV4cCI6MTc2NDEyMDk1Nn0.eJN2iw_Dxaua5TsHlI5aZLZxO3Jnr8jg_WvWzjT64Wg
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1678,7 +1668,7 @@ Content-Length: 192
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/user/additional-info HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzcsImV4cCI6MTc2NDA2NDM3N30.evy8zpbbKFqwfPWmSUEJ03ZNnu8RT5FBlJiL-gruZ0A
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTYsImV4cCI6MTc2NDEyMDk1Nn0.eJN2iw_Dxaua5TsHlI5aZLZxO3Jnr8jg_WvWzjT64Wg
 Host: localhost:8080
 
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
@@ -2025,7 +2015,7 @@ Content-Length: 127
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/categories/statistics HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzUsImV4cCI6MTc2NDA2NDM3NX0.LtFjyTBQ3W7OJqdN_Gs9uAMiyBIoArzJURLlbHAeT6w
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTQsImV4cCI6MTc2NDEyMDk1NH0.P9i79TRoCo0kuEZMQX47il-MFiYpJJQKynnPF0ugOhw
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2143,7 +2133,7 @@ Content-Length: 265
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzUsImV4cCI6MTc2NDA2NDM3NX0.LtFjyTBQ3W7OJqdN_Gs9uAMiyBIoArzJURLlbHAeT6w
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTQsImV4cCI6MTc2NDEyMDk1NH0.P9i79TRoCo0kuEZMQX47il-MFiYpJJQKynnPF0ugOhw
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2303,7 +2293,7 @@ Content-Length: 437
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/quiz/1/submit HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzUsImV4cCI6MTc2NDA2NDM3NX0.LtFjyTBQ3W7OJqdN_Gs9uAMiyBIoArzJURLlbHAeT6w
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTQsImV4cCI6MTc2NDEyMDk1NH0.P9i79TRoCo0kuEZMQX47il-MFiYpJJQKynnPF0ugOhw
 Content-Type: application/x-www-form-urlencoded
 Host: localhost:8080
 Content-Length: 8
@@ -2367,16 +2357,13 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 203
+Content-Length: 113
 
 {
   "code" : "QUIZ_OK_003",
   "message" : "답안 제출 성공",
   "result" : {
-    "quizId" : 1,
-    "quizTotalAttemptNum" : 10,
-    "quizCorrectNum" : 7,
-    "quizCorrectPercent" : 70.0
+    "hasNext" : true
   }
 }</code></pre>
 </div>
@@ -2414,24 +2401,9 @@ Content-Length: 203
 <td class="tableblock halign-left valign-top"><p class="tableblock">응답 데이터</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">퀴즈 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizTotalAttemptNum</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">총 시도 횟수</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizCorrectNum</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">정답 횟수</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizCorrectPercent</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">정답률 (%)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.hasNext</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">다음 퀴즈 존재 유무</p></td>
 </tr>
 </tbody>
 </table>
@@ -2439,30 +2411,23 @@ Content-Length: 203
 </div>
 </div>
 <div class="sect1">
-<h2 id="quiz-report"><a class="link" href="#quiz-report">퀴즈 신고</a></h2>
+<h2 id="quiz-today"><a class="link" href="#quiz-today">오늘의 퀴즈</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>POST</code> 요청을 사용하여 퀴즈에 대한 오류나 부적절한 내용을 신고합니다.</p>
+<p><code>GET</code> 요청을 사용하여 오늘의 퀴즈 ID를 조회합니다.</p>
 </div>
 <div class="sect2">
-<h3 id="quiz-report_http_request"><a class="link" href="#quiz-report_http_request">HTTP request</a></h3>
+<h3 id="quiz-today_http_request"><a class="link" href="#quiz-today_http_request">HTTP request</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/quiz/1/report HTTP/1.1
-Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzUsImV4cCI6MTc2NDA2NDM3NX0.LtFjyTBQ3W7OJqdN_Gs9uAMiyBIoArzJURLlbHAeT6w
-Content-Length: 111
-Host: localhost:8080
-
-{
-  "title" : "오타가 있습니다",
-  "content" : "문제 내용에 오타가 있어 신고합니다."
-}</code></pre>
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/today HTTP/1.1
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTQsImV4cCI6MTc2NDEyMDk1NH0.P9i79TRoCo0kuEZMQX47il-MFiYpJJQKynnPF0ugOhw
+Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="quiz-report_request_headers"><a class="link" href="#quiz-report_request_headers">Request headers</a></h3>
+<h3 id="quiz-today_request_headers"><a class="link" href="#quiz-today_request_headers">Request headers</a></h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -2483,58 +2448,13 @@ Host: localhost:8080
 </table>
 </div>
 <div class="sect2">
-<h3 id="quiz-report_path_parameters"><a class="link" href="#quiz-report_path_parameters">Path parameters</a></h3>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. /api/quiz/{quizId}/report</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>quizId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">퀴즈 ID</p></td>
-</tr>
-</tbody>
-</table>
+<h3 id="quiz-today_request_fields"><a class="link" href="#quiz-today_request_fields">Request fields</a></h3>
+<div class="paragraph">
+<p>Snippet request-fields not found for operation::quiz/today</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="quiz-report_request_fields"><a class="link" href="#quiz-report_request_fields">Request fields</a></h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Path</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>title</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">신고 제목</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">신고 내용</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="quiz-report_http_response"><a class="link" href="#quiz-report_http_response">HTTP response</a></h3>
+<h3 id="quiz-today_http_response"><a class="link" href="#quiz-today_http_response">HTTP response</a></h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
@@ -2545,20 +2465,20 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 115
+Content-Length: 119
 
 {
-  "code" : "QUIZ_OK_004",
-  "message" : "퀴즈 신고 성공",
+  "code" : "QUIZ_OK_006",
+  "message" : "오늘의 퀴즈 조회 성공",
   "result" : {
-    "quizReportId" : 1
+    "quizId" : 1
   }
 }</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="quiz-report_response_fields"><a class="link" href="#quiz-report_response_fields">Response fields</a></h3>
+<h3 id="quiz-today_response_fields"><a class="link" href="#quiz-today_response_fields">Response fields</a></h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 33.3333%;">
@@ -2589,9 +2509,9 @@ Content-Length: 115
 <td class="tableblock halign-left valign-top"><p class="tableblock">응답 데이터</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizReportId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizId</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">퀴즈 신고 ID</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">퀴즈 id</p></td>
 </tr>
 </tbody>
 </table>
@@ -2609,7 +2529,7 @@ Content-Length: 115
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/solved?categoryIds=1%2C2&amp;pageNum=0 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzUsImV4cCI6MTc2NDA2NDM3NX0.LtFjyTBQ3W7OJqdN_Gs9uAMiyBIoArzJURLlbHAeT6w
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTQsImV4cCI6MTc2NDEyMDk1NH0.P9i79TRoCo0kuEZMQX47il-MFiYpJJQKynnPF0ugOhw
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2716,166 +2636,6 @@ Content-Length: 327
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.hasNext</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">다음 페이지 존재 여부</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="quiz-resolve"><a class="link" href="#quiz-resolve">퀴즈 정답 해설 조회</a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><code>GET</code> 요청을 사용하여 퀴즈의 정답과 해설을 조회합니다.</p>
-</div>
-<div class="sect2">
-<h3 id="quiz-resolve_http_request"><a class="link" href="#quiz-resolve_http_request">HTTP request</a></h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/1/resolve HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzUsImV4cCI6MTc2NDA2NDM3NX0.LtFjyTBQ3W7OJqdN_Gs9uAMiyBIoArzJURLlbHAeT6w
-Host: localhost:8080</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="quiz-resolve_request_headers"><a class="link" href="#quiz-resolve_request_headers">Request headers</a></h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">액세스 토큰 (Bearer {token})</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="quiz-resolve_path_parameters"><a class="link" href="#quiz-resolve_path_parameters">Path parameters</a></h3>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. /api/quiz/{quizId}/resolve</caption>
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>quizId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">퀴즈 ID</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="quiz-resolve_http_response"><a class="link" href="#quiz-resolve_http_response">HTTP response</a></h3>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json
-X-Content-Type-Options: nosniff
-X-XSS-Protection: 0
-Cache-Control: no-cache, no-store, max-age=0, must-revalidate
-Pragma: no-cache
-Expires: 0
-X-Frame-Options: DENY
-Content-Length: 453
-
-{
-  "code" : "QUIZ_OK_006",
-  "message" : "재도전 퀴즈 조회 성공",
-  "result" : {
-    "quizId" : 1,
-    "quizCategoryId" : 1,
-    "quizTitle" : "연차 사용",
-    "quizContent" : "연차 사용 시 승인 절차는?",
-    "quizType" : "MULTIPLE_CHOICE",
-    "quizCorrectAnswer" : "1",
-    "quizAdditionalInformation" : "1. 사전 승인 필요\n2. 사후 신고만 필요\n3. 승인 불필요\n4. 부서장 승인만 필요"
-  }
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="quiz-resolve_response_fields"><a class="link" href="#quiz-resolve_response_fields">Response fields</a></h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Path</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 코드</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>message</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 메시지</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">응답 데이터</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">퀴즈 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizCategoryId</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">퀴즈 카테고리 ID</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizTitle</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">퀴즈 제목</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizContent</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">퀴즈 내용 (문제)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizType</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">퀴즈 타입</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizCorrectAnswer</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">정답</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.quizAdditionalInformation</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">추가 정보 (선택지)</p></td>
 </tr>
 </tbody>
 </table>
@@ -3232,7 +2992,7 @@ Content-Length: 590
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/magazine/1/scrap HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNjgsImV4cCI6MTc2NDA2NDM2OH0.2Alfp1mIrWwaIu9dszaLgrE8z7Lb2WnsLKBh2je6tQo
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NDgsImV4cCI6MTc2NDEyMDk0OH0.Sp2Ic2VGpqVj5UObdVqkwoWhK5ydJW9c80epBOzLpB8
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
@@ -3363,7 +3123,7 @@ Content-Length: 149
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/magazine/scrap-box?pageNum=1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNjksImV4cCI6MTc2NDA2NDM2OX0.5dQHd4Mv567t76f7bq9GfhQwN3gHBCv-0YKAi3GQGRo
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NDksImV4cCI6MTc2NDEyMDk0OX0.Lj2XPUx35obn1Rdbh3tZuXXfXVMYGlP1GwH8Bnq7CY4
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -5023,7 +4783,7 @@ Content-Length: 497
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/questions/my?pageNum=1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzQsImV4cCI6MTc2NDA2NDM3NH0.4Zvrpr0M_fgA1lXK3JeiZ7Lef3eJI4FydwxShJOnXGk
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTMsImV4cCI6MTc2NDEyMDk1M30.6seGCVkN75oJWMYyGkFEXSGUAt8X8wj2y3q2YeAIAGw
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -5549,7 +5309,7 @@ Content-Length: 129
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/comments/1?targetType=RESPONSE&amp;pageNum=1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzIsImV4cCI6MTc2NDA2NDM3Mn0.PXqEamJw0lo1j1ZTdZfmvmYp7RyNpUnTZlmsxsUn1Cg
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjA5NTIsImV4cCI6MTc2NDEyMDk1Mn0.LTl-Vu134yoxTFPhb1bRYDQxPZw_UewM1tAdMsE7VCA
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -6291,7 +6051,7 @@ Content-Length: 628
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-10-14 17:23:34 +0900
+Last updated 2025-10-15 18:17:56 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

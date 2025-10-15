@@ -5,23 +5,28 @@ import lombok.Builder;
 
 @Builder
 public record GetQuizResponseDto(
-        Long quizId,
-        Long quizCategoryId,
-        String quizTitle,
-        String quizContent,
-        String quizType,
-        String quizCorrectAnswer,
-        String quizAdditionalInformation
+        Long id,
+        Long categoryId,
+        String question,
+        String type,
+        String[] options,
+        String correctAnswer,
+        String explanation
 ) {
     public static GetQuizResponseDto from(GetQuizResponse response) {
-        return GetQuizResponseDto.builder()
-                .quizId(response.getQuizId())
-                .quizCategoryId(response.getQuizCategoryId())
-                .quizTitle(response.getQuizTitle())
-                .quizContent(response.getQuizContent())
-                .quizType(response.getQuizType())
-                .quizCorrectAnswer(response.getQuizCorrectAnswer())
-                .quizAdditionalInformation(response.getQuizAdditionalInformation())
+        GetQuizResponseDtoBuilder builder = GetQuizResponseDto.builder();
+
+        if(!response.getQuizContentList().isEmpty()){
+            builder.options(response.getQuizContentList().toArray(String[]::new));
+        }
+
+        return builder
+                .id(response.getQuizId())
+                .categoryId(response.getQuizCategoryId())
+                .question(response.getQuizTitle())
+                .type(response.getQuizType())
+                .correctAnswer(response.getQuizCorrectAnswer())
+                .explanation(response.getQuizAdditionalInformation())
                 .build();
     }
 }

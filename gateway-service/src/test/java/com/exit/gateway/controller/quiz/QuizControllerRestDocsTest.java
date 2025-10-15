@@ -7,7 +7,6 @@ import com.exit.gateway.config.RestDocsConfiguration;
 import com.exit.gateway.global.resolver.DeviceIdArgumentResolver;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.quiz.QuizGrpcClient;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,12 +23,12 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -174,10 +173,7 @@ class QuizControllerRestDocsTest {
     void submitAnswer() throws Exception {
         // given
         SubmitAnswerResponse grpcResponse = SubmitAnswerResponse.newBuilder()
-                .setQuizId(1L)
-                .setQuizTotalAttemptNum(10)
-                .setQuizCorrectNum(7)
-                .setQuizCorrectPercent(70.0)
+                .setHasNext(true)
                 .build();
 
         given(quizGrpcClient.submitAnswer(anyLong(), anyString(), anyLong())).willReturn(grpcResponse);
@@ -187,8 +183,7 @@ class QuizControllerRestDocsTest {
                         .header("Authorization", "Bearer " + validAccessToken)
                         .param("answer", "3"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result.quizId").value(1L))
-                .andExpect(jsonPath("$.result.quizCorrectPercent").value(70.0))
+                .andExpect(jsonPath("$.result.hasNext").value(true))
                 .andDo(document("quiz/submit-answer",
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
@@ -200,47 +195,7 @@ class QuizControllerRestDocsTest {
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.quizId").description("퀴즈 ID"),
-                                fieldWithPath("result.quizTotalAttemptNum").description("총 시도 횟수"),
-                                fieldWithPath("result.quizCorrectNum").description("정답 횟수"),
-                                fieldWithPath("result.quizCorrectPercent").description("정답률 (%)")
-                        )
-                ));
-    }
-
-    @Test
-    @DisplayName("퀴즈 신고 API")
-    void reportQuiz() throws Exception {
-        // given
-        ReportQuizResponse grpcResponse = ReportQuizResponse.newBuilder()
-                .setQuizReportId(1L)
-                .build();
-
-        given(quizGrpcClient.reportQuiz(anyLong(), anyLong(), any())).willReturn(grpcResponse);
-
-        // when & then
-        mockMvc.perform(post("/api/quiz/{quizId}/report", 1L)
-                        .header("Authorization", "Bearer " + validAccessToken)
-                        .contentType("application/json")
-                        .content("{\"title\": \"오타가 있습니다\", \"content\": \"문제 내용에 오타가 있어 신고합니다.\"}"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.result.quizReportId").value(1L))
-                .andDo(document("quiz/report",
-                        requestHeaders(
-                                headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
-                        ),
-                        pathParameters(
-                                parameterWithName("quizId").description("퀴즈 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("title").description("신고 제목"),
-                                fieldWithPath("content").description("신고 내용")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.quizReportId").description("퀴즈 신고 ID")
+                                fieldWithPath("result.hasNext").description("다음 퀴즈 존재 유무")
                         )
                 ));
     }
@@ -294,46 +249,29 @@ class QuizControllerRestDocsTest {
     }
 
     @Test
-    @DisplayName("퀴즈 정답 해설 조회 API")
-    void resolveQuiz() throws Exception {
+    @DisplayName("오늘의 퀴즈 ID 조회 API")
+    void getTodayQuiz() throws Exception {
         // given
-        GetQuizResponse grpcResponse = GetQuizResponse.newBuilder()
+        GetTodayQuizResponse grpcResponse = GetTodayQuizResponse.newBuilder()
                 .setQuizId(1L)
-                .setQuizCategoryId(1L)
-                .setQuizTitle("연차 사용")
-                .setQuizContent("연차 사용 시 승인 절차는?")
-                .setQuizType("MULTIPLE_CHOICE")
-                .setQuizCorrectAnswer("1")
-                .setQuizAdditionalInformation("1. 사전 승인 필요\n2. 사후 신고만 필요\n3. 승인 불필요\n4. 부서장 승인만 필요")
                 .build();
 
-        given(quizGrpcClient.resolveQuiz(anyLong())).willReturn(grpcResponse);
+        given(quizGrpcClient.getTodayQuiz()).willReturn(grpcResponse);
 
         // when & then
-        mockMvc.perform(get("/api/quiz/{quizId}/resolve", 1L)
+        mockMvc.perform(get("/api/quiz/today")
                         .header("Authorization", "Bearer " + validAccessToken))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.quizId").value(1L))
-                .andExpect(jsonPath("$.result.quizContent").value("연차 사용 시 승인 절차는?"))
-                .andExpect(jsonPath("$.result.quizCorrectAnswer").value("1"))
-                .andDo(document("quiz/resolve",
+                .andDo(document("quiz/today",
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
-                        ),
-                        pathParameters(
-                                parameterWithName("quizId").description("퀴즈 ID")
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.quizId").description("퀴즈 ID"),
-                                fieldWithPath("result.quizCategoryId").description("퀴즈 카테고리 ID"),
-                                fieldWithPath("result.quizTitle").description("퀴즈 제목"),
-                                fieldWithPath("result.quizContent").description("퀴즈 내용 (문제)"),
-                                fieldWithPath("result.quizType").description("퀴즈 타입"),
-                                fieldWithPath("result.quizCorrectAnswer").description("정답"),
-                                fieldWithPath("result.quizAdditionalInformation").description("추가 정보 (선택지)")
+                                fieldWithPath("result.quizId").description("퀴즈 id")
                         )
                 ));
     }
