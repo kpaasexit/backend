@@ -1,6 +1,0 @@
-[source,http,options="nowrap"]
-----
-GET /api/questions/similar?title=Spring+JWT&content=%EC%9D%B8%EC%A6%9D+%EA%B5%AC%ED%98%84 HTTP/1.1
-Host: localhost:8080
-
-----

@@ -1,8 +1,0 @@
-.+/api/quiz/{quizId}/resolve+
-|===
-|Parameter|Description
-
-|`+quizId+`
-|퀴즈 ID
-
-|===

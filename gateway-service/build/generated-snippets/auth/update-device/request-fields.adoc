@@ -1,8 +1,0 @@
-|===
-|Path|Type|Description
-
-|`+fcmToken+`
-|`+String+`
-|FCM 푸시 알림 토큰
-
-|===

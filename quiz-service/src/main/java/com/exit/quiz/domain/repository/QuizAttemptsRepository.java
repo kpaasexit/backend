@@ -19,7 +19,7 @@ public interface QuizAttemptsRepository extends JpaRepository<QuizAttempts, Long
                     from QuizAttempts qa join qa.quiz q join q.quizCategory qc
                     where qc.id in(:categoryIdList) and qa.userId = :userId
             """)
-    Slice<GetSolvedQuiz> findByQuizCategoryIdIn(@Param("categoryIdList") List<Long> categoryIdList,
+    Slice<GetSolvedQuiz> findByQuizCategoryIdIn(@Param("categoryIdList") List<Short> categoryIdList,
                                                 @Param("userId") Long userId,
                                                 Pageable pageable
     );

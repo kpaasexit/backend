@@ -1,6 +1,0 @@
-[source,bash]
-----
-$ http GET 'http://localhost:8080/api/user/info' \
-    'Content-Type:application/json;charset=UTF-8' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MTIzMDAsImV4cCI6MTc2NDExMjMwMH0._5-3YvYhTIoBpRYbeb7Jz-Jn5P9P0K6msmEYWS3KGqc'
-----

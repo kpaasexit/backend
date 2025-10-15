@@ -1,7 +1,0 @@
-|===
-|Parameter|Description
-
-|`+nickname+`
-|중복 체크할 닉네임
-
-|===

@@ -1,5 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/api/comments/1' -i -X DELETE \
-    -d 'commentType=RESPONSE'
-----

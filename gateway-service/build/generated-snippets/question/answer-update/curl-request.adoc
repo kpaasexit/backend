@@ -1,8 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/api/questions/answers/1' -i -X PUT \
-    -H 'Content-Type: application/json;charset=UTF-8' \
-    -d '{
-  "content" : "수정된 답변 내용입니다."
-}'
-----

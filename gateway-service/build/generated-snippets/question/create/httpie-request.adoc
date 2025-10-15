@@ -1,6 +1,0 @@
-[source,bash]
-----
-$ http --multipart POST 'http://localhost:8080/api/questions' \
-    'images'@'test-image1.jpg' \
-    'images'@'test-image2.png'
-----

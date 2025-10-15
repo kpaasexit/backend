@@ -1,8 +1,0 @@
-.+/api/magazine/{magazineId}/scrap+
-|===
-|Parameter|Description
-
-|`+magazineId+`
-|매거진 ID
-
-|===

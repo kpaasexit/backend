@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/api/magazine/category/1?pageNum=1' -i -X GET
-----

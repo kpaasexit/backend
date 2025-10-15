@@ -1,8 +1,0 @@
-[source,json,options="nowrap"]
-----
-{
-  "code" : "QUESTION_OK_013",
-  "message" : "댓글 삭제 성공",
-  "result" : null
-}
-----

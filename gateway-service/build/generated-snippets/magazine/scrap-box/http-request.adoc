@@ -1,7 +1,0 @@
-[source,http,options="nowrap"]
-----
-GET /api/magazine/scrap-box?pageNum=1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MTIyOTAsImV4cCI6MTc2NDExMjI5MH0.aAsWA9wt-sIuGoWBevYaZZF55MkjJDS5r9DVMfbXu2c
-Host: localhost:8080
-
-----
