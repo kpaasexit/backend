@@ -1,8 +1,0 @@
-.+/api/questions/answers/{responseId}/adopt+
-|===
-|Parameter|Description
-
-|`+responseId+`
-|답변 ID
-
-|===

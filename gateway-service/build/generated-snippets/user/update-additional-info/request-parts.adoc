@@ -1,7 +1,0 @@
-|===
-|Part|Description
-
-|`+image+`
-|프로필 이미지 파일 (JPG, PNG)
-
-|===

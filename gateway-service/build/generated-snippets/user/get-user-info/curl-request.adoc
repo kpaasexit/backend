@@ -1,6 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/api/user/info' -i -X GET \
-    -H 'Content-Type: application/json;charset=UTF-8' \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjczMzUsImV4cCI6MTc2NDEyNzMzNX0.SLPQWUqmsKsgAsfNZHDsc0zmoRjBTnXdoMz6BtNJ43E'
-----

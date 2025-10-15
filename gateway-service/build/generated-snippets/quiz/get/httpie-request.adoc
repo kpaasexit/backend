@@ -1,5 +1,0 @@
-[source,bash]
-----
-$ http GET 'http://localhost:8080/api/quiz/1' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjczMzMsImV4cCI6MTc2NDEyNzMzM30.Ii9TmmOxxhWQyz_hkEZeZBSv89dR08iSvmAV0FOWEV0'
-----

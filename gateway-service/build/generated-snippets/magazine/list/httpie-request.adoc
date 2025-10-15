@@ -1,4 +1,0 @@
-[source,bash]
-----
-$ http GET 'http://localhost:8080/api/magazine/category/1?pageNum=1'
-----

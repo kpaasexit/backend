@@ -1,7 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/api/questions/answers' -i -X POST \
-    -H 'Content-Type: multipart/form-data;charset=UTF-8' \
-    -F 'images=@test-image1.jpg;type=image/jpeg' \
-    -F 'images=@test-image2.png;type=image/png'
-----

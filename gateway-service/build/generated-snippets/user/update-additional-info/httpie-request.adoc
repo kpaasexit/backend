@@ -1,6 +1,0 @@
-[source,bash]
-----
-$ http --multipart PUT 'http://localhost:8080/api/user/additional-info' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MjczMzUsImV4cCI6MTc2NDEyNzMzNX0.SLPQWUqmsKsgAsfNZHDsc0zmoRjBTnXdoMz6BtNJ43E' \
-    'image'@'profile.jpg'
-----
