@@ -5,5 +5,5 @@ $ echo '{
   "content" : "문제 내용에 오타가 있어 신고합니다."
 }' | http POST 'http://localhost:8080/api/quiz/1/report' \
     'Content-Type:application/json;charset=UTF-8' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MTA1OTksImV4cCI6MTc2NDExMDU5OX0.DelRVkjgvxchYnwy1VX24SYrZXWpG0XHresuKvrcJwg'
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MTIyOTcsImV4cCI6MTc2NDExMjI5N30.4D2Jx5UWsvJFh0DgBeb0pB7IbNH3cOWa6ts-MXrJ_Os'
 ----
