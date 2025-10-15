@@ -34,20 +34,8 @@ secrets.yml
 .DS_Store
 Thumbs.db
 
-# Other services (exclude services not being built)
-# When building gateway-service, we only need common and gateway-service
-ai-service/
-config-server/
-eureka-service/
-magazine-service/
-notification-service/
-question-service/
-quiz-service/
-user-service/
-
-# But we need to include the service being built
-!gateway-service/
-!common/
+# Note: All service directories are included for flexible builds
+# Each Dockerfile will COPY only the service it needs
 
 # Temporary files
 nul
