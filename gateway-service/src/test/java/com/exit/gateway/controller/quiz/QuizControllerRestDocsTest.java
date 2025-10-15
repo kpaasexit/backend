@@ -15,8 +15,11 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -132,10 +135,10 @@ class QuizControllerRestDocsTest {
                 .setQuizId(1L)
                 .setQuizCategoryId(1L)
                 .setQuizTitle("Java 기본 문법")
-                .setQuizContent("다음 중 Java의 특징이 아닌 것은?")
-                .setQuizType("MULTIPLE_CHOICE")
+                .addAllQuizContent(List.of("1번", "2번",  "3번", "4번"))
+                .setQuizType("MULTIPLE")
                 .setQuizCorrectAnswer("3")
-                .setQuizAdditionalInformation("1. 객체지향\n2. 플랫폼 독립적\n3. 저수준 언어\n4. 가비지 컬렉션")
+                .setQuizAdditionalInformation("해설지")
                 .build();
 
         given(quizGrpcClient.getQuiz(anyLong(), anyLong())).willReturn(grpcResponse);
@@ -144,8 +147,8 @@ class QuizControllerRestDocsTest {
         mockMvc.perform(get("/api/quiz/{categoryId}", 1L)
                         .header("Authorization", "Bearer " + validAccessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result.quizId").value(1L))
-                .andExpect(jsonPath("$.result.quizTitle").value("Java 기본 문법"))
+                .andExpect(jsonPath("$.result.id").value(1L))
+                .andExpect(jsonPath("$.result.question").value("Java 기본 문법"))
                 .andDo(document("quiz/get",
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
@@ -157,13 +160,13 @@ class QuizControllerRestDocsTest {
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.quizId").description("퀴즈 ID"),
-                                fieldWithPath("result.quizCategoryId").description("퀴즈 카테고리 ID"),
-                                fieldWithPath("result.quizTitle").description("퀴즈 제목"),
-                                fieldWithPath("result.quizContent").description("퀴즈 내용 (문제)"),
-                                fieldWithPath("result.quizType").description("퀴즈 타입 (MULTIPLE_CHOICE, TRUE_FALSE 등)"),
-                                fieldWithPath("result.quizCorrectAnswer").description("정답"),
-                                fieldWithPath("result.quizAdditionalInformation").description("추가 정보 (선택지 등)")
+                                fieldWithPath("result.id").description("퀴즈 ID"),
+                                fieldWithPath("result.categoryId").description("퀴즈 카테고리 ID"),
+                                fieldWithPath("result.question").description("퀴즈 질문"),
+                                fieldWithPath("result.options").type(JsonFieldType.ARRAY).description("퀴즈 옵션 배열 (문제)"),
+                                fieldWithPath("result.type").description("퀴즈 타입 (MULTIPLE, OX 등)"),
+                                fieldWithPath("result.correctAnswer").description("정답"),
+                                fieldWithPath("result.explanation").description("해설지")
                         )
                 ));
     }

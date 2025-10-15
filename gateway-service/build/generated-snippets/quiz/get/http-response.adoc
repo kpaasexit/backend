@@ -8,19 +8,19 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 437
+Content-Length: 309
 
 {
   "code" : "QUIZ_OK_002",
   "message" : "퀴즈 조회 성공",
   "result" : {
-    "quizId" : 1,
-    "quizCategoryId" : 1,
-    "quizTitle" : "Java 기본 문법",
-    "quizContent" : "다음 중 Java의 특징이 아닌 것은?",
-    "quizType" : "MULTIPLE_CHOICE",
-    "quizCorrectAnswer" : "3",
-    "quizAdditionalInformation" : "1. 객체지향\n2. 플랫폼 독립적\n3. 저수준 언어\n4. 가비지 컬렉션"
+    "id" : 1,
+    "categoryId" : 1,
+    "question" : "Java 기본 문법",
+    "type" : "MULTIPLE",
+    "options" : [ "1번", "2번", "3번", "4번" ],
+    "correctAnswer" : "3",
+    "explanation" : "해설지"
   }
 }
 ----
