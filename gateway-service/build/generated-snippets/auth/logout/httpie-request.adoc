@@ -2,5 +2,5 @@
 ----
 $ http POST 'http://localhost:8080/api/auth/logout' \
     'X-Device-Id:test-device-id' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1NDI5NzAsImV4cCI6MTc2NDE0Mjk3MH0.M-NkTG-b_or7WwdpzFatpdljyupmKvoCD8aw7MT7GFA'
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1NDQ1MzYsImV4cCI6MTc2NDE0NDUzNn0.5jNFMMdWhJqsQw1Idj7N2ESrnaX5I5tsY5sy4M3lYqg'
 ----

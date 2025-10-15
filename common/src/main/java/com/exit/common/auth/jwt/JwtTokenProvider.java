@@ -109,6 +109,18 @@ public class JwtTokenProvider {
         }
     }
 
+    // 리프레시 토큰으로부터 디바이스 ID 얻기
+    public String getDeviceIdFromRefreshToken(String token) {
+        try {
+            Claims claims = getClaimsByToken(token);
+            return claims.get("deviceId", String.class);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(UserErrorCode.EXPIRED_REFRESH_TOKEN);
+        } catch (Exception e) {
+            throw new RestApiException(UserErrorCode.INVALID_REFRESH_TOKEN);
+        }
+    }
+
     // 토큰으로부터 유저 상세 정보 얻기
     public Member getUserDetailFromToken(String token) {
         try {
