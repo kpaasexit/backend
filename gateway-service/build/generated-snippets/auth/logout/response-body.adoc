@@ -1,0 +1,8 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "AUTH_OK_001",
+  "message" : "로그인 성공",
+  "result" : "로그아웃이 완료되었습니다."
+}
+----

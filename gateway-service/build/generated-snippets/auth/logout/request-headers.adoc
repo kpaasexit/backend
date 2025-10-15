@@ -1,0 +1,10 @@
+|===
+|Name|Description
+
+|`+X-Device-Id+`
+|디바이스 ID
+
+|`+Authorization+`
+|액세스 토큰 (Bearer {token})
+
+|===

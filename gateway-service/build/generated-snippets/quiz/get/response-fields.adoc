@@ -1,0 +1,44 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.id+`
+|`+Number+`
+|퀴즈 ID
+
+|`+result.categoryId+`
+|`+Number+`
+|퀴즈 카테고리 ID
+
+|`+result.question+`
+|`+String+`
+|퀴즈 질문
+
+|`+result.options+`
+|`+Array+`
+|퀴즈 옵션 배열 (문제)
+
+|`+result.type+`
+|`+String+`
+|퀴즈 타입 (MULTIPLE, OX 등)
+
+|`+result.correctAnswer+`
+|`+String+`
+|정답
+
+|`+result.explanation+`
+|`+String+`
+|해설지
+
+|===

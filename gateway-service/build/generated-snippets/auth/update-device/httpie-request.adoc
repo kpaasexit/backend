@@ -1,0 +1,9 @@
+[source,bash]
+----
+$ echo '{
+  "fcmToken" : "test-fcm-token"
+}' | http POST 'http://localhost:8080/api/auth/device' \
+    'Content-Type:application/json;charset=UTF-8' \
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MzAxOTUsImV4cCI6MTc2NDEzMDE5NX0.5T0Q7s2ol8f7M5ms2XhXEJtJwT6oBblzKpaP-IRKCds' \
+    'X-Device-Id:test-device-id'
+----

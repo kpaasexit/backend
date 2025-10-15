@@ -1,0 +1,8 @@
+[source,http,options="nowrap"]
+----
+GET /api/user/info HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MzAxOTYsImV4cCI6MTc2NDEzMDE5Nn0.Ind-7__4MfokORAuW0WQ8GkpOT-F6VakeIeKLEOZL48
+Host: localhost:8080
+
+----

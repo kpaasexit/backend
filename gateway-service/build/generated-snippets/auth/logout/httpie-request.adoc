@@ -1,0 +1,6 @@
+[source,bash]
+----
+$ http POST 'http://localhost:8080/api/auth/logout' \
+    'X-Device-Id:test-device-id' \
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MzAxOTUsImV4cCI6MTc2NDEzMDE5NX0.5T0Q7s2ol8f7M5ms2XhXEJtJwT6oBblzKpaP-IRKCds'
+----

@@ -1,0 +1,15 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUESTION_OK_008",
+  "message" : "답변 신고 성공",
+  "result" : {
+    "responseReportId" : 1,
+    "responseId" : 1,
+    "responseReportTitle" : "부정확한 정보",
+    "responseReportContent" : "답변 내용이 부정확합니다.",
+    "responseReportWriterId" : 1,
+    "createdAt" : "2024-01-01T00:00:00"
+  }
+}
+----

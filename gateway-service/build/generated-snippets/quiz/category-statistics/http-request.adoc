@@ -1,0 +1,7 @@
+[source,http,options="nowrap"]
+----
+GET /api/quiz/categories/statistics HTTP/1.1
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MzAxOTQsImV4cCI6MTc2NDEzMDE5NH0.Weqv1wKmw2a33DbX53MIwpVnR0TGsXpD2bX5xysxodg
+Host: localhost:8080
+
+----

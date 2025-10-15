@@ -1,0 +1,32 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.commentId+`
+|`+Number+`
+|댓글 ID
+
+|`+result.content+`
+|`+String+`
+|댓글 내용
+
+|`+result.userName+`
+|`+String+`
+|작성자 이름
+
+|`+result.createdAt+`
+|`+String+`
+|작성일시
+
+|===

@@ -1,0 +1,8 @@
+.+/api/questions/answers/{responseId}+
+|===
+|Parameter|Description
+
+|`+responseId+`
+|답변 ID
+
+|===

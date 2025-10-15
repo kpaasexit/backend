@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ http GET 'http://localhost:8080/api/questions/categories/recommend?title=Spring+Boot+JWT+%EC%9D%B8%EC%A6%9D'
+----

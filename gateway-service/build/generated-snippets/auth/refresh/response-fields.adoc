@@ -1,0 +1,24 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.accessToken+`
+|`+String+`
+|새로운 액세스 토큰
+
+|`+result.refreshToken+`
+|`+String+`
+|새로운 리프레시 토큰
+
+|===

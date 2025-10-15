@@ -1,0 +1,10 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUIZ_OK_006",
+  "message" : "오늘의 퀴즈 조회 성공",
+  "result" : {
+    "quizId" : 1
+  }
+}
+----

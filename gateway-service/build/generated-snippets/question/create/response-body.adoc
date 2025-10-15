@@ -1,0 +1,20 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUESTION_OK_001",
+  "message" : "질문 등록 성공",
+  "result" : {
+    "questionId" : 1,
+    "questionTitle" : "Spring JWT 인증 구현",
+    "questionContent" : "JWT 토큰 기반 인증을 구현하고 싶습니다.",
+    "questionCategory" : 1,
+    "questionUrgency" : true,
+    "questionAnswerType" : "PUBLIC",
+    "questionDisclosureType" : "PUBLIC",
+    "questionWriterId" : 1,
+    "questionWriterName" : "김사용자",
+    "imageUrls" : [ ],
+    "createdAt" : "2024-01-01T00:00:00"
+  }
+}
+----

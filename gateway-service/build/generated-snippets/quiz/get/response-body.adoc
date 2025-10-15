@@ -1,0 +1,16 @@
+[source,json,options="nowrap"]
+----
+{
+  "code" : "QUIZ_OK_002",
+  "message" : "퀴즈 조회 성공",
+  "result" : {
+    "id" : 1,
+    "categoryId" : 1,
+    "question" : "Java 기본 문법",
+    "type" : "MULTIPLE",
+    "options" : [ "1번", "2번", "3번", "4번" ],
+    "correctAnswer" : "3",
+    "explanation" : "해설지"
+  }
+}
+----

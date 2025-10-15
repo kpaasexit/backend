@@ -1,0 +1,8 @@
+.+/api/quiz/{quizId}/submit+
+|===
+|Parameter|Description
+
+|`+quizId+`
+|퀴즈 ID
+
+|===

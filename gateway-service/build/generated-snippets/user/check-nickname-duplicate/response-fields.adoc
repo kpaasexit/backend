@@ -1,0 +1,20 @@
+|===
+|Path|Type|Description
+
+|`+code+`
+|`+String+`
+|응답 코드
+
+|`+message+`
+|`+String+`
+|응답 메시지
+
+|`+result+`
+|`+Object+`
+|응답 데이터
+
+|`+result.isAvailable+`
+|`+Boolean+`
+|사용 가능 여부 (true: 사용 가능, false: 중복)
+
+|===
