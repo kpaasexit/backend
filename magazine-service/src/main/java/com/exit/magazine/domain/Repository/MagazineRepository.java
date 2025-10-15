@@ -19,4 +19,6 @@ public interface MagazineRepository extends JpaRepository<Magazines, Long> {
            "m.magazineSubtitle LIKE %:keyword% OR " +
            "m.magazineContent LIKE %:keyword%")
     Slice<Magazines> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    List<Magazines> findAllByMagazineIdIn(List<Long> longs);
 }

@@ -1,17 +1,11 @@
 package com.exit.gateway.controller.magazine;
 
 import com.exit.common.exception.rest.RestApiException;
-import com.exit.common.grpc.GetMagazineRequest;
-import com.exit.common.grpc.GetMagazinesByCategoryRequest;
-import com.exit.common.grpc.GetScrapBoxRequest;
-import com.exit.common.grpc.ScrapMagazineRequest;
+import com.exit.common.grpc.*;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.MagazineErrorCode;
 import com.exit.common.response.success.MagazineSuccessCode;
-import com.exit.gateway.controller.magazine.dto.response.GetScrapBoxResponseDto;
-import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
-import com.exit.gateway.controller.magazine.dto.response.MagazineItemListDto;
-import com.exit.gateway.controller.magazine.dto.response.ScrapMagazineResponseDto;
+import com.exit.gateway.controller.magazine.dto.response.*;
 import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
 import io.grpc.Status;
@@ -115,6 +109,28 @@ public class MagazineController {
         } catch (Exception e) {
             log.error("Get magazine failed", e);
             throw new RestApiException(MagazineErrorCode.GET_SCRAPBOX_FAIL);
+        }
+    }
+
+    @GetMapping("/recommend")
+    public SuccessResponse<GetRecommendedMagazineResponseDto> getScrapBox(
+            @LoginUser Long userId
+    ) {
+        try {
+            log.info("Get scrap-box request received");
+            GetRecommendedMagazineRequest request = GetRecommendedMagazineRequest.newBuilder()
+                    .setUserId(userId)
+                    .build();
+
+            return SuccessResponse.of(MagazineSuccessCode.GET_RECOMMENDED_MAGAZINE_SUCCESS,
+                    magazineGrpcClient.getRecommendedMagazine(request));
+        } catch (StatusRuntimeException e) {
+            log.error("Get magazine failed via gRPC: {}", e.getStatus(), e);
+            String errorMessage = getGrpcErrorMessage(e);
+            throw new RestApiException(MagazineErrorCode.GET_RECOMMENDED_MAGAZINE_FAIL, errorMessage);
+        } catch (Exception e) {
+            log.error("Get magazine failed", e);
+            throw new RestApiException(MagazineErrorCode.GET_RECOMMENDED_MAGAZINE_FAIL);
         }
     }
 

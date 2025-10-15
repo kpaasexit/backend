@@ -14,6 +14,7 @@ service MagazineService {
   rpc GetMagazine(GetMagazineRequest) returns (GetMagazineResponse);
   rpc ScrapMagazine(ScrapMagazineRequest) returns (ScrapMagazineResponse);
   rpc GetScrapBox(GetScrapBoxRequest) returns (GetScrapBoxResponse);
+  rpc GetRecommendedMagazine(GetRecommendedMagazineRequest) returns (GetRecommendedMagazineResponse);
 }
 
 // request
@@ -34,6 +35,10 @@ message ScrapMagazineRequest {
 message GetScrapBoxRequest {
   int64 user_id = 1;
   int32 page_num = 2;
+}
+
+message GetRecommendedMagazineRequest {
+  int64 user_id = 1;
 }
 
 // response
@@ -73,4 +78,8 @@ message MagazineScrapBoxItem {
 message GetScrapBoxResponse {
   repeated MagazineScrapBoxItem magazine_scrap_box_item = 1;
   bool has_next = 2;
+}
+
+message GetRecommendedMagazineResponse {
+  repeated MagazineScrapBoxItem recommendMagazine = 1;
 }

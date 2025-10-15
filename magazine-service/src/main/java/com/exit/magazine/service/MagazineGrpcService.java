@@ -1,7 +1,6 @@
 package com.exit.magazine.service;
 
 import com.exit.common.grpc.*;
-import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -83,6 +82,23 @@ public class MagazineGrpcService extends MagazineServiceGrpc.MagazineServiceImpl
             log.error("Get ScrapBox failed", e);
             responseObserver.onError(Status.INTERNAL
                     .withDescription("매거진 스크랩 박스 조회 중 오류가 발생했습니다")
+                    .asRuntimeException());
+        }
+    }
+
+    @Override
+    public void getRecommendedMagazine(com.exit.common.grpc.GetRecommendedMagazineRequest request,
+                            StreamObserver<GetRecommendedMagazineResponse> responseObserver) {
+        try {
+            log.info("Get Recommended Magazine request received: {}", request.getUserId());
+            GetRecommendedMagazineResponse response = magazineService.getRecommendedMagazine(request);
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            log.error("Get Recommended Magazine failed", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("추천 매거진 조회 중 오류가 발생했습니다")
                     .asRuntimeException());
         }
     }
