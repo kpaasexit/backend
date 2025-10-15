@@ -175,7 +175,7 @@ bootJar {
     archiveClassifier.set(profile)
 
     // JAR에 REST Docs 포함 (빌드 디렉토리에서)
-    from("$buildDir/docs/asciidoc") { into 'static/docs' }
+    from("$buildDir/docs/asciidoc") { into 'static/back-docs' }
 }
 
 // build 태스크가 REST Docs를 항상 생성하도록 설정

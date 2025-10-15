@@ -2,7 +2,7 @@
 ----
 $ curl 'http://localhost:8080/api/auth/device' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA0NjQzNzYsImV4cCI6MTc2NDA2NDM3Nn0.z6yO5wEwMG_kyqR6zbG4oMzI71fD5JURY9-7jiuRi2A' \
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1MTA4MDUsImV4cCI6MTc2NDExMDgwNX0.qBQ3TclCFjeW27n3YuzpmZfX6kXO5Mqhgmeg4EPLOD0' \
     -H 'X-Device-Id: test-device-id' \
     -d '{
   "fcmToken" : "test-fcm-token"

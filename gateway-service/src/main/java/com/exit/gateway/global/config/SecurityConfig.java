@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                         .requestMatchers("/oauth2/**", "/login/**", "/api/auth/refresh").permitAll()
                         .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator").permitAll()
-                        .requestMatchers("/docs/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/back-docs/**", "/favicon.ico").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
