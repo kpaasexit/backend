@@ -2,7 +2,7 @@
 ----
 POST /api/auth/device HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1NDQ1MzYsImV4cCI6MTc2NDE0NDUzNn0.5jNFMMdWhJqsQw1Idj7N2ESrnaX5I5tsY5sy4M3lYqg
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA1NDU2MDUsImV4cCI6MTc2NDE0NTYwNX0.LwYOVgkQlIdfQu6upINFEbMR7QLs74S50A_tS7Cv0BY
 X-Device-Id: test-device-id
 Content-Length: 37
 Host: localhost:8080

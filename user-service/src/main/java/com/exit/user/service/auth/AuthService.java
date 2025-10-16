@@ -14,6 +14,7 @@ import com.exit.user.domain.repository.UserRepository;
 import com.exit.user.exception.GrpcUserErrorCode;
 import com.exit.user.util.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AuthService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
@@ -48,8 +50,14 @@ public class AuthService {
                     user.getUserProfileUrl()
             );
 
+        } catch (GrpcException e) {
+            // 이미 GrpcException인 경우 그대로 던짐
+            throw e;
         } catch (Exception e) {
-            throw new GrpcException(GrpcUserErrorCode.SOCIAL_LOGIN_FAILED);
+            log.error("Social login failed for provider: {}, socialId: {}",
+                    oauth2UserInfoRequestDto.getProvider(),
+                    oauth2UserInfoRequestDto.getSocialId(), e);
+            throw new GrpcException(GrpcUserErrorCode.SOCIAL_LOGIN_FAILED, e.getMessage());
         }
     }
 
@@ -74,8 +82,12 @@ public class AuthService {
                     user.getUserProfileUrl()
             );
 
+        } catch (GrpcException e) {
+            // 이미 GrpcException인 경우 그대로 던짐
+            throw e;
         } catch (Exception e) {
-            throw new GrpcException(GrpcUserErrorCode.INVALID_REFRESH_TOKEN);
+            log.error("Token refresh failed for deviceId: {}", request.deviceId(), e);
+            throw new GrpcException(GrpcUserErrorCode.INVALID_REFRESH_TOKEN, e.getMessage());
         }
     }
 
@@ -96,8 +108,12 @@ public class AuthService {
                     null
             );
 
+        } catch (GrpcException e) {
+            // 이미 GrpcException인 경우 그대로 던짐
+            throw e;
         } catch (Exception e) {
-            throw new GrpcException(GrpcUserErrorCode.LOGOUT_FAILED);
+            log.error("Logout failed for userId: {}, deviceId: {}", userId, deviceId, e);
+            throw new GrpcException(GrpcUserErrorCode.LOGOUT_FAILED, e.getMessage());
         }
     }
 
