@@ -14,8 +14,8 @@ import java.io.IOException;
 @Slf4j
 public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 
-    @Value("${app.oauth2.redirect-url:http://localhost:5761/oauth2/redirect}")
-    private String redirectUrl;
+    @Value("${app.oauth2.default-client-url:https://localhost:5761}")
+    private String defaultClientUrl;
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,
@@ -23,11 +23,7 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
                                         AuthenticationException exception) throws IOException {
 
         log.error("OAuth2 로그인 실패", exception);
-
-        // 실패 시 에러 파라미터와 함께 리다이렉트
-        String errorRedirectUrl = redirectUrl + "?error=authentication_failed&message=" +
-                exception.getMessage();
-
-        response.sendRedirect(errorRedirectUrl);
+        String finalRedirectUrl = String.format("%s/oauth/callback?success=false", defaultClientUrl);
+        response.sendRedirect(finalRedirectUrl);
     }
 }
