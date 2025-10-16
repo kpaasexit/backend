@@ -6,7 +6,7 @@ import com.exit.common.grpc.GetAdditionalQuestionRequest;
 import com.exit.common.grpc.ImageMetadata;
 import com.exit.common.grpc.UploadBytesRequest;
 import com.exit.common.response.SuccessResponse;
-import com.exit.common.response.error.rest.QuestionErrorCode;
+import com.exit.common.response.error.rest.question.QuestionErrorCode;
 import com.exit.common.response.success.QuestionSuccessCode;
 import com.exit.gateway.controller.question.dto.request.question.CreateAdditionalQuestionMessageRequestDto;
 import com.exit.gateway.controller.question.dto.response.question.CreateAdditionalQuestionMessageResponseDto;

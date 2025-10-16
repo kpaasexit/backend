@@ -1,7 +1,5 @@
 package com.exit.gateway.entity;
 
-import com.exit.common.exception.rest.RestApiException;
-import com.exit.common.response.error.rest.UserErrorCode;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.KakaoOAuth2UserInfo;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.NaverOAuth2UserInfo;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
@@ -16,7 +14,7 @@ public class OAuth2UserInfoFactory {
         return switch (registrationId.toLowerCase()) {
             case "kakao" -> new KakaoOAuth2UserInfo(attributes);
             case "naver" -> new NaverOAuth2UserInfo(attributes);
-            default -> throw new RestApiException(UserErrorCode.UNSUPPORTED_PROVIDER);
+            default -> null;
         };
     }
 }

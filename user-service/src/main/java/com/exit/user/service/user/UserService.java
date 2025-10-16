@@ -112,9 +112,15 @@ public class UserService {
     }
 
     public void updateDevice(UpdateDeviceRequest request) {
-        Users user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
-        createAndSaveFcmToken(request.getFcmToken(), user, request.getDeviceId());
+        try {
+            Users user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
+            createAndSaveFcmToken(request.getFcmToken(), user, request.getDeviceId());
+        } catch (GrpcException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new GrpcException(GrpcUserErrorCode.UPDATE_DEVICE_FAILED);
+        }
     }
 
     private void createAndSaveFcmToken(String fcmToken, Users user, String deviceId) {

@@ -1,10 +1,11 @@
 package com.exit.user.service.user;
 
+import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.*;
 import com.exit.user.domain.Users;
 import com.exit.user.domain.repository.UserRepository;
+import com.exit.user.exception.GrpcUserErrorCode;
 import com.google.protobuf.Empty;
-import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
             if (userOptional.isPresent()) {
                 Users user = userOptional.get();
-                String userName = user.getUserNickname(); // using userNickname field
+                String userName = user.getUserNickname();
 
                 GetUserNameResponse grpcResponse = GetUserNameResponse.newBuilder()
                         .setUserName(userName)
@@ -44,22 +45,14 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
                 log.info("User name retrieved successfully for userId: {}, userName: {}", request.getUserId(), userName);
             } else {
                 log.warn("User not found for userId: {}", request.getUserId());
-
-                GetUserNameResponse grpcResponse = GetUserNameResponse.newBuilder()
-                        .setUserName("")
-                        .setSuccess(false)
-                        .setMessage("User not found")
-                        .build();
-
-                responseObserver.onNext(grpcResponse);
-                responseObserver.onCompleted();
+                throw new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND);
             }
 
+        } catch (GrpcException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Get user name failed for userId: {}", request.getUserId(), e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("사용자 이름 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
+            throw new GrpcException(GrpcUserErrorCode.GET_USER_NAME_FAILED);
         }
     }
 
@@ -85,9 +78,8 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             responseObserver.onCompleted();
 
         } catch (Exception e) {
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("배치 사용자 이름 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
+            log.error("Get user names failed for userIds: {}", request.getUserIdList(), e);
+            throw new GrpcException(GrpcUserErrorCode.GET_USER_NAMES_FAILED);
         }
     }
 
@@ -100,34 +92,36 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             responseObserver.onCompleted();
 
         } catch (Exception e) {
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("신고 횟수 증가 중 오류가 발생했습니다")
-                    .asRuntimeException());
+            log.error("Increase report count failed for userId: {}", request.getUserId(), e);
+            throw new GrpcException(GrpcUserErrorCode.INCREASE_REPORT_COUNT_FAILED);
         }
     }
 
     @Override
     public void updateAdditionalUserInfo(com.exit.common.grpc.UpdateAdditionalUserInfoRequest request,
                                          StreamObserver<UpdateAdditionalUserInfoResponse> responseObserver) {
-        UpdateAdditionalUserInfoResponse response = userService.updateAdditionalUserInfo(request);
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+        try {
+            UpdateAdditionalUserInfoResponse response = userService.updateAdditionalUserInfo(request);
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            log.error("Update additional user info failed for userId: {}", request.getUserId(), e);
+            throw new GrpcException(GrpcUserErrorCode.UPDATE_ADDITIONAL_INFO_FAILED);
+        }
     }
 
     @Override
     public void getUserNameAndProfile(GetUserNameRequest request, StreamObserver<UpdateAdditionalUserInfoResponse> responseObserver) {
         try {
-            log.info("Get user name request received for userId: {}", request.getUserId());
+            log.info("Get user name and profile request received for userId: {}", request.getUserId());
             UpdateAdditionalUserInfoResponse response = userService.getUserNameAndProfile(request.getUserId());
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
 
         } catch (Exception e) {
-            log.error("Get user name failed for userId: {}", request.getUserId(), e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("사용자 이름, 프로필 이미지 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
+            log.error("Get user name and profile failed for userId: {}", request.getUserId(), e);
+            throw new GrpcException(GrpcUserErrorCode.GET_USER_NAME_AND_PROFILE_FAILED);
         }
     }
 
@@ -142,9 +136,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
         } catch (Exception e) {
             log.error("Get fcmToken failed for userId: {}", request.getUserId(), e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("사용자 fcm 토큰 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
+            throw new GrpcException(GrpcUserErrorCode.GET_FCM_TOKEN_FAILED);
         }
     }
 
@@ -159,26 +151,22 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
         } catch (Exception e) {
             log.error("Update device failed for userId: {}", request.getUserId(), e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("디바이스 정보 업데이트 중 오류가 발생했습니다")
-                    .asRuntimeException());
+            throw new GrpcException(GrpcUserErrorCode.UPDATE_DEVICE_FAILED);
         }
     }
 
     @Override
     public void getUsersNameAndProfile(GetUsersNameAndProfileRequest request, StreamObserver<GetUsersNameAndProfileResponse> responseObserver) {
         try {
-            log.info("Get user name and profile received for userId: {}", request.getUserIdList());
+            log.info("Get users name and profile received for userIds: {}", request.getUserIdList());
             GetUsersNameAndProfileResponse response = userService.getUsersNameAndProfile(request.getUserIdList());
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
 
         } catch (Exception e) {
-            log.error("Get user name failed for userId: {}", request.getUserIdList(), e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("사용자 이름, 프로필 이미지 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
+            log.error("Get users name and profile failed for userIds: {}", request.getUserIdList(), e);
+            throw new GrpcException(GrpcUserErrorCode.GET_USERS_NAME_AND_PROFILE_FAILED);
         }
     }
 
@@ -193,9 +181,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
         } catch (Exception e) {
             log.error("Check Nickname Duplicate failed for nickname: {}", request.getNickname(), e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("닉네임 중복 검사 중 오류가 발생했습니다")
-                    .asRuntimeException());
+            throw new GrpcException(GrpcUserErrorCode.CHECK_NICKNAME_DUPLICATE_FAILED);
         }
     }
 }

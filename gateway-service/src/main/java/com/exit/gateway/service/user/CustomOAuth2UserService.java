@@ -20,11 +20,10 @@ import java.util.UUID;
 @Slf4j
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserGrpcClient userGrpcClient;
+    private final AuthGrpcClient authGrpcClient;
 
     @Override
     public CustomOAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
-        // 1. 기본 OAuth2UserService로 사용자 정보 가져오기
         OAuth2User oauth2User = super.loadUser(request);
 
         String registrationId = request.getClientRegistration().getRegistrationId();
@@ -32,8 +31,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String deviceId = UUID.randomUUID().toString();
 
         try {
-            // 3. gRPC 호출 시 deviceId와 deviceType 전달
-            SocialLoginResponse socialLoginResponse = userGrpcClient.socialLogin(
+            SocialLoginResponse socialLoginResponse = authGrpcClient.socialLogin(
                     userInfo,
                     deviceId
             );

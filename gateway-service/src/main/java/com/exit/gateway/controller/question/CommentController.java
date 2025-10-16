@@ -5,7 +5,7 @@ import com.exit.common.grpc.CreateCommentRequest;
 import com.exit.common.grpc.DeleteCommentRequest;
 import com.exit.common.grpc.GetCommentRequest;
 import com.exit.common.response.SuccessResponse;
-import com.exit.common.response.error.rest.QuestionErrorCode;
+import com.exit.common.response.error.rest.question.QuestionErrorCode;
 import com.exit.common.response.success.QuestionSuccessCode;
 import com.exit.gateway.controller.question.dto.request.comment.CreateCommentRequestDto;
 import com.exit.gateway.controller.question.dto.response.comment.GetCommentResponseDto;

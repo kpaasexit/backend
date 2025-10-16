@@ -4,7 +4,7 @@ import com.exit.common.auth.jwt.JwtAuthenticationProvider;
 import com.exit.common.auth.jwt.JwtAuthenticationToken;
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.exception.rest.RestApiException;
-import com.exit.common.response.error.rest.UserErrorCode;
+import com.exit.common.response.error.rest.user.AuthErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (accessToken != null) {
                 log.debug("JWT token found, validating...");
                 if (jwtTokenProvider.isExpiredToken(accessToken)) {
-                    throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
+                    throw new RestApiException(AuthErrorCode.EXPIRED_TOKEN);
                 }
 
                 Authentication authentication = jwtAuthenticationProvider.authenticate(new JwtAuthenticationToken(accessToken));
@@ -59,8 +59,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
 
-            Map<String, Object> errorResponse = Map.of("errorCode", UserErrorCode.INVALID_TOKEN.getDevelopCode(),
-                    "errorDescription", UserErrorCode.INVALID_TOKEN.getErrorDescription(),
+            Map<String, Object> errorResponse = Map.of("errorCode", AuthErrorCode.INVALID_TOKEN.getDevelopCode(),
+                    "errorDescription", AuthErrorCode.INVALID_TOKEN.getErrorDescription(),
                     "details", "invalid_access_token",
                     "errors", "invalid_access_token"
             );
@@ -72,8 +72,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setCharacterEncoding("UTF-8");
 
             // 표준 인증 예외도 동일 포맷으로 응답 (원하면 401로)
-            Map<String, Object> errorResponse = Map.of("errorCode", UserErrorCode.INVALID_TOKEN.getDevelopCode(),
-                    "errorDescription", UserErrorCode.INVALID_TOKEN.getErrorDescription(),
+            Map<String, Object> errorResponse = Map.of("errorCode", AuthErrorCode.INVALID_TOKEN.getDevelopCode(),
+                    "errorDescription", AuthErrorCode.INVALID_TOKEN.getErrorDescription(),
                     "details", null,
                     "errors", null
             );
