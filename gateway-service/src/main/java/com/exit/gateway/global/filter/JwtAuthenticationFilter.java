@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,9 +72,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setCharacterEncoding("UTF-8");
 
             // 표준 인증 예외도 동일 포맷으로 응답 (원하면 401로)
-            Map<String, Object> errorResponse = Map.of("httpStatus", 401,
-                            "errorCodeResponse", UserErrorCode.INVALID_TOKEN, // 프로젝트 코드에 맞게
-                            "errorMessage", "Invalid authentication token");
+            Map<String, Object> errorResponse = Map.of("errorCode", UserErrorCode.INVALID_TOKEN.getDevelopCode(),
+                    "errorDescription", UserErrorCode.INVALID_TOKEN.getErrorDescription(),
+                    "details", null,
+                    "errors", null
+            );
 
             response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
         } finally {
