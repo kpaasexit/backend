@@ -3,7 +3,7 @@ package com.exit.gateway.controller.quiz;
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.*;
 import com.exit.common.response.SuccessResponse;
-import com.exit.common.response.error.rest.QuizErrorCode;
+import com.exit.common.response.error.rest.quiz.QuizErrorCode;
 import com.exit.common.response.success.QuizSuccessCode;
 import com.exit.gateway.controller.quiz.dto.response.quiz.*;
 import com.exit.gateway.global.annotation.LoginUser;

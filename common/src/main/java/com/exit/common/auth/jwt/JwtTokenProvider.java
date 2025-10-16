@@ -3,7 +3,7 @@ package com.exit.common.auth.jwt;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.properties.JwtProperties;
-import com.exit.common.response.error.rest.UserErrorCode;
+import com.exit.common.response.error.rest.user.AuthErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -81,7 +81,7 @@ public class JwtTokenProvider {
             Claims claims = getClaimsByToken(token);
             return claims.getExpiration().before(new Date());
         } catch (Exception e) {
-            throw new RestApiException(UserErrorCode.INVALID_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_TOKEN);
         }
     }
 
@@ -91,9 +91,9 @@ public class JwtTokenProvider {
             Claims claims = getClaimsByToken(token);
             return claims.get("userId", Long.class);
         } catch (ExpiredJwtException e) {
-            throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
+            throw new RestApiException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (Exception e) {
-            throw new RestApiException(UserErrorCode.INVALID_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_TOKEN);
         }
     }
 
@@ -103,9 +103,9 @@ public class JwtTokenProvider {
             Claims claims = getClaimsByToken(token);
             return claims.get("deviceId", String.class);
         } catch (ExpiredJwtException e) {
-            throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
+            throw new RestApiException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (Exception e) {
-            throw new RestApiException(UserErrorCode.INVALID_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_TOKEN);
         }
     }
 
@@ -115,9 +115,9 @@ public class JwtTokenProvider {
             Claims claims = getClaimsByToken(token);
             return claims.get("deviceId", String.class);
         } catch (ExpiredJwtException e) {
-            throw new RestApiException(UserErrorCode.EXPIRED_REFRESH_TOKEN);
+            throw new RestApiException(AuthErrorCode.EXPIRED_REFRESH_TOKEN);
         } catch (Exception e) {
-            throw new RestApiException(UserErrorCode.INVALID_REFRESH_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
 
@@ -129,9 +129,9 @@ public class JwtTokenProvider {
             String deviceId = claims.get("deviceId", String.class);
             return new Member(userId, deviceId);
         } catch (ExpiredJwtException e) {
-            throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
+            throw new RestApiException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (Exception e) {
-            throw new RestApiException(UserErrorCode.INVALID_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_TOKEN);
         }
     }
 
@@ -141,9 +141,9 @@ public class JwtTokenProvider {
             Claims claims = getClaimsByToken(token);
             return Long.parseLong(String.valueOf(claims.get("tokenId")));
         } catch (ExpiredJwtException e) {
-            throw new RestApiException(UserErrorCode.EXPIRED_TOKEN);
+            throw new RestApiException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (Exception e) {
-            throw new RestApiException(UserErrorCode.INVALID_TOKEN);
+            throw new RestApiException(AuthErrorCode.INVALID_TOKEN);
         }
     }
 

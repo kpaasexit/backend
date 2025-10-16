@@ -18,11 +18,11 @@ import com.exit.question.domain.question.repository.QuestionImageRepository;
 import com.exit.question.domain.question.repository.QuestionReportRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
 import com.exit.question.domain.response.Response;
-import com.exit.question.domain.response.ResponseImage;
 import com.exit.question.domain.response.repository.ResponseImageRepository;
 import com.exit.question.domain.response.repository.ResponseLikeRepository;
 import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcQuestionErrorCode;
+import com.exit.question.exception.GrpcResponseErrorCode;
 import com.exit.question.service.client.AiGrpcClient;
 import com.exit.question.service.client.NotificationGrpcClient;
 import com.exit.question.service.client.UserGrpcClient;
@@ -31,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -43,7 +42,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -68,9 +66,10 @@ public class QuestionService {
     private final TaskScheduler taskScheduler;
     private final QuestionGrpcMapper questionGrpcMapper;
 
+
     public QuestionCreateResponse createQuestion(QuestionCreateRequest request) {
         QuestionCategory questionCategory = questionCategoryRepository.findById(request.getQuestionCategory())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
         Question question = Question.createQuestionFromRequest(request, questionCategory);
         Question savedQuestion = questionRepository.save(question);
 
@@ -86,7 +85,7 @@ public class QuestionService {
 
     public QuestionReportResponse questionReport(QuestionReportRequest request) {
         Question question = questionRepository.findById(request.getQuestionId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         QuestionReport questionReport = QuestionReport.from(request);
         userGrpcClient.increaseReportCount(question.getQuestionWriterId());
@@ -217,7 +216,7 @@ public class QuestionService {
 
     private QuestionCreateResponse buildQuestionCreateResponse(Long questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         Optional<List<QuestionImage>> images = questionImageRepository.findAllByQuestionId(questionId);
         List<String> questionUrls = new ArrayList<>();

@@ -44,7 +44,7 @@ public class MagazineService {
     @Transactional(readOnly = true)
     public GetMagazineResponse getMagazine(GetMagazineRequest request) {
         Magazines magazine = magazineRepository.findById(request.getMagazineId())
-                .orElseThrow(() -> new GrpcException(GrpcMagazineErrorCode.NULL_MAGAZINE));
+                .orElseThrow(() -> new GrpcException(GrpcMagazineErrorCode.MAGAZINE_NOT_FOUND));
         UpdateAdditionalUserInfoResponse userInfo = userGrpcClient.getUserNameAndProfile(magazine.getMagazineAuthorId());
         MagazineItem magazineItem = createMagazineItem(magazine, userInfo);
 
@@ -93,7 +93,7 @@ public class MagazineService {
         }
 
         Magazines magazine = magazineRepository.findById(request.getMagazineId())
-                .orElseThrow(() -> new GrpcException(GrpcMagazineErrorCode.NULL_MAGAZINE));
+                .orElseThrow(() -> new GrpcException(GrpcMagazineErrorCode.MAGAZINE_NOT_FOUND));
         MagazineScraps magazineScrap = MagazineScraps.from(magazine, request.getUserId());
         magazineScrapRepository.save(magazineScrap);
         return true; // 새로운 스크랩

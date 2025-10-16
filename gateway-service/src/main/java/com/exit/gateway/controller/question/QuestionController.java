@@ -3,7 +3,7 @@ package com.exit.gateway.controller.question;
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.*;
 import com.exit.common.response.SuccessResponse;
-import com.exit.common.response.error.rest.QuestionErrorCode;
+import com.exit.common.response.error.rest.question.QuestionErrorCode;
 import com.exit.common.response.success.QuestionSuccessCode;
 import com.exit.gateway.controller.question.dto.request.question.*;
 import com.exit.gateway.controller.question.dto.response.question.*;

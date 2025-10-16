@@ -1,5 +1,6 @@
-package com.exit.common.response.error.rest;
+package com.exit.common.response.error.rest.notification;
 
+import com.exit.common.response.error.rest.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

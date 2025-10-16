@@ -2,6 +2,7 @@ package com.exit.user.service.auth;
 
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.user.domain.JwtToken;
+import com.exit.user.exception.GrpcAuthErrorCode;
 import com.exit.user.exception.GrpcUserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -102,12 +103,12 @@ public class JwtTokenRedisService {
         JwtToken storedToken = getJwtToken(userId, deviceId);
 
         if (storedToken == null) {
-            throw new GrpcException(GrpcUserErrorCode.INVALID_REFRESH_TOKEN);
+            throw new GrpcException(GrpcAuthErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         // 저장된 refresh token과 요청된 refresh token 비교
         if (!storedToken.getRefreshToken().equals(requestRefreshToken)) {
-            throw new GrpcException(GrpcUserErrorCode.INVALID_REFRESH_TOKEN);
+            throw new GrpcException(GrpcAuthErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
 

@@ -2,7 +2,7 @@ package com.exit.gateway.service.question;
 
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.*;
-import com.exit.common.response.error.rest.QuestionErrorCode;
+import com.exit.common.response.error.rest.question.QuestionErrorCode;
 import com.exit.gateway.controller.question.dto.request.question.AnswerCreateRequestDto;
 import com.exit.gateway.controller.question.dto.request.question.AnswerReportRequestDto;
 import com.exit.gateway.controller.question.dto.request.question.QuestionCreateRequestDto;

@@ -125,7 +125,7 @@ public class AdditionalQuestionService {
 
     private Question getQuestion(Long questionId) {
         return questionRepository.findById(questionId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
     }
 
 

@@ -3,7 +3,7 @@ package com.exit.gateway.controller.magazine;
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.*;
 import com.exit.common.response.SuccessResponse;
-import com.exit.common.response.error.rest.MagazineErrorCode;
+import com.exit.common.response.error.rest.magazine.MagazineErrorCode;
 import com.exit.common.response.success.MagazineSuccessCode;
 import com.exit.gateway.controller.magazine.dto.response.*;
 import com.exit.gateway.global.annotation.LoginUser;

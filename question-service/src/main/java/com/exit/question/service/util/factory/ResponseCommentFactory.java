@@ -5,7 +5,6 @@ import com.exit.common.grpc.*;
 import com.exit.common.util.time.TimeStampUtil;
 import com.exit.question.controller.dto.request.NotificationContentDto;
 import com.exit.question.domain.Comment;
-import com.exit.question.domain.question.QuestionComment;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.ResponseComment;
 import com.exit.question.domain.response.repository.ResponseCommentRepository;
@@ -35,7 +34,7 @@ public class ResponseCommentFactory extends CommentFactory {
     @Override
     public Comment createAndSaveComment(Long targetId, Long authorId, String content) {
         Response response = responseRepository.findById(targetId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         ResponseComment comment = ResponseComment.builder()
                 .response(response)
