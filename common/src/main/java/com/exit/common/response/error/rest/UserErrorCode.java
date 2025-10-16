@@ -8,10 +8,13 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum UserErrorCode implements ErrorCode {
     NULL_USER("AUTH_ERR_001", HttpStatus.BAD_REQUEST, "사용자가 존재하지 않습니다."),
+
     INVALID_TOKEN("AUTH_ERR_002", HttpStatus.BAD_REQUEST, "올바르지 않은 토큰입니다."),
     EXPIRED_TOKEN("AUTH_ERR_003", HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
-    INVALID_REFRESH_TOKEN("AUTH_ERR_0013", HttpStatus.BAD_REQUEST, "올바르지 않은 리프레시 토큰입니다."),
-    EXPIRED_REFRESH_TOKEN("AUTH_ERR_0014", HttpStatus.UNAUTHORIZED, "만료된 리프레시 토큰입니다."),
+    INVALID_REFRESH_TOKEN("AUTH_ERR_013", HttpStatus.BAD_REQUEST, "올바르지 않은 리프레시 토큰입니다."),
+    EXPIRED_REFRESH_TOKEN("AUTH_ERR_014", HttpStatus.UNAUTHORIZED, "만료된 리프레시 토큰입니다."),
+    SOCIAL_LOGIN_FAIL("AUTH_ERR_015", HttpStatus.BAD_REQUEST, "소셜 로그인에 실패하였습니다."),
+
     INVALID_REDIRECT_URI("AUTH_ERR_004", HttpStatus.BAD_REQUEST, "유효하지 않은 리다이렉트 경로입니다."),
     UNSUPPORTED_PROVIDER("AUTH_ERR_005", HttpStatus.BAD_REQUEST, "지원하지 않는 OAuth2 제공자입니다."),
     UPDATE_ADDITIONAL_INFO_FAIL("AUTH_ERR_006", HttpStatus.BAD_REQUEST, "추가 정보 업데이트에 실패하였습니다."),
@@ -21,7 +24,7 @@ public enum UserErrorCode implements ErrorCode {
     GET_USER_INFO_FAIL("AUTH_ERR_010", HttpStatus.BAD_REQUEST, "유저 정보 조회에 실패하였습니다."),
     DELETED_USER_FAIL("AUTH_ERR_011", HttpStatus.BAD_REQUEST, "회원 탈퇴에 실패하였습니다."),
     CHECK_NICKNAME_DUPLICATE_FAIL("AUTH_ERR_012", HttpStatus.BAD_REQUEST, "닉네임 중복 체크에 실패하였습니다."),
-    SOCIAL_LOGIN_FAIL("AUTH_ERR_015", HttpStatus.BAD_REQUEST, "소셜 로그인에 실패하였습니다."),
+    AVAILABLE_USER_SERVER("AUTH_ERR_099", HttpStatus.INTERNAL_SERVER_ERROR, "유저 서버 다운!!!!"),
     ;
 
     private final String developCode;

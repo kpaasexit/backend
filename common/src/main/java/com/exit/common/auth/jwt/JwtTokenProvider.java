@@ -80,8 +80,8 @@ public class JwtTokenProvider {
         try {
             Claims claims = getClaimsByToken(token);
             return claims.getExpiration().before(new Date());
-        } catch (ExpiredJwtException e) {
-            return false;
+        } catch (Exception e) {
+            throw new RestApiException(UserErrorCode.INVALID_TOKEN);
         }
     }
 

@@ -59,10 +59,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
 
-            Map<String, Object> errorResponse = Map.of(
-                    "httpStatus", ex.getErrorCode().getHttpStatus().value(),
-                    "errorCodeResponse", ex.getErrorCode(),
-                    "errorMessage", ex.getErrorCode().getErrorDescription()
+            Map<String, Object> errorResponse = Map.of("errorCode", UserErrorCode.INVALID_TOKEN.getDevelopCode(),
+                    "errorDescription", UserErrorCode.INVALID_TOKEN.getErrorDescription(),
+                    "details", "invalid_access_token",
+                    "errors", "invalid_access_token"
             );
 
             response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
