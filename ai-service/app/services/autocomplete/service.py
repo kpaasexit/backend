@@ -129,35 +129,50 @@ class AutocompleteService:
         category: Optional[str],
         enable_fuzzy: bool
     ) -> List[AutocompleteResult]:
-        # Multi-match 쿼리 구성
+        # 자동완성은 접두사 매칭이 핵심
         must_queries = []
 
-        # 1. 키워드 매칭 (가중치 높음)
-        keyword_query = {
-            "multi_match": {
-                "query": query,
-                "fields": [
-                    "keyword^5",           # 정확한 키워드 매칭
-                    "keyword.edge_ngram^3",  # 접두사 매칭
-                    "keyword.ngram^2",       # 부분 매칭
-                    "title.ngram"            # 제목 부분 매칭
+        # 1. 접두사 매칭 (자동완성의 핵심)
+        # "고기" 입력 시 "고기", "고기완자", "고기리" 등 "고기"로 시작하는 것만 반환
+        prefix_query = {
+            "bool": {
+                "should": [
+                    # 정확한 접두사 매칭 (가장 높은 가중치)
+                    {
+                        "match_phrase_prefix": {
+                            "keyword": {
+                                "query": query,
+                                "boost": 10
+                            }
+                        }
+                    },
+                    # edge_ngram을 활용한 접두사 매칭
+                    {
+                        "match": {
+                            "keyword.edge_ngram": {
+                                "query": query,
+                                "boost": 5
+                            }
+                        }
+                    }
                 ],
-                "type": "best_fields",
-                "minimum_should_match": "70%"
+                "minimum_should_match": 1
             }
         }
 
-        should_queries = [keyword_query]
+        must_queries.append(prefix_query)
 
-        # 2. Fuzzy 매칭 (오타 허용)
-        if enable_fuzzy:
+        # 2. Fuzzy 매칭 (오타 허용) - 접두사 기반으로만
+        should_queries = []
+        if enable_fuzzy and len(query) >= 2:
             fuzzy_query = {
-                "multi_match": {
-                    "query": query,
-                    "fields": ["keyword", "title"],
-                    "fuzziness": "AUTO",
-                    "prefix_length": 1,
-                    "max_expansions": 50
+                "match": {
+                    "keyword": {
+                        "query": query,
+                        "fuzziness": "AUTO",
+                        "prefix_length": 1,
+                        "max_expansions": 50
+                    }
                 }
             }
             should_queries.append(fuzzy_query)
@@ -171,14 +186,18 @@ class AutocompleteService:
             })
 
         # 최종 쿼리 구성 - aggregation 사용하여 중복 제거
+        query_bool = {
+            "must": must_queries
+        }
+
+        # should 쿼리가 있으면 추가 (fuzzy 매칭)
+        if should_queries:
+            query_bool["should"] = should_queries
+
         search_body = {
             "size": 0,  # 상위 히트는 필요 없음
             "query": {
-                "bool": {
-                    "must": must_queries,
-                    "should": should_queries,
-                    "minimum_should_match": 1
-                }
+                "bool": query_bool
             },
             "aggs": {
                 "unique_keywords": {
