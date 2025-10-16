@@ -21,7 +21,7 @@ public class CommentService {
     private final NotificationGrpcClient notificationGrpcClient;
 
     public CreateCommentResponse createComment(CreateCommentRequest request) {
-        CommentFactory factory = commentFactoryManager.getFactory(CommentType.valueOf(request.getCommentType()));
+        CommentFactory factory = commentFactoryManager.getFactory(CommentType.valueOf(request.getCommentType().toUpperCase()));
         Comment comment = factory.createAndSaveComment(request.getTargetId(), request.getWriterId(), request.getContent());
         String authorName = userGrpcClient.getUserName(comment.getAuthorId());
 

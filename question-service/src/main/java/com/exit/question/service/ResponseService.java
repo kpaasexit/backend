@@ -61,7 +61,7 @@ public class ResponseService {
 
         List<String> imageUrls = processAnswerImages(request, savedResponse);
         Question question = questionRepository.findById(savedResponse.getQuestionId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         String subBody = truncateContent(savedResponse.getResponseContent());
         SendNotificationRequest sendNotificationRequest = notificationGrpcMapper.getSendNotificationRequest(
@@ -83,7 +83,7 @@ public class ResponseService {
 
     public UpdateResponseResponse updateResponse(UpdateResponseRequest request) {
         Response response = responseRepository.findById(request.getResponseId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
 
         if (Boolean.TRUE.equals(response.getResponseAdopt()))
             throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
@@ -107,7 +107,7 @@ public class ResponseService {
 
     public void deleteResponse(DeleteResponseRequest request) {
         Response response = responseRepository.findById(request.getResponseId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
 
         if (Boolean.TRUE.equals(response.getResponseAdopt()))
             throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
@@ -121,7 +121,7 @@ public class ResponseService {
 
     public AnswerReportResponse answerReport(AnswerReportRequest request) {
         Response response = responseRepository.findById(request.getResponseId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
         ResponseReport responseReport = ResponseReport.from(request);
 
         ResponseReport savedResponseReport = responseReportRepository.save(responseReport);
@@ -131,7 +131,7 @@ public class ResponseService {
 
     private Response adoptResponse(Long responseId) {
         Response response = responseRepository.findById(responseId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
 
         validateQuestionNotAlreadyAdopted(response.getQuestionId());
         response.updateResponseAdopt();
@@ -140,7 +140,7 @@ public class ResponseService {
 
     private void validateQuestionNotAlreadyAdopted(Long questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         if (Boolean.TRUE.equals(question.getQuestionAnswerAdopt())) {
             throw new GrpcException(GrpcQuestionErrorCode.EXIST_ADOPTED_RESPONSE);
@@ -150,7 +150,7 @@ public class ResponseService {
     private void tryToSendAdoptionNotification(Response response) {
         try {
             Question question = questionRepository.findById(response.getQuestionId())
-                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
             String body = truncateContent(response.getResponseContent());
             SendNotificationRequest notificationRequest =
@@ -164,7 +164,7 @@ public class ResponseService {
 
     private void markQuestionAsAdopted(Response response) {
         Question question = questionRepository.findById(response.getQuestionId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         question.updateAnswerAdopt();
         questionRepository.save(question);

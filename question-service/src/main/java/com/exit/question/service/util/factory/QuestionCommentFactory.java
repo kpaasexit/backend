@@ -33,7 +33,7 @@ public class QuestionCommentFactory extends CommentFactory {
     @Override
     public Comment createAndSaveComment(Long targetId, Long authorId, String content) {
         Question question = questionRepository.findById(targetId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         QuestionComment comment = QuestionComment.builder()
                 .question(question)
@@ -53,7 +53,7 @@ public class QuestionCommentFactory extends CommentFactory {
     @Override
     public SendNotificationRequest createSendNotificationRequest(Long targetId, String deviceId) {
         NotificationContentDto dto = questionRepository.findContentById(targetId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         return SendNotificationRequest.newBuilder()
                 .setBody(dto.content())

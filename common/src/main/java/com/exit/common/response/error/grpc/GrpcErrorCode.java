@@ -6,4 +6,6 @@ public interface GrpcErrorCode {
     Status.Code getGrpcStatusCode();
 
     String getDevelopCode();
+
+    String getErrorDescription();
 }

@@ -8,9 +8,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum GrpcMagazineErrorCode implements GrpcErrorCode {
-    NULL_MAGAZINE(Status.Code.NOT_FOUND, "MAGAZINE_ERR_001")
+    MAGAZINE_NOT_FOUND(Status.Code.NOT_FOUND, "MAGAZINE_ERR_001", "매거진이 존재하지 않음")
     ;
 
     private final Status.Code grpcStatusCode;
     private final String developCode;
+    private final String errorDescription;
 }
