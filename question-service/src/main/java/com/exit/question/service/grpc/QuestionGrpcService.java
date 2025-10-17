@@ -2,7 +2,6 @@ package com.exit.question.service.grpc;
 
 import com.exit.common.grpc.*;
 import com.exit.question.service.QuestionService;
-import com.exit.question.service.ResponseService;
 import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -16,61 +15,15 @@ import net.devh.boot.grpc.server.service.GrpcService;
 public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImplBase {
 
     private final QuestionService questionService;
-    private final ResponseService responseService;
 
     @Override
     public void questionCreate(com.exit.common.grpc.QuestionCreateRequest request,
                                StreamObserver<com.exit.common.grpc.QuestionCreateResponse> responseObserver) {
-        try {
-            log.info("Question create request received: {}", request.getQuestionTitle());
-            QuestionCreateResponse response = questionService.createQuestion(request);
+        log.info("Question create request received: {}", request.getQuestionTitle());
+        QuestionCreateResponse response = questionService.createQuestion(request);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Question create failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("질문 생성 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
-    }
-
-    @Override
-    public void answerCreate(com.exit.common.grpc.AnswerCreateRequest request,
-                             StreamObserver<com.exit.common.grpc.AnswerCreateResponse> responseObserver) {
-        try {
-            log.info("Answer create request received for question ID: {}", request.getQuestionId());
-
-            AnswerCreateResponse response = responseService.answerCreate(request);
-
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Answer create failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("답변 생성 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
-    }
-
-    @Override
-    public void answerRecommend(com.exit.common.grpc.AnswerRecommendRequest request,
-                                StreamObserver<com.exit.common.grpc.AnswerRecommendResponse> responseObserver) {
-        try {
-            log.info("Answer recommend request received for response ID: {}", request.getResponseId());
-            AnswerRecommendResponse response = responseService.toggleAnswerLike(request);
-
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Answer recommend failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("답변 추천 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
@@ -164,44 +117,6 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
     }
 
     @Override
-    public void updateResponse(com.exit.common.grpc.UpdateResponseRequest request,
-                               StreamObserver<com.exit.common.grpc.UpdateResponseResponse> responseObserver) {
-        try {
-            log.info("Update response request received for response id: {}", request.getResponseId());
-
-            UpdateResponseResponse response = responseService.updateResponse(request);
-
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Update response failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("답변 수정 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
-    }
-
-    @Override
-    public void deleteResponse(com.exit.common.grpc.DeleteResponseRequest request,
-                               StreamObserver<com.google.protobuf.Empty> responseObserver) {
-        try {
-            log.info("Delete response request received for response ID: {}", request.getResponseId());
-
-            responseService.deleteResponse(request);
-
-            responseObserver.onNext(Empty.getDefaultInstance());
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Delete Response failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("답변 삭제 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
-    }
-
-    @Override
     public void getPopularPost(Empty request,
                                StreamObserver<GetPopularPostResponse> responseObserver) {
         try {
@@ -222,7 +137,7 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
 
     @Override
     public void getMyQuestion(GetMyQuestionRequest request,
-                               StreamObserver<GetMyQuestionResponse> responseObserver) {
+                              StreamObserver<GetMyQuestionResponse> responseObserver) {
         try {
             log.info("Get my question request received");
             GetMyQuestionResponse response = questionService.getMyQuestion(request);

@@ -222,6 +222,9 @@ public class UserService {
     }
 
     private void createAndSaveFcmToken(String fcmToken, Users user, String deviceId) {
+        Optional<UserFcmToken> existFcmToken = userFcmTokenRepository.findByDeviceId(deviceId);
+        existFcmToken.ifPresent(userFcmTokenRepository::delete);
+
         UserFcmToken userFcmToken = UserFcmToken.builder()
                 .user(user)
                 .token(fcmToken)

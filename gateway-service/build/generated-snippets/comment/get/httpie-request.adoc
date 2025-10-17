@@ -1,5 +1,5 @@
 [source,bash]
 ----
 $ http GET 'http://localhost:8080/api/comments/1?targetType=RESPONSE&pageNum=1' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA2OTI2MjAsImV4cCI6MTc2NDI5MjYyMH0.cQG5etRMBPe2eYT3gPO_5KUknMj6suCX2WMkNPnVYgM'
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDAwNjYsImV4cCI6MTc2NDMwMDA2Nn0.-Xn-1t1at3f0P005NKes5OEIy0YaPdicJKy56A_G7Zw'
 ----

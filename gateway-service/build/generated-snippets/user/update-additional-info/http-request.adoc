@@ -2,7 +2,7 @@
 ----
 PUT /api/user/additional-info HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA2OTI2MjQsImV4cCI6MTc2NDI5MjYyNH0.s_LCxC_Suf4Hk3-Wl79rvS_umJD7d0PPF42DUsP2dQE
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDAwNzIsImV4cCI6MTc2NDMwMDA3Mn0.kAkv84UuHbQISlcAg_uI2_2z6OnhGBKr-ukVGzmE6O0
 Host: localhost:8080
 
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm

@@ -56,7 +56,7 @@ public class ResponseCommentFactory extends CommentFactory {
     public SendNotificationRequest createSendNotificationRequest(Long targetId, String deviceId) {
 
         NotificationContentDto dto = responseRepository.findContentById(targetId)
-                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
         return SendNotificationRequest.newBuilder()
                 .setBody(dto.content())
                 .setType("NEW_COMMENT")

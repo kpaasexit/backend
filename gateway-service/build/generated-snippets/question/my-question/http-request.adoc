@@ -1,7 +1,7 @@
 [source,http,options="nowrap"]
 ----
 GET /api/questions/my?pageNum=1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA2OTI2MjEsImV4cCI6MTc2NDI5MjYyMX0.1dkl4Qi2Gurf_kP8fnJ-jiIlgp5KH-UfP0d_7u415GM
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDAwNjcsImV4cCI6MTc2NDMwMDA2N30.VNnNUWwBPva9rFAfKORki1AVDCxLQE4_VIrpDV4mQ2c
 Host: localhost:8080
 
 ----

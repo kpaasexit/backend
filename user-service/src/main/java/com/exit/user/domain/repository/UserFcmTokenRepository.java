@@ -13,4 +13,6 @@ public interface UserFcmTokenRepository extends JpaRepository<UserFcmToken, Long
 
     @Query("select uf.token from UserFcmToken uf where uf.user.userId = :userId and uf.active = true")
     List<String> findFcmTokenByUserId(Long userId);
+
+    Optional<UserFcmToken> findByDeviceId(String deviceId);
 }

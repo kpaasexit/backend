@@ -16,9 +16,6 @@ public class QuestionGrpcClient {
 
     @GrpcClient("question-service")
     private QuestionServiceGrpc.QuestionServiceBlockingStub questionServiceStub;
-    @GrpcClient("question-service")
-    private ResponseServiceGrpc.ResponseServiceBlockingStub responseServiceStub;
-
 
     public QuestionCreateResponseDto createQuestion(QuestionCreateRequest request) {
         try {
@@ -32,42 +29,6 @@ public class QuestionGrpcClient {
         }
     }
 
-    public AnswerAdoptResponseDto adoptAnswer(AnswerAdoptRequest request) {
-        try {
-            log.debug("Sending answer adopt request via gRPC");
-            AnswerAdoptResponse response = responseServiceStub.answerAdopt(request);
-            log.debug("Received answer adopt response via gRPC");
-            return AnswerAdoptResponseDto.from(response);
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC answer adopt failed: {}", e.getStatus(), e);
-            throw e;
-        }
-    }
-
-    public AnswerCreateResponseDto createAnswer(AnswerCreateRequest request) {
-        try {
-            log.debug("Sending answer create request via gRPC");
-            AnswerCreateResponse response = questionServiceStub.answerCreate(request);
-            log.debug("Received answer create response via gRPC");
-            return AnswerCreateResponseDto.from(response);
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC answer create failed: {}", e.getStatus(), e);
-            throw e;
-        }
-    }
-
-    public AnswerRecommendResponseDto recommendAnswer(AnswerRecommendRequest request) {
-        try {
-            log.debug("Sending answer recommend request via gRPC");
-            AnswerRecommendResponse response = questionServiceStub.answerRecommend(request);
-            log.debug("Received answer recommend response via gRPC");
-            return AnswerRecommendResponseDto.from(response);
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC answer recommend failed: {}", e.getStatus(), e);
-            throw e;
-        }
-    }
-
     public QuestionReportResponseDto reportQuestion(QuestionReportRequest request) {
         try {
             log.debug("Sending question report request via gRPC");
@@ -76,18 +37,6 @@ public class QuestionGrpcClient {
             return QuestionReportResponseDto.from(response);
         } catch (StatusRuntimeException e) {
             log.error("gRPC question report failed: {}", e.getStatus(), e);
-            throw e;
-        }
-    }
-
-    public AnswerReportResponseDto reportAnswer(AnswerReportRequest request) {
-        try {
-            log.debug("Sending answer report request via gRPC");
-            AnswerReportResponse response = responseServiceStub.answerReport(request);
-            log.debug("Received answer report response via gRPC");
-            return AnswerReportResponseDto.from(response);
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC answer report failed: {}", e.getStatus(), e);
             throw e;
         }
     }
@@ -140,29 +89,6 @@ public class QuestionGrpcClient {
         }
     }
 
-    public AnswerUpdateResponseDto updateResponse(UpdateResponseRequest request) {
-        try {
-            log.debug("Sending update response request via gRPC for responseId: {}", request.getResponseId());
-            UpdateResponseResponse response = questionServiceStub.updateResponse(request);
-            log.debug("Received update response response via gRPC");
-            return new AnswerUpdateResponseDto(response.getResponseId(), response.getContent());
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC update response failed: {}", e.getStatus(), e);
-            throw e;
-        }
-    }
-
-    public void deleteResponse(DeleteResponseRequest request) {
-        try {
-            log.debug("Sending delete response request via gRPC for responseId: {}", request.getResponseId());
-            questionServiceStub.deleteResponse(request);
-            log.debug("Received delete response response via gRPC");
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC delete response failed: {}", e.getStatus(), e);
-            throw e;
-        }
-    }
-
     public GetPopularPostResponseDto getPopularPost() {
         try {
             log.debug("Sending get Popular post response request via gRPC");
@@ -187,23 +113,6 @@ public class QuestionGrpcClient {
             return GetMyQuestionResponseDto.from(response);
         } catch (StatusRuntimeException e) {
             log.error("gRPC my question response failed: {}", e.getStatus(), e);
-            throw e;
-        }
-    }
-
-    public GetDetailResponseResponseDto getDetailResponse(Long questionId, Long userId, Integer pageNum) {
-        try {
-            log.debug("Sending get detail response request via gRPC");
-            GetDetailResponseRequest request = GetDetailResponseRequest.newBuilder()
-                    .setQuestionId(questionId)
-                    .setUserId(userId)
-                    .setPageNum(pageNum)
-                    .build();
-            GetDetailResponseResponse response = responseServiceStub.getDetailResponse(request);
-            log.debug("Received get detail response response via gRPC");
-            return GetDetailResponseResponseDto.from(response);
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC get detail response failed: {}", e.getStatus(), e);
             throw e;
         }
     }
