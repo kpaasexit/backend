@@ -1,15 +1,14 @@
 package com.exit.gateway.controller.search.dto.response;
 
+import com.exit.gateway.controller.question.dto.response.question.QuestionListQueryResponseDto;
 import lombok.Builder;
 
 import java.util.List;
 
 @Builder
 public record IntegratedSearchResponseDto(
-        List<QuestionSearchItemDto> questions,
+        List<QuestionListQueryResponseDto> questions,
         List<MagazineSearchItemDto> magazines,
-        Integer questionTotalCount,
-        Integer magazineTotalCount,
         Boolean questionHasNext,
         Boolean magazineHasNext
 ) {

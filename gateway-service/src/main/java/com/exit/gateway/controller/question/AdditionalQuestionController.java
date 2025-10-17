@@ -1,30 +1,19 @@
 package com.exit.gateway.controller.question;
 
-import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.CreateAdditionalQuestionMessageRequest;
 import com.exit.common.grpc.GetAdditionalQuestionRequest;
-import com.exit.common.grpc.ImageMetadata;
-import com.exit.common.grpc.UploadBytesRequest;
 import com.exit.common.response.SuccessResponse;
-import com.exit.common.response.error.rest.question.QuestionErrorCode;
 import com.exit.common.response.success.QuestionSuccessCode;
 import com.exit.gateway.controller.question.dto.request.question.CreateAdditionalQuestionMessageRequestDto;
 import com.exit.gateway.controller.question.dto.response.question.CreateAdditionalQuestionMessageResponseDto;
 import com.exit.gateway.controller.question.dto.response.question.GetAdditionalQuestionResponseDto;
 import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.AdditionalQuestionGrpcClient;
-import com.google.protobuf.ByteString;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
+import com.exit.gateway.service.question.QuestionRequestMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/additional-question")
@@ -32,90 +21,32 @@ import java.util.List;
 @Slf4j
 public class AdditionalQuestionController {
     private final AdditionalQuestionGrpcClient additionalQuestionGrpcClient;
+    private final QuestionRequestMapper questionRequestMapper;
 
     @PostMapping(value = "/message", consumes = "multipart/form-data")
     public SuccessResponse<CreateAdditionalQuestionMessageResponseDto> createAdditionalQuestionMessage(
             @LoginUser Long userId,
-            @Valid @ModelAttribute CreateAdditionalQuestionMessageRequestDto request) {
-        try {
-            log.info("Create additional question message request received");
+            @Valid @ModelAttribute CreateAdditionalQuestionMessageRequestDto request
+    ) {
+        log.info("Create additional question message request received");
+        CreateAdditionalQuestionMessageRequest grpcRequest = questionRequestMapper.toGrpcCreateAdditionalQuestionMessageRequest(userId, request);
 
-            CreateAdditionalQuestionMessageRequest.Builder grpcRequestBuilder = CreateAdditionalQuestionMessageRequest.newBuilder()
-                    .setUserId(userId)
-                    .setQuestionId(request.getQuestionId())
-                    .setResponseId(request.getResponseId())
-                    .setContent(request.getContent());
-
-            if (request.getImages() != null && !request.getImages().isEmpty()) {
-                List<UploadBytesRequest> imageRequests = new ArrayList<>();
-                for (MultipartFile image : request.getImages()) {
-                    if (!image.isEmpty()) {
-                        ImageMetadata meta = ImageMetadata.newBuilder()
-                                .setFilename(image.getOriginalFilename())
-                                .setContentType(image.getContentType())
-                                .build();
-                        UploadBytesRequest uploadRequest = UploadBytesRequest.newBuilder()
-                                .setMeta(meta)
-                                .setData(ByteString.copyFrom(image.getBytes()))
-                                .build();
-                        imageRequests.add(uploadRequest);
-                    }
-                }
-                grpcRequestBuilder.addAllImages(imageRequests);
-            }
-
-            CreateAdditionalQuestionMessageResponseDto response = additionalQuestionGrpcClient.createAdditionalQuestionMessage(grpcRequestBuilder.build());
-            return SuccessResponse.of(QuestionSuccessCode.ADDITIONAL_QUESTION_CREATE_SUCCESS, response);
-        } catch (StatusRuntimeException e) {
-            log.error("Create additional question message failed via gRPC: {}", e.getStatus(), e);
-            throw new RestApiException(QuestionErrorCode.CREATE_ADDITIONAL_QUESTION_FAIL, getGrpcErrorMessage(e));
-        } catch (IOException e) {
-            log.error("File processing failed", e);
-            throw new RestApiException(QuestionErrorCode.CREATE_ADDITIONAL_QUESTION_FAIL);
-        } catch (Exception e) {
-            log.error("Create additional question message failed", e);
-            throw new RestApiException(QuestionErrorCode.CREATE_ADDITIONAL_QUESTION_FAIL);
-        }
+        return SuccessResponse.of(QuestionSuccessCode.ADDITIONAL_QUESTION_CREATE_SUCCESS,
+                additionalQuestionGrpcClient.createAdditionalQuestionMessage(grpcRequest));
     }
 
     @GetMapping("/{followUpRoomId}")
     public SuccessResponse<GetAdditionalQuestionResponseDto> getAdditionalQuestion(
             @PathVariable Long followUpRoomId,
             @RequestParam Long questionId) {
-        try {
-            log.info("Get additional question request received for followUpRoomId: {}, questionId: {}", followUpRoomId, questionId);
+        log.info("Get additional question request received for followUpRoomId: {}, questionId: {}", followUpRoomId, questionId);
 
-            GetAdditionalQuestionRequest grpcRequest = GetAdditionalQuestionRequest.newBuilder()
-                    .setFollowUpRoomId(followUpRoomId)
-                    .setQuestionId(questionId)
-                    .build();
+        GetAdditionalQuestionRequest grpcRequest = GetAdditionalQuestionRequest.newBuilder()
+                .setFollowUpRoomId(followUpRoomId)
+                .setQuestionId(questionId)
+                .build();
 
-            GetAdditionalQuestionResponseDto response = additionalQuestionGrpcClient.getAdditionalQuestion(grpcRequest);
-            return SuccessResponse.of(QuestionSuccessCode.QUESTION_DETAIL_SUCCESS, response);
-        } catch (StatusRuntimeException e) {
-            log.error("Get additional question failed via gRPC: {}", e.getStatus(), e);
-            throw new RestApiException(QuestionErrorCode.GET_ADDITIONAL_QUESTION_LIST_FAIL, getGrpcErrorMessage(e));
-        } catch (Exception e) {
-            log.error("Get additional question failed", e);
-            throw new RestApiException(QuestionErrorCode.GET_ADDITIONAL_QUESTION_LIST_FAIL);
-        }
-    }
-
-    private String getGrpcErrorMessage(StatusRuntimeException e) {
-        Status status = e.getStatus();
-        switch (status.getCode()) {
-            case INVALID_ARGUMENT:
-                return "잘못된 요청입니다.";
-            case UNAUTHENTICATED:
-                return "인증에 실패했습니다.";
-            case PERMISSION_DENIED:
-                return "권한이 없습니다.";
-            case NOT_FOUND:
-                return "요청한 데이터를 찾을 수 없습니다.";
-            case ALREADY_EXISTS:
-                return "이미 존재하는 데이터입니다.";
-            default:
-                return status.getDescription() != null ? status.getDescription() : "서버 오류가 발생했습니다.";
-        }
+        return SuccessResponse.of(QuestionSuccessCode.QUESTION_DETAIL_SUCCESS,
+                additionalQuestionGrpcClient.getAdditionalQuestion(grpcRequest));
     }
 }

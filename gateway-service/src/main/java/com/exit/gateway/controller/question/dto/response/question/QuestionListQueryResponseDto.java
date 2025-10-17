@@ -28,6 +28,7 @@ public record QuestionListQueryResponseDto(
         if(!questionListItem.getQuestionWriterProfile().isEmpty()) {
             builder.questionWriterProfile(questionListItem.getQuestionWriterProfile());
         }
+
         return builder
                 .questionId(questionListItem.getQuestionId())
                 .questionCategoryId(questionListItem.getQuestionCategory())

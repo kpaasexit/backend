@@ -1,7 +1,7 @@
 [source,http,options="nowrap"]
 ----
 POST /api/quiz/1/submit HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA2ODY2MTUsImV4cCI6MTc2NDI4NjYxNX0.Zu91QnyFY0onWHuKiSOsDwHtAFIkSoqQNhyTXwkU2nY
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDI1NDQsImV4cCI6MTc2NDMwMjU0NH0.ELfXNKlETyLjdSHdx-Sz291NYiIiJOOHMXBEOTw-O3c
 Content-Type: application/x-www-form-urlencoded
 Host: localhost:8080
 Content-Length: 8

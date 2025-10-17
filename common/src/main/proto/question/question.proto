@@ -11,15 +11,11 @@ import "google/protobuf/timestamp.proto";
 
 service QuestionService {
   rpc QuestionCreate(QuestionCreateRequest) returns (QuestionCreateResponse);
-  rpc AnswerCreate(AnswerCreateRequest) returns (AnswerCreateResponse);
-  rpc AnswerRecommend(AnswerRecommendRequest) returns (AnswerRecommendResponse);
   rpc QuestionReport(QuestionReportRequest) returns (QuestionReportResponse);
   rpc QuestionList(QuestionListRequest) returns (QuestionListResponse);
   rpc CategoryRecommend(CategoryRecommendRequest) returns (CategoryRecommendationResponse);
   rpc SimilarQuestion(SimilarQuestionRequest) returns (SimilarQuestionResponse);
   rpc GetQuestionDetail(QuestionDetailRequest) returns (QuestionDetailResponse);
-  rpc UpdateResponse(UpdateResponseRequest) returns (UpdateResponseResponse);
-  rpc DeleteResponse(DeleteResponseRequest) returns (google.protobuf.Empty);
   rpc GetPopularPost(google.protobuf.Empty) returns (GetPopularPostResponse);
   rpc GetMyQuestion(GetMyQuestionRequest) returns (GetMyQuestionResponse);
 }
@@ -45,19 +41,6 @@ message QuestionCreateRequest {
   int64 question_writer_id = 7;
   bool question_is_anonymous = 8;
   repeated UploadBytesRequest images = 9;
-}
-
-message AnswerCreateRequest {
-  int64 question_id = 1;
-  string response_content = 2;
-  int64 response_writer_id = 3;
-  bool response_is_anonymous = 4;
-  repeated UploadBytesRequest images = 5;
-}
-
-message AnswerRecommendRequest {
-  int64 response_id = 1;
-  int64 user_id = 2;
 }
 
 message QuestionReportRequest {
@@ -89,15 +72,6 @@ message QuestionDetailRequest {
   int64 user_id = 2;
 }
 
-message UpdateResponseRequest {
-  int64 response_id = 1;
-  string content = 2;
-}
-
-message DeleteResponseRequest {
-  int64 response_id = 1;
-}
-
 message GetMyQuestionRequest {
   int64 user_id = 1;
   int32 page_num = 2;
@@ -116,21 +90,6 @@ message QuestionCreateResponse {
   string question_writer_name = 9;
   repeated string image_urls = 10;
   google.protobuf.Timestamp created_at = 11;
-}
-
-message AnswerCreateResponse {
-  int64 response_id = 1;
-  int64 question_id = 2;
-  string response_content = 3;
-  int64 response_writer_id = 4;
-  repeated string image_urls = 5;
-  google.protobuf.Timestamp created_at = 6;
-}
-
-message AnswerRecommendResponse {
-  int64 response_id = 1;
-  int32 count = 2;
-  bool is_recommended = 3;
 }
 
 message QuestionReportResponse {
@@ -197,11 +156,6 @@ message ResponseDetail {
 
 message QuestionDetailResponse {
   QuestionCreateResponse question = 1;
-}
-
-message UpdateResponseResponse {
-  int64 response_id = 1;
-  string content = 2;
 }
 
 message PopularPostItem {
