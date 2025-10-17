@@ -12,7 +12,7 @@ from app.config import get_settings
 from app.grpc_service.question_server import QuestionGRPCServer
 from app.grpc_service.quiz_server import QuizGRPCServer
 from app.core.eureka import get_eureka_client
-from app.api import search_router
+from app.api import search_router, quiz_router
 from app.services.quiz import get_quiz_scheduler
 from app.core.logger import LoggerSetup
 from app.vectordb.collections import Collections
@@ -165,6 +165,7 @@ def create_app() -> FastAPI:
 Question Service gRPC: 50051
 Quiz Service gRPC: 50052
 Search Service REST: /api/search/*
+Quiz Service REST: /api/quiz/*
 
         """.strip(),
         version="1.0.0",
@@ -186,6 +187,7 @@ Search Service REST: /api/search/*
 
     # REST API 라우터 등록
     app.include_router(search_router)
+    app.include_router(quiz_router)
 
     @app.get("/health", summary="상태 확인", tags=["Health"])
     async def health_check():
