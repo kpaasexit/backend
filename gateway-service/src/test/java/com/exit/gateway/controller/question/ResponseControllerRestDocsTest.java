@@ -19,6 +19,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -286,6 +287,81 @@ class ResponseControllerRestDocsTest {
                                 fieldWithPath("result.responseReportContent").description("신고 내용"),
                                 fieldWithPath("result.responseReportWriterId").description("신고자 ID"),
                                 fieldWithPath("result.createdAt").description("신고일시")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("답변 리스트 상세 조회 API")
+    void responseDetail() throws Exception {
+        // given
+        LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
+
+        ResponseDetailDto response1 = ResponseDetailDto.builder()
+                .responseId(1L)
+                .responseWriterId(2L)
+                .responseWriterName("김답변")
+                .responseWriterProfile("https://example.com/profile/kim.jpg")
+                .responseContent("JWT 토큰은 다음과 같이 구현할 수 있습니다...")
+                .responseAdopt(true)
+                .urls(List.of("https://example.com/image1.jpg", "https://example.com/image2.jpg"))
+                .likeCount(15)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+
+        ResponseDetailDto response2 = ResponseDetailDto.builder()
+                .responseId(2L)
+                .responseWriterId(3L)
+                .responseWriterName("이개발")
+                .responseWriterProfile("https://example.com/profile/lee.jpg")
+                .responseContent("다른 방법으로는 이렇게 할 수도 있습니다...")
+                .responseAdopt(false)
+                .urls(List.of())
+                .likeCount(5)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+
+        GetDetailResponseResponseDto response = GetDetailResponseResponseDto.builder()
+                .responses(List.of(response1, response2))
+                .hasNext(true)
+                .build();
+
+        given(responseGrpcClient.getDetailResponse(any(), any(), any())).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/responses/{questionId}/responses", 1L)
+                        .param("pageNum", "1"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.result.responses[0].responseId").value(1L))
+                .andExpect(jsonPath("$.result.responses[0].responseAdopt").value(true))
+                .andExpect(jsonPath("$.result.responses[0].likeCount").value(15))
+                .andExpect(jsonPath("$.result.responses[1].responseId").value(2L))
+                .andExpect(jsonPath("$.result.hasNext").value(true))
+                .andDo(document("response/detail-list",
+                        pathParameters(
+                                parameterWithName("questionId").description("질문 ID")
+                        ),
+                        queryParameters(
+                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작, 기본값: 1)").optional()
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.responses").description("답변 목록"),
+                                fieldWithPath("result.responses[].responseId").description("답변 ID"),
+                                fieldWithPath("result.responses[].responseWriterId").description("답변 작성자 ID"),
+                                fieldWithPath("result.responses[].responseWriterName").description("답변 작성자 이름"),
+                                fieldWithPath("result.responses[].responseWriterProfile").description("답변 작성자 프로필 URL").optional(),
+                                fieldWithPath("result.responses[].responseContent").description("답변 내용"),
+                                fieldWithPath("result.responses[].responseAdopt").description("채택 여부"),
+                                fieldWithPath("result.responses[].urls").description("답변 이미지 URL 목록"),
+                                fieldWithPath("result.responses[].likeCount").description("좋아요 수"),
+                                fieldWithPath("result.responses[].createdAt").description("작성일시"),
+                                fieldWithPath("result.responses[].updatedAt").description("수정일시"),
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
                         )
                 ));
     }
