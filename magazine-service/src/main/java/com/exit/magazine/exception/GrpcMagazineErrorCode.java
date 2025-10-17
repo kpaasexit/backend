@@ -23,7 +23,10 @@ public enum GrpcMagazineErrorCode implements GrpcErrorCode {
     SAVE_SCRAP_FAILED(Status.Code.INTERNAL, "MAGAZINE_ERR_032", "스크랩 저장 실패"),
 
     // 사용자 정보 조회 실패
-    GET_USER_INFO_FAILED(Status.Code.INTERNAL, "MAGAZINE_ERR_040", "사용자 정보 조회 실패");
+    GET_USER_INFO_FAILED(Status.Code.INTERNAL, "MAGAZINE_ERR_040", "사용자 정보 조회 실패"),
+
+    // 매거진 통합 검색 실패
+    SEARCH_INTEGRATED_FAILED(Status.Code.INTERNAL, "MAGAZINE_ERR_060", "매거진 통합 검색 실패");
 
     private final Status.Code grpcStatusCode;
     private final String developCode;
