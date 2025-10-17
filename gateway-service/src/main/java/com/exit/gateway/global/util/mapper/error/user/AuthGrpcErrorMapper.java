@@ -1,4 +1,4 @@
-package com.exit.gateway.global.util.mapper.error.auth;
+package com.exit.gateway.global.util.mapper.error.user;
 
 import com.exit.common.response.error.rest.ErrorCode;
 import com.exit.common.response.error.rest.user.AuthErrorCode;

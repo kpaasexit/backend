@@ -1,6 +1,6 @@
 [source,json,options="nowrap"]
 ----
 {
-  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDAzMTEsImV4cCI6MjM2NTUwMDMxMX0.rHR16-JwdGIK0cIP2irK2Nekn3yUVJ48s8eNVsz8H1Y"
+  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDEwNjgsImV4cCI6MjM2NTUwMTA2OH0.tf8yuk4dI4ClQr-ERW2f2LVTx5v2XAdf2PPydwCFV3Q"
 }
 ----

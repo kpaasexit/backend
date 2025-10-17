@@ -25,7 +25,7 @@ public class MagazineGrpcErrorMapper implements GrpcErrorMapper {
         MagazineErrorCode errorCode = ERROR_CODE_MAP.get(developCode);
 
         if (errorCode == null) {
-            log.warn("알 수 없는 User gRPC 에러코드: {}. 기본 퀴즈 에러 코드 사용", developCode);
+            log.warn("알 수 없는 User gRPC 에러코드: {}. 기본 매거진 에러 코드 사용", developCode);
             return getDefaultErrorCode();
         }
 
