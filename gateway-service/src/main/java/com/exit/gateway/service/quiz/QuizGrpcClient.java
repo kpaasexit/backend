@@ -2,6 +2,9 @@ package com.exit.gateway.service.quiz;
 
 import com.exit.common.grpc.*;
 import com.exit.gateway.controller.quiz.dto.request.quiz.ReportQuizRequestDto;
+import com.exit.gateway.global.annotation.GrpcToRest;
+import com.exit.gateway.global.util.mapper.error.auth.AuthGrpcErrorMapper;
+import com.exit.gateway.global.util.mapper.error.quiz.QuizGrpcErrorMapper;
 import com.google.protobuf.Empty;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +17,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@GrpcToRest(mapper = QuizGrpcErrorMapper.class)
 public class QuizGrpcClient {
 
     @GrpcClient("quiz-service")
     private QuizServiceGrpc.QuizServiceBlockingStub quizServiceStub;
 
     public GetCategoryStatisticsResponse getCategoryStatistics(Long userId) {
-        try {
             GetCategoryStatisticsRequest request = GetCategoryStatisticsRequest.newBuilder()
                     .setUserId(userId)
                     .build();
@@ -30,14 +33,9 @@ public class QuizGrpcClient {
             log.debug("Received get category statistics response via gRPC");
 
             return response;
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC get category statistics failed: {}", e.getStatus(), e);
-            throw e;
-        }
     }
 
     public GetQuizResponse getQuiz(Long categoryId, Long userId) {
-        try {
             GetQuizRequest request = GetQuizRequest.newBuilder()
                     .setCategoryId(categoryId)
                     .setUserId(userId)
@@ -48,14 +46,9 @@ public class QuizGrpcClient {
             log.debug("Received get quiz response via gRPC");
 
             return response;
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC get quiz failed: {}", e.getStatus(), e);
-            throw e;
-        }
     }
 
     public SubmitAnswerResponse submitAnswer(Long quizId, String answer, Long userId) {
-        try {
             SubmitAnswerRequest request = SubmitAnswerRequest.newBuilder()
                     .setQuizId(quizId)
                     .setAnswer(answer)
@@ -67,14 +60,9 @@ public class QuizGrpcClient {
             log.debug("Received submit answer response via gRPC");
 
             return response;
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC submit answer failed: {}", e.getStatus(), e);
-            throw e;
-        }
     }
 
     public GetSolvedQuizResponse getSolvedQuiz(Long userId, List<Long> categoryIds, Integer pageNum) {
-        try {
             GetSolvedQuizRequest request = GetSolvedQuizRequest.newBuilder()
                     .setUserId(userId)
                     .addAllCategoryId(categoryIds)
@@ -86,20 +74,11 @@ public class QuizGrpcClient {
             log.debug("Received get solved quiz response via gRPC");
 
             return response;
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC get solved quiz failed: {}", e.getStatus(), e);
-            throw e;
-        }
     }
 
     public GetTodayQuizResponse getTodayQuiz() {
-        try {
             GetTodayQuizResponse response = quizServiceStub.getTodayQuiz(Empty.getDefaultInstance());
             log.debug("Received get today quiz response via gRPC");
             return response;
-        } catch (StatusRuntimeException e) {
-            log.error("gRPC get today quiz failed: {}", e.getStatus(), e);
-            throw e;
-        }
     }
 }
