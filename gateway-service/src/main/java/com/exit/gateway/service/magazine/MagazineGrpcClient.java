@@ -2,6 +2,7 @@ package com.exit.gateway.service.magazine;
 
 import com.exit.common.grpc.*;
 import com.exit.gateway.controller.magazine.dto.response.*;
+import com.exit.gateway.controller.search.dto.response.MagazineSearchItemDto;
 import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
@@ -79,5 +80,21 @@ public class MagazineGrpcClient {
             log.error("gRPC getMagazine failed: {}", e.getStatus(), e);
             throw e;
         }
+    }
+
+    public SearchMagazinesResponse searchMagazines(String keyword, int page, int size) {
+        // 빈 문자열이나 공백만 있는 경우 빈 문자열로 정규화
+        String normalizedKeyword = (keyword == null || keyword.trim().isEmpty()) ? "" : keyword.trim();
+        log.debug("Sending search magazines request via gRPC for keyword: '{}'", normalizedKeyword);
+
+        SearchMagazinesRequest request = SearchMagazinesRequest.newBuilder()
+                .setKeyword(normalizedKeyword)
+                .setPage(page)
+                .setSize(size)
+                .build();
+
+        SearchMagazinesResponse response = magazineServiceStub.searchMagazines(request);
+        log.debug("Received search magazines response via gRPC with {} results", response.getMagazinesCount());
+        return response;
     }
 }

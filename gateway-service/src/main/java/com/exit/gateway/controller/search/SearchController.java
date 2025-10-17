@@ -1,16 +1,18 @@
 package com.exit.gateway.controller.search;
 
 import com.exit.common.exception.rest.RestApiException;
+import com.exit.common.grpc.QuestionListRequest;
 import com.exit.common.grpc.SearchMagazinesResponse;
-import com.exit.common.grpc.SearchQuestionsResponse;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.error.rest.search.SearchErrorCode;
 import com.exit.common.response.success.SearchSuccessCode;
+import com.exit.gateway.controller.question.dto.response.question.QuestionListQueryResponseDto;
+import com.exit.gateway.controller.question.dto.response.question.QuestionListResponseDto;
 import com.exit.gateway.controller.search.dto.response.IntegratedSearchResponseDto;
 import com.exit.gateway.controller.search.dto.response.MagazineSearchItemDto;
-import com.exit.gateway.controller.search.dto.response.QuestionSearchItemDto;
 import com.exit.gateway.controller.search.dto.response.RecommendedSearchTermsDto;
-import com.exit.gateway.service.search.SearchGrpcClient;
+import com.exit.gateway.service.magazine.MagazineGrpcClient;
+import com.exit.gateway.service.question.QuestionGrpcClient;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,7 +32,8 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class SearchController {
 
-    private final SearchGrpcClient searchGrpcClient;
+    private final QuestionGrpcClient questionGrpcClient;
+    private final MagazineGrpcClient magazineGrpcClient;
 
     @GetMapping
     public SuccessResponse<IntegratedSearchResponseDto> integratedSearch(
@@ -40,47 +43,39 @@ public class SearchController {
 
         try {
             log.info("Integrated search request - keyword: {}, page: {}, size: {}", keyword, page, size);
-
-            List<QuestionSearchItemDto> questions = Collections.emptyList();
-            List<MagazineSearchItemDto> magazines = Collections.emptyList();
-            int questionTotalCount = 0;
-            int magazineTotalCount = 0;
-            boolean questionHasNext = false;
-            boolean magazineHasNext = false;
-
+            QuestionListRequest questionListRequest = QuestionListRequest.newBuilder()
+                    .addAllCategoryIds(new ArrayList<>(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)))
+                    .setKeyword(keyword)
+                    .setPage(page)
+                    .setSize(size)
+                    .setIsAdopted(false)
+                    .build();
             // 병렬로 질문과 매거진 검색
-            CompletableFuture<SearchQuestionsResponse> questionsFuture = CompletableFuture.supplyAsync(() ->
-                    searchGrpcClient.searchQuestions(keyword, page, size)
+            CompletableFuture<QuestionListResponseDto> questionsFuture = CompletableFuture.supplyAsync(() ->
+                    questionGrpcClient.getQuestionList(questionListRequest)
             );
             CompletableFuture<SearchMagazinesResponse> magazinesFuture = CompletableFuture.supplyAsync(() ->
-                    searchGrpcClient.searchMagazines(keyword, page, size)
+                    magazineGrpcClient.searchMagazines(keyword, page, size)
             );
 
             // 두 결과 모두 기다림
-            SearchQuestionsResponse questionsResponse = questionsFuture.join();
+            QuestionListResponseDto questionsResponse = questionsFuture.join();
             SearchMagazinesResponse magazinesResponse = magazinesFuture.join();
 
-            questions = questionsResponse.getQuestionsList().stream()
-                    .map(SearchGrpcClient::toQuestionDto)
+            List<QuestionListQueryResponseDto> questions = questionsResponse.questionList();
+            List<MagazineSearchItemDto> magazines = magazinesResponse.getMagazinesList().stream()
+                    .map(MagazineSearchItemDto::toMagazineDto)
                     .toList();
-            magazines = magazinesResponse.getMagazinesList().stream()
-                    .map(SearchGrpcClient::toMagazineDto)
-                    .toList();
-            questionTotalCount = questionsResponse.getTotalCount();
-            magazineTotalCount = magazinesResponse.getTotalCount();
-            questionHasNext = questionsResponse.getHasNext();
-            magazineHasNext = magazinesResponse.getHasNext();
+            boolean questionHasNext = questionsResponse.hasNext();
+            boolean magazineHasNext = magazinesResponse.getHasNext();
 
 
             IntegratedSearchResponseDto responseDto = IntegratedSearchResponseDto.builder()
                     .questions(questions)
                     .magazines(magazines)
-                    .questionTotalCount(questionTotalCount)
-                    .magazineTotalCount(magazineTotalCount)
                     .questionHasNext(questionHasNext)
                     .magazineHasNext(magazineHasNext)
                     .build();
-
             return SuccessResponse.of(SearchSuccessCode.SEARCH_SUCCESS, responseDto);
 
         } catch (StatusRuntimeException e) {
