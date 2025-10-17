@@ -53,4 +53,8 @@
 |`+String+`
 |작성일시
 
+|`+result.magazineItems[].isScrap+`
+|`+Null+`
+|스크랩 여부
+
 |===

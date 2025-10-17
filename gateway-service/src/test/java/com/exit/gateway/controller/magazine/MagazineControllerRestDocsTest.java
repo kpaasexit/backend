@@ -133,7 +133,8 @@ class MagazineControllerRestDocsTest {
                                 fieldWithPath("result.magazineItems[].magazineAuthor").description("작성자"),
                                 fieldWithPath("result.magazineItems[].authorProfileUrl").description("작성자 프로필 URL"),
                                 fieldWithPath("result.magazineItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
-                                fieldWithPath("result.magazineItems[].createdAt").description("작성일시")
+                                fieldWithPath("result.magazineItems[].createdAt").description("작성일시"),
+                                fieldWithPath("result.magazineItems[].isScrap").description("스크랩 여부")
                         )
                 ));
     }
@@ -180,7 +181,8 @@ class MagazineControllerRestDocsTest {
                                 fieldWithPath("result.magazineAuthor").description("작성자"),
                                 fieldWithPath("result.authorProfileUrl").description("작성자 프로필 URL"),
                                 fieldWithPath("result.magazineThumbnailUrl").description("매거진 썸네일 URL"),
-                                fieldWithPath("result.createdAt").description("작성일시")
+                                fieldWithPath("result.createdAt").description("작성일시"),
+                                fieldWithPath("result.isScrap").description("스크랩 여부")
                         )
                 ));
     }

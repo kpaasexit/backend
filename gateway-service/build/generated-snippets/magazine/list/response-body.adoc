@@ -13,7 +13,8 @@
       "magazineAuthor" : "김개발",
       "authorProfileUrl" : "https://example.com/profile/kim.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/kpaas.jpg",
-      "createdAt" : "2024-01-01T00:00:00"
+      "createdAt" : "2024-01-01T00:00:00",
+      "isScrap" : null
     }, {
       "magazineId" : 2,
       "magazineCategoryId" : 1,
@@ -23,7 +24,8 @@
       "magazineAuthor" : "이아키",
       "authorProfileUrl" : "https://example.com/profile/lee.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/msa.jpg",
-      "createdAt" : "2024-01-01T00:00:00"
+      "createdAt" : "2024-01-01T00:00:00",
+      "isScrap" : null
     } ]
   }
 }

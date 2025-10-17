@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,13 +37,24 @@ public class MagazineService {
     public GetMagazinesByCategoryResponse getMagazinesByCategory(GetMagazinesByCategoryRequest request) {
         try {
             PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
-            List<MagazineItem> magazineItems = magazineRepository.findAllByMagazineCategoryMagazineCategoryId(request.getCategoryId(), pageRequest)
-                    .stream()
-                    .map(magazine -> {
-                        UpdateAdditionalUserInfoResponse userInfo = userGrpcClient.getUserNameAndProfile(magazine.getMagazineAuthorId());
-                        return createMagazineItem(magazine, userInfo);
-                    })
-                    .toList();
+            List<Magazines> magazines = magazineRepository.findAllByMagazineCategoryMagazineCategoryId(request.getCategoryId(), pageRequest);
+            List<Long> magazineIds = magazines.stream().map(Magazines::getMagazineId).toList();
+            Set<Long> authorIds = magazines.stream().map(Magazines::getMagazineAuthorId).collect(Collectors.toSet());
+
+            GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(authorIds);
+            Map<Long, UpdateAdditionalUserInfoResponse> authorInfos = usersNameAndProfile.getUserInfoList().stream()
+                    .collect(Collectors.toMap(userInfo -> userInfo.getUserId(), userInfo -> userInfo));
+
+            Set<Magazines> scrapSet = magazineScrapRepository.findByUserIdAndMagazine_MagazineIdIn(request.getUserId(), magazineIds).stream()
+                    .map(MagazineScraps::getMagazine)
+                    .collect(Collectors.toSet());
+
+            List<MagazineItem> magazineItems = magazines.stream().map(
+                    magazine -> {
+                        boolean isScrap = scrapSet.contains(magazine);
+                        return createMagazineItem(magazine, authorInfos.get(magazine.getMagazineAuthorId()), isScrap);
+                    }).toList();
+
             return GetMagazinesByCategoryResponse.newBuilder()
                     .addAllMagazineItem(magazineItems)
                     .build();
@@ -58,7 +70,8 @@ public class MagazineService {
             Magazines magazine = magazineRepository.findById(request.getMagazineId())
                     .orElseThrow(() -> new GrpcException(GrpcMagazineErrorCode.MAGAZINE_NOT_FOUND));
             UpdateAdditionalUserInfoResponse userInfo = userGrpcClient.getUserNameAndProfile(magazine.getMagazineAuthorId());
-            MagazineItem magazineItem = createMagazineItem(magazine, userInfo);
+            boolean isScrap = magazineScrapRepository.findByUserIdAndMagazine_magazineId(request.getUserId(), request.getMagazineId()).isPresent();
+            MagazineItem magazineItem = createMagazineItem(magazine, userInfo, isScrap);
 
             return GetMagazineResponse.newBuilder()
                     .setMagazineItem(magazineItem)
@@ -162,27 +175,19 @@ public class MagazineService {
 
             Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserInfoMap(authorIds);
 
-            // MagazineSearchItem 생성
-            List<MagazineItem> searchItems = slice.getContent().stream()
-                    .map(magazine -> {
-                        UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(magazine.getMagazineAuthorId());
-                        return MagazineItem.newBuilder()
-                                .setMagazineId(magazine.getMagazineId())
-                                .setMagazineCategoryId(magazine.getMagazineCategory().getMagazineCategoryId())
-                                .setMagazineTitle(magazine.getMagazineTitle())
-                                .setMagazineSubtitle(magazine.getMagazineSubtitle())
-                                .setMagazineContent(magazine.getMagazineContent())
-                                .setMagazineAuthor(userInfo != null ? userInfo.getUserName() : "Unknown")
-                                .setAuthorProfileUrl(userInfo != null ? userInfo.getUserProfile() : "")
-                                .setMagazineThumbnailUrl(magazine.getMagazineThumbnailUrl())
-                                .setCreatedAt(toGrpcTimestamp(magazine.getCreatedAt()))
-                                .build();
-                    })
-                    .toList();
+            List<Long> magazineIds = slice.getContent().stream().map(Magazines::getMagazineId).toList();
+            Set<Magazines> scrapSet = magazineScrapRepository.findByUserIdAndMagazine_MagazineIdIn(request.getUserId(), magazineIds).stream()
+                    .map(MagazineScraps::getMagazine)
+                    .collect(Collectors.toSet());
+
+            List<MagazineItem> searchItems = slice.getContent().stream().map(
+                    magazine -> {
+                        boolean isScrap = scrapSet.contains(magazine);
+                        return createMagazineItem(magazine, userInfoMap.get(magazine.getMagazineAuthorId()), isScrap);
+                    }).toList();
 
             return SearchMagazinesResponse.newBuilder()
                     .addAllMagazines(searchItems)
-                    .setTotalCount(searchItems.size())
                     .setHasNext(slice.hasNext())
                     .build();
         } catch (Exception e) {
@@ -203,17 +208,18 @@ public class MagazineService {
         return true; // 새로운 스크랩
     }
 
-    private MagazineItem createMagazineItem(Magazines magazine, UpdateAdditionalUserInfoResponse userInfo) {
+    private MagazineItem createMagazineItem(Magazines magazine, UpdateAdditionalUserInfoResponse userInfo, Boolean isScrap) {
         return MagazineItem.newBuilder()
                 .setMagazineId(magazine.getMagazineId())
                 .setMagazineCategoryId(magazine.getMagazineCategory().getMagazineCategoryId())
                 .setMagazineTitle(magazine.getMagazineTitle())
                 .setMagazineSubtitle(magazine.getMagazineSubtitle())
                 .setMagazineContent(magazine.getMagazineContent())
-                .setMagazineAuthor(userInfo.getUserName())
-                .setAuthorProfileUrl(userInfo.getUserProfile())
-                .setMagazineThumbnailUrl(magazine.getMagazineThumbnailUrl())
+                .setMagazineAuthor(userInfo != null ? userInfo.getUserName() : "Unknown")
+                .setAuthorProfileUrl(userInfo != null && !userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
+                .setMagazineThumbnailUrl(magazine.getMagazineThumbnailUrl()!= null ? magazine.getMagazineThumbnailUrl() : "")
                 .setCreatedAt(toGrpcTimestamp(magazine.getCreatedAt()))
+                .setIsScrap(isScrap)
                 .build();
     }
 

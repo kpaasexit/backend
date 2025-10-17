@@ -19,7 +19,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -170,6 +169,7 @@ class SearchControllerRestDocsTest {
                                 fieldWithPath("result.magazines[].authorProfileUrl").description("작성자 프로필 URL"),
                                 fieldWithPath("result.magazines[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
                                 fieldWithPath("result.magazines[].createdAt").description("작성일시"),
+                                fieldWithPath("result.magazines[].isScrap").description("스크랩 여부"),
                                 fieldWithPath("result.questionHasNext").description("질문 다음 페이지 존재 여부"),
                                 fieldWithPath("result.magazineHasNext").description("매거진 다음 페이지 존재 여부")
                         )

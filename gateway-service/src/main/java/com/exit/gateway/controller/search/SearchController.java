@@ -1,16 +1,9 @@
 package com.exit.gateway.controller.search;
 
-import com.exit.common.grpc.QuestionListRequest;
-import com.exit.common.grpc.SearchMagazinesResponse;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.success.SearchSuccessCode;
-import com.exit.gateway.controller.question.dto.response.question.QuestionListQueryResponseDto;
-import com.exit.gateway.controller.question.dto.response.question.QuestionListResponseDto;
 import com.exit.gateway.controller.search.dto.response.IntegratedSearchResponseDto;
-import com.exit.gateway.controller.search.dto.response.MagazineSearchItemDto;
 import com.exit.gateway.controller.search.dto.response.RecommendedSearchTermsDto;
-import com.exit.gateway.service.magazine.MagazineGrpcClient;
-import com.exit.gateway.service.question.QuestionGrpcClient;
 import com.exit.gateway.service.search.SearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/search")

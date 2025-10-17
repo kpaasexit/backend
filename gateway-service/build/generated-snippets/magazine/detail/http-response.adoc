@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 590
+Content-Length: 613
 
 {
   "code" : "MAGAZINE_OK_002",
@@ -22,7 +22,8 @@ Content-Length: 590
     "magazineAuthor" : "김개발",
     "authorProfileUrl" : "https://example.com/profile/kim.jpg",
     "magazineThumbnailUrl" : "https://example.com/thumbnail/kpaas.jpg",
-    "createdAt" : "2024-01-01T00:00:00"
+    "createdAt" : "2024-01-01T00:00:00",
+    "isScrap" : null
   }
 }
 ----

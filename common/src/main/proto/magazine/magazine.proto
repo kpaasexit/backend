@@ -22,10 +22,12 @@ service MagazineService {
 message GetMagazinesByCategoryRequest {
   int64 category_id = 1;
   int32 page_num = 2;
+  int64 user_id = 3;
 }
 
 message GetMagazineRequest {
   int64 magazine_id = 1;
+  int64 user_id = 2;
 }
 
 message ScrapMagazineRequest {
@@ -46,6 +48,7 @@ message SearchMagazinesRequest {
   string keyword = 1;
   int32 page = 2;
   int32 size = 3;
+  int64 user_id = 4;
 }
 
 // response
@@ -59,6 +62,7 @@ message MagazineItem {
   string author_profile_url = 7;
   string magazine_thumbnail_url = 8;
   google.protobuf.Timestamp created_at = 9;
+  bool is_scrap = 10;
 }
 
 message GetMagazinesByCategoryResponse {
@@ -93,6 +97,5 @@ message GetRecommendedMagazineResponse {
 
 message SearchMagazinesResponse {
   repeated MagazineItem magazines = 1;
-  int32 total_count = 2;
   bool has_next = 3;
 }

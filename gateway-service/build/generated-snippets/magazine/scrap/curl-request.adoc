@@ -1,5 +1,5 @@
 [source,bash]
 ----
 $ curl 'http://localhost:8080/api/magazine/1/scrap' -i -X POST \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDM4MDEsImV4cCI6MTc2NDMwMzgwMX0.cDhDZ_aSmaLNWgfUDuKlRJsZoYgEImyC_GUUzS4dSZY'
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDcyNTQsImV4cCI6MTc2NDMwNzI1NH0.iWlfdm_jX7Mj8DZJBJmMa0NI7z4YiujMQqsdMRvNUeU'
 ----

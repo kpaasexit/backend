@@ -2,10 +2,10 @@ package com.exit.gateway.service.search;
 
 import com.exit.common.grpc.QuestionListRequest;
 import com.exit.common.grpc.SearchMagazinesResponse;
+import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
 import com.exit.gateway.controller.question.dto.response.question.QuestionListQueryResponseDto;
 import com.exit.gateway.controller.question.dto.response.question.QuestionListResponseDto;
 import com.exit.gateway.controller.search.dto.response.IntegratedSearchResponseDto;
-import com.exit.gateway.controller.search.dto.response.MagazineSearchItemDto;
 import com.exit.gateway.global.annotation.GrpcToRest;
 import com.exit.gateway.global.util.mapper.error.search.SearchGrpcErrorMapper;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
@@ -49,8 +49,8 @@ public class SearchService {
         SearchMagazinesResponse magazinesResponse = magazinesFuture.join();
 
         List<QuestionListQueryResponseDto> questions = questionsResponse.questionList();
-        List<MagazineSearchItemDto> magazines = magazinesResponse.getMagazinesList().stream()
-                .map(MagazineSearchItemDto::toMagazineDto)
+        List<MagazineItemDto> magazines = magazinesResponse.getMagazinesList().stream()
+                .map(MagazineItemDto::from)
                 .toList();
         boolean questionHasNext = questionsResponse.hasNext();
         boolean magazineHasNext = magazinesResponse.getHasNext();

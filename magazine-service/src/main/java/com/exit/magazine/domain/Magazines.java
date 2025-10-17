@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "Magazines")
 @Getter
@@ -46,5 +48,17 @@ public class Magazines extends BaseEntity {
         this.magazineSubtitle = magazineSubtitle;
         this.magazineContent = magazineContent;
         this.magazineThumbnailUrl = magazineThumbnailUrl;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Magazines magazines = (Magazines) o;
+        return Objects.equals(magazineId, magazines.magazineId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(magazineId);
     }
 }
