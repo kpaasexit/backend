@@ -91,24 +91,22 @@ class SearchControllerRestDocsTest {
                 .build();
 
         // Magazine mock data
-        com.exit.common.grpc.MagazineItem magazine1 = com.exit.common.grpc.MagazineItem.newBuilder()
+        com.exit.common.grpc.MagazineListItem magazine1 = com.exit.common.grpc.MagazineListItem.newBuilder()
                 .setMagazineId(1L)
                 .setMagazineCategoryId(1L)
                 .setMagazineTitle("K-Paas 플랫폼 소개")
                 .setMagazineSubtitle("클라우드 네이티브 플랫폼의 모든 것")
-                .setMagazineContent("K-Paas는 혁신적인 클라우드 플랫폼입니다...")
                 .setMagazineAuthor("김개발")
                 .setAuthorProfileUrl("https://example.com/profile/kim.jpg")
                 .setMagazineThumbnailUrl("https://example.com/thumbnail/kpaas.jpg")
                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(LocalDateTime.now()))
                 .build();
 
-        com.exit.common.grpc.MagazineItem magazine2 = com.exit.common.grpc.MagazineItem.newBuilder()
+        com.exit.common.grpc.MagazineListItem magazine2 = com.exit.common.grpc.MagazineListItem.newBuilder()
                 .setMagazineId(2L)
                 .setMagazineCategoryId(1L)
                 .setMagazineTitle("MSA 아키텍처 가이드")
                 .setMagazineSubtitle("마이크로서비스 설계 원칙")
-                .setMagazineContent("마이크로서비스 아키텍처(MSA)는...")
                 .setMagazineAuthor("이아키")
                 .setAuthorProfileUrl("https://example.com/profile/lee.jpg")
                 .setMagazineThumbnailUrl("https://example.com/thumbnail/msa.jpg")
@@ -164,12 +162,10 @@ class SearchControllerRestDocsTest {
                                 fieldWithPath("result.magazines[].magazineCategoryId").description("매거진 카테고리 ID"),
                                 fieldWithPath("result.magazines[].magazineTitle").description("매거진 제목"),
                                 fieldWithPath("result.magazines[].magazineSubtitle").description("매거진 부제목"),
-                                fieldWithPath("result.magazines[].magazineContent").description("매거진 내용"),
-                                fieldWithPath("result.magazines[].magazineAuthor").description("매거진 작성자"),
+                                fieldWithPath("result.magazines[].magazineAuthor").description("매거진 작성자 닉네임"),
                                 fieldWithPath("result.magazines[].authorProfileUrl").description("작성자 프로필 URL"),
                                 fieldWithPath("result.magazines[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
                                 fieldWithPath("result.magazines[].createdAt").description("작성일시"),
-                                fieldWithPath("result.magazines[].isScrap").description("스크랩 여부"),
                                 fieldWithPath("result.questionHasNext").description("질문 다음 페이지 존재 여부"),
                                 fieldWithPath("result.magazineHasNext").description("매거진 다음 페이지 존재 여부")
                         )

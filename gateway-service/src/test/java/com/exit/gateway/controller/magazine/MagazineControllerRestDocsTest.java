@@ -78,31 +78,29 @@ class MagazineControllerRestDocsTest {
         // given
         LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
 
-        MagazineItemDto item1 = MagazineItemDto.builder()
+        MagazineListItemDto item1 = MagazineListItemDto.builder()
                 .magazineId(1L)
                 .magazineCategoryId(1L)
                 .magazineTitle("K-Paas 플랫폼 소개")
                 .magazineSubtitle("클라우드 네이티브 플랫폼의 모든 것")
-                .magazineContent("K-Paas는 혁신적인 클라우드 플랫폼입니다...")
                 .magazineAuthor("김개발")
                 .authorProfileUrl("https://example.com/profile/kim.jpg")
                 .magazineThumbnailUrl("https://example.com/thumbnail/kpaas.jpg")
                 .createdAt(now)
                 .build();
 
-        MagazineItemDto item2 = MagazineItemDto.builder()
+        MagazineListItemDto item2 = MagazineListItemDto.builder()
                 .magazineId(2L)
                 .magazineCategoryId(1L)
                 .magazineTitle("MSA 아키텍처 가이드")
                 .magazineSubtitle("마이크로서비스 설계 원칙")
-                .magazineContent("마이크로서비스 아키텍처(MSA)는...")
                 .magazineAuthor("이아키")
                 .authorProfileUrl("https://example.com/profile/lee.jpg")
                 .magazineThumbnailUrl("https://example.com/thumbnail/msa.jpg")
                 .createdAt(now)
                 .build();
 
-        MagazineItemListDto response = new MagazineItemListDto(List.of(item1, item2));
+        MagazineListDto response = new MagazineListDto(List.of(item1, item2));
 
         given(magazineGrpcClient.getMagazinesByCategory(any())).willReturn(response);
 
@@ -110,9 +108,9 @@ class MagazineControllerRestDocsTest {
         mockMvc.perform(get("/api/magazine/category/{categoryId}", 1L)
                         .param("pageNum", "1"))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.result.magazineItems[0].magazineId").value(1L))
-                .andExpect(jsonPath("$.result.magazineItems[0].magazineTitle").value("K-Paas 플랫폼 소개"))
-                .andExpect(jsonPath("$.result.magazineItems[1].magazineId").value(2L))
+                .andExpect(jsonPath("$.result.magazineListItems[0].magazineId").value(1L))
+                .andExpect(jsonPath("$.result.magazineListItems[0].magazineTitle").value("K-Paas 플랫폼 소개"))
+                .andExpect(jsonPath("$.result.magazineListItems[1].magazineId").value(2L))
                 .andDo(document("magazine/list",
                         pathParameters(
                                 parameterWithName("categoryId").description("카테고리 ID")
@@ -124,17 +122,15 @@ class MagazineControllerRestDocsTest {
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.magazineItems").description("매거진 목록"),
-                                fieldWithPath("result.magazineItems[].magazineId").description("매거진 ID"),
-                                fieldWithPath("result.magazineItems[].magazineCategoryId").description("매거진 카테고리 ID"),
-                                fieldWithPath("result.magazineItems[].magazineTitle").description("매거진 제목"),
-                                fieldWithPath("result.magazineItems[].magazineSubtitle").description("매거진 부제목"),
-                                fieldWithPath("result.magazineItems[].magazineContent").description("매거진 내용"),
-                                fieldWithPath("result.magazineItems[].magazineAuthor").description("작성자"),
-                                fieldWithPath("result.magazineItems[].authorProfileUrl").description("작성자 프로필 URL"),
-                                fieldWithPath("result.magazineItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
-                                fieldWithPath("result.magazineItems[].createdAt").description("작성일시"),
-                                fieldWithPath("result.magazineItems[].isScrap").description("스크랩 여부")
+                                fieldWithPath("result.magazineListItems").description("매거진 목록"),
+                                fieldWithPath("result.magazineListItems[].magazineId").description("매거진 ID"),
+                                fieldWithPath("result.magazineListItems[].magazineCategoryId").description("매거진 카테고리 ID"),
+                                fieldWithPath("result.magazineListItems[].magazineTitle").description("매거진 제목"),
+                                fieldWithPath("result.magazineListItems[].magazineSubtitle").description("매거진 부제목"),
+                                fieldWithPath("result.magazineListItems[].magazineAuthor").description("작성자"),
+                                fieldWithPath("result.magazineListItems[].authorProfileUrl").description("작성자 프로필 URL"),
+                                fieldWithPath("result.magazineListItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
+                                fieldWithPath("result.magazineListItems[].createdAt").description("작성일시")
                         )
                 ));
     }

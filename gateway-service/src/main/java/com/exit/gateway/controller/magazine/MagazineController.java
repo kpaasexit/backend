@@ -1,15 +1,11 @@
 package com.exit.gateway.controller.magazine;
 
-import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.*;
 import com.exit.common.response.SuccessResponse;
-import com.exit.common.response.error.rest.magazine.MagazineErrorCode;
 import com.exit.common.response.success.MagazineSuccessCode;
 import com.exit.gateway.controller.magazine.dto.response.*;
 import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -22,43 +18,43 @@ public class MagazineController {
     private final MagazineGrpcClient magazineGrpcClient;
 
     @GetMapping("/category/{categoryId}")
-    public SuccessResponse<MagazineItemListDto> getMagazinesByCategory(
+    public SuccessResponse<MagazineListDto> getMagazinesByCategory(
             @PathVariable Long categoryId,
             @RequestParam(defaultValue = "1") Integer pageNum) {
-            log.info("Get magazines by category request received: categoryId={}, pageNum={}", categoryId, pageNum - 1);
-            GetMagazinesByCategoryRequest request = GetMagazinesByCategoryRequest.newBuilder()
-                    .setCategoryId(categoryId)
-                    .setPageNum(pageNum - 1)
-                    .build();
+        log.info("Get magazines by category request received: categoryId={}, pageNum={}", categoryId, pageNum - 1);
+        GetMagazinesByCategoryRequest request = GetMagazinesByCategoryRequest.newBuilder()
+                .setCategoryId(categoryId)
+                .setPageNum(pageNum - 1)
+                .build();
 
-            return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_LIST_BY_CATEGORY_SUCCESS,
-                    magazineGrpcClient.getMagazinesByCategory(request));
+        return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_LIST_BY_CATEGORY_SUCCESS,
+                magazineGrpcClient.getMagazinesByCategory(request));
     }
 
     @GetMapping("/{magazineId}")
     public SuccessResponse<MagazineItemDto> getMagazine(
             @PathVariable Long magazineId) {
-            log.info("Get magazine request received: magazineId={}", magazineId);
-            GetMagazineRequest request = GetMagazineRequest.newBuilder()
-                    .setMagazineId(magazineId)
-                    .build();
+        log.info("Get magazine request received: magazineId={}", magazineId);
+        GetMagazineRequest request = GetMagazineRequest.newBuilder()
+                .setMagazineId(magazineId)
+                .build();
 
-            return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_SUCCESS,
-                    magazineGrpcClient.getMagazine(request));
+        return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_SUCCESS,
+                magazineGrpcClient.getMagazine(request));
     }
 
     @PostMapping("/{magazineId}/scrap")
     public SuccessResponse<ScrapMagazineResponseDto> scrapMagazine(
             @PathVariable Long magazineId,
             @LoginUser Long userId) {
-            log.info("Scrap magazine request received: magazineId={}", magazineId);
-            ScrapMagazineRequest request = ScrapMagazineRequest.newBuilder()
-                    .setMagazineId(magazineId)
-                    .setUserId(userId)
-                    .build();
+        log.info("Scrap magazine request received: magazineId={}", magazineId);
+        ScrapMagazineRequest request = ScrapMagazineRequest.newBuilder()
+                .setMagazineId(magazineId)
+                .setUserId(userId)
+                .build();
 
-            return SuccessResponse.of(MagazineSuccessCode.SCRAP_MAGAZINE_SUCCESS,
-                    magazineGrpcClient.scrapMagazine(request));
+        return SuccessResponse.of(MagazineSuccessCode.SCRAP_MAGAZINE_SUCCESS,
+                magazineGrpcClient.scrapMagazine(request));
     }
 
     @GetMapping("/scrap-box")
@@ -66,26 +62,26 @@ public class MagazineController {
             @LoginUser Long userId,
             @RequestParam Integer pageNum
     ) {
-            log.info("Get scrap-box request received");
-            GetScrapBoxRequest request = GetScrapBoxRequest.newBuilder()
-                    .setUserId(userId)
-                    .setPageNum(pageNum-1)
-                    .build();
+        log.info("Get scrap-box request received");
+        GetScrapBoxRequest request = GetScrapBoxRequest.newBuilder()
+                .setUserId(userId)
+                .setPageNum(pageNum - 1)
+                .build();
 
-            return SuccessResponse.of(MagazineSuccessCode.GET_SCRAP_BOX_SUCCESS,
-                    magazineGrpcClient.getScrapBox(request));
+        return SuccessResponse.of(MagazineSuccessCode.GET_SCRAP_BOX_SUCCESS,
+                magazineGrpcClient.getScrapBox(request));
     }
 
     @GetMapping("/recommend")
     public SuccessResponse<GetRecommendedMagazineResponseDto> getScrapBox(
             @LoginUser Long userId
     ) {
-            log.info("Get scrap-box request received");
-            GetRecommendedMagazineRequest request = GetRecommendedMagazineRequest.newBuilder()
-                    .setUserId(userId)
-                    .build();
+        log.info("Get scrap-box request received");
+        GetRecommendedMagazineRequest request = GetRecommendedMagazineRequest.newBuilder()
+                .setUserId(userId)
+                .build();
 
-            return SuccessResponse.of(MagazineSuccessCode.GET_RECOMMENDED_MAGAZINE_SUCCESS,
-                    magazineGrpcClient.getRecommendedMagazine(request));
+        return SuccessResponse.of(MagazineSuccessCode.GET_RECOMMENDED_MAGAZINE_SUCCESS,
+                magazineGrpcClient.getRecommendedMagazine(request));
     }
 }

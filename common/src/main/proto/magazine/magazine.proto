@@ -65,8 +65,19 @@ message MagazineItem {
   bool is_scrap = 10;
 }
 
+message MagazineListItem {
+  int64 magazine_id = 1;
+  int64 magazine_category_id = 2;
+  string magazine_title = 3;
+  string magazine_subtitle = 4;
+  string magazine_author = 6;
+  string author_profile_url = 7;
+  string magazine_thumbnail_url = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
 message GetMagazinesByCategoryResponse {
-  repeated MagazineItem magazine_item = 1;
+  repeated MagazineListItem magazine_item = 1;
 }
 
 message GetMagazineResponse {
@@ -96,6 +107,6 @@ message GetRecommendedMagazineResponse {
 }
 
 message SearchMagazinesResponse {
-  repeated MagazineItem magazines = 1;
+  repeated MagazineListItem magazines = 1;
   bool has_next = 3;
 }

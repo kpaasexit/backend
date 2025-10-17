@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,25 +37,19 @@ public class MagazineService {
         try {
             PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
             List<Magazines> magazines = magazineRepository.findAllByMagazineCategoryMagazineCategoryId(request.getCategoryId(), pageRequest);
-            List<Long> magazineIds = magazines.stream().map(Magazines::getMagazineId).toList();
             Set<Long> authorIds = magazines.stream().map(Magazines::getMagazineAuthorId).collect(Collectors.toSet());
 
             GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(authorIds);
-            Map<Long, UpdateAdditionalUserInfoResponse> authorInfos = usersNameAndProfile.getUserInfoList().stream()
+            Map<Long, UpdateAdditionalUserInfoResponse> authorInfoMap = usersNameAndProfile.getUserInfoList().stream()
                     .collect(Collectors.toMap(userInfo -> userInfo.getUserId(), userInfo -> userInfo));
 
-            Set<Magazines> scrapSet = magazineScrapRepository.findByUserIdAndMagazine_MagazineIdIn(request.getUserId(), magazineIds).stream()
-                    .map(MagazineScraps::getMagazine)
-                    .collect(Collectors.toSet());
-
-            List<MagazineItem> magazineItems = magazines.stream().map(
-                    magazine -> {
-                        boolean isScrap = scrapSet.contains(magazine);
-                        return createMagazineItem(magazine, authorInfos.get(magazine.getMagazineAuthorId()), isScrap);
-                    }).toList();
-
+            List<MagazineListItem> magazineListItems = magazines.stream().map(magazine -> {
+                        UpdateAdditionalUserInfoResponse authorUserInfo = authorInfoMap.get(request.getUserId());
+                        return createMagazineListItem(magazine, authorUserInfo);
+                    }
+            ).toList();
             return GetMagazinesByCategoryResponse.newBuilder()
-                    .addAllMagazineItem(magazineItems)
+                    .addAllMagazineItem(magazineListItems)
                     .build();
         } catch (Exception e) {
             log.error("Get magazines by category failed for categoryId: {}", request.getCategoryId(), e);
@@ -175,16 +168,9 @@ public class MagazineService {
 
             Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserInfoMap(authorIds);
 
-            List<Long> magazineIds = slice.getContent().stream().map(Magazines::getMagazineId).toList();
-            Set<Magazines> scrapSet = magazineScrapRepository.findByUserIdAndMagazine_MagazineIdIn(request.getUserId(), magazineIds).stream()
-                    .map(MagazineScraps::getMagazine)
-                    .collect(Collectors.toSet());
-
-            List<MagazineItem> searchItems = slice.getContent().stream().map(
-                    magazine -> {
-                        boolean isScrap = scrapSet.contains(magazine);
-                        return createMagazineItem(magazine, userInfoMap.get(magazine.getMagazineAuthorId()), isScrap);
-                    }).toList();
+            List<MagazineListItem> searchItems = slice.getContent().stream().map(
+                    magazine -> createMagazineListItem(magazine, userInfoMap.get(request.getUserId()))
+                    ).toList();
 
             return SearchMagazinesResponse.newBuilder()
                     .addAllMagazines(searchItems)
@@ -217,7 +203,7 @@ public class MagazineService {
                 .setMagazineContent(magazine.getMagazineContent())
                 .setMagazineAuthor(userInfo != null ? userInfo.getUserName() : "Unknown")
                 .setAuthorProfileUrl(userInfo != null && !userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
-                .setMagazineThumbnailUrl(magazine.getMagazineThumbnailUrl()!= null ? magazine.getMagazineThumbnailUrl() : "")
+                .setMagazineThumbnailUrl(magazine.getMagazineThumbnailUrl() != null ? magazine.getMagazineThumbnailUrl() : "")
                 .setCreatedAt(toGrpcTimestamp(magazine.getCreatedAt()))
                 .setIsScrap(isScrap)
                 .build();
@@ -235,5 +221,18 @@ public class MagazineService {
                         UpdateAdditionalUserInfoResponse::getUserId,
                         Function.identity()
                 ));
+    }
+
+    private MagazineListItem createMagazineListItem(Magazines magazine, UpdateAdditionalUserInfoResponse authorInfo) {
+        return MagazineListItem.newBuilder()
+                .setMagazineId(magazine.getMagazineId())
+                .setMagazineCategoryId(magazine.getMagazineCategory().getMagazineCategoryId())
+                .setMagazineTitle(magazine.getMagazineTitle())
+                .setMagazineSubtitle(magazine.getMagazineSubtitle())
+                .setMagazineAuthor(authorInfo != null ? authorInfo.getUserName() : "Unknown")
+                .setAuthorProfileUrl(authorInfo != null && !authorInfo.getUserProfile().isEmpty() ? authorInfo.getUserProfile() : "")
+                .setMagazineThumbnailUrl(magazine.getMagazineThumbnailUrl() != null ? magazine.getMagazineThumbnailUrl() : "")
+                .setCreatedAt(toGrpcTimestamp(magazine.getCreatedAt()))
+                .build();
     }
 }

@@ -15,13 +15,13 @@ public class MagazineGrpcClient {
     @GrpcClient("magazine-service")
     private MagazineServiceGrpc.MagazineServiceBlockingStub magazineServiceStub;
 
-    public MagazineItemListDto getMagazinesByCategory(GetMagazinesByCategoryRequest request) {
+    public MagazineListDto getMagazinesByCategory(GetMagazinesByCategoryRequest request) {
         log.debug("Sending getMagazinesByCategory request via gRPC: categoryId={}, pageNum={}",
                 request.getCategoryId(), request.getPageNum());
         GetMagazinesByCategoryResponse response = magazineServiceStub.getMagazinesByCategory(request);
         log.debug("Received getMagazinesByCategory response via gRPC: {} magazines found", response.getMagazineItemCount());
 
-        return MagazineItemListDto.from(response);
+        return MagazineListDto.from(response);
     }
 
     public MagazineItemDto getMagazine(GetMagazineRequest request) {

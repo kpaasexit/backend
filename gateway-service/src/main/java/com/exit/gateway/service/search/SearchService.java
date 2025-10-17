@@ -3,6 +3,7 @@ package com.exit.gateway.service.search;
 import com.exit.common.grpc.QuestionListRequest;
 import com.exit.common.grpc.SearchMagazinesResponse;
 import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
+import com.exit.gateway.controller.magazine.dto.response.MagazineListItemDto;
 import com.exit.gateway.controller.question.dto.response.question.QuestionListQueryResponseDto;
 import com.exit.gateway.controller.question.dto.response.question.QuestionListResponseDto;
 import com.exit.gateway.controller.search.dto.response.IntegratedSearchResponseDto;
@@ -49,8 +50,8 @@ public class SearchService {
         SearchMagazinesResponse magazinesResponse = magazinesFuture.join();
 
         List<QuestionListQueryResponseDto> questions = questionsResponse.questionList();
-        List<MagazineItemDto> magazines = magazinesResponse.getMagazinesList().stream()
-                .map(MagazineItemDto::from)
+        List<MagazineListItemDto> magazines = magazinesResponse.getMagazinesList().stream()
+                .map(MagazineListItemDto::from)
                 .toList();
         boolean questionHasNext = questionsResponse.hasNext();
         boolean magazineHasNext = magazinesResponse.getHasNext();
