@@ -186,3 +186,6 @@ docker-compose.override.yml
 # Pytest
 .pytest_cache/
 pytest_cache/
+
+# Index Caches
+scripts/backups/
