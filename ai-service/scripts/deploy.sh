@@ -31,6 +31,30 @@ docker image prune -f > /dev/null 2>&1
 echo -e "${YELLOW}Building services...${NC}"
 docker-compose build ai-service
 
+# Build and start Elasticsearch with nori plugin
+echo -e "${YELLOW}Setting up Elasticsearch with nori plugin...${NC}"
+docker-compose up -d elasticsearch
+echo -e "${YELLOW}Waiting for Elasticsearch to be ready...${NC}"
+sleep 15
+
+# Verify nori plugin is installed
+echo -e "${YELLOW}Verifying nori plugin installation...${NC}"
+max_plugin_attempts=10
+plugin_attempt=0
+while [ $plugin_attempt -lt $max_plugin_attempts ]; do
+    if docker exec ai-service-elasticsearch elasticsearch-plugin list 2>/dev/null | grep -q analysis-nori; then
+        echo -e "${GREEN}✓ Nori plugin installed${NC}"
+        break
+    fi
+    plugin_attempt=$((plugin_attempt + 1))
+    sleep 2
+done
+
+if [ $plugin_attempt -eq $max_plugin_attempts ]; then
+    echo -e "${RED}✗ Failed to verify nori plugin installation${NC}"
+    exit 1
+fi
+
 # Clean up intermediate build images
 echo -e "${YELLOW}Cleaning up intermediate images...${NC}"
 docker image prune -f
