@@ -2,7 +2,7 @@
 ----
 {
   "code" : "MAGAZINE_OK_001",
-  "message" : "매거진 리스트 조회 성공",
+  "message" : " 카테고리 별 매거진 리스트 조회 성공",
   "result" : {
     "magazineItems" : [ {
       "magazineId" : 1,

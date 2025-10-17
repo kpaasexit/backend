@@ -8,11 +8,11 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 1135
+Content-Length: 1153
 
 {
   "code" : "MAGAZINE_OK_001",
-  "message" : "매거진 리스트 조회 성공",
+  "message" : " 카테고리 별 매거진 리스트 조회 성공",
   "result" : {
     "magazineItems" : [ {
       "magazineId" : 1,
