@@ -1,6 +1,6 @@
 [source,bash]
 ----
 $ curl 'http://localhost:8080/api/quiz/1/submit' -i -X POST \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDI1NDQsImV4cCI6MTc2NDMwMjU0NH0.ELfXNKlETyLjdSHdx-Sz291NYiIiJOOHMXBEOTw-O3c' \
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDM4MDcsImV4cCI6MTc2NDMwMzgwN30.oxPQAJoEeuf1y_kkR01qf1mGpJScx6Ly4RsCSnshmL8' \
     -d 'answer=3'
 ----
