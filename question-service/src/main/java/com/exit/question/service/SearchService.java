@@ -12,10 +12,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -83,7 +80,7 @@ public class SearchService {
         }
 
         List<UpdateAdditionalUserInfoResponse> userInfoList =
-                userGrpcClient.getUsersNameAndProfile(new ArrayList<>(writerIds)).getUserInfoList();
+                userGrpcClient.getUsersNameAndProfile(new HashSet<>(writerIds)).getUserInfoList();
 
         return userInfoList.stream()
                 .collect(Collectors.toMap(

@@ -9,6 +9,7 @@ import com.exit.question.domain.response.Response;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.exit.common.util.time.TimeStampUtil.toGrpcTimestamp;
 
@@ -27,10 +28,13 @@ public class QuestionGrpcMapper {
                 .build();
     }
 
-    public QuestionListResponse getQuestionListResponse(List<QuestionListQueryResponseDto> content, boolean hasNext) {
-        List<QuestionListItem> allQuestions = content.stream().map(QuestionListQueryResponseDto::toQuestionListItem).toList();
+    public QuestionListResponse getQuestionListResponse(List<QuestionListQueryResponseDto> content, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap, boolean hasNext) {
+        List<QuestionListItem> questionListItems = content.stream()
+                .map(dto -> QuestionListQueryResponseDto.toQuestionListItem(dto, userInfoMap))
+                .toList();
+
         return QuestionListResponse.newBuilder()
-                .addAllQuestions(allQuestions)
+                .addAllQuestions(questionListItems)
                 .setHasNext(hasNext)
                 .build();
     }

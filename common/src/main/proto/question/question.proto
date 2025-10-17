@@ -151,14 +151,15 @@ message QuestionListResponse {
 message QuestionListItem {
   int64 question_id = 1;
   int64 question_category = 2;
-  int64 question_writer_id = 3;
-  string question_title = 4;
-  string question_content = 5;
-  bool question_urgency = 6;
-  string question_answer_type = 7;
-  bool question_answer_adopt = 8;
-  int32 answer_count = 9;
-  google.protobuf.Timestamp created_at = 10;
+  string question_writer_name = 3;
+  string question_writer_profile = 4;
+  string question_title = 5;
+  string question_content = 6;
+  bool question_urgency = 7;
+  string question_answer_type = 8;
+  bool question_answer_adopt = 9;
+  int32 answer_count = 10;
+  google.protobuf.Timestamp created_at = 11;
 }
 
 message CategoryRecommendationResponse {

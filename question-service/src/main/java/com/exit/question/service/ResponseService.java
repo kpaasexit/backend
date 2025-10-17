@@ -129,6 +129,17 @@ public class ResponseService {
         return responseGrpcMapper.getAnswerReportResponse(savedResponseReport);
     }
 
+    @Transactional(readOnly = true)
+    public GetDetailResponseResponse getDetailResponse(GetDetailResponseRequest request) {
+        List<ResponseDetail> responseDetails = buildResponseDetail(request);
+        boolean hasMore = hasMoreResponses(request.getQuestionId());
+
+        return GetDetailResponseResponse.newBuilder()
+                .addAllResponses(responseDetails)
+                .setHasNext(hasMore)
+                .build();
+    }
+
     private Response adoptResponse(Long responseId) {
         Response response = responseRepository.findById(responseId)
                 .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
@@ -206,17 +217,6 @@ public class ResponseService {
         return imageUrls;
     }
 
-    @Transactional(readOnly = true)
-    public GetDetailResponseResponse getDetailResponse(GetDetailResponseRequest request) {
-        List<ResponseDetail> responseDetails = buildResponseDetail(request);
-        boolean hasMore = hasMoreResponses(request.getQuestionId());
-
-        return GetDetailResponseResponse.newBuilder()
-                .addAllResponses(responseDetails)
-                .setHasNext(hasMore)
-                .build();
-    }
-
     private List<ResponseDetail> buildResponseDetail(GetDetailResponseRequest request) {
         List<Response> responses = new ArrayList<>();
 
@@ -289,7 +289,7 @@ public class ResponseService {
                 .map(Response::getResponseWriterId)
                 .collect(toSet());
 
-        GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(new ArrayList<>(writerIds));
+        GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(new HashSet<>(writerIds));
         return usersNameAndProfile.getUserInfoList().stream()
                 .collect(toMap(
                         UpdateAdditionalUserInfoResponse::getUserId,

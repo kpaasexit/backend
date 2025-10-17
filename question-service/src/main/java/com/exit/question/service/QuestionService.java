@@ -102,7 +102,13 @@ public class QuestionService {
                 filter.getCategoryIdsList(),
                 filter.getKeyword().isEmpty() ? null : filter.getKeyword(),
                 filter.getIsAdopted(), pageRequest);
-        return questionGrpcMapper.getQuestionListResponse(slice.getContent(), slice.hasNext());
+
+        Set<Long> writerIds = slice.getContent().stream().map(QuestionListQueryResponseDto::questionWriterId).collect(toSet());
+        GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(writerIds);
+        Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = usersNameAndProfile.getUserInfoList().stream()
+                .collect(toMap(UpdateAdditionalUserInfoResponse::getUserId, Function.identity()));
+
+        return questionGrpcMapper.getQuestionListResponse(slice.getContent(), userInfoMap, slice.hasNext());
     }
 
     // 카테고리 추천
@@ -228,7 +234,7 @@ public class QuestionService {
     }
 
     private Map<Long, UpdateAdditionalUserInfoResponse> getUserNicknameAndProfileByWriterIds(Set<Long> writerIds) {
-        List<UpdateAdditionalUserInfoResponse> userInfoList = userGrpcClient.getUsersNameAndProfile(new ArrayList<>(writerIds)).getUserInfoList();
+        List<UpdateAdditionalUserInfoResponse> userInfoList = userGrpcClient.getUsersNameAndProfile(new HashSet<>(writerIds)).getUserInfoList();
         Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = userInfoList.stream()
                 .collect(toMap(UpdateAdditionalUserInfoResponse::getUserId, Function.identity()));
         return userInfoMap;

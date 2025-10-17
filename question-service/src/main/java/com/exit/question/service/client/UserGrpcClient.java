@@ -7,6 +7,7 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -65,7 +66,7 @@ public class UserGrpcClient {
         }
     }
 
-    public GetUsersNameAndProfileResponse getUsersNameAndProfile(List<Long> userIds) {
+    public GetUsersNameAndProfileResponse getUsersNameAndProfile(Set<Long> userIds) {
         try {
             GetUsersNameAndProfileRequest request = GetUsersNameAndProfileRequest.newBuilder()
                     .addAllUserId(userIds)

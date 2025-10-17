@@ -83,7 +83,8 @@ class QuestionControllerRestDocsTest {
         QuestionListQueryResponseDto question1 = QuestionListQueryResponseDto.builder()
                 .questionId(1L)
                 .questionCategoryId(1L)
-                .questionWriterId(1L)
+                .questionWriterName("고구마")
+                .questionWriterProfile("profile url")
                 .questionTitle("Spring Boot에서 JWT 인증 구현하는 방법")
                 .questionContent("JWT 토큰을 사용한 인증을 구현하고 싶습니다...")
                 .questionUrgency(true)
@@ -96,7 +97,8 @@ class QuestionControllerRestDocsTest {
         QuestionListQueryResponseDto question2 = QuestionListQueryResponseDto.builder()
                 .questionId(2L)
                 .questionCategoryId(2L)
-                .questionWriterId(2L)
+                .questionWriterName("감자")
+                .questionWriterProfile("profile url")
                 .questionTitle("Docker Compose 설정 문의")
                 .questionContent("멀티 컨테이너 환경에서...")
                 .questionUrgency(false)
@@ -137,7 +139,8 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.questionList").description("질문 목록"),
                                 fieldWithPath("result.questionList[].questionId").description("질문 ID"),
                                 fieldWithPath("result.questionList[].questionCategoryId").description("질문 카테고리 ID"),
-                                fieldWithPath("result.questionList[].questionWriterId").description("작성자 ID"),
+                                fieldWithPath("result.questionList[].questionWriterName").description("작성자 닉네임"),
+                                fieldWithPath("result.questionList[].questionWriterProfile").description("작성자 프로필 url"),
                                 fieldWithPath("result.questionList[].questionTitle").description("질문 제목"),
                                 fieldWithPath("result.questionList[].questionContent").description("질문 내용"),
                                 fieldWithPath("result.questionList[].questionUrgency").description("긴급 여부"),
