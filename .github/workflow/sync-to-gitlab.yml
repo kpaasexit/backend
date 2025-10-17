@@ -1,5 +1,5 @@
 name: Sync Dev to GitLab
-
+# dev 브랜치 push 감지
 on:
   push:
     branches:
