@@ -1,7 +1,7 @@
 [source,bash]
 ----
 $ echo '{
-  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDAwNzEsImV4cCI6MjM2NTUwMDA3MX0.M8W8Y2HAMD7EV53TkmVvZxmvKgH4JkKsT4OrGHdwqYg"
+  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDAzMTEsImV4cCI6MjM2NTUwMDMxMX0.rHR16-JwdGIK0cIP2irK2Nekn3yUVJ48s8eNVsz8H1Y"
 }' | http POST 'http://localhost:8080/api/auth/refresh' \
     'Content-Type:application/json;charset=UTF-8' \
     'X-Device-Id:test-device-id'

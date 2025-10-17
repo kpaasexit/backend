@@ -1,7 +1,7 @@
 [source,http,options="nowrap"]
 ----
 GET /api/quiz/1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDAwNjksImV4cCI6MTc2NDMwMDA2OX0.2NjkdDAk-yQrCbnCp4ubHzgXs3eFe_mrpKJCoc6S53s
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA3MDAzMDksImV4cCI6MTc2NDMwMDMwOX0.itkO0PyM06I6w6J4v6qjidlp8QdaK21XFN0gjIqr4BU
 Host: localhost:8080
 
 ----
