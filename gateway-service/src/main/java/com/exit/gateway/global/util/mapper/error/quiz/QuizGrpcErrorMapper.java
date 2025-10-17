@@ -17,7 +17,6 @@ public class QuizGrpcErrorMapper implements GrpcErrorMapper {
             Map.entry("QUIZ_ERR_020", QuizErrorCode.GET_CATEGORY_STATISTICS_FAIL),      // GET_CATEGORY_STATISTICS_FAILED
 
             // 퀴즈 조회 실패
-            Map.entry("QUIZ_ERR_001", QuizErrorCode.GET_QUIZ_FAIL),                     // NO_AVAILABLE_QUIZ
             Map.entry("QUIZ_ERR_021", QuizErrorCode.GET_QUIZ_FAIL),                     // GET_QUIZ_FAILED
 
             // 오늘의 퀴즈 조회 실패
@@ -27,9 +26,7 @@ public class QuizGrpcErrorMapper implements GrpcErrorMapper {
             Map.entry("QUIZ_ERR_023", QuizErrorCode.GET_SOLVED_QUIZ_FAIL),              // GET_SOLVED_QUIZ_FAILED
 
             // 퀴즈 제출 실패
-            Map.entry("QUIZ_ERR_002", QuizErrorCode.SUBMIT_ANSWER_FAIL),                // NOT_FOUND_QUIZ
-            Map.entry("QUIZ_ERR_030", QuizErrorCode.SUBMIT_ANSWER_FAIL),                // SUBMIT_ANSWER_FAILED
-            Map.entry("QUIZ_ERR_031", QuizErrorCode.SUBMIT_ANSWER_FAIL)                 // SAVE_QUIZ_ATTEMPT_FAILED
+            Map.entry("QUIZ_ERR_030", QuizErrorCode.SUBMIT_ANSWER_FAIL)                // SUBMIT_ANSWER_FAILED
     );
 
     @Override

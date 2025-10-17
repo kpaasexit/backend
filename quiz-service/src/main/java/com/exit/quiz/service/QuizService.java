@@ -45,7 +45,7 @@ public class QuizService {
                     .build();
         } catch (Exception e) {
             log.error("Get category statistics failed for userId: {}", request.getUserId(), e);
-            throw new GrpcException(GrpcQuizErrorCode.GET_CATEGORY_STATISTICS_FAILED);
+            throw new GrpcException(GrpcQuizErrorCode.GET_CATEGORY_STATISTICS_FAILED, e.getMessage());
         }
     }
 
@@ -73,10 +73,9 @@ public class QuizService {
                     .setQuizAdditionalInformation(quiz.getAdditionalInformation())
                     .build();
         } catch (GrpcException e) {
-            throw e;
+            throw new GrpcException(GrpcQuizErrorCode.GET_QUIZ_FAILED, e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
-            log.error("Get quiz failed for categoryId: {}, userId: {}", request.getCategoryId(), request.getUserId(), e);
-            throw new GrpcException(GrpcQuizErrorCode.GET_QUIZ_FAILED);
+            throw new GrpcException(GrpcQuizErrorCode.GET_QUIZ_FAILED, e.getMessage());
         }
     }
 
@@ -94,10 +93,9 @@ public class QuizService {
                     .setHasNext(hasNext)
                     .build();
         } catch (GrpcException e) {
-            throw e;
+            throw new GrpcException(GrpcQuizErrorCode.SUBMIT_ANSWER_FAILED, e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
-            log.error("Submit answer failed for quizId: {}, userId: {}", request.getQuizId(), request.getUserId(), e);
-            throw new GrpcException(GrpcQuizErrorCode.SUBMIT_ANSWER_FAILED);
+            throw new GrpcException(GrpcQuizErrorCode.SUBMIT_ANSWER_FAILED, e.getMessage());
         }
     }
 
@@ -121,8 +119,7 @@ public class QuizService {
                     .setHasNext(slice.hasNext())
                     .build();
         } catch (Exception e) {
-            log.error("Get solved quiz failed for userId: {}, categoryIds: {}", request.getUserId(), request.getCategoryIdList(), e);
-            throw new GrpcException(GrpcQuizErrorCode.GET_SOLVED_QUIZ_FAILED);
+            throw new GrpcException(GrpcQuizErrorCode.GET_SOLVED_QUIZ_FAILED, e.getMessage());
         }
     }
 
@@ -135,8 +132,7 @@ public class QuizService {
                     .setQuizId(todayQuizId)
                     .build();
         } catch (Exception e) {
-            log.error("Get today quiz failed", e);
-            throw new GrpcException(GrpcQuizErrorCode.GET_TODAY_QUIZ_FAILED);
+            throw new GrpcException(GrpcQuizErrorCode.GET_TODAY_QUIZ_FAILED, e.getMessage());
         }
     }
 

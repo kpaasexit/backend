@@ -40,11 +40,11 @@ public class AuthService {
             JwtToken jwtToken = createAndSaveJwtToken(user, deviceId);
             return new LoginSuccessResponse(jwtToken.getAccessToken(), jwtToken.getRefreshToken(), user.getUserId(), user.getUserProfileUrl());
         } catch (GrpcException e) {
-            throw e;
+            throw new GrpcException(GrpcAuthErrorCode.SOCIAL_LOGIN_FAILED, e.getGrpcErrorCode().getErrorDescription());
         } catch (org.springframework.dao.DataAccessException e) {
-            throw new GrpcException(GrpcUserErrorCode.DB_CONNECTION_FAILED);
+            throw new GrpcException(GrpcAuthErrorCode.SOCIAL_LOGIN_FAILED, GrpcUserErrorCode.DB_CONNECTION_FAILED.getErrorDescription());
         } catch (Exception e) {
-            throw new GrpcException(GrpcAuthErrorCode.SOCIAL_LOGIN_FAILED);
+            throw new GrpcException(GrpcAuthErrorCode.SOCIAL_LOGIN_FAILED,e.getMessage());
         }
     }
 
@@ -63,13 +63,13 @@ public class AuthService {
 
             return new LoginSuccessResponse(newJwtToken.getAccessToken(), newJwtToken.getRefreshToken(), user.getUserId(), user.getUserProfileUrl());
         } catch (GrpcException e) {
-            throw e;
+            throw new GrpcException(GrpcAuthErrorCode.REFRESH_TOKEN_FAILED, e.getGrpcErrorCode().getErrorDescription());
         } catch (org.springframework.data.redis.RedisConnectionFailureException e) {
-            throw new GrpcException(GrpcUserErrorCode.REDIS_CONNECTION_FAILED);
+            throw new GrpcException(GrpcAuthErrorCode.REFRESH_TOKEN_FAILED, GrpcUserErrorCode.REDIS_CONNECTION_FAILED.getErrorDescription());
         } catch (org.springframework.dao.DataAccessException e) {
-            throw new GrpcException(GrpcUserErrorCode.DB_CONNECTION_FAILED);
+            throw new GrpcException(GrpcAuthErrorCode.REFRESH_TOKEN_FAILED, GrpcUserErrorCode.DB_CONNECTION_FAILED.getErrorDescription());
         } catch (Exception e) {
-            throw new GrpcException(GrpcAuthErrorCode.REFRESH_TOKEN_FAILED);
+            throw new GrpcException(GrpcAuthErrorCode.REFRESH_TOKEN_FAILED, e.getMessage());
         }
     }
 
@@ -83,9 +83,38 @@ public class AuthService {
 
             return new LoginSuccessResponse(null, null, userId, null);
         } catch (org.springframework.data.redis.RedisConnectionFailureException e) {
-            throw new GrpcException(GrpcUserErrorCode.REDIS_CONNECTION_FAILED);
+            throw new GrpcException(GrpcAuthErrorCode.LOGOUT_FAILED, GrpcUserErrorCode.REDIS_CONNECTION_FAILED.getErrorDescription());
         } catch (Exception e) {
-            throw new GrpcException(GrpcAuthErrorCode.LOGOUT_FAILED);
+            throw new GrpcException(GrpcAuthErrorCode.LOGOUT_FAILED, e.getMessage());
+        }
+    }
+
+    public void withdraw(Long userId) {
+        try {
+            try {
+                jwtTokenRedisService.deleteAllJwtTokens(userId);
+            } catch (Exception e) {
+                log.error("Exception while deleting jwt token", e);
+            }
+
+            Users user = getUserById(userId);
+
+            if (user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
+                try {
+                    fileUploadUtil.deleteFile(user.getUserProfileUrl());
+                } catch (Exception e) {
+                    log.error("Exception while deleting user profile url", e);
+                }
+            }
+            user.withdraw();
+            userRepository.save(user);
+
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcAuthErrorCode.WITHDRAW_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (org.springframework.dao.DataAccessException e) {
+            throw new GrpcException(GrpcAuthErrorCode.WITHDRAW_FAILED, GrpcUserErrorCode.DB_CONNECTION_FAILED.getErrorDescription());
+        } catch (Exception e) {
+            throw new GrpcException(GrpcAuthErrorCode.WITHDRAW_FAILED, e.getMessage());
         }
     }
 
@@ -114,35 +143,6 @@ public class AuthService {
 
         jwtTokenRedisService.saveJwtToken(user.getUserId(), deviceId, jwtToken);
         return jwtToken;
-    }
-
-    public void withdraw(Long userId) {
-        try {
-            try {
-                jwtTokenRedisService.deleteAllJwtTokens(userId);
-            } catch (Exception e) {
-                log.error("Exception while deleting jwt token", e);
-            }
-
-            Users user = getUserById(userId);
-
-            if (user.getUserProfileUrl() != null && !user.getUserProfileUrl().isEmpty()) {
-                try {
-                    fileUploadUtil.deleteFile(user.getUserProfileUrl());
-                } catch (Exception e) {
-                    log.error("Exception while deleting user profile url", e);
-                }
-            }
-            user.withdraw();
-            userRepository.save(user);
-
-        } catch (GrpcException e) {
-            throw e;
-        } catch (org.springframework.dao.DataAccessException e) {
-            throw new GrpcException(GrpcUserErrorCode.DB_CONNECTION_FAILED);
-        } catch (Exception e) {
-            throw new GrpcException(GrpcAuthErrorCode.WITHDRAW_FAILED);
-        }
     }
 
     private Users getUserById(Long userId) {

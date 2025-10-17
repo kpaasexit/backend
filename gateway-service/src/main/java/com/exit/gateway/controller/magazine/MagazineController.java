@@ -32,15 +32,15 @@ public class MagazineController {
                     .setPageNum(pageNum - 1)
                     .build();
 
-            return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_LIST_SUCCESS,
+            return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_LIST_BY_CATEGORY_SUCCESS,
                     magazineGrpcClient.getMagazinesByCategory(request));
         } catch (StatusRuntimeException e) {
             log.error("Get magazines by category failed via gRPC: {}", e.getStatus(), e);
             String errorMessage = getGrpcErrorMessage(e);
-            throw new RestApiException(MagazineErrorCode.GET_MAGAZINE_LIST_FAIL, errorMessage);
+            throw new RestApiException(MagazineErrorCode.GET_MAGAZINES_BY_CATEGORY_FAIL, errorMessage);
         } catch (Exception e) {
             log.error("Get magazines by category failed", e);
-            throw new RestApiException(MagazineErrorCode.GET_MAGAZINE_LIST_FAIL);
+            throw new RestApiException(MagazineErrorCode.GET_MAGAZINES_BY_CATEGORY_FAIL);
         }
     }
 
@@ -58,10 +58,10 @@ public class MagazineController {
         } catch (StatusRuntimeException e) {
             log.error("Get magazine failed via gRPC: {}", e.getStatus(), e);
             String errorMessage = getGrpcErrorMessage(e);
-            throw new RestApiException(MagazineErrorCode.NULL_MAGAZINE, errorMessage);
+            throw new RestApiException(MagazineErrorCode.NOT_FOUND_MAGAZINE, errorMessage);
         } catch (Exception e) {
             log.error("Get magazine failed", e);
-            throw new RestApiException(MagazineErrorCode.NULL_MAGAZINE);
+            throw new RestApiException(MagazineErrorCode.NO);
         }
     }
 

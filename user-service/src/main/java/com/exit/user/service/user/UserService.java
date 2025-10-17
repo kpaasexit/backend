@@ -35,10 +35,10 @@ public class UserService {
             user.increaseReportCount();
             userRepository.save(user);
         } catch (GrpcException e) {
-            throw e;
+            throw new GrpcException(GrpcUserErrorCode.INCREASE_REPORT_COUNT_FAILED, e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Increase report count failed for userId: {}", request.getUserId(), e);
-            throw new GrpcException(GrpcUserErrorCode.INCREASE_REPORT_COUNT_FAILED);
+            throw new GrpcException(GrpcUserErrorCode.INCREASE_REPORT_COUNT_FAILED, e.getMessage());
         }
     }
 
@@ -92,10 +92,10 @@ public class UserService {
                     .setUserName(savedUser.getUserNickname())
                     .build();
         } catch (GrpcException e) {
-            throw e;
+            throw new GrpcException(GrpcUserErrorCode.UPDATE_ADDITIONAL_INFO_FAILED, e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Update additional user info failed for userId: {}", request.getUserId(), e);
-            throw new GrpcException(GrpcUserErrorCode.UPDATE_ADDITIONAL_INFO_FAILED);
+            throw new GrpcException(GrpcUserErrorCode.UPDATE_ADDITIONAL_INFO_FAILED, e.getMessage());
         }
     }
 
@@ -115,10 +115,10 @@ public class UserService {
                     .setUserName(user.getUserNickname())
                     .build();
         } catch (GrpcException e) {
-            throw e;
+            throw new GrpcException(GrpcUserErrorCode.GET_USER_NAME_AND_PROFILE_FAILED, e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Get user name and profile failed for userId: {}", userId, e);
-            throw new GrpcException(GrpcUserErrorCode.GET_USER_NAME_AND_PROFILE_FAILED);
+            throw new GrpcException(GrpcUserErrorCode.GET_USER_NAME_AND_PROFILE_FAILED, e.getMessage());
         }
     }
 
@@ -132,7 +132,7 @@ public class UserService {
                     .build();
         } catch (Exception e) {
             log.error("Get FCM token failed for userId: {}", request.getUserId(), e);
-            throw new GrpcException(GrpcUserErrorCode.GET_FCM_TOKEN_FAILED);
+            throw new GrpcException(GrpcUserErrorCode.GET_FCM_TOKEN_FAILED, e.getMessage());
         }
     }
 
@@ -142,10 +142,10 @@ public class UserService {
                     .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
             createAndSaveFcmToken(request.getFcmToken(), user, request.getDeviceId());
         } catch (GrpcException e) {
-            throw e;
+            throw new GrpcException(GrpcUserErrorCode.UPDATE_DEVICE_FAILED, e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Update device failed for userId: {}", request.getUserId(), e);
-            throw new GrpcException(GrpcUserErrorCode.UPDATE_DEVICE_FAILED);
+            throw new GrpcException(GrpcUserErrorCode.UPDATE_DEVICE_FAILED, e.getMessage());
         }
     }
 
@@ -171,10 +171,10 @@ public class UserService {
                     .addAllUserInfo(response)
                     .build();
         } catch (GrpcException e) {
-            throw e;
+            throw new GrpcException(GrpcUserErrorCode.GET_USERS_NAME_AND_PROFILE_FAILED, e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Get users name and profile failed for userIds: {}", userIdList, e);
-            throw new GrpcException(GrpcUserErrorCode.GET_USERS_NAME_AND_PROFILE_FAILED);
+            throw new GrpcException(GrpcUserErrorCode.GET_USERS_NAME_AND_PROFILE_FAILED, e.getMessage());
         }
     }
 
@@ -189,7 +189,7 @@ public class UserService {
                     .build();
         } catch (Exception e) {
             log.error("Check nickname duplicate failed for nickname: {}", nickname, e);
-            throw new GrpcException(GrpcUserErrorCode.CHECK_NICKNAME_DUPLICATE_FAILED);
+            throw new GrpcException(GrpcUserErrorCode.CHECK_NICKNAME_DUPLICATE_FAILED, e.getMessage());
         }
     }
 
@@ -200,9 +200,9 @@ public class UserService {
                     .orElseThrow(() -> new GrpcException(GrpcUserErrorCode.USER_NOT_FOUND));
             return user.getUserNickname();
         } catch (GrpcException e) {
-            throw e;
+            throw new GrpcException(GrpcUserErrorCode.GET_USER_NAME_FAILED, e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
-            throw new GrpcException(GrpcUserErrorCode.GET_USER_NAME_FAILED);
+            throw new GrpcException(GrpcUserErrorCode.GET_USER_NAME_FAILED, e.getMessage());
         }
     }
 
@@ -217,7 +217,7 @@ public class UserService {
                             .build())
                     .toList();
         } catch (Exception e) {
-            throw new  GrpcException(GrpcUserErrorCode.GET_USER_NAMES_FAILED);
+            throw new GrpcException(GrpcUserErrorCode.GET_USER_NAMES_FAILED, e.getMessage());
         }
     }
 
