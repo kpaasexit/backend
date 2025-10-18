@@ -80,6 +80,8 @@ message MagazineListItem {
 
 message GetMagazinesByCategoryResponse {
   repeated MagazineListItem magazine_item = 1;
+  int32 current_page = 2;
+  bool has_next = 3;
 }
 
 message GetMagazineResponse {
@@ -101,7 +103,8 @@ message MagazineScrapBoxItem {
 
 message GetScrapBoxResponse {
   repeated MagazineScrapBoxItem magazine_scrap_box_item = 1;
-  bool has_next = 2;
+  int32 current_page = 2;
+  bool has_next = 3;
 }
 
 message GetRecommendedMagazineResponse {

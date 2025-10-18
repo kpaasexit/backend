@@ -16,7 +16,7 @@ public record GetQuizResponseDto(
     public static GetQuizResponseDto from(GetQuizResponse response) {
         GetQuizResponseDtoBuilder builder = GetQuizResponseDto.builder();
 
-        if(!response.getQuizContentList().isEmpty()){
+        if (!response.getQuizContentList().isEmpty()) {
             builder.options(response.getQuizContentList().toArray(String[]::new));
         }
 

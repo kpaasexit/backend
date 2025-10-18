@@ -36,20 +36,22 @@ public class MagazineService {
     public GetMagazinesByCategoryResponse getMagazinesByCategory(GetMagazinesByCategoryRequest request) {
         try {
             PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
-            List<Magazines> magazines = magazineRepository.findAllByMagazineCategoryMagazineCategoryId(request.getCategoryId(), pageRequest);
-            Set<Long> authorIds = magazines.stream().map(Magazines::getMagazineAuthorId).collect(Collectors.toSet());
+            Slice<Magazines> magazines = magazineRepository.findAllByMagazineCategoryMagazineCategoryId(request.getCategoryId(), pageRequest);
+            Set<Long> authorIds = magazines.getContent().stream().map(Magazines::getMagazineAuthorId).collect(Collectors.toSet());
 
             GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(authorIds);
             Map<Long, UpdateAdditionalUserInfoResponse> authorInfoMap = usersNameAndProfile.getUserInfoList().stream()
                     .collect(Collectors.toMap(userInfo -> userInfo.getUserId(), userInfo -> userInfo));
 
-            List<MagazineListItem> magazineListItems = magazines.stream().map(magazine -> {
+            List<MagazineListItem> magazineListItems = magazines.getContent().stream().map(magazine -> {
                         UpdateAdditionalUserInfoResponse authorUserInfo = authorInfoMap.get(magazine.getMagazineAuthorId());
                         return createMagazineListItem(magazine, authorUserInfo);
                     }
             ).toList();
             return GetMagazinesByCategoryResponse.newBuilder()
                     .addAllMagazineItem(magazineListItems)
+                    .setCurrentPage(magazines.getNumber() + 1)
+                    .setHasNext(magazines.hasNext())
                     .build();
         } catch (Exception e) {
             log.error("Get magazines by category failed for categoryId: {}", request.getCategoryId(), e);
@@ -113,6 +115,7 @@ public class MagazineService {
 
             return GetScrapBoxResponse.newBuilder()
                     .addAllMagazineScrapBoxItem(magazineScrapBoxItems)
+                    .setCurrentPage(slice.getNumber() + 1)
                     .setHasNext(slice.hasNext())
                     .build();
         } catch (Exception e) {

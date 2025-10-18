@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface MagazineRepository extends JpaRepository<Magazines, Long> {
-    List<Magazines> findAllByMagazineCategoryMagazineCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
+    Slice<Magazines> findAllByMagazineCategoryMagazineCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
     @Query("SELECT m FROM Magazines m WHERE " +
            "m.magazineTitle LIKE %:keyword% OR " +

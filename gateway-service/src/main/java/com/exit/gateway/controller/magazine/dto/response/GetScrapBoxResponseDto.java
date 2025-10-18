@@ -13,6 +13,7 @@ import static com.exit.common.util.time.TimeStampUtil.timestampToLocalDateTime;
 @Builder
 public record GetScrapBoxResponseDto(
         List<MagazineScrapBoxItem> scrapBoxItems,
+        Integer currentPage,
         Boolean hasNext
 ) {
     public static GetScrapBoxResponseDto from(GetScrapBoxResponse response) {
@@ -28,6 +29,7 @@ public record GetScrapBoxResponseDto(
 
         return GetScrapBoxResponseDto.builder()
                 .scrapBoxItems(list)
+                .currentPage(response.getCurrentPage())
                 .hasNext(response.getHasNext())
                 .build();
     }
