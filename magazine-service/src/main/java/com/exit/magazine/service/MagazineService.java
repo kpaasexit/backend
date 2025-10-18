@@ -44,7 +44,7 @@ public class MagazineService {
                     .collect(Collectors.toMap(userInfo -> userInfo.getUserId(), userInfo -> userInfo));
 
             List<MagazineListItem> magazineListItems = magazines.stream().map(magazine -> {
-                        UpdateAdditionalUserInfoResponse authorUserInfo = authorInfoMap.get(request.getUserId());
+                        UpdateAdditionalUserInfoResponse authorUserInfo = authorInfoMap.get(magazine.getMagazineAuthorId());
                         return createMagazineListItem(magazine, authorUserInfo);
                     }
             ).toList();
