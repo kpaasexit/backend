@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 661
+Content-Length: 685
 
 {
   "code" : "MAGAZINE_OK_004",
@@ -27,6 +27,7 @@ Content-Length: 661
       "magazineThumbnailUrl" : "https://example.com/thumb2.jpg",
       "createdAt" : "2024-01-01T00:00:00"
     } ],
+    "currentPage" : 1,
     "hasNext" : false
   }
 }

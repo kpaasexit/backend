@@ -1,4 +1,4 @@
-.+/api/quiz/{categoryId}+
+.+/api/quiz/category/{categoryId}+
 |===
 |Parameter|Description
 

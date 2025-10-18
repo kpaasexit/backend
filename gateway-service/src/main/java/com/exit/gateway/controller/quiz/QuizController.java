@@ -28,10 +28,10 @@ public class QuizController {
                 GetCategoryStatisticsResponseDto.from(response));
     }
 
-    @GetMapping("/{categoryId}")
-    public SuccessResponse<GetQuizResponseDto> getQuiz(@PathVariable Long categoryId, @LoginUser Long userId) {
+    @GetMapping("/category/{categoryId}")
+    public SuccessResponse<GetQuizResponseDto> getQuizByCategory(@PathVariable Long categoryId, @LoginUser Long userId) {
         log.info("Get quiz request received for categoryId: {}, userId: {}", categoryId, userId);
-        GetQuizResponse response = quizGrpcClient.getQuiz(categoryId, userId);
+        GetQuizResponse response = quizGrpcClient.getQuizByCategory(categoryId, userId);
 
         return SuccessResponse.of(QuizSuccessCode.GET_QUIZ_SUCCESS,
                 GetQuizResponseDto.from(response));
@@ -69,5 +69,14 @@ public class QuizController {
 
         return SuccessResponse.of(QuizSuccessCode.GET_TODAY_QUIZ,
                 GetTodayQuizResponseDto.from(response));
+    }
+
+    @GetMapping("/{quizId}")
+    public SuccessResponse<GetQuizResponseDto> getQuizById(@PathVariable Long quizId, @LoginUser Long userId) {
+        log.info("Get quiz request received for quizId: {}, userId: {}", quizId, userId);
+        GetQuizResponse response = quizGrpcClient.getQuizById(quizId, userId);
+
+        return SuccessResponse.of(QuizSuccessCode.GET_QUIZ_SUCCESS,
+                GetQuizResponseDto.from(response));
     }
 }

@@ -263,12 +263,19 @@ operation::user/check-nickname-available[snippets='http-request,query-parameters
 
 operation::quiz/category-statistics[snippets='http-request,request-headers,http-response,response-fields']
 
-[[quiz-get]]
-== 퀴즈 조회
+[[quiz-get-by-category]]
+== 카테고리를 사용한 퀴즈 조회
 
 `GET` 요청을 사용하여 특정 카테고리의 퀴즈를 조회합니다.
 
-operation::quiz/get[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
+operation::quiz/get-by-category[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
+
+[[quiz-get-by-id]]
+== 퀴즈 id를 사용한 퀴즈조회
+
+`GET` 요청을 사용하여 특정 퀴즈를 조회합니다.
+
+operation::quiz/get-by-id[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
 
 [[quiz-submit-answer]]
 == 퀴즈 답안 제출

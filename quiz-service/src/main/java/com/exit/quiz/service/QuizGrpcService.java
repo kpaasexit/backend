@@ -25,10 +25,10 @@ public class QuizGrpcService extends QuizServiceGrpc.QuizServiceImplBase {
     }
 
     @Override
-    public void getQuiz(com.exit.common.grpc.GetQuizRequest request,
+    public void getQuizByCategory(com.exit.common.grpc.GetQuizByCategoryRequest request,
                         StreamObserver<GetQuizResponse> responseObserver) {
         log.info("Get quiz request received for categoryId: {}, userId: {}", request.getCategoryId(), request.getUserId());
-        GetQuizResponse response = quizService.getQuiz(request);
+        GetQuizResponse response = quizService.getQuizByCategory(request);
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -57,6 +57,16 @@ public class QuizGrpcService extends QuizServiceGrpc.QuizServiceImplBase {
                             StreamObserver<GetTodayQuizResponse> responseObserver) {
         log.info("Get today quiz request received");
         GetTodayQuizResponse response = quizService.getTodayQuiz();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getQuizById(com.exit.common.grpc.GetQuizByIdRequest request,
+                                  StreamObserver<GetQuizResponse> responseObserver) {
+        log.info("Get quiz request received for quizId: {}, userId: {}", request.getQuizId(), request.getUserId());
+        GetQuizResponse response = quizService.getQuizById(request);
+
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

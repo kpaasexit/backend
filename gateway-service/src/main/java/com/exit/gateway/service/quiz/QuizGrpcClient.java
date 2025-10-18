@@ -10,6 +10,7 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import quiz.QuizService;
 
 @Service
 @RequiredArgsConstructor
@@ -32,14 +33,14 @@ public class QuizGrpcClient {
         return response;
     }
 
-    public GetQuizResponse getQuiz(Long categoryId, Long userId) {
-        GetQuizRequest request = GetQuizRequest.newBuilder()
+    public GetQuizResponse getQuizByCategory(Long categoryId, Long userId) {
+        GetQuizByCategoryRequest request = GetQuizByCategoryRequest.newBuilder()
                 .setCategoryId(categoryId)
                 .setUserId(userId)
                 .build();
 
         log.debug("Sending get quiz request via gRPC: categoryId={}, userId={}", categoryId, userId);
-        GetQuizResponse response = quizServiceStub.getQuiz(request);
+        GetQuizResponse response = quizServiceStub.getQuizByCategory(request);
         log.debug("Received get quiz response via gRPC");
 
         return response;
@@ -75,6 +76,17 @@ public class QuizGrpcClient {
 
     public GetTodayQuizResponse getTodayQuiz() {
         GetTodayQuizResponse response = quizServiceStub.getTodayQuiz(Empty.getDefaultInstance());
+        log.debug("Received get today quiz response via gRPC");
+        return response;
+    }
+
+    public GetQuizResponse getQuizById(Long quizId, Long userId) {
+        GetQuizByIdRequest request = GetQuizByIdRequest.newBuilder()
+                .setQuizId(quizId)
+                .setUserId(userId)
+                .build();
+
+        GetQuizResponse response = quizServiceStub.getQuizById(request);
         log.debug("Received get today quiz response via gRPC");
         return response;
     }

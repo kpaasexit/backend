@@ -37,10 +37,12 @@ public class MagazineController {
 
     @GetMapping("/{magazineId}")
     public SuccessResponse<MagazineItemDto> getMagazine(
-            @PathVariable Long magazineId) {
+            @PathVariable Long magazineId,
+            @LoginUser Long userId) {
         log.info("Get magazine request received: magazineId={}", magazineId);
         GetMagazineRequest request = GetMagazineRequest.newBuilder()
                 .setMagazineId(magazineId)
+                .setUserId(userId)
                 .build();
 
         return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_SUCCESS,

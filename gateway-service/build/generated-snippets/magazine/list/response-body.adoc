@@ -22,7 +22,9 @@
       "authorProfileUrl" : "https://example.com/profile/lee.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/msa.jpg",
       "createdAt" : "2024-01-01T00:00:00"
-    } ]
+    } ],
+    "currentPage" : 1,
+    "hasNext" : true
   }
 }
 ----

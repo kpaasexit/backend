@@ -50,7 +50,7 @@ public class QuizService {
     }
 
     @Transactional(readOnly = true)
-    public GetQuizResponse getQuiz(GetQuizRequest request) {
+    public GetQuizResponse getQuizByCategory(GetQuizByCategoryRequest request) {
         try {
             Quiz quiz = quizRepository.findRandomUnsolvedByCategoryIdAndUserId(
                             (short) request.getCategoryId(), request.getUserId())
@@ -145,6 +145,35 @@ public class QuizService {
             quizAttemptsRepository.save(attempt);
         } catch (Exception e) {
             log.warn("save quiz attempt failed for userId: {}", userId, e);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public GetQuizResponse getQuizById(GetQuizByIdRequest request) {
+        try {
+            Quiz quiz = quizRepository.findById(request.getQuizId())
+                    .orElseThrow(() -> new GrpcException(GrpcQuizErrorCode.NO_AVAILABLE_QUIZ));
+
+            GetQuizResponse.Builder builder = GetQuizResponse.newBuilder();
+
+            // OX, MULTIPLE 따라서 다르게
+            if(quiz.getType().equals(QuizType.MULTIPLE)) {
+                List<String> options = Arrays.stream(quiz.getContent().split("\n")).toList();
+                builder.addAllQuizContent(options);
+            }
+
+            return builder
+                    .setQuizId(quiz.getId())
+                    .setQuizCategoryId(quiz.getQuizCategory().getId())
+                    .setQuizTitle(quiz.getTitle())
+                    .setQuizType(quiz.getType().name())
+                    .setQuizCorrectAnswer(quiz.getCorrectAnswer())
+                    .setQuizAdditionalInformation(quiz.getAdditionalInformation())
+                    .build();
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcQuizErrorCode.GET_QUIZ_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            throw new GrpcException(GrpcQuizErrorCode.GET_QUIZ_FAILED, e.getMessage());
         }
     }
 }

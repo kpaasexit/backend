@@ -7,8 +7,10 @@ import com.exit.gateway.global.util.mapper.error.GrpcErrorMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class AuthGrpcErrorMapper implements GrpcErrorMapper {
     // developCode -> REST ErrorCode 매핑
     private static final Map<String, AuthErrorCode> ERROR_CODE_MAP = Map.ofEntries(

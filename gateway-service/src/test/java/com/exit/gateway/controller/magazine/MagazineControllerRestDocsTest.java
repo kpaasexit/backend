@@ -108,7 +108,7 @@ class MagazineControllerRestDocsTest {
                 .createdAt(now)
                 .build();
 
-        MagazineListDto response = new MagazineListDto(List.of(item1, item2));
+        MagazineListDto response = new MagazineListDto(List.of(item1, item2), 1, true);
 
         given(magazineGrpcClient.getMagazinesByCategory(any())).willReturn(response);
 
@@ -142,7 +142,9 @@ class MagazineControllerRestDocsTest {
                                 fieldWithPath("result.magazineListItems[].authorProfileUrl").description("작성자 프로필 URL"),
                                 fieldWithPath("result.magazineListItems[].magazineThumbnailUrl").description(
                                         "매거진 썸네일 URL"),
-                                fieldWithPath("result.magazineListItems[].createdAt").description("작성일시")
+                                fieldWithPath("result.magazineListItems[].createdAt").description("작성일시"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
                         )
                 ));
     }
@@ -255,6 +257,7 @@ class MagazineControllerRestDocsTest {
 
         GetScrapBoxResponseDto response = GetScrapBoxResponseDto.builder()
                 .scrapBoxItems(List.of(item1, item2))
+                .currentPage(1)
                 .hasNext(false)
                 .build();
 
@@ -291,6 +294,7 @@ class MagazineControllerRestDocsTest {
                                 fieldWithPath("result.scrapBoxItems[].magazineSubtitle").description("매거진 부제목"),
                                 fieldWithPath("result.scrapBoxItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
                                 fieldWithPath("result.scrapBoxItems[].createdAt").description("작성일시"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
                                 fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
                         )
                 ));

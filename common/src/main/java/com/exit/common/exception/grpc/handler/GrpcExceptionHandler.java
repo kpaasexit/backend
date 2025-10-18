@@ -21,7 +21,9 @@ public class GrpcExceptionHandler {
         GrpcExceptionResponseBody errorResponse = GrpcExceptionResponseBody.of(ex);
 
         try {
-            return Status.INVALID_ARGUMENT
+            // 실제 GrpcException의 Status Code를 사용
+            Status.Code statusCode = ex.getGrpcErrorCode().getGrpcStatusCode();
+            return Status.fromCode(statusCode)
                     .withDescription(objectMapper.writeValueAsString(errorResponse));
         } catch (Exception e) {
             return Status.INTERNAL.withDescription("Serialization error");
