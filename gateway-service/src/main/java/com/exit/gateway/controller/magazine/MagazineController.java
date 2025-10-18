@@ -8,6 +8,7 @@ import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.Integers;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,11 +21,14 @@ public class MagazineController {
     @GetMapping("/category/{categoryId}")
     public SuccessResponse<MagazineListDto> getMagazinesByCategory(
             @PathVariable Long categoryId,
-            @RequestParam(defaultValue = "1") Integer pageNum) {
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "5") Integer size
+    ) {
         log.info("Get magazines by category request received: categoryId={}, pageNum={}", categoryId, pageNum - 1);
         GetMagazinesByCategoryRequest request = GetMagazinesByCategoryRequest.newBuilder()
                 .setCategoryId(categoryId)
                 .setPageNum(pageNum - 1)
+                .setSize(size)
                 .build();
 
         return SuccessResponse.of(MagazineSuccessCode.GET_MAGAZINE_LIST_BY_CATEGORY_SUCCESS,
@@ -60,12 +64,14 @@ public class MagazineController {
     @GetMapping("/scrap-box")
     public SuccessResponse<GetScrapBoxResponseDto> getScrapBox(
             @LoginUser Long userId,
-            @RequestParam Integer pageNum
-    ) {
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "5") Integer size
+            ) {
         log.info("Get scrap-box request received");
         GetScrapBoxRequest request = GetScrapBoxRequest.newBuilder()
                 .setUserId(userId)
                 .setPageNum(pageNum - 1)
+                .setSize(size)
                 .build();
 
         return SuccessResponse.of(MagazineSuccessCode.GET_SCRAP_BOX_SUCCESS,

@@ -13,48 +13,40 @@
 |`+Object+`
 |응답 데이터
 
-|`+result.magazineItems+`
+|`+result.magazineListItems+`
 |`+Array+`
 |매거진 목록
 
-|`+result.magazineItems[].magazineId+`
+|`+result.magazineListItems[].magazineId+`
 |`+Number+`
 |매거진 ID
 
-|`+result.magazineItems[].magazineCategoryId+`
+|`+result.magazineListItems[].magazineCategoryId+`
 |`+Number+`
 |매거진 카테고리 ID
 
-|`+result.magazineItems[].magazineTitle+`
+|`+result.magazineListItems[].magazineTitle+`
 |`+String+`
 |매거진 제목
 
-|`+result.magazineItems[].magazineSubtitle+`
+|`+result.magazineListItems[].magazineSubtitle+`
 |`+String+`
 |매거진 부제목
 
-|`+result.magazineItems[].magazineContent+`
-|`+String+`
-|매거진 내용
-
-|`+result.magazineItems[].magazineAuthor+`
+|`+result.magazineListItems[].magazineAuthor+`
 |`+String+`
 |작성자
 
-|`+result.magazineItems[].authorProfileUrl+`
+|`+result.magazineListItems[].authorProfileUrl+`
 |`+String+`
 |작성자 프로필 URL
 
-|`+result.magazineItems[].magazineThumbnailUrl+`
+|`+result.magazineListItems[].magazineThumbnailUrl+`
 |`+String+`
 |매거진 썸네일 URL
 
-|`+result.magazineItems[].createdAt+`
+|`+result.magazineListItems[].createdAt+`
 |`+String+`
 |작성일시
-
-|`+result.magazineItems[].isScrap+`
-|`+Null+`
-|스크랩 여부
 
 |===

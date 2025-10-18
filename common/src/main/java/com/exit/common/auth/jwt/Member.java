@@ -1,5 +1,8 @@
 package com.exit.common.auth.jwt;
 
+import lombok.Getter;
+
+@Getter
 public class Member {
     Long userId;
     String deviceId;
@@ -8,4 +11,5 @@ public class Member {
         this.userId = userId;
         this.deviceId = deviceId;
     }
+
 }

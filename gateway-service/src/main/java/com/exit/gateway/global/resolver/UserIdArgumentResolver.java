@@ -1,10 +1,12 @@
 package com.exit.gateway.global.resolver;
 
 import com.exit.common.auth.jwt.JwtTokenProvider;
+import com.exit.common.auth.jwt.Member;
 import com.exit.gateway.global.annotation.LoginUser;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -27,8 +29,16 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory) {
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        String accessToken = jwtTokenProvider.extractAccessToken(request);
-        return jwtTokenProvider.getUserIdFromToken(accessToken);
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            return -1L;
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof Member) {
+            return ((Member) principal).getUserId();
+        }
+        return -1L;
     }
 }

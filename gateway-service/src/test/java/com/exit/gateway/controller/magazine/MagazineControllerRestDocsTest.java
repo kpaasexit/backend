@@ -1,11 +1,36 @@
 package com.exit.gateway.controller.magazine;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.gateway.config.RestDocsConfiguration;
-import com.exit.gateway.controller.magazine.dto.response.*;
+import com.exit.gateway.controller.magazine.dto.response.GetRecommendedMagazineResponseDto;
+import com.exit.gateway.controller.magazine.dto.response.GetScrapBoxResponseDto;
+import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
+import com.exit.gateway.controller.magazine.dto.response.MagazineListDto;
+import com.exit.gateway.controller.magazine.dto.response.MagazineListItemDto;
+import com.exit.gateway.controller.magazine.dto.response.ScrapMagazineResponseDto;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,23 +40,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = MagazineController.class,
         excludeAutoConfiguration = {
@@ -106,7 +114,8 @@ class MagazineControllerRestDocsTest {
 
         // when & then
         mockMvc.perform(get("/api/magazine/category/{categoryId}", 1L)
-                        .param("pageNum", "1"))
+                        .param("pageNum", "1")
+                        .param("size", "2"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.magazineListItems[0].magazineId").value(1L))
                 .andExpect(jsonPath("$.result.magazineListItems[0].magazineTitle").value("K-Paas 플랫폼 소개"))
@@ -116,7 +125,8 @@ class MagazineControllerRestDocsTest {
                                 parameterWithName("categoryId").description("카테고리 ID")
                         ),
                         queryParameters(
-                                parameterWithName("pageNum").description("페이지 번호 (기본값: 1)").optional()
+                                parameterWithName("pageNum").description("페이지 번호 (기본값: 1)").optional(),
+                                parameterWithName("size").description("페이지 번호 (기본값: 5)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
@@ -124,12 +134,14 @@ class MagazineControllerRestDocsTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.magazineListItems").description("매거진 목록"),
                                 fieldWithPath("result.magazineListItems[].magazineId").description("매거진 ID"),
-                                fieldWithPath("result.magazineListItems[].magazineCategoryId").description("매거진 카테고리 ID"),
+                                fieldWithPath("result.magazineListItems[].magazineCategoryId").description(
+                                        "매거진 카테고리 ID"),
                                 fieldWithPath("result.magazineListItems[].magazineTitle").description("매거진 제목"),
                                 fieldWithPath("result.magazineListItems[].magazineSubtitle").description("매거진 부제목"),
                                 fieldWithPath("result.magazineListItems[].magazineAuthor").description("작성자"),
                                 fieldWithPath("result.magazineListItems[].authorProfileUrl").description("작성자 프로필 URL"),
-                                fieldWithPath("result.magazineListItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
+                                fieldWithPath("result.magazineListItems[].magazineThumbnailUrl").description(
+                                        "매거진 썸네일 URL"),
                                 fieldWithPath("result.magazineListItems[].createdAt").description("작성일시")
                         )
                 ));
@@ -251,7 +263,8 @@ class MagazineControllerRestDocsTest {
         // when & then
         mockMvc.perform(get("/api/magazine/scrap-box")
                         .header("Authorization", "Bearer " + validAccessToken)
-                        .param("pageNum", "1"))
+                        .param("pageNum", "1")
+                        .param("size", "5"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.scrapBoxItems[0].magazineId").value(1L))
                 .andExpect(jsonPath("$.result.scrapBoxItems[0].magazineTitle").value("스크랩한 매거진 1"))
@@ -264,7 +277,9 @@ class MagazineControllerRestDocsTest {
                                 headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
                         ),
                         queryParameters(
-                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작)")
+                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작)").optional(),
+                                parameterWithName("size").description("페이지 번호 (기본값: 5)").optional()
+
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
@@ -329,8 +344,10 @@ class MagazineControllerRestDocsTest {
                                 fieldWithPath("result.recommendedMagazineItems").description("추천 매거진 목록"),
                                 fieldWithPath("result.recommendedMagazineItems[].magazineId").description("매거진 ID"),
                                 fieldWithPath("result.recommendedMagazineItems[].magazineTitle").description("매거진 제목"),
-                                fieldWithPath("result.recommendedMagazineItems[].magazineSubtitle").description("매거진 부제목"),
-                                fieldWithPath("result.recommendedMagazineItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
+                                fieldWithPath("result.recommendedMagazineItems[].magazineSubtitle").description(
+                                        "매거진 부제목"),
+                                fieldWithPath("result.recommendedMagazineItems[].magazineThumbnailUrl").description(
+                                        "매거진 썸네일 URL"),
                                 fieldWithPath("result.recommendedMagazineItems[].createdAt").description("작성일시")
                         )
                 ));

@@ -35,7 +35,7 @@ public class MagazineService {
     @Transactional(readOnly = true)
     public GetMagazinesByCategoryResponse getMagazinesByCategory(GetMagazinesByCategoryRequest request) {
         try {
-            PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
+            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
             List<Magazines> magazines = magazineRepository.findAllByMagazineCategoryMagazineCategoryId(request.getCategoryId(), pageRequest);
             Set<Long> authorIds = magazines.stream().map(Magazines::getMagazineAuthorId).collect(Collectors.toSet());
 
@@ -97,7 +97,7 @@ public class MagazineService {
     @Transactional(readOnly = true)
     public GetScrapBoxResponse getScrapBox(GetScrapBoxRequest request) {
         try {
-            PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
+            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
             Slice<MagazineScraps> slice = magazineScrapRepository.findByUserId(request.getUserId(), pageRequest);
             List<Magazines> magazines = slice.getContent().stream()
                     .map(MagazineScraps::getMagazine)

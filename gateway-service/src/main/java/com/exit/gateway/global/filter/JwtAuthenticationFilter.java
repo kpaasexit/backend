@@ -92,6 +92,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.startsWith("/login/") ||
                 path.startsWith("/back-docs") ||
                 path.startsWith("/favicon.ico");
-
     }
 }

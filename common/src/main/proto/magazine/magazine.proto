@@ -22,7 +22,8 @@ service MagazineService {
 message GetMagazinesByCategoryRequest {
   int64 category_id = 1;
   int32 page_num = 2;
-  int64 user_id = 3;
+  int32 size = 3;
+  int64 user_id = 4;
 }
 
 message GetMagazineRequest {
@@ -38,6 +39,7 @@ message ScrapMagazineRequest {
 message GetScrapBoxRequest {
   int64 user_id = 1;
   int32 page_num = 2;
+  int32 size = 3;
 }
 
 message GetRecommendedMagazineRequest {

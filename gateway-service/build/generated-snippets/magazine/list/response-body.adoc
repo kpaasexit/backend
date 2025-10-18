@@ -4,28 +4,24 @@
   "code" : "MAGAZINE_OK_001",
   "message" : " 카테고리 별 매거진 리스트 조회 성공",
   "result" : {
-    "magazineItems" : [ {
+    "magazineListItems" : [ {
       "magazineId" : 1,
       "magazineCategoryId" : 1,
       "magazineTitle" : "K-Paas 플랫폼 소개",
       "magazineSubtitle" : "클라우드 네이티브 플랫폼의 모든 것",
-      "magazineContent" : "K-Paas는 혁신적인 클라우드 플랫폼입니다...",
       "magazineAuthor" : "김개발",
       "authorProfileUrl" : "https://example.com/profile/kim.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/kpaas.jpg",
-      "createdAt" : "2024-01-01T00:00:00",
-      "isScrap" : null
+      "createdAt" : "2024-01-01T00:00:00"
     }, {
       "magazineId" : 2,
       "magazineCategoryId" : 1,
       "magazineTitle" : "MSA 아키텍처 가이드",
       "magazineSubtitle" : "마이크로서비스 설계 원칙",
-      "magazineContent" : "마이크로서비스 아키텍처(MSA)는...",
       "magazineAuthor" : "이아키",
       "authorProfileUrl" : "https://example.com/profile/lee.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/msa.jpg",
-      "createdAt" : "2024-01-01T00:00:00",
-      "isScrap" : null
+      "createdAt" : "2024-01-01T00:00:00"
     } ]
   }
 }
