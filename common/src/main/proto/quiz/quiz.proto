@@ -50,6 +50,7 @@ message CategoryStat {
   int64 category_id = 1;
   int32 category_quiz_num = 2;
   int32 category_solved_num = 3;
+  bool can_solve_quiz = 4;
 }
 
 message GetCategoryStatisticsResponse {

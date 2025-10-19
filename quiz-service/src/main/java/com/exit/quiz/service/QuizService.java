@@ -34,11 +34,16 @@ public class QuizService {
         try {
             List<CategoryStat> categoryStats = quizRepository.getQuizByCategoryId(request.getUserId())
                     .stream()
-                    .map(categoryQuizCount -> CategoryStat.newBuilder()
-                            .setCategoryId(categoryQuizCount.categoryId())
-                            .setCategoryQuizNum(categoryQuizCount.quizTotalCount())
-                            .setCategorySolvedNum(categoryQuizCount.quizSolvedCount())
-                            .build())
+                    .map(dto -> {
+                        int totalCountByCategory = dto.quizTotalCount();
+                        int solvedCountByCategory = dto.quizSolvedCount();
+                        return CategoryStat.newBuilder()
+                            .setCategoryId(dto.categoryId())
+                            .setCategoryQuizNum(totalCountByCategory)
+                            .setCategorySolvedNum(solvedCountByCategory)
+                            .setCanSolveQuiz(totalCountByCategory - solvedCountByCategory > 0)
+                            .build();
+                    })
                     .toList();
 
             return GetCategoryStatisticsResponse.newBuilder()

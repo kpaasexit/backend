@@ -1,7 +1,7 @@
 [source,http,options="nowrap"]
 ----
 POST /api/auth/withdraw HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA4Nzk3OTksImV4cCI6MTc2NDQ3OTc5OX0.zt46z1YWZGPCz7FOtfVoa-1XFzfZXSsWn6zwrPWIA98
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA4ODE2NjEsImV4cCI6MTc2NDQ4MTY2MX0.eGzoaE9CwWUjVmJC76p12FhvYEPuWmSThcUOZgfrrjk
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded
 

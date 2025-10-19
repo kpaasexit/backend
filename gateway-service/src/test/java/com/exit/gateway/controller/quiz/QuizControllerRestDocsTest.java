@@ -125,7 +125,8 @@ class QuizControllerRestDocsTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result[].categoryId").description("카테고리 ID"),
                                 fieldWithPath("result[].quizTotalNum").description("전체 퀴즈 수"),
-                                fieldWithPath("result[].quizSolvedNum").description("푼 퀴즈 수")
+                                fieldWithPath("result[].quizSolvedNum").description("푼 퀴즈 수"),
+                                fieldWithPath("result[].canSolveQuiz").description("풀 수 있는 퀴즈 존재 여부")
                         )
                 ));
     }

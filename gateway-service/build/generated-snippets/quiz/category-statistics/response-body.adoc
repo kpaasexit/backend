@@ -6,11 +6,13 @@
   "result" : [ {
     "categoryId" : 1,
     "quizTotalNum" : 50,
-    "quizSolvedNum" : 10
+    "quizSolvedNum" : 10,
+    "canSolveQuiz" : false
   }, {
     "categoryId" : 2,
     "quizTotalNum" : 30,
-    "quizSolvedNum" : 5
+    "quizSolvedNum" : 5,
+    "canSolveQuiz" : false
   } ]
 }
 ----
