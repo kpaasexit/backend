@@ -22,6 +22,7 @@ import com.exit.question.service.util.NotificationGrpcMapper;
 import com.exit.question.service.util.ResponseGrpcMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -173,11 +174,14 @@ public class ResponseService {
     public GetDetailResponseResponse getDetailResponse(GetDetailResponseRequest request) {
         try {
             List<ResponseDetail> responseDetails = buildResponseDetail(request);
-            boolean hasMore = hasMoreResponses(request.getQuestionId());
+            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
+            Page<Response> questions = responseRepository.findAllByQuestionId(request.getQuestionId(), pageRequest);
 
             return GetDetailResponseResponse.newBuilder()
                     .addAllResponses(responseDetails)
-                    .setHasNext(hasMore)
+                    .setHasNext(questions.hasNext())
+                    .setCurrentPage(questions.getNumber() + 1)
+                    .setTotalPageNum(questions.getTotalPages())
                     .build();
         } catch (Exception e) {
             log.error("Get detail response failed for questionId: {}", request.getQuestionId(), e);
@@ -301,11 +305,6 @@ public class ResponseService {
                                 .build())
                 ))
                 .toList();
-    }
-
-    private boolean hasMoreResponses(Long questionId) {
-        PageRequest pageRequest = PageRequest.of(0, 5);
-        return responseRepository.findAllByQuestionId(questionId, pageRequest).hasNext();
     }
 
     private Map<Long, List<String>> getResponseImageUrlsMap(List<Response> responses) {

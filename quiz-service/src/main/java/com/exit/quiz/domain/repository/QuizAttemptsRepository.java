@@ -2,6 +2,7 @@ package com.exit.quiz.domain.repository;
 
 import com.exit.quiz.controller.dto.response.GetSolvedQuiz;
 import com.exit.quiz.domain.QuizAttempts;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,8 +20,8 @@ public interface QuizAttemptsRepository extends JpaRepository<QuizAttempts, Long
                     from QuizAttempts qa join qa.quiz q join q.quizCategory qc
                     where qc.id in(:categoryIdList) and qa.userId = :userId
             """)
-    Slice<GetSolvedQuiz> findByQuizCategoryIdIn(@Param("categoryIdList") List<Short> categoryIdList,
-                                                @Param("userId") Long userId,
-                                                Pageable pageable
+    Page<GetSolvedQuiz> findByQuizCategoryIdIn(@Param("categoryIdList") List<Short> categoryIdList,
+                                               @Param("userId") Long userId,
+                                               Pageable pageable
     );
 }

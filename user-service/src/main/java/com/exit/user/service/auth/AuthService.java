@@ -9,6 +9,7 @@ import com.exit.user.controller.dto.request.RefreshTokenRequestDto;
 import com.exit.user.controller.dto.response.LoginSuccessResponse;
 import com.exit.user.domain.JwtToken;
 import com.exit.user.domain.Users;
+import com.exit.user.domain.repository.UserFcmTokenRepository;
 import com.exit.user.domain.repository.UserRepository;
 import com.exit.user.exception.GrpcAuthErrorCode;
 import com.exit.user.exception.GrpcUserErrorCode;

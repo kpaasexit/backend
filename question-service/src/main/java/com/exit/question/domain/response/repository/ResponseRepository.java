@@ -2,6 +2,7 @@ package com.exit.question.domain.response.repository;
 
 import com.exit.question.controller.dto.request.NotificationContentDto;
 import com.exit.question.domain.response.Response;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface ResponseRepository extends JpaRepository<Response, Long> {
-    Slice<Response> findAllByQuestionId(Long questionId, PageRequest pageRequest);
+    Page<Response> findAllByQuestionId(Long questionId, PageRequest pageRequest);
 
     // 채택된 답변 조회
     Optional<Response> findByQuestionIdAndResponseAdoptTrue(Long questionId);

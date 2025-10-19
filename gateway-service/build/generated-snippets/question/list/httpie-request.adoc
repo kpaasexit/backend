@@ -1,4 +1,4 @@
 [source,bash]
 ----
-$ http GET 'http://localhost:8080/api/questions?categoryIds=1&categoryIds=2&keyword=Spring&page=0&size=10'
+$ http GET 'http://localhost:8080/api/questions?categoryIds=1&categoryIds=2&keyword=Spring&page=0&size=5&isAdopted=false'
 ----

@@ -62,10 +62,11 @@ public class CommentController {
     }
 
     @GetMapping("/{targetId}")
-    public SuccessResponse<GetCommentResponseDto> getComment(
+    public SuccessResponse<GetCommentResponseDto> getCommentList(
             @PathVariable Long targetId,
             @RequestParam String targetType,
-            @RequestParam Integer pageNum,
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "5") Integer size,
             @LoginUser Long userId
     ) {
         log.info("Comment get request received for targetId: {}, targetType: {}",
@@ -75,6 +76,7 @@ public class CommentController {
                 .setTargetId(targetId)
                 .setTargetType(targetType)
                 .setUserId(userId)
+                .setSize(size)
                 .setPageNum(pageNum - 1)
                 .build();
 

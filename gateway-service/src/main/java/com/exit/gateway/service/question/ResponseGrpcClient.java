@@ -58,12 +58,13 @@ public class ResponseGrpcClient {
         log.debug("Received delete response response via gRPC");
     }
 
-    public GetDetailResponseResponseDto getDetailResponse(Long questionId, Long userId, Integer pageNum) {
+    public GetDetailResponseResponseDto getDetailResponse(Long questionId, Long userId, Integer pageNum, Integer size) {
         log.debug("Sending get detail response request via gRPC");
         GetDetailResponseRequest request = GetDetailResponseRequest.newBuilder()
                 .setQuestionId(questionId)
                 .setUserId(userId)
                 .setPageNum(pageNum)
+                .setSize(size)
                 .build();
         GetDetailResponseResponse response = responseServiceStub.getDetailResponse(request);
         log.debug("Received get detail response response via gRPC");

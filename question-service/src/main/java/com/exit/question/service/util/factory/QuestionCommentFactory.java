@@ -14,6 +14,7 @@ import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.service.client.UserGrpcClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
@@ -65,9 +66,9 @@ public class QuestionCommentFactory extends CommentFactory {
     }
 
     @Override
-    public GetCommentResponse getCommentList(Long targetId, Long userId, Integer pageNum) {
-        PageRequest pageRequest = PageRequest.of(pageNum, 5);
-        Slice<QuestionComment> questionComments = questionCommentRepository.findAllByQuestion_QuestionId(targetId, pageRequest);
+    public GetCommentResponse getCommentList(GetCommentRequest request) {
+        PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
+        Page<QuestionComment> questionComments = questionCommentRepository.findAllByQuestion_QuestionId(request.getTargetId(), pageRequest);
 
         Set<Long> commentAuthorIds = getCommentAuthorIds(questionComments.getContent());
         GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(commentAuthorIds);
@@ -78,6 +79,8 @@ public class QuestionCommentFactory extends CommentFactory {
         return GetCommentResponse.newBuilder()
                 .addAllComment(commentItemList)
                 .setHasNext(questionComments.hasNext())
+                .setCurrentPage(questionComments.getNumber() + 1)
+                .setTotalPageNum(questionComments.getTotalPages())
                 .build();
     }
 

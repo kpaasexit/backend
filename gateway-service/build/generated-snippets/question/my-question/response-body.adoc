@@ -14,7 +14,9 @@
       "answerAdopt" : true,
       "answerCount" : 5
     } ],
-    "hasNext" : false
+    "hasNext" : false,
+    "currentPage" : null,
+    "totalPageNum" : null
   }
 }
 ----

@@ -36,7 +36,6 @@ message authority {
   bool can_modify = 3;
   bool is_third_party = 4;
   bool can_write = 5;
-  bool is_ai = 6;
 }
 
 message MessageItem {

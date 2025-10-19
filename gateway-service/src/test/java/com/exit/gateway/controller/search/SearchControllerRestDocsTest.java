@@ -138,8 +138,8 @@ class SearchControllerRestDocsTest {
                         preprocessResponse(prettyPrint()),
                         queryParameters(
                                 parameterWithName("keyword").description("검색 키워드"),
-                                parameterWithName("page").description("페이지 번호 (0부터 시작, 기본값: 0)").optional(),
-                                parameterWithName("size").description("페이지 크기 (기본값: 10)").optional()
+                                parameterWithName("page").description("페이지 번호 (1부터 시작, 기본값: 1)").optional(),
+                                parameterWithName("size").description("페이지 크기 (기본값: 5)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),

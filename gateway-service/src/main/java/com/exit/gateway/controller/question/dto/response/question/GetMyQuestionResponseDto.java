@@ -9,7 +9,9 @@ import java.util.List;
 @Builder
 public record GetMyQuestionResponseDto(
         List<GetPopularPostResponseDto.PopularPost> questions,
-        Boolean hasNext
+        Boolean hasNext,
+        Integer currentPage,
+        Integer totalPageNum
 ) {
     public static GetMyQuestionResponseDto from(GetMyQuestionResponse response) {
         List<GetPopularPostResponseDto.PopularPost> posts = response.getPostList().stream()
@@ -32,6 +34,8 @@ public record GetMyQuestionResponseDto(
         return GetMyQuestionResponseDto.builder()
                 .questions(posts)
                 .hasNext(response.getHasNext())
+                .currentPage(response.getCurrentPage())
+                .totalPageNum(response.getTotalPageNum())
                 .build();
     }
 }

@@ -17,7 +17,9 @@
       "profileImage" : "https://example.com/profile2.jpg",
       "createdAt" : "2024-01-01T00:30:00"
     } ],
-    "hasNext" : false
+    "hasNext" : false,
+    "currentPage" : 1,
+    "totalPageNum" : 5
   }
 }
 ----

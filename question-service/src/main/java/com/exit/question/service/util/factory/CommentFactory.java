@@ -1,6 +1,7 @@
 package com.exit.question.service.util.factory;
 
 import com.exit.common.grpc.CommentItem;
+import com.exit.common.grpc.GetCommentRequest;
 import com.exit.common.grpc.GetCommentResponse;
 import com.exit.common.grpc.SendNotificationRequest;
 import com.exit.question.domain.Comment;
@@ -14,5 +15,5 @@ public abstract class CommentFactory {
 
     public abstract SendNotificationRequest createSendNotificationRequest(Long targetId, String deviceId);
 
-    public abstract GetCommentResponse getCommentList(Long targetId, Long userId, Integer pageNum);
+    public abstract GetCommentResponse getCommentList(GetCommentRequest request);
 }

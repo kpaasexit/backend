@@ -53,10 +53,11 @@ public class QuizController {
     public SuccessResponse<GetSolvedQuizResponseDto> getSolvedQuiz(
             @LoginUser Long userId,
             @RequestParam List<Long> categoryIds,
-            @RequestParam Integer pageNum
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "5") Integer size
     ) {
         log.info("Get solved quiz request received for userId: {}", userId);
-        GetSolvedQuizResponse response = quizGrpcClient.getSolvedQuiz(userId, categoryIds, pageNum - 1);
+        GetSolvedQuizResponse response = quizGrpcClient.getSolvedQuiz(userId, categoryIds, pageNum - 1, size);
 
         return SuccessResponse.of(QuizSuccessCode.GET_SOLVED_QUIZ_SUCCESS,
                 GetSolvedQuizResponseDto.from(response));

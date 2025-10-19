@@ -32,7 +32,7 @@ public class SearchService {
         QuestionListRequest questionListRequest = QuestionListRequest.newBuilder()
                 .addAllCategoryIds(new ArrayList<>(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)))
                 .setKeyword(keyword)
-                .setPage(page)
+                .setPageNum(page)
                 .setSize(size)
                 .setIsAdopted(false)
                 .build();

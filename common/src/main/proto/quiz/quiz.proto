@@ -42,6 +42,7 @@ message GetSolvedQuizRequest {
   int64 user_id = 1;
   repeated int64 category_id = 2;
   int32 page_num = 3;
+  int32 size = 4;
 }
 
 // response
@@ -77,6 +78,8 @@ message AttemptQuiz {
 message GetSolvedQuizResponse {
   repeated AttemptQuiz attempt_quiz = 1;
   bool has_next = 2;
+  int32 current_page = 3;
+  int32 total_page_num = 4;
 }
 
 message GetTodayQuizResponse {

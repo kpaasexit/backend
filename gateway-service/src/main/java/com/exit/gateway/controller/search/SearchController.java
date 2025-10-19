@@ -24,10 +24,10 @@ public class SearchController {
     @GetMapping
     public SuccessResponse<IntegratedSearchResponseDto> integratedSearch(
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size
     ) {
-        return SuccessResponse.of(SearchSuccessCode.SEARCH_SUCCESS, searchService.integratedSearch(keyword, page, size));
+        return SuccessResponse.of(SearchSuccessCode.SEARCH_SUCCESS, searchService.integratedSearch(keyword, page-1, size));
     }
 
     @GetMapping("/recommend")
