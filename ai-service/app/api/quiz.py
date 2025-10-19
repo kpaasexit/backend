@@ -12,7 +12,7 @@ from app.core.logger import LoggerSetup
 class QuizSchema(BaseModel):
     quiz_id: int = Field(..., description="퀴즈 ID")
     quiz_category_id: int = Field(..., description="카테고리 ID (1-8)")
-    quiz_title: str = Field(..., description="퀴즈 제목")
+    quiz_title: str | None = Field(None, description="퀴즈 제목 (OX 퀴즈의 경우 null)")
     quiz_content: str = Field(..., description="퀴즈 내용")
     quiz_type: QuizType = Field(..., description="퀴즈 타입 (OX/MULTIPLE)")
     quiz_correct_answer: int = Field(..., description="정답 (OX: 0(정답)/1(오답), MULTIPLE: 0-3)")
@@ -116,7 +116,7 @@ async def generate_quizzes(
                 QuizSchema(
                     quiz_id=q.quiz_id,
                     quiz_category_id=q.quiz_category_id,
-                    quiz_title=q.quiz_title,
+                    quiz_title=None if q.quiz_type == QuizType.OX else q.quiz_title,
                     quiz_content=q.quiz_content,
                     quiz_type=q.quiz_type,
                     quiz_correct_answer=q.quiz_correct_answer,

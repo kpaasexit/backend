@@ -124,7 +124,6 @@ class QuizService:
 
 다음 JSON 형식으로 정확히 응답해주세요:
 {{
-    "quiz_title": "퀴즈의 간단한 제목 (50자 이내)",
     "quiz_content": "퀴즈 문제 내용 (명제 형태로 작성)",
     "quiz_correct_answer": 0,
     "explanation": "정답이 왜 O(또는 X)인지에 대한 상세한 설명. 문제의 배경 지식, 정답의 근거, 오답일 경우의 이유 등을 포함하여 작성"
@@ -493,21 +492,27 @@ class QuizService:
 
                     quiz_data = json.loads(response.choices[0].message.content)
 
+                    # OX 퀴즈의 경우 quiz_title에 quiz_content를 저장
+                    if quiz_type == QuizType.OX:
+                        quiz_title_for_storage = quiz_data["quiz_content"]
+                    else:
+                        quiz_title_for_storage = quiz_data.get("quiz_title", "")
+
                     similar_titles = await self.check_title_similarity(
-                        quiz_data["quiz_title"],
+                        quiz_title_for_storage,
                         request.category_id,
                         threshold=0.75
                     )
 
                     if similar_titles:
                         logger.info(f"Similar quiz found: {similar_titles[0]['title']} (score: {similar_titles[0]['score']})")
-                        existing_quizzes.append({"title": quiz_data["quiz_title"]})
+                        existing_quizzes.append({"title": quiz_title_for_storage})
                         retry_count += 1
                         continue
 
                     quiz = QuizCreate(
                         quiz_category_id=request.category_id,
-                        quiz_title=quiz_data["quiz_title"],
+                        quiz_title=quiz_title_for_storage,
                         quiz_content=quiz_data["quiz_content"],
                         quiz_type=quiz_type,
                         quiz_correct_answer=quiz_data["quiz_correct_answer"],
