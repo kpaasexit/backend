@@ -6,6 +6,7 @@ from .model import ModelConfig
 from .database import QdrantConfig, RedisConfig, MySQLConfig
 from .services import OpenAIConfig, EurekaConfig
 from .system import MemoryConfig
+from .scheduler import QuizSchedulerConfig
 from .main import Settings, get_settings
 
 __all__ = [
@@ -18,6 +19,7 @@ __all__ = [
     "OpenAIConfig",
     "EurekaConfig",
     "MemoryConfig",
+    "QuizSchedulerConfig",
     "Settings",
     "get_settings"
 ]

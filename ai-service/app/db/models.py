@@ -7,7 +7,6 @@ import enum
 class QuizTypeEnum(enum.Enum):
     MULTIPLE = "MULTIPLE"
     OX = "OX"
-    FOUR_LIMBS = "FOUR_LIMBS"
 
 
 class QuizModel(Base):

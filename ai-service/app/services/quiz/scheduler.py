@@ -23,14 +23,18 @@ class QuizScheduler:
 
     def start(self):
         if not self.scheduler.running:
+            # Get scheduler time from settings
+            hour = settings.quiz_scheduler.cron_hour
+            minute = settings.quiz_scheduler.cron_minute
+
             self.scheduler.add_job(
                 self.generate_daily_quizzes,
-                CronTrigger(hour=2, minute=0),
+                CronTrigger(hour=hour, minute=minute),
                 id='daily_quiz_generation',
                 replace_existing=True
             )
             self.scheduler.start()
-            logger.info("Quiz scheduler started - will run daily at 2:00 AM")
+            logger.info(f"Quiz scheduler started - will run daily at {hour:02d}:{minute:02d}")
 
     def stop(self):
         if self.scheduler.running:

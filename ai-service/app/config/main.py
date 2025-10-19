@@ -10,6 +10,7 @@ from .model import ModelConfig
 from .database import QdrantConfig, RedisConfig, MySQLConfig
 from .services import OpenAIConfig, EurekaConfig
 from .system import MemoryConfig
+from .scheduler import QuizSchedulerConfig
 
 
 class Settings(BaseConfig):
@@ -23,6 +24,7 @@ class Settings(BaseConfig):
     mysql: MySQLConfig = Field(default_factory=MySQLConfig)
     memory: MemoryConfig = Field(default_factory=MemoryConfig)
     eureka: EurekaConfig = Field(default_factory=EurekaConfig)
+    quiz_scheduler: QuizSchedulerConfig = Field(default_factory=QuizSchedulerConfig)
 
     categories: List[str] = Field(
         default=[
@@ -47,6 +49,7 @@ class Settings(BaseConfig):
         self.mysql = MySQLConfig()
         self.memory = MemoryConfig()
         self.eureka = EurekaConfig()
+        self.quiz_scheduler = QuizSchedulerConfig()
 
     @property
     def is_production(self) -> bool:
