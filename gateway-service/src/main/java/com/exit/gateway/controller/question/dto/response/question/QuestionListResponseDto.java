@@ -8,7 +8,9 @@ import java.util.List;
 @Builder
 public record QuestionListResponseDto(
         List<QuestionListQueryResponseDto> questionList,
-        boolean hasNext
+        boolean hasNext,
+        Integer currentPage,
+        Integer totalPageNum
 ) {
     public static QuestionListResponseDto from(QuestionListResponse questionListResponse) {
         return QuestionListResponseDto.builder()
@@ -16,6 +18,8 @@ public record QuestionListResponseDto(
                         .map(QuestionListQueryResponseDto::from)
                         .toList())
                 .hasNext(questionListResponse.getHasNext())
+                .currentPage(questionListResponse.getCurrentPage())
+                .totalPageNum(questionListResponse.getCurrentPage())
                 .build();
     }
 }

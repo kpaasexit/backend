@@ -121,7 +121,8 @@ class QuestionControllerRestDocsTest {
                         .param("categoryIds", "1", "2")
                         .param("keyword", "Spring")
                         .param("page", "0")
-                        .param("size", "10"))
+                        .param("size", "5")
+                        .param("isAdopted", "false"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.questionList[0].questionId").value(1L))
                 .andExpect(jsonPath("$.result.questionList[0].questionTitle").value("Spring Boot에서 JWT 인증 구현하는 방법"))
@@ -130,8 +131,9 @@ class QuestionControllerRestDocsTest {
                         queryParameters(
                                 parameterWithName("categoryIds").description("카테고리 ID 목록 (선택)").optional(),
                                 parameterWithName("keyword").description("검색 키워드 (선택)").optional(),
-                                parameterWithName("page").description("페이지 번호 (기본값: 0)").optional(),
-                                parameterWithName("size").description("페이지 크기 (기본값: 10)").optional()
+                                parameterWithName("page").description("페이지 번호 (기본값: 1)").optional(),
+                                parameterWithName("size").description("페이지 크기 (기본값: 5)").optional(),
+                                parameterWithName("isAdopted").description("답변 채택 여부 (기본값: false)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
@@ -149,7 +151,9 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.questionList[].questionAnswerAdopt").description("답변 채택 여부"),
                                 fieldWithPath("result.questionList[].answerCount").description("답변 개수"),
                                 fieldWithPath("result.questionList[].createdAt").description("작성일시"),
-                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                                fieldWithPath("result.totalPageNum").description("전체 페이지 개수")
                         )
                 ));
     }
@@ -489,12 +493,13 @@ class QuestionControllerRestDocsTest {
                 .hasNext(false)
                 .build();
 
-        given(questionGrpcClient.getMyQuestion(anyLong(), anyInt())).willReturn(response);
+        given(questionGrpcClient.getMyQuestion(anyLong(), anyInt(), anyInt())).willReturn(response);
 
         // when & then
         mockMvc.perform(get("/api/questions/my")
                         .header("Authorization", "Bearer " + validAccessToken)
-                        .param("pageNum", "1"))
+                        .param("pageNum", "1")
+                        .param("size", "5"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.questions[0].title").value("내가 작성한 첫 번째 질문"))
                 .andExpect(jsonPath("$.result.hasNext").value(false))
@@ -503,7 +508,8 @@ class QuestionControllerRestDocsTest {
                                 headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
                         ),
                         queryParameters(
-                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작)")
+                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작)").optional(),
+                                parameterWithName("size").description("페이지 크기").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
@@ -518,7 +524,9 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.questions[].content").description("질문 내용"),
                                 fieldWithPath("result.questions[].answerAdopt").description("답변 채택 여부"),
                                 fieldWithPath("result.questions[].answerCount").description("답변 개수"),
-                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                                fieldWithPath("result.totalPageNum").description("전체 페이지 개수")
                         )
                 ));
     }

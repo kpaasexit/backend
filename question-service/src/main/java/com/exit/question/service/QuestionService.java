@@ -25,6 +25,7 @@ import com.exit.question.service.client.UserGrpcClient;
 import com.exit.question.service.util.QuestionGrpcMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.retry.annotation.Backoff;
@@ -104,19 +105,19 @@ public class QuestionService {
     @Transactional(readOnly = true)
     public QuestionListResponse questionList(QuestionListRequest filter) {
         try {
-            PageRequest pageRequest = PageRequest.of(filter.getPage(), filter.getSize());
+            PageRequest pageRequest = PageRequest.of(filter.getPageNum(), filter.getSize());
 
-            Slice<QuestionListQueryResponseDto> slice = questionRepository.findQuestionsByFilter(
+            Page<QuestionListQueryResponseDto> page = questionRepository.findQuestionsByFilter(
                     filter.getCategoryIdsList(),
                     filter.getKeyword().isEmpty() ? null : filter.getKeyword(),
                     filter.getIsAdopted(), pageRequest);
 
-            Set<Long> writerIds = slice.getContent().stream().map(QuestionListQueryResponseDto::questionWriterId).collect(toSet());
+            Set<Long> writerIds = page.getContent().stream().map(QuestionListQueryResponseDto::questionWriterId).collect(toSet());
             GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(writerIds);
             Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = usersNameAndProfile.getUserInfoList().stream()
                     .collect(toMap(UpdateAdditionalUserInfoResponse::getUserId, Function.identity()));
 
-            return questionGrpcMapper.getQuestionListResponse(slice.getContent(), userInfoMap, slice.hasNext());
+            return questionGrpcMapper.getQuestionListResponse(page, userInfoMap);
         } catch (Exception e) {
             log.error("Get question list failed", e);
             throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_LIST_FAILED, e.getMessage());
@@ -222,8 +223,8 @@ public class QuestionService {
     @Transactional(readOnly = true)
     public GetMyQuestionResponse getMyQuestion(GetMyQuestionRequest request) {
         try {
-            PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
-            Slice<PopularPostDto> myQuestionDtos = questionRepository.findByQuestionWriterId(request.getUserId(), pageRequest);
+            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
+            Page<PopularPostDto> myQuestionDtos = questionRepository.findByQuestionWriterId(request.getUserId(), pageRequest);
 
             Set<Long> writerIds = myQuestionDtos.getContent().stream()
                     .map(PopularPostDto::questionWriterId)
@@ -235,7 +236,9 @@ public class QuestionService {
 
             return GetMyQuestionResponse.newBuilder()
                     .addAllPost(popularPostItemList)
+                    .setCurrentPage(myQuestionDtos.getNumber() + 1)
                     .setHasNext(myQuestionDtos.hasNext())
+                    .setTotalPageNum(myQuestionDtos.getTotalPages())
                     .build();
         } catch (Exception e) {
             log.error("Get my question failed for userId: {}", request.getUserId(), e);
@@ -243,7 +246,7 @@ public class QuestionService {
         }
     }
 
-    private List<PopularPostItem> getPopularPostItemList(Slice<PopularPostDto> myQuestionDtos, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
+    private List<PopularPostItem> getPopularPostItemList(Page<PopularPostDto> myQuestionDtos, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
         return myQuestionDtos.getContent().stream()
                 .map(post -> {
                     UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());

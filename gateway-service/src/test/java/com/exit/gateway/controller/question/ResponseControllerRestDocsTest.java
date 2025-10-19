@@ -328,11 +328,12 @@ class ResponseControllerRestDocsTest {
                 .hasNext(true)
                 .build();
 
-        given(responseGrpcClient.getDetailResponse(any(), any(), any())).willReturn(response);
+        given(responseGrpcClient.getDetailResponse(any(), any(), any(), any())).willReturn(response);
 
         // when & then
         mockMvc.perform(get("/api/responses/{questionId}/responses", 1L)
-                        .param("pageNum", "1"))
+                        .param("pageNum", "1")
+                        .param("size", "5"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.responses[0].responseId").value(1L))
                 .andExpect(jsonPath("$.result.responses[0].responseAdopt").value(true))
@@ -344,7 +345,8 @@ class ResponseControllerRestDocsTest {
                                 parameterWithName("questionId").description("질문 ID")
                         ),
                         queryParameters(
-                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작, 기본값: 1)").optional()
+                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작, 기본값: 1)").optional(),
+                                parameterWithName("size").description("페이지 크기 (기본값: 5)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
@@ -361,7 +363,9 @@ class ResponseControllerRestDocsTest {
                                 fieldWithPath("result.responses[].likeCount").description("좋아요 수"),
                                 fieldWithPath("result.responses[].createdAt").description("작성일시"),
                                 fieldWithPath("result.responses[].updatedAt").description("수정일시"),
-                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                                fieldWithPath("result.totalPageNum").description("전체 페이지 개수")
                         )
                 ));
     }

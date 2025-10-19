@@ -11,7 +11,9 @@
       "quizId" : 2,
       "quizTitle" : "퇴직금 지급 기준은?"
     } ],
-    "hasNext" : true
+    "hasNext" : true,
+    "currentPage" : 1,
+    "totalPageNum" : 3
   }
 }
 ----

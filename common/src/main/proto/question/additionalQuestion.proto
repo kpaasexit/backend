@@ -30,6 +30,14 @@ message GetAdditionalQuestionRequest {
 }
 
 // response
+message authority {
+  bool can_adopt = 1;
+  bool can_delete = 2;
+  bool can_modify = 3;
+  bool is_third_party = 4;
+  bool can_write = 5;
+}
+
 message MessageItem {
   bool is_questioner = 1;
   int64 message_id = 2;

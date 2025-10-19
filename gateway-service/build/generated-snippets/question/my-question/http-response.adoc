@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 452
+Content-Length: 507
 
 {
   "code" : "QUESTION_OK_018",
@@ -24,7 +24,9 @@ Content-Length: 452
       "answerAdopt" : true,
       "answerCount" : 5
     } ],
-    "hasNext" : false
+    "hasNext" : false,
+    "currentPage" : null,
+    "totalPageNum" : null
   }
 }
 ----

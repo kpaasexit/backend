@@ -36,6 +36,7 @@ message GetDetailResponseRequest {
   int64 question_id = 1;
   int64 user_id = 2;
   int32 page_num = 3;
+  int32 size = 4;
 }
 
 message AnswerCreateRequest {
@@ -80,6 +81,8 @@ message AnswerReportResponse {
 message GetDetailResponseResponse {
   repeated ResponseDetail responses = 2;
   bool has_next = 3;
+  int32 current_page = 4;
+  int32 total_page_num = 5;
 }
 
 message AnswerCreateResponse {

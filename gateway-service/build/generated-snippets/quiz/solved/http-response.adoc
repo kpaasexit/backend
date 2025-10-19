@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 327
+Content-Length: 376
 
 {
   "code" : "QUIZ_OK_005",
@@ -21,7 +21,9 @@ Content-Length: 327
       "quizId" : 2,
       "quizTitle" : "퇴직금 지급 기준은?"
     } ],
-    "hasNext" : true
+    "hasNext" : true,
+    "currentPage" : 1,
+    "totalPageNum" : 3
   }
 }
 ----

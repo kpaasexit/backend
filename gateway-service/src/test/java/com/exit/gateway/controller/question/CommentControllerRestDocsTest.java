@@ -159,6 +159,8 @@ class CommentControllerRestDocsTest {
 
         GetCommentResponseDto response = GetCommentResponseDto.builder()
                 .commentItemList(List.of(comment1, comment2))
+                .currentPage(1)
+                .totalPageNum(5)
                 .hasNext(false)
                 .build();
 
@@ -168,7 +170,8 @@ class CommentControllerRestDocsTest {
         mockMvc.perform(get("/api/comments/{targetId}", 1L)
                         .header("Authorization", "Bearer " + validAccessToken)
                         .param("targetType", "RESPONSE")
-                        .param("pageNum", "1"))
+                        .param("pageNum", "1")
+                        .param("size", "5"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.commentItemList[0].commentId").value(1L))
                 .andExpect(jsonPath("$.result.commentItemList[0].content").value("도움이 되는 답변 감사합니다!"))
@@ -183,7 +186,8 @@ class CommentControllerRestDocsTest {
                         ),
                         queryParameters(
                                 parameterWithName("targetType").description("대상 타입 (QUESTION, RESPONSE)"),
-                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작)")
+                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작)").optional(),
+                                parameterWithName("size").description("페이지 크기)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
@@ -195,7 +199,9 @@ class CommentControllerRestDocsTest {
                                 fieldWithPath("result.commentItemList[].nickname").description("작성자 이름"),
                                 fieldWithPath("result.commentItemList[].profileImage").description("작성자 프로필 URL"),
                                 fieldWithPath("result.commentItemList[].createdAt").description("작성일시"),
-                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                                fieldWithPath("result.totalPageNum").description("전체 페이지 개수")
                         )
                 ));
     }

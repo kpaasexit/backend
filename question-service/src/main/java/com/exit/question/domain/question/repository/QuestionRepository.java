@@ -5,6 +5,7 @@ import com.exit.question.controller.dto.response.PopularPostDto;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.response.Response;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -66,7 +67,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             group by q.questionId, qc.questionCategoryId, q.questionWriterId, q.questionTitle, q.questionContent,
                      q.questionUrgency, q.questionAnswerType, q.questionAnswerAdopt, q.createdAt
             """)
-    Slice<QuestionListQueryResponseDto> findQuestionsByFilter(
+    Page<QuestionListQueryResponseDto> findQuestionsByFilter(
             @Param("categoryIds") List<Long> categoryIds,
             @Param("kw") String keywordLike,
             @Param("adoptedOnly") Boolean adoptedOnly,
@@ -91,5 +92,5 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             group by q.questionId, qc.questionCategoryId, q.questionWriterId,
                      q.questionTitle, q.questionContent, q.questionAnswerAdopt, q.createdAt
             """)
-    Slice<PopularPostDto> findByQuestionWriterId(Long questionWriterId, PageRequest pageRequest);
+    Page<PopularPostDto> findByQuestionWriterId(Long questionWriterId, PageRequest pageRequest);
 }

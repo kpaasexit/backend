@@ -6,6 +6,7 @@ import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.QuestionReport;
 import com.exit.question.domain.response.Response;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,14 +29,16 @@ public class QuestionGrpcMapper {
                 .build();
     }
 
-    public QuestionListResponse getQuestionListResponse(List<QuestionListQueryResponseDto> content, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap, boolean hasNext) {
-        List<QuestionListItem> questionListItems = content.stream()
+    public QuestionListResponse getQuestionListResponse(Page<QuestionListQueryResponseDto> page, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
+        List<QuestionListItem> questionListItems = page.getContent().stream()
                 .map(dto -> QuestionListQueryResponseDto.toQuestionListItem(dto, userInfoMap))
                 .toList();
 
         return QuestionListResponse.newBuilder()
                 .addAllQuestions(questionListItems)
-                .setHasNext(hasNext)
+                .setCurrentPage(page.getNumber() + 1)
+                .setHasNext(page.hasNext())
+                .setTotalPageNum(page.getTotalPages())
                 .build();
     }
 

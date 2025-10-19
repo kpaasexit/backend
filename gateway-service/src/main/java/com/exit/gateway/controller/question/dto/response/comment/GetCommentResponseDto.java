@@ -11,7 +11,9 @@ import java.util.List;
 @Builder
 public record GetCommentResponseDto(
         List<CommentItem> commentItemList,
-        Boolean hasNext
+        Boolean hasNext,
+        Integer currentPage,
+        Integer totalPageNum
 ) {
     public static GetCommentResponseDto from(GetCommentResponse response) {
         List<CommentItem> commentItems = response.getCommentList().stream()
@@ -27,6 +29,8 @@ public record GetCommentResponseDto(
         return GetCommentResponseDto.builder()
                 .commentItemList(commentItems)
                 .hasNext(response.getHasNext())
+                .currentPage(response.getCurrentPage())
+                .totalPageNum(response.getTotalPageNum())
                 .build();
     }
 

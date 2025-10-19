@@ -9,7 +9,9 @@ import java.util.List;
 @Builder
 public record GetSolvedQuizResponseDto(
         List<AttemptQuizDto> attemptQuiz,
-        boolean hasNext
+        boolean hasNext,
+        Integer currentPage,
+        Integer totalPageNum
 ) {
     public static GetSolvedQuizResponseDto from(GetSolvedQuizResponse response) {
         List<AttemptQuizDto> attemptQuizList = response.getAttemptQuizList().stream()
@@ -19,6 +21,8 @@ public record GetSolvedQuizResponseDto(
         return GetSolvedQuizResponseDto.builder()
                 .attemptQuiz(attemptQuizList)
                 .hasNext(response.getHasNext())
+                .currentPage(response.getCurrentPage())
+                .totalPageNum(response.getTotalPageNum())
                 .build();
     }
 

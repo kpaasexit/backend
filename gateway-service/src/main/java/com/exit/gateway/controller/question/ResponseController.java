@@ -97,10 +97,11 @@ public class ResponseController {
     public SuccessResponse<GetDetailResponseResponseDto> getDetailResponse(
             @PathVariable Long questionId,
             @LoginUser Long userId,
-            @RequestParam(defaultValue = "1") Integer pageNum
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "5") Integer size
     ) {
         log.info("Get detail response for userId: {}, pageNum: {}", userId, pageNum);
         return SuccessResponse.of(QuestionSuccessCode.GET_DETAIL_RESPONSE,
-                responseGrpcClient.getDetailResponse(questionId, userId, pageNum - 1));
+                responseGrpcClient.getDetailResponse(questionId, userId, pageNum - 1, size));
     }
 }

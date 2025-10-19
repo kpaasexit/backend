@@ -10,6 +10,7 @@ import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.QuestionGrpcClient;
 import com.exit.gateway.service.question.QuestionRequestMapper;
 import jakarta.validation.Valid;
+import lombok.Builder.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +41,8 @@ public class QuestionController {
     public SuccessResponse<QuestionListResponseDto> getQuestionList(
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "false", required = false) boolean isAdopted
     ) {
         log.info("Question list request received");
@@ -53,7 +54,7 @@ public class QuestionController {
         QuestionListRequest.Builder requestBuilder = QuestionListRequest.newBuilder()
                 .addAllCategoryIds(categoryIds)
                 .setKeyword(keyword != null ? keyword : "")
-                .setPage(page)
+                .setPageNum(page-1)
                 .setSize(size)
                 .setIsAdopted(isAdopted);
 
@@ -123,10 +124,11 @@ public class QuestionController {
     @GetMapping("/my")
     public SuccessResponse<GetMyQuestionResponseDto> getMyQuestion(
             @LoginUser Long userId,
-            @RequestParam Integer pageNum
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "5") Integer size
     ) {
         log.info("Get my question for userId: {}, pageNum: {}", userId, pageNum);
         return SuccessResponse.of(QuestionSuccessCode.GET_MY_QUESTION_SUCCESS,
-                questionGrpcClient.getMyQuestion(userId, pageNum - 1));
+                questionGrpcClient.getMyQuestion(userId, pageNum - 1, size));
     }
 }
