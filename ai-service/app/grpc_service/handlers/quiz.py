@@ -32,10 +32,13 @@ class QuizHandler:
             return quiz_service_pb2.QUIZ_TYPE_UNSPECIFIED
 
     def _quiz_to_proto(self, quiz) -> quiz_service_pb2.Quiz:
+        # OX 퀴즈의 경우 quiz_title을 빈 문자열로 반환
+        quiz_title = "" if quiz.quiz_type == ModelQuizType.OX else quiz.quiz_title
+
         return quiz_service_pb2.Quiz(
             quiz_id=quiz.quiz_id,
             quiz_category_id=quiz.quiz_category_id,
-            quiz_title=quiz.quiz_title,
+            quiz_title=quiz_title,
             quiz_content=quiz.quiz_content,
             quiz_type=self._convert_quiz_type_to_proto(quiz.quiz_type),
             quiz_correct_answer=quiz.quiz_correct_answer,
