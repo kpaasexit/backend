@@ -8,6 +8,7 @@ import com.exit.gateway.controller.user.dto.request.auth.DeviceFcmTokenRequestDt
 import com.exit.gateway.controller.user.dto.request.auth.RefreshTokenRequestDto;
 import com.exit.gateway.global.resolver.DeviceIdArgumentResolver;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
+import com.exit.gateway.service.user.AuthGrpcClient;
 import com.exit.gateway.service.user.UserGrpcClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,7 @@ class AuthControllerRestDocsTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @MockBean
-    private UserGrpcClient userGrpcClient;
+    private AuthGrpcClient authGrpcClient;
 
     @MockBean
     private DeviceIdArgumentResolver deviceIdArgumentResolver;
@@ -100,7 +101,7 @@ class AuthControllerRestDocsTest {
                 .setRefreshToken("new-refresh-token")
                 .build();
 
-        given(userGrpcClient.refreshToken(anyString(), anyString())).willReturn(grpcResponse);
+        given(authGrpcClient.refreshToken(anyString(), anyString())).willReturn(grpcResponse);
 
         // when & then
 mockMvc.perform(post("/api/auth/refresh")
@@ -134,7 +135,7 @@ mockMvc.perform(post("/api/auth/refresh")
     void logout() throws Exception {
         // given
         com.exit.common.grpc.LogoutResponse grpcResponse = com.exit.common.grpc.LogoutResponse.newBuilder().build();
-        given(userGrpcClient.logout(any(Long.class), anyString())).willReturn(grpcResponse);
+        given(authGrpcClient.logout(any(Long.class), anyString())).willReturn(grpcResponse);
 
         // when & then
         mockMvc.perform(post("/api/auth/logout")
@@ -157,43 +158,10 @@ mockMvc.perform(post("/api/auth/refresh")
     }
 
     @Test
-    @DisplayName("디바이스 정보 업데이트 API")
-    void updateDevice() throws Exception {
-        // given
-        DeviceFcmTokenRequestDto request = new DeviceFcmTokenRequestDto("test-fcm-token");
-
-        willDoNothing().given(userGrpcClient).updateDevice(anyLong(), anyString(), anyString());
-
-        // when & then
-        mockMvc.perform(post("/api/auth/device")
-                        .header("Authorization", "Bearer " + validAccessToken)
-                        .header("X-Device-Id", "test-device-id")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andDo(document("auth/update-device",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestHeaders(
-                                headerWithName("Authorization").description("액세스 토큰 (Bearer {token})"),
-                                headerWithName("X-Device-Id").description("디바이스 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("fcmToken").description("FCM 푸시 알림 토큰")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터 (업데이트 완료 메시지)")
-                        )
-                ));
-    }
-
-    @Test
     @DisplayName("회원 탈퇴 API")
     void withdraw() throws Exception {
         // given
-        willDoNothing().given(userGrpcClient).withdraw(anyLong());
+        willDoNothing().given(authGrpcClient).withdraw(anyLong());
 
         // when & then
         mockMvc.perform(post("/api/auth/withdraw")

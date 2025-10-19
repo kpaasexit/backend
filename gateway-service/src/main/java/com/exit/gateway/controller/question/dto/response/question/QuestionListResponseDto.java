@@ -4,7 +4,6 @@ import com.exit.common.grpc.QuestionListResponse;
 import lombok.Builder;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 public record QuestionListResponseDto(
@@ -15,7 +14,7 @@ public record QuestionListResponseDto(
         return QuestionListResponseDto.builder()
                 .questionList(questionListResponse.getQuestionsList().stream()
                         .map(QuestionListQueryResponseDto::from)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .hasNext(questionListResponse.getHasNext())
                 .build();
     }

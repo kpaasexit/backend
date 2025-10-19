@@ -10,7 +10,8 @@ import "google/protobuf/empty.proto";
 
 service QuizService {
   rpc GetCategoryStatistics(GetCategoryStatisticsRequest) returns (GetCategoryStatisticsResponse);
-  rpc GetQuiz(GetQuizRequest) returns (GetQuizResponse);
+  rpc GetQuizByCategory(GetQuizByCategoryRequest) returns (GetQuizResponse);
+  rpc GetQuizById(GetQuizByIdRequest) returns (GetQuizResponse);
   rpc SubmitAnswer(SubmitAnswerRequest) returns (SubmitAnswerResponse);
   rpc GetSolvedQuiz(GetSolvedQuizRequest) returns (GetSolvedQuizResponse);
   rpc GetTodayQuiz(google.protobuf.Empty) returns (GetTodayQuizResponse);
@@ -21,9 +22,14 @@ message GetCategoryStatisticsRequest {
   int64 user_id = 1;
 }
 
-message GetQuizRequest {
+message GetQuizByCategoryRequest {
   int64 user_id = 1;
   int64 category_id = 2;
+}
+
+message GetQuizByIdRequest {
+  int64 user_id = 1;
+  int64 quiz_id = 2;
 }
 
 message SubmitAnswerRequest {

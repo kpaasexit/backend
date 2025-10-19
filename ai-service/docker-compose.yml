@@ -52,11 +52,21 @@ services:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
       - ai-service-network
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        # Install nori plugin if not already installed
+        if ! elasticsearch-plugin list | grep -q analysis-nori; then
+          elasticsearch-plugin install --batch analysis-nori
+        fi
+        # Start Elasticsearch
+        /usr/local/bin/docker-entrypoint.sh elasticsearch
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 60s
 
   # AI Service
   ai-service:

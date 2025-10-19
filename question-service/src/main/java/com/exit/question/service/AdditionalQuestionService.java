@@ -49,52 +49,70 @@ public class AdditionalQuestionService {
     private final AiGrpcMapper aiGrpcMapper;
 
     public CreateAdditionalQuestionMessageResponse createAdditionalQuestionMessage(CreateAdditionalQuestionMessageRequest request) {
-        Response response = findResponseById(request.getResponseId());
-        FollowUpRoom followUpRoom = findOrCreateFollowUpRoom(response);
-        FollowUpMessage savedMessage = createAndSaveMessage(request, followUpRoom);
-        List<String> imageUrls = saveUploadedImages(request.getImagesList(), savedMessage);
+        try {
+            Response response = findResponseById(request.getResponseId());
+            FollowUpRoom followUpRoom = findOrCreateFollowUpRoom(response);
+            FollowUpMessage savedMessage = createAndSaveMessage(request, followUpRoom);
+            List<String> imageUrls = saveUploadedImages(request.getImagesList(), savedMessage);
 
-        Question question = getQuestion(request.getQuestionId());
-        boolean isQuestioner = isUserQuestioner(question.getQuestionWriterId(), request.getUserId());
-        if (isQuestioner && response.getResponseWriterId() == 1L) {
-            generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question);
+            Question question = getQuestion(request.getQuestionId());
+            boolean isQuestioner = isUserQuestioner(question.getQuestionWriterId(), request.getUserId());
+            if (isQuestioner && response.getResponseWriterId() == 1L) {
+                generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question);
+            }
+
+            MessageItem messageItem = buildMessageItem(savedMessage, imageUrls, isQuestioner);
+
+            if (response.getResponseWriterId() != 1L) {
+                SendNotificationRequest sendNotificationRequest = createSendNotificationRequest(
+                        messageItem, response.getResponseWriterId(), question.getQuestionWriterId());
+                notificationGrpcClient.sendNotification(sendNotificationRequest);
+            }
+
+            return CreateAdditionalQuestionMessageResponse.newBuilder()
+                    .setFollowUpRoomId(followUpRoom.getFollowUpRoomId())
+                    .setMessage(messageItem)
+                    .build();
+        } catch (GrpcException e) {
+            throw new GrpcException(com.exit.question.exception.GrpcAdditionalQuestionErrorCode.CREATE_ADDITIONAL_QUESTION_MESSAGE_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Create additional question message failed for responseId: {}", request.getResponseId(), e);
+            throw new GrpcException(com.exit.question.exception.GrpcAdditionalQuestionErrorCode.CREATE_ADDITIONAL_QUESTION_MESSAGE_FAILED,
+                    e.getMessage());
         }
-
-        MessageItem messageItem = buildMessageItem(savedMessage, imageUrls, isQuestioner);
-
-        if (response.getResponseWriterId() != 1L) {
-            SendNotificationRequest sendNotificationRequest = createSendNotificationRequest(
-                    messageItem, response.getResponseWriterId(), question.getQuestionWriterId());
-            notificationGrpcClient.sendNotification(sendNotificationRequest);
-        }
-
-        return CreateAdditionalQuestionMessageResponse.newBuilder()
-                .setFollowUpRoomId(followUpRoom.getFollowUpRoomId())
-                .setMessage(messageItem)
-                .build();
     }
 
     @Transactional(readOnly = true)
     public GetAdditionalQuestionResponse getAdditionalQuestion(GetAdditionalQuestionRequest request) {
-        FollowUpRoom followUpRoom = followUpRoomRepository.findById(request.getFollowUpRoomId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_ADDITIONAL_QUESTION));
+        try {
+            FollowUpRoom followUpRoom = followUpRoomRepository.findById(request.getFollowUpRoomId())
+                    .orElseThrow(() -> new GrpcException(com.exit.question.exception.GrpcAdditionalQuestionErrorCode.NULL_FOLLOW_UP_ROOM));
 
-        Question question = getQuestion(request.getQuestionId());
+            Question question = getQuestion(request.getQuestionId());
 
-        List<MessageItem> messageList = followUpRoom.getFollowUpMessages().stream()
-                .map(message -> buildMessageItem(message, message.getImageUrlList(),
-                        isUserQuestioner(question.getQuestionWriterId(), message.getFollowUpMessageWriterId())))
-                .toList();
+            List<MessageItem> messageList = followUpRoom.getFollowUpMessages().stream()
+                    .map(message -> buildMessageItem(message, message.getImageUrlList(),
+                            isUserQuestioner(question.getQuestionWriterId(), message.getFollowUpMessageWriterId())))
+                    .toList();
 
-        return GetAdditionalQuestionResponse.newBuilder()
-                .setFollowUpRoomId(request.getFollowUpRoomId())
-                .addAllMessage(messageList)
-                .build();
+            return GetAdditionalQuestionResponse.newBuilder()
+                    .setFollowUpRoomId(request.getFollowUpRoomId())
+                    .addAllMessage(messageList)
+                    .build();
+        } catch (GrpcException e) {
+            throw new GrpcException(com.exit.question.exception.GrpcAdditionalQuestionErrorCode.GET_ADDITIONAL_QUESTION_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Get additional question failed for followUpRoomId: {}", request.getFollowUpRoomId(), e);
+            throw new GrpcException(com.exit.question.exception.GrpcAdditionalQuestionErrorCode.GET_ADDITIONAL_QUESTION_FAILED,
+                    e.getMessage());
+        }
     }
 
     private Response findResponseById(Long responseId) {
         return responseRepository.findById(responseId)
-                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
     }
 
     private FollowUpRoom findOrCreateFollowUpRoom(Response response) {
@@ -125,7 +143,7 @@ public class AdditionalQuestionService {
 
     private Question getQuestion(Long questionId) {
         return questionRepository.findById(questionId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
     }
 
 

@@ -207,13 +207,6 @@ operation::auth/refresh[snippets='http-request,request-headers,request-fields,ht
 
 operation::auth/logout[snippets='http-request,request-headers,http-response,response-fields']
 
-[[auth-update-device]]
-== 디바이스 정보 업데이트
-
-`POST` 요청을 사용하여 디바이스의 FCM 토큰을 업데이트합니다.
-
-operation::auth/update-device[snippets='http-request,request-headers,request-fields,http-response,response-fields']
-
 [[auth-withdraw]]
 == 회원 탈퇴
 
@@ -223,6 +216,14 @@ operation::auth/withdraw[snippets='http-request,request-headers,http-response,re
 
 [[user-api]]
 = 사용자 API
+
+[[user-update-device]]
+== 디바이스 정보 업데이트
+
+`POST` 요청을 사용하여 디바이스의 FCM 토큰을 업데이트합니다.
+
+operation::user/update-device[snippets='http-request,request-headers,request-fields,http-response,response-fields']
+
 
 [[user-get-user-info]]
 == 사용자 정보 조회
@@ -262,12 +263,19 @@ operation::user/check-nickname-available[snippets='http-request,query-parameters
 
 operation::quiz/category-statistics[snippets='http-request,request-headers,http-response,response-fields']
 
-[[quiz-get]]
-== 퀴즈 조회
+[[quiz-get-by-category]]
+== 카테고리를 사용한 퀴즈 조회
 
 `GET` 요청을 사용하여 특정 카테고리의 퀴즈를 조회합니다.
 
-operation::quiz/get[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
+operation::quiz/get-by-category[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
+
+[[quiz-get-by-id]]
+== 퀴즈 id를 사용한 퀴즈조회
+
+`GET` 요청을 사용하여 특정 퀴즈를 조회합니다.
+
+operation::quiz/get-by-id[snippets='http-request,request-headers,path-parameters,http-response,response-fields']
 
 [[quiz-submit-answer]]
 == 퀴즈 답안 제출
@@ -367,34 +375,6 @@ operation::question/report[snippets='http-request,path-parameters,request-fields
 
 operation::question/category-recommend[snippets='http-request,query-parameters,http-response,response-fields']
 
-[[question-answer-create]]
-== 답변 생성
-
-`POST` 요청을 사용하여 질문에 답변을 작성합니다.
-
-operation::question/answer-create[snippets='http-request,request-parts,http-response,response-fields']
-
-[[question-answer-adopt]]
-== 답변 채택
-
-`POST` 요청을 사용하여 답변을 채택합니다.
-
-operation::question/answer-adopt[snippets='http-request,path-parameters,http-response,response-fields']
-
-[[question-answer-recommend]]
-== 답변 추천
-
-`POST` 요청을 사용하여 답변을 추천합니다.
-
-operation::question/answer-recommend[snippets='http-request,path-parameters,http-response,response-fields']
-
-[[question-answer-report]]
-== 답변 신고
-
-`POST` 요청을 사용하여 부적절한 답변을 신고합니다.
-
-operation::question/answer-report[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
-
 [[question-similar]]
 == 유사 질문 조회
 
@@ -416,19 +396,57 @@ operation::question/my-question[snippets='http-request,request-headers,query-par
 
 operation::question/popular-post[snippets='http-request,http-response,response-fields']
 
-[[question-answer-update]]
+[[response-api]]
+= 답변 API
+
+[[response-answer-update]]
 == 답변 수정
 
 `PUT` 요청을 사용하여 답변 내용을 수정합니다.
 
-operation::question/answer-update[snippets='http-request,path-parameters,http-response,response-fields']
+operation::response/answer-update[snippets='http-request,path-parameters,http-response,response-fields']
 
-[[question-answer-delete]]
+[[response-answer-delete]]
 == 답변 삭제
 
 `DELETE` 요청을 사용하여 답변을 삭제합니다.
 
-operation::question/answer-delete[snippets='http-request,path-parameters,http-response,response-fields']
+operation::response/answer-delete[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[response-answer-create]]
+== 답변 생성
+
+`POST` 요청을 사용하여 질문에 답변을 작성합니다.
+
+operation::response/answer-create[snippets='http-request,request-parts,http-response,response-fields']
+
+[[response-answer-adopt]]
+== 답변 채택
+
+`POST` 요청을 사용하여 답변을 채택합니다.
+
+operation::response/answer-adopt[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[response-answer-recommend]]
+== 답변 추천
+
+`POST` 요청을 사용하여 답변을 추천합니다.
+
+operation::response/answer-recommend[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[response-answer-report]]
+== 답변 신고
+
+`POST` 요청을 사용하여 부적절한 답변을 신고합니다.
+
+operation::response/answer-report[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[response-detail-list]]
+== 답변 상세 조회
+
+`GET` 요청을 사용하여 답변 리스트를 조회합니다.
+
+operation::response/detail-list[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
 
 [[comment-api]]
 = 댓글 API

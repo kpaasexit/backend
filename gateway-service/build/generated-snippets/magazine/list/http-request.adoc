@@ -1,6 +1,6 @@
 [source,http,options="nowrap"]
 ----
-GET /api/magazine/category/1?pageNum=1 HTTP/1.1
+GET /api/magazine/category/1?pageNum=1&size=2 HTTP/1.1
 Host: localhost:8080
 
 ----

@@ -169,7 +169,6 @@ app/models/data/
 app/models/fine_tuned/
 app/models/training_data/
 *.pth
-*.xlsx
 training_results.json
 checkpoints/
 
@@ -187,3 +186,6 @@ docker-compose.override.yml
 # Pytest
 .pytest_cache/
 pytest_cache/
+
+# Index Caches
+scripts/backups/

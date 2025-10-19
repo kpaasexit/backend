@@ -21,55 +21,31 @@ public class CommentGrpcService extends CommentServiceGrpc.CommentServiceImplBas
     @Override
     public void createComment(com.exit.common.grpc.CreateCommentRequest request,
                               StreamObserver<CreateCommentResponse> responseObserver) {
-        try {
             log.info("create comment request received: {}", request.getCommentType());
             CreateCommentResponse response = commentService.createComment(request);
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("create comment request fail", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("댓글 생성 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
     }
 
 
     @Override
     public void deleteComment(com.exit.common.grpc.DeleteCommentRequest request,
                               StreamObserver<com.google.protobuf.Empty> responseObserver) {
-        try {
             log.info("delete comment request received : {}", request.getCommentId());
             commentService.deleteComment(request);
 
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("delete comment request fail", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("댓글 삭제 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
     }
 
     @Override
     public void getComment(com.exit.common.grpc.GetCommentRequest request,
                               StreamObserver<GetCommentResponse> responseObserver) {
-        try {
             log.info("get comment request received : {}", request.getTargetId());
             GetCommentResponse response = commentService.getComment(request);
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("get comment request fail", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("댓글 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
     }
 }

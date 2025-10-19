@@ -1,7 +1,6 @@
 package com.exit.magazine.service;
 
 import com.exit.common.grpc.*;
-import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,89 +16,60 @@ public class MagazineGrpcService extends MagazineServiceGrpc.MagazineServiceImpl
     @Override
     public void getMagazinesByCategory(com.exit.common.grpc.GetMagazinesByCategoryRequest request,
                                        StreamObserver<GetMagazinesByCategoryResponse> responseObserver) {
-        try {
-            log.info("Get Magazine List request received: {}", request.getCategoryId());
-            GetMagazinesByCategoryResponse response = magazineService.getMagazinesByCategory(request);
+        log.info("Get Magazine List request received: {}", request.getCategoryId());
+        GetMagazinesByCategoryResponse response = magazineService.getMagazinesByCategory(request);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Get Magazine List failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("매거진 카테고리별 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void getMagazine(com.exit.common.grpc.GetMagazineRequest request,
                             StreamObserver<GetMagazineResponse> responseObserver) {
-        try {
-            log.info("Get Magazine request received: {}", request.getMagazineId());
-            GetMagazineResponse response = magazineService.getMagazine(request);
+        log.info("Get Magazine request received: {}", request.getMagazineId());
+        GetMagazineResponse response = magazineService.getMagazine(request);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Get Magazine failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("매거진 상세 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void scrapMagazine(com.exit.common.grpc.ScrapMagazineRequest request,
-                            StreamObserver<ScrapMagazineResponse> responseObserver) {
-        try {
-            log.info("Scrap Magazine request received: {}", request.getUserId());
-            ScrapMagazineResponse response = magazineService.scrapMagazine(request);
+                              StreamObserver<ScrapMagazineResponse> responseObserver) {
+        log.info("Scrap Magazine request received: {}", request.getUserId());
+        ScrapMagazineResponse response = magazineService.scrapMagazine(request);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Scrap Magazine failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("매거진 스크랩 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void getScrapBox(com.exit.common.grpc.GetScrapBoxRequest request,
                             StreamObserver<GetScrapBoxResponse> responseObserver) {
-        try {
-            log.info("Get Magazine Scrap Box request received: {}", request.getUserId());
-            GetScrapBoxResponse response = magazineService.getScrapBox(request);
+        log.info("Get Magazine Scrap Box request received: {}", request.getUserId());
+        GetScrapBoxResponse response = magazineService.getScrapBox(request);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Get ScrapBox failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("매거진 스크랩 박스 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void getRecommendedMagazine(com.exit.common.grpc.GetRecommendedMagazineRequest request,
-                            StreamObserver<GetRecommendedMagazineResponse> responseObserver) {
-        try {
-            log.info("Get Recommended Magazine request received: {}", request.getUserId());
-            GetRecommendedMagazineResponse response = magazineService.getRecommendedMagazine(request);
+                                       StreamObserver<GetRecommendedMagazineResponse> responseObserver) {
+        log.info("Get Recommended Magazine request received: {}", request.getUserId());
+        GetRecommendedMagazineResponse response = magazineService.getRecommendedMagazine(request);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-        } catch (Exception e) {
-            log.error("Get Recommended Magazine failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("추천 매거진 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void searchMagazines(com.exit.common.grpc.SearchMagazinesRequest request,
+                                StreamObserver<SearchMagazinesResponse> responseObserver) {
+        log.info("Get Recommended Magazine request received");
+        SearchMagazinesResponse response = magazineService.searchMagazines(request);
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }

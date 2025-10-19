@@ -24,7 +24,7 @@ public class AiGrpcClient {
     /**
      * AI 답변 생성 요청
      *
-     * @param question 질문 내용 (제목 + 본문)
+     * @param questionId 질문 내용 (제목 + 본문)
      * @return AI가 생성한 답변 텍스트
      */
     public String generateAiAnswer(Long questionId) {

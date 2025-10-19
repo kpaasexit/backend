@@ -1,10 +1,13 @@
 package com.exit.gateway.controller.search;
 
+import com.exit.common.grpc.QuestionListRequest;
+import com.exit.common.grpc.QuestionListResponse;
 import com.exit.common.grpc.SearchMagazinesResponse;
-import com.exit.common.grpc.SearchQuestionsResponse;
 import com.exit.common.util.time.TimeStampUtil;
 import com.exit.gateway.config.RestDocsConfiguration;
-import com.exit.gateway.service.search.SearchGrpcClient;
+import com.exit.gateway.controller.question.dto.response.question.QuestionListResponseDto;
+import com.exit.gateway.service.magazine.MagazineGrpcClient;
+import com.exit.gateway.service.question.QuestionGrpcClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +19,9 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -43,7 +46,9 @@ class SearchControllerRestDocsTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private SearchGrpcClient searchGrpcClient;
+    private QuestionGrpcClient questionGrpcClient;
+    @MockBean
+    private MagazineGrpcClient magazineGrpcClient;
 
     @Test
     @DisplayName("통합 검색 API")
@@ -52,11 +57,11 @@ class SearchControllerRestDocsTest {
         LocalDateTime now = LocalDateTime.of(2025, 10, 16, 0, 0);
 
         // Question mock data
-        com.exit.common.grpc.QuestionSearchItem question1 = com.exit.common.grpc.QuestionSearchItem.newBuilder()
+        com.exit.common.grpc.QuestionListItem question1 = com.exit.common.grpc.QuestionListItem.newBuilder()
                 .setQuestionId(1L)
                 .setQuestionCategory(1L)
-                .setQuestionWriterId(100L)
                 .setQuestionWriterName("김질문")
+                .setQuestionWriterProfile("profile url")
                 .setQuestionTitle("Spring Boot 질문입니다")
                 .setQuestionContent("Spring Boot에서 JWT 인증은 어떻게 구현하나요?")
                 .setQuestionUrgency(true)
@@ -66,11 +71,11 @@ class SearchControllerRestDocsTest {
                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(now))
                 .build();
 
-        com.exit.common.grpc.QuestionSearchItem question2 = com.exit.common.grpc.QuestionSearchItem.newBuilder()
+        com.exit.common.grpc.QuestionListItem question2 = com.exit.common.grpc.QuestionListItem.newBuilder()
                 .setQuestionId(2L)
                 .setQuestionCategory(2L)
-                .setQuestionWriterId(101L)
                 .setQuestionWriterName("이개발")
+                .setQuestionWriterProfile("profile url")
                 .setQuestionTitle("MSA 구조 질문")
                 .setQuestionContent("MSA에서 서비스간 통신은 어떻게 하나요?")
                 .setQuestionUrgency(false)
@@ -80,32 +85,28 @@ class SearchControllerRestDocsTest {
                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(now))
                 .build();
 
-        SearchQuestionsResponse questionsResponse = SearchQuestionsResponse.newBuilder()
-                .addQuestions(question1)
-                .addQuestions(question2)
-                .setTotalCount(2)
+        QuestionListResponse questionsResponse = QuestionListResponse.newBuilder()
+                .addAllQuestions(List.of(question1, question2))
                 .setHasNext(false)
                 .build();
 
         // Magazine mock data
-        com.exit.common.grpc.MagazineSearchItem magazine1 = com.exit.common.grpc.MagazineSearchItem.newBuilder()
+        com.exit.common.grpc.MagazineListItem magazine1 = com.exit.common.grpc.MagazineListItem.newBuilder()
                 .setMagazineId(1L)
                 .setMagazineCategoryId(1L)
                 .setMagazineTitle("K-Paas 플랫폼 소개")
                 .setMagazineSubtitle("클라우드 네이티브 플랫폼의 모든 것")
-                .setMagazineContent("K-Paas는 혁신적인 클라우드 플랫폼입니다...")
                 .setMagazineAuthor("김개발")
                 .setAuthorProfileUrl("https://example.com/profile/kim.jpg")
                 .setMagazineThumbnailUrl("https://example.com/thumbnail/kpaas.jpg")
                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(LocalDateTime.now()))
                 .build();
 
-        com.exit.common.grpc.MagazineSearchItem magazine2 = com.exit.common.grpc.MagazineSearchItem.newBuilder()
+        com.exit.common.grpc.MagazineListItem magazine2 = com.exit.common.grpc.MagazineListItem.newBuilder()
                 .setMagazineId(2L)
                 .setMagazineCategoryId(1L)
                 .setMagazineTitle("MSA 아키텍처 가이드")
                 .setMagazineSubtitle("마이크로서비스 설계 원칙")
-                .setMagazineContent("마이크로서비스 아키텍처(MSA)는...")
                 .setMagazineAuthor("이아키")
                 .setAuthorProfileUrl("https://example.com/profile/lee.jpg")
                 .setMagazineThumbnailUrl("https://example.com/thumbnail/msa.jpg")
@@ -113,14 +114,12 @@ class SearchControllerRestDocsTest {
                 .build();
 
         SearchMagazinesResponse magazinesResponse = SearchMagazinesResponse.newBuilder()
-                .addMagazines(magazine1)
-                .addMagazines(magazine2)
-                .setTotalCount(2)
+                .addAllMagazines(List.of(magazine1, magazine2))
                 .setHasNext(false)
                 .build();
 
-        given(searchGrpcClient.searchQuestions(anyString(), anyInt(), anyInt())).willReturn(questionsResponse);
-        given(searchGrpcClient.searchMagazines(anyString(), anyInt(), anyInt())).willReturn(magazinesResponse);
+        given(questionGrpcClient.getQuestionList(any(QuestionListRequest.class))).willReturn(QuestionListResponseDto.from(questionsResponse));
+        given(magazineGrpcClient.searchMagazines(anyString(), anyInt(), anyInt())).willReturn(magazinesResponse);
 
         // when & then
         mockMvc.perform(get("/api/search")
@@ -132,8 +131,8 @@ class SearchControllerRestDocsTest {
                 .andExpect(jsonPath("$.result.questions[0].questionTitle").value("Spring Boot 질문입니다"))
                 .andExpect(jsonPath("$.result.magazines[0].magazineId").value(1L))
                 .andExpect(jsonPath("$.result.magazines[0].magazineTitle").value("K-Paas 플랫폼 소개"))
-                .andExpect(jsonPath("$.result.questionTotalCount").value(2))
-                .andExpect(jsonPath("$.result.magazineTotalCount").value(2))
+                .andExpect(jsonPath("$.result.questionHasNext").value(false))
+                .andExpect(jsonPath("$.result.magazineHasNext").value(false))
                 .andDo(document("search/integrated",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
@@ -148,8 +147,8 @@ class SearchControllerRestDocsTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.questions").description("질문 검색 결과 목록"),
                                 fieldWithPath("result.questions[].questionId").description("질문 ID"),
-                                fieldWithPath("result.questions[].questionCategory").description("질문 카테고리 ID"),
-                                fieldWithPath("result.questions[].questionWriterId").description("질문 작성자 ID"),
+                                fieldWithPath("result.questions[].questionCategoryId").description("질문 카테고리 ID"),
+                                fieldWithPath("result.questions[].questionWriterProfile").description("질문 작성자 프로필 url").optional(),
                                 fieldWithPath("result.questions[].questionWriterName").description("질문 작성자 이름"),
                                 fieldWithPath("result.questions[].questionTitle").description("질문 제목"),
                                 fieldWithPath("result.questions[].questionContent").description("질문 내용"),
@@ -163,13 +162,10 @@ class SearchControllerRestDocsTest {
                                 fieldWithPath("result.magazines[].magazineCategoryId").description("매거진 카테고리 ID"),
                                 fieldWithPath("result.magazines[].magazineTitle").description("매거진 제목"),
                                 fieldWithPath("result.magazines[].magazineSubtitle").description("매거진 부제목"),
-                                fieldWithPath("result.magazines[].magazineContent").description("매거진 내용"),
-                                fieldWithPath("result.magazines[].magazineAuthor").description("매거진 작성자"),
+                                fieldWithPath("result.magazines[].magazineAuthor").description("매거진 작성자 닉네임"),
                                 fieldWithPath("result.magazines[].authorProfileUrl").description("작성자 프로필 URL"),
                                 fieldWithPath("result.magazines[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
                                 fieldWithPath("result.magazines[].createdAt").description("작성일시"),
-                                fieldWithPath("result.questionTotalCount").description("질문 전체 개수"),
-                                fieldWithPath("result.magazineTotalCount").description("매거진 전체 개수"),
                                 fieldWithPath("result.questionHasNext").description("질문 다음 페이지 존재 여부"),
                                 fieldWithPath("result.magazineHasNext").description("매거진 다음 페이지 존재 여부")
                         )

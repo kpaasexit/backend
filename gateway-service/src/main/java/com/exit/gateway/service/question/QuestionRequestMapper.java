@@ -2,11 +2,8 @@ package com.exit.gateway.service.question;
 
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.*;
-import com.exit.common.response.error.rest.QuestionErrorCode;
-import com.exit.gateway.controller.question.dto.request.question.AnswerCreateRequestDto;
-import com.exit.gateway.controller.question.dto.request.question.AnswerReportRequestDto;
-import com.exit.gateway.controller.question.dto.request.question.QuestionCreateRequestDto;
-import com.exit.gateway.controller.question.dto.request.question.QuestionReportRequestDto;
+import com.exit.common.response.error.rest.question.QuestionErrorCode;
+import com.exit.gateway.controller.question.dto.request.question.*;
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -69,6 +66,21 @@ public class QuestionRequestMapper {
                 .setResponseReportTitle(dto.getResponseReportTitle())
                 .setResponseReportContent(dto.getResponseReportContent())
                 .build();
+    }
+
+    public CreateAdditionalQuestionMessageRequest toGrpcCreateAdditionalQuestionMessageRequest(Long userId, CreateAdditionalQuestionMessageRequestDto dto) {
+        CreateAdditionalQuestionMessageRequest.Builder builder = CreateAdditionalQuestionMessageRequest.newBuilder()
+                .setUserId(userId)
+                .setQuestionId(dto.getQuestionId())
+                .setResponseId(dto.getResponseId())
+                .setContent(dto.getContent());
+
+        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
+            List<UploadBytesRequest> imageRequests = convertMultipartFilesToUploadRequests(dto.getImages());
+            builder.addAllImages(imageRequests);
+        }
+
+        return builder.build();
     }
 
     private List<UploadBytesRequest> convertMultipartFilesToUploadRequests(List<MultipartFile> files) {

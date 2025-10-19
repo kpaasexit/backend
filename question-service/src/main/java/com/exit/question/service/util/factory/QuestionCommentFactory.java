@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class QuestionCommentFactory extends CommentFactory {
     @Override
     public Comment createAndSaveComment(Long targetId, Long authorId, String content) {
         Question question = questionRepository.findById(targetId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         QuestionComment comment = QuestionComment.builder()
                 .question(question)
@@ -53,7 +54,7 @@ public class QuestionCommentFactory extends CommentFactory {
     @Override
     public SendNotificationRequest createSendNotificationRequest(Long targetId, String deviceId) {
         NotificationContentDto dto = questionRepository.findContentById(targetId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         return SendNotificationRequest.newBuilder()
                 .setBody(dto.content())
@@ -68,7 +69,7 @@ public class QuestionCommentFactory extends CommentFactory {
         PageRequest pageRequest = PageRequest.of(pageNum, 5);
         Slice<QuestionComment> questionComments = questionCommentRepository.findAllByQuestion_QuestionId(targetId, pageRequest);
 
-        List<Long> commentAuthorIds = getCommentAuthorIds(questionComments.getContent());
+        Set<Long> commentAuthorIds = getCommentAuthorIds(questionComments.getContent());
         GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(commentAuthorIds);
 
         Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserInfoMap(usersNameAndProfile);
@@ -102,10 +103,10 @@ public class QuestionCommentFactory extends CommentFactory {
                 );
     }
 
-    private List<Long> getCommentAuthorIds(List<QuestionComment> questionComments) {
+    private Set<Long> getCommentAuthorIds(List<QuestionComment> questionComments) {
         return questionComments.stream()
                 .map(QuestionComment::getAuthorId)
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     private void validateCommentWriter(Long commentId, Long userId) {

@@ -15,16 +15,20 @@ service MagazineService {
   rpc ScrapMagazine(ScrapMagazineRequest) returns (ScrapMagazineResponse);
   rpc GetScrapBox(GetScrapBoxRequest) returns (GetScrapBoxResponse);
   rpc GetRecommendedMagazine(GetRecommendedMagazineRequest) returns (GetRecommendedMagazineResponse);
+  rpc SearchMagazines(SearchMagazinesRequest) returns (SearchMagazinesResponse);
 }
 
 // request
 message GetMagazinesByCategoryRequest {
   int64 category_id = 1;
   int32 page_num = 2;
+  int32 size = 3;
+  int64 user_id = 4;
 }
 
 message GetMagazineRequest {
   int64 magazine_id = 1;
+  int64 user_id = 2;
 }
 
 message ScrapMagazineRequest {
@@ -35,10 +39,18 @@ message ScrapMagazineRequest {
 message GetScrapBoxRequest {
   int64 user_id = 1;
   int32 page_num = 2;
+  int32 size = 3;
 }
 
 message GetRecommendedMagazineRequest {
   int64 user_id = 1;
+}
+
+message SearchMagazinesRequest {
+  string keyword = 1;
+  int32 page = 2;
+  int32 size = 3;
+  int64 user_id = 4;
 }
 
 // response
@@ -52,10 +64,24 @@ message MagazineItem {
   string author_profile_url = 7;
   string magazine_thumbnail_url = 8;
   google.protobuf.Timestamp created_at = 9;
+  bool is_scrap = 10;
+}
+
+message MagazineListItem {
+  int64 magazine_id = 1;
+  int64 magazine_category_id = 2;
+  string magazine_title = 3;
+  string magazine_subtitle = 4;
+  string magazine_author = 6;
+  string author_profile_url = 7;
+  string magazine_thumbnail_url = 8;
+  google.protobuf.Timestamp created_at = 9;
 }
 
 message GetMagazinesByCategoryResponse {
-  repeated MagazineItem magazine_item = 1;
+  repeated MagazineListItem magazine_item = 1;
+  int32 current_page = 2;
+  bool has_next = 3;
 }
 
 message GetMagazineResponse {
@@ -77,9 +103,15 @@ message MagazineScrapBoxItem {
 
 message GetScrapBoxResponse {
   repeated MagazineScrapBoxItem magazine_scrap_box_item = 1;
-  bool has_next = 2;
+  int32 current_page = 2;
+  bool has_next = 3;
 }
 
 message GetRecommendedMagazineResponse {
   repeated MagazineScrapBoxItem recommendMagazine = 1;
+}
+
+message SearchMagazinesResponse {
+  repeated MagazineListItem magazines = 1;
+  bool has_next = 3;
 }

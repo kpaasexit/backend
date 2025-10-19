@@ -1,5 +1,6 @@
 package com.exit.gateway.handler;
 
+import com.exit.common.exception.rest.RestApiException;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.KakaoOAuth2UserInfo;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.NaverOAuth2UserInfo;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
@@ -32,7 +33,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Value("${app.oauth2.allowed-origins}")
     private String allowedOriginsRaw;
 
-    @Value("${app.oauth2.default-client-url:https://localhost:8080}")
+    @Value("${app.oauth2.default-client-url:https://localhost:5761}")
     private String defaultClientUrl;
 
     private List<String> allowedOrigins;
@@ -60,8 +61,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         } else {
             userInfo = new KakaoOAuth2UserInfo(oauth2User.getAttributes());
         }
-
-
 
         log.info("OAuth2 로그인 성공 - Provider: {}, User: {}", userInfo.getProvider(), userInfo.getName());
 
@@ -98,7 +97,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         } catch (Exception e) {
             log.error("OAuth2 로그인 처리 중 오류 발생", e);
-            response.sendRedirect(defaultClientUrl + "/login?error=login_failed");
+            response.sendRedirect(defaultClientUrl + "/oauth/callback?success=false");
         }
     }
 

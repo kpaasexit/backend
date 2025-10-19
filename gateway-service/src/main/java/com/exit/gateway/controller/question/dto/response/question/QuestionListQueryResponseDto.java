@@ -12,7 +12,8 @@ import static com.exit.common.util.time.TimeStampUtil.timestampToLocalDateTime;
 public record QuestionListQueryResponseDto(
         Long questionId,
         Long questionCategoryId,
-        Long questionWriterId,
+        String questionWriterName,
+        String questionWriterProfile,
         String questionTitle,
         String questionContent,
         Boolean questionUrgency,
@@ -23,10 +24,15 @@ public record QuestionListQueryResponseDto(
         LocalDateTime createdAt
 ) {
     public static QuestionListQueryResponseDto from(QuestionListItem questionListItem) {
-        return QuestionListQueryResponseDto.builder()
+        QuestionListQueryResponseDtoBuilder builder = QuestionListQueryResponseDto.builder();
+        if(!questionListItem.getQuestionWriterProfile().isEmpty()) {
+            builder.questionWriterProfile(questionListItem.getQuestionWriterProfile());
+        }
+
+        return builder
                 .questionId(questionListItem.getQuestionId())
                 .questionCategoryId(questionListItem.getQuestionCategory())
-                .questionWriterId(questionListItem.getQuestionWriterId())
+                .questionWriterName(questionListItem.getQuestionWriterName())
                 .questionTitle(questionListItem.getQuestionTitle())
                 .questionContent(questionListItem.getQuestionContent())
                 .questionUrgency(questionListItem.getQuestionUrgency())

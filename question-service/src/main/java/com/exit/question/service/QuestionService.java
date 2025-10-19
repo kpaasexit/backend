@@ -18,20 +18,15 @@ import com.exit.question.domain.question.repository.QuestionImageRepository;
 import com.exit.question.domain.question.repository.QuestionReportRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
 import com.exit.question.domain.response.Response;
-import com.exit.question.domain.response.ResponseImage;
-import com.exit.question.domain.response.repository.ResponseImageRepository;
-import com.exit.question.domain.response.repository.ResponseLikeRepository;
 import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.service.client.AiGrpcClient;
-import com.exit.question.service.client.NotificationGrpcClient;
 import com.exit.question.service.client.UserGrpcClient;
 import com.exit.question.service.util.QuestionGrpcMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -43,7 +38,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
@@ -59,142 +53,194 @@ public class QuestionService {
     private final QuestionImageRepository questionImageRepository;
     private final QuestionReportRepository questionReportRepository;
     private final ResponseRepository responseRepository;
-    private final ResponseImageRepository responseImageRepository;
-    private final ResponseLikeRepository responseLikeRepository;
     private final FileUploadUtil fileUploadUtil;
     private final UserGrpcClient userGrpcClient;
-    private final NotificationGrpcClient notificationGrpcClient;
     private final AiGrpcClient aiGrpcClient;
     private final TaskScheduler taskScheduler;
     private final QuestionGrpcMapper questionGrpcMapper;
 
+
     public QuestionCreateResponse createQuestion(QuestionCreateRequest request) {
-        QuestionCategory questionCategory = questionCategoryRepository.findById(request.getQuestionCategory())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
-        Question question = Question.createQuestionFromRequest(request, questionCategory);
-        Question savedQuestion = questionRepository.save(question);
+        try {
+            QuestionCategory questionCategory = questionCategoryRepository.findById(request.getQuestionCategory())
+                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.UNAVAILABLE_QUESTION_CATEGORY));
+            Question question = Question.createQuestionFromRequest(request, questionCategory);
+            Question savedQuestion = questionRepository.save(question);
 
-        List<String> imageUrls = uploadQuestionImages(request, savedQuestion);
-        String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
+            List<String> imageUrls = uploadQuestionImages(request, savedQuestion);
+            String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
 
-        aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
-        // AI 답변 자동 생성
-        scheduleAiAnswerGeneration(savedQuestion);
+            aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
+            // AI 답변 자동 생성
+            scheduleAiAnswerGeneration(savedQuestion);
 
-        return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageUrls, questionWriterName);
+            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageUrls, questionWriterName);
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcQuestionErrorCode.CREATE_QUESTION_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Create question failed for userId: {}", request.getQuestionWriterId(), e);
+            throw new GrpcException(GrpcQuestionErrorCode.CREATE_QUESTION_FAILED, e.getMessage());
+        }
     }
 
     public QuestionReportResponse questionReport(QuestionReportRequest request) {
-        Question question = questionRepository.findById(request.getQuestionId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+        try {
+            Question question = questionRepository.findById(request.getQuestionId())
+                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
-        QuestionReport questionReport = QuestionReport.from(request);
-        userGrpcClient.increaseReportCount(question.getQuestionWriterId());
+            QuestionReport questionReport = QuestionReport.from(request);
+            userGrpcClient.increaseReportCount(question.getQuestionWriterId());
 
-        QuestionReport savedQuestionReport = questionReportRepository.save(questionReport);
-        return questionGrpcMapper.getQuestionReportResponse(savedQuestionReport);
+            QuestionReport savedQuestionReport = questionReportRepository.save(questionReport);
+            return questionGrpcMapper.getQuestionReportResponse(savedQuestionReport);
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcQuestionErrorCode.QUESTION_REPORT_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Question report failed for questionId: {}", request.getQuestionId(), e);
+            throw new GrpcException(GrpcQuestionErrorCode.QUESTION_REPORT_FAILED, e.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)
     public QuestionListResponse questionList(QuestionListRequest filter) {
-        PageRequest pageRequest = PageRequest.of(filter.getPage(), filter.getSize());
+        try {
+            PageRequest pageRequest = PageRequest.of(filter.getPage(), filter.getSize());
 
-        Slice<QuestionListQueryResponseDto> slice = questionRepository.findQuestionsByFilter(
-                filter.getCategoryIdsList(),
-                filter.getKeyword().isEmpty() ? null : filter.getKeyword(),
-                filter.getIsAdopted(), pageRequest);
-        return questionGrpcMapper.getQuestionListResponse(slice.getContent(), slice.hasNext());
+            Slice<QuestionListQueryResponseDto> slice = questionRepository.findQuestionsByFilter(
+                    filter.getCategoryIdsList(),
+                    filter.getKeyword().isEmpty() ? null : filter.getKeyword(),
+                    filter.getIsAdopted(), pageRequest);
+
+            Set<Long> writerIds = slice.getContent().stream().map(QuestionListQueryResponseDto::questionWriterId).collect(toSet());
+            GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(writerIds);
+            Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = usersNameAndProfile.getUserInfoList().stream()
+                    .collect(toMap(UpdateAdditionalUserInfoResponse::getUserId, Function.identity()));
+
+            return questionGrpcMapper.getQuestionListResponse(slice.getContent(), userInfoMap, slice.hasNext());
+        } catch (Exception e) {
+            log.error("Get question list failed", e);
+            throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_LIST_FAILED, e.getMessage());
+        }
     }
 
     // 카테고리 추천
     @Transactional(readOnly = true)
     public CategoryRecommendationResponse categoryRecommend(String title) {
-        Long categoryRecommend = aiGrpcClient.categoryRecommend(title).longValue();
-        QuestionCategory questionCategory = questionCategoryRepository.findById(categoryRecommend)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION_CATEGORY));
+        try {
+            Long categoryRecommend = aiGrpcClient.categoryRecommend(title).longValue();
+            QuestionCategory questionCategory = questionCategoryRepository.findById(categoryRecommend)
+                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.UNAVAILABLE_QUESTION_CATEGORY));
 
-        return CategoryRecommendationResponse.newBuilder()
-                .setCategoryId(questionCategory.getQuestionCategoryId())
-                .setCategoryName(questionCategory.getQuestionCategoryName())
-                .build();
+            return CategoryRecommendationResponse.newBuilder()
+                    .setCategoryId(questionCategory.getQuestionCategoryId())
+                    .setCategoryName(questionCategory.getQuestionCategoryName())
+                    .build();
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcQuestionErrorCode.CATEGORY_RECOMMEND_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Category recommend failed for title: {}", title, e);
+            throw new GrpcException(GrpcQuestionErrorCode.CATEGORY_RECOMMEND_FAILED, e.getMessage());
+        }
     }
 
     // 유사 질문 조회
     @Transactional(readOnly = true)
     public SimilarQuestionResponse similarQuestion(String title, String content) {
-        SimilarResponse similarResponse = aiGrpcClient.similarQuestion(title, content);
-        if (similarResponse.getQuestionsCount() <= 0) {
-            return null;
-        }
+        try {
+            SimilarResponse similarResponse = aiGrpcClient.similarQuestion(title, content);
+            if (similarResponse.getQuestionsCount() <= 0) {
+                return null;
+            }
 
-        List<Long> similarQuestionIds = similarResponse.getQuestionsList().stream().map(SimilarQuestion::getQuestionId).toList();
-        List<Question> similarQuestions = questionRepository.findAllById(similarQuestionIds);
-        return questionGrpcMapper.getSimilarQuestionResponse(similarQuestions);
+            List<Long> similarQuestionIds = similarResponse.getQuestionsList().stream().map(SimilarQuestion::getQuestionId).toList();
+            List<Question> similarQuestions = questionRepository.findAllById(similarQuestionIds);
+            return questionGrpcMapper.getSimilarQuestionResponse(similarQuestions);
+        } catch (Exception e) {
+            log.error("Similar question search failed for title: {}", title, e);
+            throw new GrpcException(GrpcQuestionErrorCode.SIMILAR_QUESTION_FAILED, e.getMessage());
+        }
     }
 
     // 질문 게시글 상세 보기
     @Transactional(readOnly = true)
     public QuestionDetailResponse getQuestionDetail(QuestionDetailRequest request) {
-        QuestionCreateResponse questionCreateResponse = buildQuestionCreateResponse(request.getQuestionId());
+        try {
+            QuestionCreateResponse questionCreateResponse = buildQuestionCreateResponse(request.getQuestionId());
 
-        return questionGrpcMapper.getQuestionDetailResponse(questionCreateResponse);
+            return questionGrpcMapper.getQuestionDetailResponse(questionCreateResponse);
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_DETAIL_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Get question detail failed for questionId: {}", request.getQuestionId(), e);
+            throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_DETAIL_FAILED, e.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)
     public GetPopularPostResponse getPopularPost() {
-        List<PopularPostDto> popularPosts = questionRepository.findTop5By();
+        try {
+            List<PopularPostDto> popularPosts = questionRepository.findTop5By();
 
-        if (popularPosts.isEmpty()) {
-            return GetPopularPostResponse.newBuilder().build();
+            if (popularPosts.isEmpty()) {
+                return GetPopularPostResponse.newBuilder().build();
+            }
+
+            // 모든 작성자 ID 수집
+            Set<Long> writerIds = popularPosts.stream()
+                    .map(PopularPostDto::questionWriterId)
+                    .collect(toSet());
+
+            // 배치로 사용자 정보 조회
+            Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserNicknameAndProfileByWriterIds(writerIds);
+
+            // PopularPostItem 생성
+            List<PopularPostItem> items = popularPosts.stream()
+                    .map(post -> {
+                        UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());
+                        return PopularPostItem.newBuilder()
+                                .setCategoryId(post.questionCategoryId())
+                                .setProfileUrl(!userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
+                                .setNickname(userInfo.getUserName())
+                                .setTitle(post.questionTitle())
+                                .setContent(post.questionContent())
+                                .setAnswerAdopt(post.questionAnswerAdopt())
+                                .setAnswerCount(post.answerCount())
+                                .setCreatedAt(TimeStampUtil.toGrpcTimestamp(post.createdAt()))
+                                .build();
+                    })
+                    .toList();
+
+            return GetPopularPostResponse.newBuilder()
+                    .addAllPost(items)
+                    .build();
+        } catch (Exception e) {
+            log.error("Get popular post failed", e);
+            throw new GrpcException(GrpcQuestionErrorCode.GET_POPULAR_POST_FAILED, e.getMessage());
         }
-
-        // 모든 작성자 ID 수집
-        Set<Long> writerIds = popularPosts.stream()
-                .map(PopularPostDto::questionWriterId)
-                .collect(toSet());
-
-        // 배치로 사용자 정보 조회
-        Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserNicknameAndProfileByWriterIds(writerIds);
-
-        // PopularPostItem 생성
-        List<PopularPostItem> items = popularPosts.stream()
-                .map(post -> {
-                    UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());
-                    return PopularPostItem.newBuilder()
-                            .setCategoryId(post.questionCategoryId())
-                            .setProfileUrl(!userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
-                            .setNickname(userInfo.getUserName())
-                            .setTitle(post.questionTitle())
-                            .setContent(post.questionContent())
-                            .setAnswerAdopt(post.questionAnswerAdopt())
-                            .setAnswerCount(post.answerCount())
-                            .setCreatedAt(TimeStampUtil.toGrpcTimestamp(post.createdAt()))
-                            .build();
-                })
-                .toList();
-
-        return GetPopularPostResponse.newBuilder()
-                .addAllPost(items)
-                .build();
     }
 
     @Transactional(readOnly = true)
     public GetMyQuestionResponse getMyQuestion(GetMyQuestionRequest request) {
-        PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
-        Slice<PopularPostDto> myQuestionDtos = questionRepository.findByQuestionWriterId(request.getUserId(), pageRequest);
+        try {
+            PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
+            Slice<PopularPostDto> myQuestionDtos = questionRepository.findByQuestionWriterId(request.getUserId(), pageRequest);
 
-        Set<Long> writerIds = myQuestionDtos.getContent().stream()
-                .map(PopularPostDto::questionWriterId)
-                .collect(toSet());
+            Set<Long> writerIds = myQuestionDtos.getContent().stream()
+                    .map(PopularPostDto::questionWriterId)
+                    .collect(toSet());
 
-        Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserNicknameAndProfileByWriterIds(writerIds);
+            Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserNicknameAndProfileByWriterIds(writerIds);
 
-        List<PopularPostItem> popularPostItemList = getPopularPostItemList(myQuestionDtos, userInfoMap);
+            List<PopularPostItem> popularPostItemList = getPopularPostItemList(myQuestionDtos, userInfoMap);
 
-        return GetMyQuestionResponse.newBuilder()
-                .addAllPost(popularPostItemList)
-                .setHasNext(myQuestionDtos.hasNext())
-                .build();
+            return GetMyQuestionResponse.newBuilder()
+                    .addAllPost(popularPostItemList)
+                    .setHasNext(myQuestionDtos.hasNext())
+                    .build();
+        } catch (Exception e) {
+            log.error("Get my question failed for userId: {}", request.getUserId(), e);
+            throw new GrpcException(GrpcQuestionErrorCode.GET_MY_QUESTION_FAILED, e.getMessage());
+        }
     }
 
     private List<PopularPostItem> getPopularPostItemList(Slice<PopularPostDto> myQuestionDtos, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
@@ -217,7 +263,7 @@ public class QuestionService {
 
     private QuestionCreateResponse buildQuestionCreateResponse(Long questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         Optional<List<QuestionImage>> images = questionImageRepository.findAllByQuestionId(questionId);
         List<String> questionUrls = new ArrayList<>();
@@ -229,7 +275,7 @@ public class QuestionService {
     }
 
     private Map<Long, UpdateAdditionalUserInfoResponse> getUserNicknameAndProfileByWriterIds(Set<Long> writerIds) {
-        List<UpdateAdditionalUserInfoResponse> userInfoList = userGrpcClient.getUsersNameAndProfile(new ArrayList<>(writerIds)).getUserInfoList();
+        List<UpdateAdditionalUserInfoResponse> userInfoList = userGrpcClient.getUsersNameAndProfile(new HashSet<>(writerIds)).getUserInfoList();
         Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = userInfoList.stream()
                 .collect(toMap(UpdateAdditionalUserInfoResponse::getUserId, Function.identity()));
         return userInfoMap;

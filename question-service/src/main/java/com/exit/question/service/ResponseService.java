@@ -56,82 +56,138 @@ public class ResponseService {
 
 
     public AnswerCreateResponse answerCreate(AnswerCreateRequest request) {
-        Response newResponse = Response.createResponse(request);
-        Response savedResponse = responseRepository.save(newResponse);
+        try {
+            Response newResponse = Response.createResponse(request);
+            Response savedResponse = responseRepository.save(newResponse);
 
-        List<String> imageUrls = processAnswerImages(request, savedResponse);
-        Question question = questionRepository.findById(savedResponse.getQuestionId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+            List<String> imageUrls = processAnswerImages(request, savedResponse);
+            Question question = questionRepository.findById(savedResponse.getQuestionId())
+                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
-        String subBody = truncateContent(savedResponse.getResponseContent());
-        SendNotificationRequest sendNotificationRequest = notificationGrpcMapper.getSendNotificationRequest(
-                subBody, "NEW_ANSWER_ON_QUESTION", question);
-        notificationGrpcClient.sendNotification(sendNotificationRequest);
+            String subBody = truncateContent(savedResponse.getResponseContent());
+            SendNotificationRequest sendNotificationRequest = notificationGrpcMapper.getSendNotificationRequest(
+                    subBody, "NEW_ANSWER_ON_QUESTION", question);
+            notificationGrpcClient.sendNotification(sendNotificationRequest);
 
-        return responseGrpcMapper.getAnswerCreateResponse(savedResponse, imageUrls);
+            return responseGrpcMapper.getAnswerCreateResponse(savedResponse, imageUrls);
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcResponseErrorCode.CREATE_ANSWER_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Create answer failed for questionId: {}", request.getQuestionId(), e);
+            throw new GrpcException(GrpcResponseErrorCode.CREATE_ANSWER_FAILED, e.getMessage());
+        }
     }
 
     public AnswerRecommendResponse toggleAnswerLike(AnswerRecommendRequest request) {
-        Optional<ResponseLike> existingLike =
-                responseLikeRepository.findByResponseIdAndUserId(request.getResponseId(), request.getUserId());
+        try {
+            Optional<ResponseLike> existingLike =
+                    responseLikeRepository.findByResponseIdAndUserId(request.getResponseId(), request.getUserId());
 
-        boolean isLiked = handleLikeToggle(existingLike, request);
-        int likeCount = responseLikeRepository.countByResponseId(request.getResponseId());
+            boolean isLiked = handleLikeToggle(existingLike, request);
+            int likeCount = responseLikeRepository.countByResponseId(request.getResponseId());
 
-        return responseGrpcMapper.getAnswerRecommendResponse(request.getResponseId(), likeCount, isLiked);
+            return responseGrpcMapper.getAnswerRecommendResponse(request.getResponseId(), likeCount, isLiked);
+        } catch (Exception e) {
+            log.error("Toggle answer like failed for responseId: {}", request.getResponseId(), e);
+            throw new GrpcException(GrpcResponseErrorCode.TOGGLE_ANSWER_LIKE_FAILED, e.getMessage());
+        }
     }
 
     public UpdateResponseResponse updateResponse(UpdateResponseRequest request) {
-        Response response = responseRepository.findById(request.getResponseId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+        try {
+            Response response = responseRepository.findById(request.getResponseId())
+                    .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
 
-        if (Boolean.TRUE.equals(response.getResponseAdopt()))
-            throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
+            if (Boolean.TRUE.equals(response.getResponseAdopt()))
+                throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
 
-        response.updateContent(request.getContent());
-        responseRepository.save(response);
+            response.updateContent(request.getContent());
+            responseRepository.save(response);
 
-        return UpdateResponseResponse.newBuilder()
-                .setResponseId(response.getResponseId())
-                .setContent(response.getResponseContent())
-                .build();
+            return UpdateResponseResponse.newBuilder()
+                    .setResponseId(response.getResponseId())
+                    .setContent(response.getResponseContent())
+                    .build();
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcResponseErrorCode.UPDATE_RESPONSE_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Update response failed for responseId: {}", request.getResponseId(), e);
+            throw new GrpcException(GrpcResponseErrorCode.UPDATE_RESPONSE_FAILED, e.getMessage());
+        }
     }
 
     public AnswerAdoptResponse answerAdopt(AnswerAdoptRequest request) {
-        Response adoptedResponse = adoptResponse(request.getResponseId());
-        markQuestionAsAdopted(adoptedResponse);
-        tryToSendAdoptionNotification(adoptedResponse);
+        try {
+            Response adoptedResponse = adoptResponse(request.getResponseId());
+            markQuestionAsAdopted(adoptedResponse);
+            tryToSendAdoptionNotification(adoptedResponse);
 
-        return responseGrpcMapper.getAnswerAdoptResponse(adoptedResponse);
+            return responseGrpcMapper.getAnswerAdoptResponse(adoptedResponse);
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcResponseErrorCode.ANSWER_ADOPT_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Answer adopt failed for responseId: {}", request.getResponseId(), e);
+            throw new GrpcException(GrpcResponseErrorCode.ANSWER_ADOPT_FAILED, e.getMessage());
+        }
     }
 
     public void deleteResponse(DeleteResponseRequest request) {
-        Response response = responseRepository.findById(request.getResponseId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+        try {
+            Response response = responseRepository.findById(request.getResponseId())
+                    .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
 
-        if (Boolean.TRUE.equals(response.getResponseAdopt()))
-            throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
+            if (Boolean.TRUE.equals(response.getResponseAdopt()))
+                throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
 
-        // FollowUpRoom이 있다면 먼저 삭제
-        followUpRoomRepository.findByResponse(response)
-                .ifPresent(followUpRoomRepository::delete);
+            // FollowUpRoom이 있다면 먼저 삭제
+            followUpRoomRepository.findByResponse(response)
+                    .ifPresent(followUpRoomRepository::delete);
 
-        responseRepository.delete(response);
+            responseRepository.delete(response);
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcResponseErrorCode.DELETE_RESPONSE_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Delete response failed for responseId: {}", request.getResponseId(), e);
+            throw new GrpcException(GrpcResponseErrorCode.DELETE_RESPONSE_FAILED, e.getMessage());
+        }
     }
 
     public AnswerReportResponse answerReport(AnswerReportRequest request) {
-        Response response = responseRepository.findById(request.getResponseId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
-        ResponseReport responseReport = ResponseReport.from(request);
+        try {
+            Response response = responseRepository.findById(request.getResponseId())
+                    .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
+            ResponseReport responseReport = ResponseReport.from(request);
 
-        ResponseReport savedResponseReport = responseReportRepository.save(responseReport);
-        userGrpcClient.increaseReportCount(response.getResponseWriterId());
-        return responseGrpcMapper.getAnswerReportResponse(savedResponseReport);
+            ResponseReport savedResponseReport = responseReportRepository.save(responseReport);
+            userGrpcClient.increaseReportCount(response.getResponseWriterId());
+            return responseGrpcMapper.getAnswerReportResponse(savedResponseReport);
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcResponseErrorCode.ANSWER_REPORT_FAILED, e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Answer report failed for responseId: {}", request.getResponseId(), e);
+            throw new GrpcException(GrpcResponseErrorCode.ANSWER_REPORT_FAILED, e.getMessage());
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public GetDetailResponseResponse getDetailResponse(GetDetailResponseRequest request) {
+        try {
+            List<ResponseDetail> responseDetails = buildResponseDetail(request);
+            boolean hasMore = hasMoreResponses(request.getQuestionId());
+
+            return GetDetailResponseResponse.newBuilder()
+                    .addAllResponses(responseDetails)
+                    .setHasNext(hasMore)
+                    .build();
+        } catch (Exception e) {
+            log.error("Get detail response failed for questionId: {}", request.getQuestionId(), e);
+            throw new GrpcException(GrpcResponseErrorCode.GET_DETAIL_RESPONSE_FAILED, e.getMessage());
+        }
     }
 
     private Response adoptResponse(Long responseId) {
         Response response = responseRepository.findById(responseId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_RESPONSE));
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
 
         validateQuestionNotAlreadyAdopted(response.getQuestionId());
         response.updateResponseAdopt();
@@ -140,7 +196,7 @@ public class ResponseService {
 
     private void validateQuestionNotAlreadyAdopted(Long questionId) {
         Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         if (Boolean.TRUE.equals(question.getQuestionAnswerAdopt())) {
             throw new GrpcException(GrpcQuestionErrorCode.EXIST_ADOPTED_RESPONSE);
@@ -150,7 +206,7 @@ public class ResponseService {
     private void tryToSendAdoptionNotification(Response response) {
         try {
             Question question = questionRepository.findById(response.getQuestionId())
-                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
             String body = truncateContent(response.getResponseContent());
             SendNotificationRequest notificationRequest =
@@ -164,7 +220,7 @@ public class ResponseService {
 
     private void markQuestionAsAdopted(Response response) {
         Question question = questionRepository.findById(response.getQuestionId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         question.updateAnswerAdopt();
         questionRepository.save(question);
@@ -204,17 +260,6 @@ public class ResponseService {
             }
         }
         return imageUrls;
-    }
-
-    @Transactional(readOnly = true)
-    public GetDetailResponseResponse getDetailResponse(GetDetailResponseRequest request) {
-        List<ResponseDetail> responseDetails = buildResponseDetail(request);
-        boolean hasMore = hasMoreResponses(request.getQuestionId());
-
-        return GetDetailResponseResponse.newBuilder()
-                .addAllResponses(responseDetails)
-                .setHasNext(hasMore)
-                .build();
     }
 
     private List<ResponseDetail> buildResponseDetail(GetDetailResponseRequest request) {
@@ -289,7 +334,7 @@ public class ResponseService {
                 .map(Response::getResponseWriterId)
                 .collect(toSet());
 
-        GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(new ArrayList<>(writerIds));
+        GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(new HashSet<>(writerIds));
         return usersNameAndProfile.getUserInfoList().stream()
                 .collect(toMap(
                         UpdateAdditionalUserInfoResponse::getUserId,

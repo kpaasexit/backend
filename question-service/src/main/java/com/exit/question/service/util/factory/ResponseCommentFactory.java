@@ -5,7 +5,6 @@ import com.exit.common.grpc.*;
 import com.exit.common.util.time.TimeStampUtil;
 import com.exit.question.controller.dto.request.NotificationContentDto;
 import com.exit.question.domain.Comment;
-import com.exit.question.domain.question.QuestionComment;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.ResponseComment;
 import com.exit.question.domain.response.repository.ResponseCommentRepository;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,7 +35,7 @@ public class ResponseCommentFactory extends CommentFactory {
     @Override
     public Comment createAndSaveComment(Long targetId, Long authorId, String content) {
         Response response = responseRepository.findById(targetId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NULL_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         ResponseComment comment = ResponseComment.builder()
                 .response(response)
@@ -56,7 +56,7 @@ public class ResponseCommentFactory extends CommentFactory {
     public SendNotificationRequest createSendNotificationRequest(Long targetId, String deviceId) {
 
         NotificationContentDto dto = responseRepository.findContentById(targetId)
-                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NULL_RESPONSE));
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
         return SendNotificationRequest.newBuilder()
                 .setBody(dto.content())
                 .setType("NEW_COMMENT")
@@ -70,7 +70,7 @@ public class ResponseCommentFactory extends CommentFactory {
         PageRequest pageRequest = PageRequest.of(pageNum, 5);
         Slice<ResponseComment> responseComments = responseCommentRepository.findAllByResponse_ResponseId(targetId, pageRequest);
 
-        List<Long> commentAuthorIds = getCommentAuthorIds(responseComments.getContent());
+        Set<Long> commentAuthorIds = getCommentAuthorIds(responseComments.getContent());
         GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(commentAuthorIds);
 
         Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserInfoMap(usersNameAndProfile);
@@ -104,10 +104,10 @@ public class ResponseCommentFactory extends CommentFactory {
                 );
     }
 
-    private List<Long> getCommentAuthorIds(List<ResponseComment> responseComment) {
+    private Set<Long> getCommentAuthorIds(List<ResponseComment> responseComment) {
         return responseComment.stream()
                 .map(ResponseComment::getAuthorId)
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     private void validateCommentWriter(Long commentId, Long userId) {

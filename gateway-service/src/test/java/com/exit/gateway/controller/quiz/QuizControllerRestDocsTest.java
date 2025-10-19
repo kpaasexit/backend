@@ -128,7 +128,51 @@ class QuizControllerRestDocsTest {
     }
 
     @Test
-    @DisplayName("퀴즈 조회 API")
+    @DisplayName("카테고리 id를 사용한 퀴즈 조회 API")
+    void getQuizByCategory() throws Exception {
+        // given
+        GetQuizResponse grpcResponse = GetQuizResponse.newBuilder()
+                .setQuizId(1L)
+                .setQuizCategoryId(1L)
+                .setQuizTitle("Java 기본 문법")
+                .addAllQuizContent(List.of("1번", "2번",  "3번", "4번"))
+                .setQuizType("MULTIPLE")
+                .setQuizCorrectAnswer("3")
+                .setQuizAdditionalInformation("해설지")
+                .build();
+
+        given(quizGrpcClient.getQuizByCategory(anyLong(), anyLong())).willReturn(grpcResponse);
+
+        // when & then
+        mockMvc.perform(get("/api/quiz/category/{categoryId}", 1L)
+                        .header("Authorization", "Bearer " + validAccessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result.id").value(1L))
+                .andExpect(jsonPath("$.result.question").value("Java 기본 문법"))
+                .andDo(document("quiz/get-by-category",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
+                        ),
+                        pathParameters(
+                                parameterWithName("categoryId").description("카테고리 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.id").description("퀴즈 ID"),
+                                fieldWithPath("result.categoryId").description("퀴즈 카테고리 ID"),
+                                fieldWithPath("result.question").description("퀴즈 질문"),
+                                fieldWithPath("result.options").type(JsonFieldType.ARRAY).description("퀴즈 옵션 배열 (문제)"),
+                                fieldWithPath("result.type").description("퀴즈 타입 (MULTIPLE, OX 등)"),
+                                fieldWithPath("result.correctAnswer").description("정답"),
+                                fieldWithPath("result.explanation").description("해설지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("퀴즈 id를 사용한 퀴즈 조회 API")
     void getQuiz() throws Exception {
         // given
         GetQuizResponse grpcResponse = GetQuizResponse.newBuilder()
@@ -141,20 +185,20 @@ class QuizControllerRestDocsTest {
                 .setQuizAdditionalInformation("해설지")
                 .build();
 
-        given(quizGrpcClient.getQuiz(anyLong(), anyLong())).willReturn(grpcResponse);
+        given(quizGrpcClient.getQuizById(anyLong(), anyLong())).willReturn(grpcResponse);
 
         // when & then
-        mockMvc.perform(get("/api/quiz/{categoryId}", 1L)
+        mockMvc.perform(get("/api/quiz/{quizId}", 1L)
                         .header("Authorization", "Bearer " + validAccessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result.id").value(1L))
                 .andExpect(jsonPath("$.result.question").value("Java 기본 문법"))
-                .andDo(document("quiz/get",
+                .andDo(document("quiz/get-by-id",
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
                         ),
                         pathParameters(
-                                parameterWithName("categoryId").description("카테고리 ID")
+                                parameterWithName("quizId").description("퀴즈 ID")
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),

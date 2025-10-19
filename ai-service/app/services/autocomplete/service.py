@@ -62,10 +62,12 @@ class AutocompleteService:
         self,
         query: str,
         limit: int = 10,
-        category: Optional[str] = None,
-        enable_fuzzy: bool = True,
         enable_cache: bool = True
     ) -> AutocompleteResponse:
+        """
+        자동완성 API - 접두사 100% 반영
+        입력한 문자열로 시작하는 키워드만 반환
+        """
         start_time = datetime.now()
 
         # 쿼리 정규화
@@ -75,12 +77,12 @@ class AutocompleteService:
                 query=query,
                 results=[],
                 total=0,
-                search_type='empty',
+                search_type='prefix',
                 took_ms=0.0
             )
 
-        # 캐시 확인
-        cache_key = f"autocomplete:{normalized_query}:{limit}:{category}"
+        # 캐시 확인 (v3: 모든 조사 엄격 필터링 + 중복 제거)
+        cache_key = f"autocomplete_prefix_v3:{normalized_query}:{limit}"
         if enable_cache:
             cached_result = await self.cache.aget(cache_key)
             if cached_result:
@@ -98,13 +100,8 @@ class AutocompleteService:
                 took_ms=0.0
             )
 
-        # 검색 타입 결정
-        if is_chosung_query(normalized_query):
-            search_type = 'chosung'
-            results = await self._search_by_chosung(normalized_query, limit, category)
-        else:
-            search_type = 'normal'
-            results = await self._search_normal(normalized_query, limit, category, enable_fuzzy)
+        # 접두사 매칭만 수행
+        results = await self._search_by_prefix(normalized_query, limit)
 
         # 응답 생성
         took_ms = (datetime.now() - start_time).total_seconds() * 1000
@@ -112,7 +109,7 @@ class AutocompleteService:
             query=query,
             results=results,
             total=len(results),
-            search_type=search_type,
+            search_type='prefix',
             took_ms=took_ms
         )
 
@@ -122,198 +119,367 @@ class AutocompleteService:
 
         return response
 
-    async def _search_normal(
+    async def related_search(
         self,
         query: str,
-        limit: int,
-        category: Optional[str],
-        enable_fuzzy: bool
+        limit: int = 10,
+        enable_cache: bool = True
+    ) -> AutocompleteResponse:
+        """
+        연관 검색어 API - Fuzzy 매칭, 오타 허용
+        입력한 문자열과 유사한 키워드 반환
+        """
+        start_time = datetime.now()
+
+        # 쿼리 정규화
+        normalized_query = query.strip()
+        if not normalized_query:
+            return AutocompleteResponse(
+                query=query,
+                results=[],
+                total=0,
+                search_type='related',
+                took_ms=0.0
+            )
+
+        # 캐시 확인
+        cache_key = f"related_search_v3:{normalized_query}:{limit}"
+        if enable_cache:
+            cached_result = await self.cache.aget(cache_key)
+            if cached_result:
+                self.logger.debug(f"캐시 히트: {cache_key}")
+                return AutocompleteResponse(**cached_result)
+
+        # Elasticsearch 연결 확인
+        if not await self._check_connection():
+            self.logger.error("Elasticsearch 연결 불가")
+            return AutocompleteResponse(
+                query=query,
+                results=[],
+                total=0,
+                search_type='error',
+                took_ms=0.0
+            )
+
+        # Fuzzy 매칭 수행
+        results = await self._search_by_fuzzy(normalized_query, limit)
+
+        # 응답 생성
+        took_ms = (datetime.now() - start_time).total_seconds() * 1000
+        response = AutocompleteResponse(
+            query=query,
+            results=results,
+            total=len(results),
+            search_type='related',
+            took_ms=took_ms
+        )
+
+        # 캐시 저장
+        if enable_cache:
+            await self.cache.aset(cache_key, response.model_dump(), ttl=300)  # 5분 캐싱
+
+        return response
+
+    async def chosung_search(
+        self,
+        query: str,
+        limit: int = 10,
+        enable_cache: bool = True
+    ) -> AutocompleteResponse:
+        """
+        초성 검색 API
+        초성으로 키워드 검색
+        """
+        start_time = datetime.now()
+
+        # 쿼리 정규화
+        normalized_query = normalize_chosung_query(query.strip())
+        if not normalized_query:
+            return AutocompleteResponse(
+                query=query,
+                results=[],
+                total=0,
+                search_type='chosung',
+                took_ms=0.0
+            )
+
+        # 캐시 확인
+        cache_key = f"chosung_search_v3:{normalized_query}:{limit}"
+        if enable_cache:
+            cached_result = await self.cache.aget(cache_key)
+            if cached_result:
+                self.logger.debug(f"캐시 히트: {cache_key}")
+                return AutocompleteResponse(**cached_result)
+
+        # Elasticsearch 연결 확인
+        if not await self._check_connection():
+            self.logger.error("Elasticsearch 연결 불가")
+            return AutocompleteResponse(
+                query=query,
+                results=[],
+                total=0,
+                search_type='error',
+                took_ms=0.0
+            )
+
+        # 초성 검색 수행
+        results = await self._search_by_chosung(normalized_query, limit)
+
+        # 응답 생성
+        took_ms = (datetime.now() - start_time).total_seconds() * 1000
+        response = AutocompleteResponse(
+            query=query,
+            results=results,
+            total=len(results),
+            search_type='chosung',
+            took_ms=took_ms
+        )
+
+        # 캐시 저장
+        if enable_cache:
+            await self.cache.aset(cache_key, response.model_dump(), ttl=300)  # 5분 캐싱
+
+        return response
+
+    def _has_josa_ending(self, keyword: str) -> bool:
+        """
+        키워드가 조사로 끝나는지 엄격하게 확인
+        예: "고양이에게" -> True, "고기와" -> True, "고양이" -> False
+        """
+        # 모든 한국어 조사 목록 (긴 것부터 먼저 체크)
+        josa_endings = [
+            # 4글자 이상
+            '에서부터', '으로부터', '에게서는', '한테서는',
+            # 3글자
+            '에서는', '에서도', '에서의', '으로는', '으로도', '으로의', '에게는', '에게도', '한테는', '한테도',
+            '이라는', '이라도', '이라고', '이지만', '이면서', '이거나',
+            # 2글자
+            '에서', '에게', '한테', '으로', '로서', '로써', '까지', '부터', '조차', '마저', '밖에', '대로', '처럼', '같이',
+            '이다', '이며', '이고', '이나', '이든', '이요', '이야', '이랑', '라도', '라고', '라며', '라면',
+            # 1글자
+            '은', '는', '이', '가', '을', '를', '의', '에', '와', '과', '도', '만', '로', '요', '야'
+        ]
+
+        for josa in josa_endings:
+            if keyword.endswith(josa):
+                # 조사를 제외한 부분의 길이 체크
+                base_len = len(keyword) - len(josa)
+                # 조사를 제외한 부분이 2글자 이상이면 조사로 간주
+                if base_len >= 2:
+                    return True
+
+        return False
+
+    async def _search_by_prefix(
+        self,
+        query: str,
+        limit: int
     ) -> List[AutocompleteResult]:
-        # Multi-match 쿼리 구성
-        must_queries = []
+        """
+        접두사 매칭 검색 - 정확히 입력한 문자열로 시작하는 키워드만 반환
+        """
+        # 더 많은 결과를 가져와서 조사 필터링 후 limit만큼 반환
+        fetch_size = limit * 3
 
-        # 1. 키워드 매칭 (가중치 높음)
-        keyword_query = {
-            "multi_match": {
-                "query": query,
-                "fields": [
-                    "keyword^5",           # 정확한 키워드 매칭
-                    "keyword.edge_ngram^3",  # 접두사 매칭
-                    "keyword.ngram^2",       # 부분 매칭
-                    "title.ngram"            # 제목 부분 매칭
-                ],
-                "type": "best_fields",
-                "minimum_should_match": "70%"
-            }
-        }
-
-        should_queries = [keyword_query]
-
-        # 2. Fuzzy 매칭 (오타 허용)
-        if enable_fuzzy:
-            fuzzy_query = {
-                "multi_match": {
-                    "query": query,
-                    "fields": ["keyword", "title"],
-                    "fuzziness": "AUTO",
-                    "prefix_length": 1,
-                    "max_expansions": 50
-                }
-            }
-            should_queries.append(fuzzy_query)
-
-        # 3. 카테고리 필터
-        if category:
-            must_queries.append({
-                "term": {
-                    "category.keyword": category
-                }
-            })
-
-        # 최종 쿼리 구성 - aggregation 사용하여 중복 제거
+        # 최종 쿼리 구성
         search_body = {
-            "size": 0,  # 상위 히트는 필요 없음
+            "size": fetch_size,
             "query": {
-                "bool": {
-                    "must": must_queries,
-                    "should": should_queries,
-                    "minimum_should_match": 1
-                }
-            },
-            "aggs": {
-                "unique_keywords": {
-                    "terms": {
-                        "field": "keyword.keyword",
-                        "size": limit,
-                        "order": {"max_popularity": "desc"}
-                    },
-                    "aggs": {
-                        "max_popularity": {
-                            "max": {
-                                "field": "popularity_score"
-                            }
-                        },
-                        "top_doc": {
-                            "top_hits": {
-                                "size": 1,
-                                "sort": [
-                                    {"popularity_score": {"order": "desc"}},
-                                    {"answer_count": {"order": "desc"}}
-                                ],
-                                "_source": ["keyword", "category", "title", "answer_count", "popularity_score"]
-                            }
-                        }
+                "prefix": {
+                    "keyword.keyword": {
+                        "value": query
                     }
                 }
-            }
+            },
+            "sort": [
+                {"popularity_score": {"order": "desc"}},
+                {"answer_count": {"order": "desc"}},
+                {"_score": {"order": "desc"}}
+            ],
+            "_source": ["keyword", "category", "title", "answer_count", "popularity_score"]
         }
 
         try:
             response = await self.es.search(index=self.INDEX_NAME, body=search_body)
             results = []
+            seen_keywords = set()  # 중복 제거용
 
-            buckets = response.get('aggregations', {}).get('unique_keywords', {}).get('buckets', [])
+            for hit in response['hits']['hits']:
+                source = hit['_source']
+                keyword = source['keyword']
 
-            for bucket in buckets:
-                top_hit = bucket['top_doc']['hits']['hits'][0]['_source']
+                # 조사로 끝나는 키워드 필터링
+                if self._has_josa_ending(keyword):
+                    continue
+
+                # 중복 제거
+                if keyword in seen_keywords:
+                    continue
+                seen_keywords.add(keyword)
+
                 results.append(AutocompleteResult(
-                    keyword=top_hit['keyword'],
-                    category=top_hit['category'],
-                    title=top_hit['title'],
-                    answer_count=top_hit['answer_count'],
-                    popularity_score=top_hit['popularity_score'],
-                    matched_by='keyword'
+                    keyword=keyword,
+                    category=source['category'],
+                    title=source['title'],
+                    answer_count=source['answer_count'],
+                    popularity_score=source['popularity_score'],
+                    matched_by='prefix'
                 ))
+
+                # limit에 도달하면 중단
+                if len(results) >= limit:
+                    break
 
             return results
 
         except Exception as e:
-            self.logger.error(f"일반 검색 에러: {e}")
+            self.logger.error(f"접두사 검색 에러: {e}")
+            return []
+
+    async def _search_by_fuzzy(
+        self,
+        query: str,
+        limit: int
+    ) -> List[AutocompleteResult]:
+        """
+        Fuzzy 매칭 검색 - 오타를 허용한 유사 키워드 검색 (nori 형태소 분석 적용)
+        """
+        # Nori 기반 Fuzzy 매칭 쿼리
+        fuzzy_query = {
+            "multi_match": {
+                "query": query,
+                "fields": ["keyword.nori^4", "keyword^3", "title.nori^2", "title"],
+                "fuzziness": "AUTO",
+                "prefix_length": 0,  # 접두사 제한 없음 (연관 검색어이므로)
+                "max_expansions": 50,
+                "type": "best_fields"
+            }
+        }
+
+        # Nori 기반 부분 매칭
+        partial_match = {
+            "match": {
+                "keyword.nori": {
+                    "query": query,
+                    "operator": "and"
+                }
+            }
+        }
+
+        # 최종 쿼리 구성
+        query_bool = {
+            "should": [fuzzy_query, partial_match],
+            "minimum_should_match": 1
+        }
+
+        search_body = {
+            "size": limit * 2,  # 중복 제거를 위해 더 많이 가져옴
+            "query": {
+                "bool": query_bool
+            },
+            "sort": [
+                {"_score": {"order": "desc"}},
+                {"popularity_score": {"order": "desc"}},
+                {"answer_count": {"order": "desc"}}
+            ],
+            "_source": ["keyword", "category", "title", "answer_count", "popularity_score"]
+        }
+
+        try:
+            response = await self.es.search(index=self.INDEX_NAME, body=search_body)
+            results = []
+            seen_keywords = set()
+
+            for hit in response['hits']['hits']:
+                source = hit['_source']
+                keyword = source['keyword']
+
+                # 조사로 끝나는 키워드 필터링
+                if self._has_josa_ending(keyword):
+                    continue
+
+                # 중복 제거
+                if keyword not in seen_keywords:
+                    seen_keywords.add(keyword)
+                    results.append(AutocompleteResult(
+                        keyword=keyword,
+                        category=source['category'],
+                        title=source['title'],
+                        answer_count=source['answer_count'],
+                        popularity_score=source['popularity_score'],
+                        matched_by='fuzzy'
+                    ))
+
+                # limit에 도달하면 중단
+                if len(results) >= limit:
+                    break
+
+            return results
+
+        except Exception as e:
+            self.logger.error(f"Fuzzy 검색 에러: {e}")
             return []
 
     async def _search_by_chosung(
         self,
         query: str,
-        limit: int,
-        category: Optional[str]
+        limit: int
     ) -> List[AutocompleteResult]:
+        """
+        초성 검색 - 초성으로 키워드 매칭
+        """
         # 쿼리 정규화 (초성만 추출)
         normalized_chosung = normalize_chosung_query(query)
 
-        must_queries = []
-
-        # 초성 매칭
-        chosung_query = {
-            "match": {
-                "keyword_chosung": {
-                    "query": normalized_chosung,
-                    "fuzziness": "AUTO"
-                }
-            }
-        }
-
-        must_queries.append(chosung_query)
-
-        # 카테고리 필터
-        if category:
-            must_queries.append({
-                "term": {
-                    "category.keyword": category
-                }
-            })
-
-        # aggregation 사용하여 중복 제거
+        # 초성 매칭 쿼리
         search_body = {
-            "size": 0,
+            "size": limit,
             "query": {
-                "bool": {
-                    "must": must_queries
-                }
-            },
-            "aggs": {
-                "unique_keywords": {
-                    "terms": {
-                        "field": "keyword.keyword",
-                        "size": limit,
-                        "order": {"max_popularity": "desc"}
-                    },
-                    "aggs": {
-                        "max_popularity": {
-                            "max": {
-                                "field": "popularity_score"
-                            }
-                        },
-                        "top_doc": {
-                            "top_hits": {
-                                "size": 1,
-                                "sort": [
-                                    {"popularity_score": {"order": "desc"}},
-                                    {"answer_count": {"order": "desc"}}
-                                ],
-                                "_source": ["keyword", "category", "title", "answer_count", "popularity_score"]
-                            }
-                        }
+                "match": {
+                    "keyword_chosung": {
+                        "query": normalized_chosung,
+                        "fuzziness": "AUTO"
                     }
                 }
-            }
+            },
+            "sort": [
+                {"popularity_score": {"order": "desc"}},
+                {"answer_count": {"order": "desc"}},
+                {"_score": {"order": "desc"}}
+            ],
+            "_source": ["keyword", "category", "title", "answer_count", "popularity_score"]
         }
 
         try:
             response = await self.es.search(index=self.INDEX_NAME, body=search_body)
             results = []
+            seen_keywords = set()  # 중복 제거용
 
-            buckets = response.get('aggregations', {}).get('unique_keywords', {}).get('buckets', [])
+            for hit in response['hits']['hits']:
+                source = hit['_source']
+                keyword = source['keyword']
 
-            for bucket in buckets:
-                top_hit = bucket['top_doc']['hits']['hits'][0]['_source']
+                # 조사로 끝나는 키워드 필터링
+                if self._has_josa_ending(keyword):
+                    continue
+
+                # 중복 제거
+                if keyword in seen_keywords:
+                    continue
+                seen_keywords.add(keyword)
+
                 results.append(AutocompleteResult(
-                    keyword=top_hit['keyword'],
-                    category=top_hit['category'],
-                    title=top_hit['title'],
-                    answer_count=top_hit['answer_count'],
-                    popularity_score=top_hit['popularity_score'],
+                    keyword=keyword,
+                    category=source['category'],
+                    title=source['title'],
+                    answer_count=source['answer_count'],
+                    popularity_score=source['popularity_score'],
                     matched_by='chosung'
                 ))
+
+                # limit에 도달하면 중단
+                if len(results) >= limit:
+                    break
 
             return results
 
@@ -367,7 +533,7 @@ class AutocompleteService:
     ) -> List[AutocompleteResult]:
         cache_key = f"trending:{limit}:{category}"
 
-        # 캐시 확인
+        #1 확인
         cached_result = await self.cache.aget(cache_key)
         if cached_result:
             return [AutocompleteResult(**item) for item in cached_result]

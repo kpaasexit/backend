@@ -6,6 +6,7 @@ import com.exit.gateway.config.RestDocsConfiguration;
 import com.exit.gateway.controller.question.dto.response.question.*;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.question.QuestionGrpcClient;
+import com.exit.gateway.service.question.QuestionRequestMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ class QuestionControllerRestDocsTest {
     private QuestionGrpcClient questionGrpcClient;
 
     @MockBean
-    private com.exit.gateway.service.question.QuestionRequestMapper questionRequestMapper;
+    private QuestionRequestMapper questionRequestMapper;
 
     @MockBean
     private UserIdArgumentResolver userIdArgumentResolver;
@@ -83,7 +84,8 @@ class QuestionControllerRestDocsTest {
         QuestionListQueryResponseDto question1 = QuestionListQueryResponseDto.builder()
                 .questionId(1L)
                 .questionCategoryId(1L)
-                .questionWriterId(1L)
+                .questionWriterName("고구마")
+                .questionWriterProfile("profile url")
                 .questionTitle("Spring Boot에서 JWT 인증 구현하는 방법")
                 .questionContent("JWT 토큰을 사용한 인증을 구현하고 싶습니다...")
                 .questionUrgency(true)
@@ -96,7 +98,8 @@ class QuestionControllerRestDocsTest {
         QuestionListQueryResponseDto question2 = QuestionListQueryResponseDto.builder()
                 .questionId(2L)
                 .questionCategoryId(2L)
-                .questionWriterId(2L)
+                .questionWriterName("감자")
+                .questionWriterProfile("profile url")
                 .questionTitle("Docker Compose 설정 문의")
                 .questionContent("멀티 컨테이너 환경에서...")
                 .questionUrgency(false)
@@ -137,7 +140,8 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.questionList").description("질문 목록"),
                                 fieldWithPath("result.questionList[].questionId").description("질문 ID"),
                                 fieldWithPath("result.questionList[].questionCategoryId").description("질문 카테고리 ID"),
-                                fieldWithPath("result.questionList[].questionWriterId").description("작성자 ID"),
+                                fieldWithPath("result.questionList[].questionWriterName").description("작성자 닉네임"),
+                                fieldWithPath("result.questionList[].questionWriterProfile").description("작성자 프로필 url"),
                                 fieldWithPath("result.questionList[].questionTitle").description("질문 제목"),
                                 fieldWithPath("result.questionList[].questionContent").description("질문 내용"),
                                 fieldWithPath("result.questionList[].questionUrgency").description("긴급 여부"),
@@ -238,69 +242,6 @@ class QuestionControllerRestDocsTest {
     }
 
     @Test
-    @DisplayName("답변 채택 API")
-    void adoptAnswer() throws Exception {
-        // given
-        AnswerAdoptResponseDto response = AnswerAdoptResponseDto.builder()
-                .responseId(1L)
-                .isAdopted(true)
-                .build();
-
-        given(questionGrpcClient.adoptAnswer(any())).willReturn(response);
-
-        // when & then
-        mockMvc.perform(org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post("/api/questions/answers/{responseId}/adopt", 1L))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.result.responseId").value(1L))
-                .andExpect(jsonPath("$.result.isAdopted").value(true))
-                .andDo(document("question/answer-adopt",
-                        pathParameters(
-                                parameterWithName("responseId").description("답변 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.responseId").description("답변 ID"),
-                                fieldWithPath("result.isAdopted").description("채택 여부")
-                        )
-                ));
-    }
-
-    @Test
-    @DisplayName("답변 추천 API")
-    void recommendAnswer() throws Exception {
-        // given
-        AnswerRecommendResponseDto response = AnswerRecommendResponseDto.builder()
-                .responseId(1L)
-                .isRecommended(true)
-                .recommendCount(10)
-                .build();
-
-        given(questionGrpcClient.recommendAnswer(any())).willReturn(response);
-
-        // when & then
-        mockMvc.perform(org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post("/api/questions/answers/{responseId}/recommend", 1L))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.result.responseId").value(1L))
-                .andExpect(jsonPath("$.result.isRecommended").value(true))
-                .andExpect(jsonPath("$.result.recommendCount").value(10))
-                .andDo(document("question/answer-recommend",
-                        pathParameters(
-                                parameterWithName("responseId").description("답변 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.responseId").description("답변 ID"),
-                                fieldWithPath("result.isRecommended").description("추천 여부"),
-                                fieldWithPath("result.recommendCount").description("추천 수")
-                        )
-                ));
-    }
-
-    @Test
     @DisplayName("유사 질문 조회 API")
     void getSimilarQuestion() throws Exception {
         // given
@@ -347,57 +288,6 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.similarQuestionResponseDto[].questionAnswerType").description("답변 타입"),
                                 fieldWithPath("result.similarQuestionResponseDto[].questionAnswerAdopt").description("답변 채택 여부"),
                                 fieldWithPath("result.similarQuestionResponseDto[].createdAt").description("작성일시")
-                        )
-                ));
-    }
-
-    @Test
-    @DisplayName("답변 수정 API")
-    void updateAnswer() throws Exception {
-        // given
-        AnswerUpdateResponseDto response = new AnswerUpdateResponseDto(1L, "수정된 답변 내용입니다.");
-
-        given(questionGrpcClient.updateResponse(any())).willReturn(response);
-
-        // when & then
-        mockMvc.perform(put("/api/questions/answers/{responseId}", 1L)
-                        .contentType("application/json")
-                        .content("{\"content\": \"수정된 답변 내용입니다.\"}"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.result.responseId").value(1L))
-                .andExpect(jsonPath("$.result.content").value("수정된 답변 내용입니다."))
-                .andDo(document("question/answer-update",
-                        pathParameters(
-                                parameterWithName("responseId").description("답변 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.responseId").description("답변 ID"),
-                                fieldWithPath("result.content").description("수정된 답변 내용")
-                        )
-                ));
-    }
-
-    @Test
-    @DisplayName("답변 삭제 API")
-    void deleteAnswer() throws Exception {
-        // given
-        willDoNothing().given(questionGrpcClient).deleteResponse(any());
-
-        // when & then
-        mockMvc.perform(delete("/api/questions/answers/{responseId}", 1L))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.result").value("성공적으로 삭제하였습니다."))
-                .andDo(document("question/answer-delete",
-                        pathParameters(
-                                parameterWithName("responseId").description("답변 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터")
                         )
                 ));
     }
@@ -517,110 +407,6 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.questionReportTitle").description("신고 제목"),
                                 fieldWithPath("result.questionReportContent").description("신고 내용"),
                                 fieldWithPath("result.questionReportWriterId").description("신고자 ID"),
-                                fieldWithPath("result.createdAt").description("신고일시")
-                        )
-                ));
-    }
-
-    @Test
-    @DisplayName("답변 생성 API")
-    void createAnswer() throws Exception {
-        // given
-
-        MockMultipartFile image1 = new MockMultipartFile(
-                "images",                           // DTO의 필드명과 일치
-                "test-image1.jpg",
-                "image/jpeg",
-                "test image content".getBytes()
-        );
-
-        MockMultipartFile image2 = new MockMultipartFile(
-                "images",
-                "test-image2.png",
-                "image/png",
-                "another image".getBytes()
-        );
-        LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
-
-        AnswerCreateResponseDto response = AnswerCreateResponseDto.builder()
-                .responseId(1L)
-                .responseContent("JWT 토큰은 다음과 같이 구현할 수 있습니다...")
-                .questionId(1L)
-                .responseWriterId(2L)
-                .createdAt(now)
-                .build();
-
-        given(questionGrpcClient.createAnswer(any())).willReturn(response);
-
-        // when & then
-        mockMvc.perform(multipart("/api/questions/answers")
-                        .file(image1)
-                        .file(image2)
-                        .param("questionId", "1")
-                        .param("responseContent", "JWT 토큰은 다음과 같이 구현할 수 있습니다...")
-                        .param("responseWriterId", "2"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.result.responseId").value(1L))
-                .andExpect(jsonPath("$.result.responseContent").value("JWT 토큰은 다음과 같이 구현할 수 있습니다..."))
-                .andDo(document("question/answer-create",
-                        requestParts(
-                                partWithName("images")
-                                        .description("업로드할 이미지 파일 목록 (선택)")
-                                        .optional()
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.responseId").description("답변 ID"),
-                                fieldWithPath("result.responseContent").description("답변 내용"),
-                                fieldWithPath("result.questionId").description("질문 ID"),
-                                fieldWithPath("result.responseWriterId").description("답변 작성자 ID"),
-                                fieldWithPath("result.createdAt").description("작성일시")
-                        )
-                ));
-    }
-
-    @Test
-    @DisplayName("답변 신고 API")
-    void reportAnswer() throws Exception {
-        // given
-        LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
-
-        AnswerReportResponseDto response = AnswerReportResponseDto.builder()
-                .responseReportId(1L)
-                .responseId(1L)
-                .responseReportTitle("부정확한 정보")
-                .responseReportContent("답변 내용이 부정확합니다.")
-                .responseReportWriterId(1L)
-                .createdAt(now)
-                .build();
-
-        given(questionGrpcClient.reportAnswer(any())).willReturn(response);
-
-        // when & then
-        mockMvc.perform(post("/api/questions/answers/{responseId}/report", 1L)
-                        .contentType("application/json")
-                        .content("{\"responseReportTitle\": \"부정확한 정보\", \"responseReportContent\": \"답변 내용이 부정확합니다.\"}"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.result.responseReportId").value(1L))
-                .andDo(document("question/answer-report",
-                        pathParameters(
-                                parameterWithName("responseId").description("답변 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("responseReportTitle").description("신고 제목"),
-                                fieldWithPath("responseReportContent").description("신고 내용")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.responseReportId").description("답변 신고 ID"),
-                                fieldWithPath("result.responseId").description("답변 ID"),
-                                fieldWithPath("result.responseReportTitle").description("신고 제목"),
-                                fieldWithPath("result.responseReportContent").description("신고 내용"),
-                                fieldWithPath("result.responseReportWriterId").description("신고자 ID"),
                                 fieldWithPath("result.createdAt").description("신고일시")
                         )
                 ));

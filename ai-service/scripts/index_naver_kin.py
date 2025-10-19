@@ -364,7 +364,7 @@ async def main():
         print("Elasticsearch 연결 성공!")
 
         # 데이터 로드
-        data_path = Path(__file__).parent.parent / "app" / "models" / "home_life_finetuned" / "final_model" / "naver_kin_result.xlsx"
+        data_path = Path(__file__).parent.parent / "scripts" / "crawling_data" / "naver_kin_result.xlsx"
 
         if not data_path.exists():
             raise FileNotFoundError(f"데이터 파일을 찾을 수 없습니다: {data_path}")
