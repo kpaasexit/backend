@@ -25,6 +25,8 @@ from io import StringIO
 import pandas as pd
 from elasticsearch import AsyncElasticsearch
 from sklearn.feature_extraction.text import TfidfVectorizer
+from huggingface_hub import hf_hub_download
+from dotenv import load_dotenv
 
 # 로깅 설정
 import logging
@@ -37,6 +39,10 @@ logger = logging.getLogger(__name__)
 # 프로젝트 루트를 Python 경로에 추가
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+
+# .env 파일 로드
+env_path = project_root / ".env"
+load_dotenv(env_path)
 
 
 # Korpora의 input() 프롬프트를 자동으로 "yes"로 응답하도록 패치
@@ -202,6 +208,70 @@ def calculate_pos_boost(keyword: str, pos_info: Dict[str, Any] = None) -> float:
     return min(boost, 2.0)  # 최대 2.0배
 
 
+def process_keyword_with_pos(text: str) -> Optional[str]:
+    """
+    명사만 엄격하게 추출
+
+    동사, 형용사, 부사, 조사 등을 모두 제거하고 명사만 추출
+    예:
+      - "나온다" -> "나" (X, 동사 제거 시 의미 없음) -> None
+      - "나이" -> "나이" (O, 명사)
+      - "자동차보험" -> "자동차보험" (O, 복합명사)
+      - "영화배우이자" -> "영화배우" (O, 조사 제거)
+
+    Args:
+        text: 원본 텍스트
+
+    Returns:
+        명사만 추출한 결과 (명사가 없으면 None)
+    """
+    if not text or len(text) < 2:
+        return None
+
+    tagger = get_pos_tagger()
+    if tagger is None:
+        # 형태소 분석기가 없으면 기본 처리
+        return extract_nouns_only(text)
+
+    try:
+        # Okt 형태소 분석
+        pos_result = tagger.pos(text, norm=True, stem=False)
+
+        # 명사만 추출
+        nouns = []
+        for word, pos in pos_result:
+            # Okt 품사 태그:
+            # - Noun: 명사
+            # - Verb: 동사 (제외)
+            # - Adjective: 형용사 (제외)
+            # - Adverb: 부사 (제외)
+            # - Josa: 조사 (제외)
+            if pos == 'Noun':
+                # 명사만 추가
+                nouns.append(word)
+
+        if not nouns:
+            return None
+
+        # 명사들을 연결
+        result = ''.join(nouns)
+
+        # 최소 길이 체크
+        if len(result) < 2:
+            return None
+
+        # 불용어 체크
+        if result in DOMAIN_STOPWORDS:
+            return None
+
+        return result
+
+    except Exception as e:
+        logger.debug(f"형태소 분석 실패 '{text}': {e}")
+        # 실패 시 기본 처리
+        return extract_nouns_only(text)
+
+
 # ============================================================================
 # 공통 함수
 # ============================================================================
@@ -323,6 +393,87 @@ MIN_TFIDF_SCORE = 0.005  # 최소 TF-IDF 점수
 
 # 데이터 크기 비율 (Naver: 270K vs Namuwiki: 3.9M = 1:14.5)
 DATA_SIZE_RATIO = 14.5  # 나무위키/네이버 비율
+
+# ============================================================================
+# 생활 관련 키워드 자동 가중치 시스템 (데이터 기반)
+# ============================================================================
+
+# 생활 카테고리별 가중치 설정
+LIFE_CATEGORY_WEIGHTS = {
+    "요리/식품관리": 3.0,      # 가장 높은 비중 (15.61%)
+    "청소/세탁": 3.0,          # 일상 생활 핵심
+    "생활수리/DIY": 2.5,       # 실용성 높음
+    "이사/인테리어": 2.5,      # 실용성 높음
+    "육아/반려동물": 2.5,      # 실용성 높음
+    "생활경제/계약": 2.0,      # 중요하지만 검색 빈도 낮음
+    "환경/건강": 2.0,          # 중요하지만 검색 빈도 낮음
+    "스마트홈/가전": 2.0,      # 중요하지만 검색 빈도 낮음
+}
+
+# 전역 변수: 카테고리별 키워드 맵 (데이터 로드 시 자동 생성)
+_category_keyword_map = {}
+
+
+def build_category_keyword_map(df: pd.DataFrame, top_n: int = 100) -> Dict[str, Set[str]]:
+    """
+    네이버 지식인 데이터에서 카테고리별 상위 키워드 추출
+
+    Args:
+        df: 네이버 지식인 데이터프레임
+        top_n: 각 카테고리별로 추출할 상위 키워드 수
+
+    Returns:
+        {category: set(keywords)} 형태의 딕셔너리
+    """
+    logger.info("카테고리별 키워드 맵 생성 중...")
+    category_keyword_map = {}
+
+    for category in LIFE_CATEGORY_WEIGHTS.keys():
+        # 해당 카테고리의 데이터만 필터링
+        category_df = df[df['category'] == category]
+
+        # 키워드 빈도 계산
+        keyword_counter = Counter()
+        for _, row in category_df.iterrows():
+            keyword = str(row['keyword']) if pd.notna(row['keyword']) else ""
+            if keyword and is_valid_keyword(keyword):
+                keyword_counter[keyword] += 1
+
+        # 상위 N개 키워드 추출
+        top_keywords = {kw for kw, _ in keyword_counter.most_common(top_n)}
+        category_keyword_map[category] = top_keywords
+
+        logger.info(f"  {category}: {len(top_keywords)}개 키워드 추출")
+
+    return category_keyword_map
+
+
+def calculate_life_category_boost(keyword: str, category: str = None) -> float:
+    """
+    생활 카테고리 기반 키워드 가중치 계산
+
+    Args:
+        keyword: 검사할 키워드
+        category: 키워드의 카테고리 (있으면 직접 가중치 부여)
+
+    Returns:
+        가중치 배율 (1.0 ~ 3.0)
+    """
+    # 카테고리가 명시되어 있으면 직접 가중치 반환
+    if category and category in LIFE_CATEGORY_WEIGHTS:
+        return LIFE_CATEGORY_WEIGHTS[category]
+
+    # 카테고리가 없으면 키워드 맵에서 검색
+    if not _category_keyword_map:
+        return 1.0  # 맵이 초기화되지 않았으면 기본값
+
+    max_boost = 1.0
+    for cat, keywords in _category_keyword_map.items():
+        if keyword in keywords:
+            weight = LIFE_CATEGORY_WEIGHTS.get(cat, 1.0)
+            max_boost = max(max_boost, weight)
+
+    return max_boost
 
 
 def calculate_domain_relevance_score(
@@ -685,7 +836,7 @@ def is_valid_keyword(keyword: str) -> bool:
 
     - 기본 검증: 길이, 문자 패턴
     - 품사 검증: 명사가 포함되어 있는지 확인
-    - 동사/형용사/부사 제외
+    - 동사/형용사/부사/접미사 제외
     """
     if not keyword or len(keyword) < 2:
         return False
@@ -710,6 +861,23 @@ def is_valid_keyword(keyword: str) -> bool:
     if keyword.isdigit():
         return False
 
+    # 복수형/접미사 패턴 제외 (노트들, 사람들, 것들 등)
+    plural_suffix_patterns = [
+        r'.*들$',  # 복수형: 노트들, 사람들, 것들
+        r'.*씩$',  # 배분: 하나씩, 조금씩
+        r'.*마다$',  # 전체: 날마다, 해마다
+        r'.*대로$',  # 양태: 생각대로, 말대로
+        r'.*처럼$',  # 비교: 나처럼, 너처럼
+        r'.*같이$',  # 비교: 나같이, 너같이
+        r'.*부터$',  # 시작점
+        r'.*까지$',  # 종료점
+    ]
+
+    for pattern in plural_suffix_patterns:
+        if re.match(pattern, keyword) and len(keyword) <= 5:
+            # 5글자 이하에서만 접미사 패턴 적용 (긴 복합어는 제외)
+            return False
+
     # 동사/형용사 어미 패턴 제외 (강화)
     verb_adjective_patterns = [
         # 서술형 어미
@@ -733,8 +901,8 @@ def is_valid_keyword(keyword: str) -> bool:
     if special_char_count / len(keyword) > 0.5:
         return False
 
-    # 품사 태깅으로 명사 여부 확인 (성능을 위해 2글자만 체크)
-    if len(keyword) == 2:
+    # 품사 태깅으로 명사 여부 확인 (2~4글자 키워드)
+    if 2 <= len(keyword) <= 4:
         pos_info = analyze_keyword_pos(keyword)
         if pos_info['noun_count'] == 0:
             # 명사가 하나도 없으면 제외
@@ -828,39 +996,64 @@ def calculate_popularity_score_naver(row: pd.Series) -> float:
 
 
 def extract_naver_kin_keywords(df: pd.DataFrame) -> Dict[str, int]:
-    """네이버 지식인 데이터에서 키워드 추출 (빈도 계산)"""
+    """
+    네이버 지식인 데이터에서 키워드 추출 (빈도 계산)
+
+    형태소 분석을 통해 명사만 추출하여 정제
+    """
     keyword_counter = Counter()
-    logger.info("네이버 지식인 키워드 추출 중...")
+    logger.info("네이버 지식인 키워드 추출 중 (형태소 분석 적용)...")
 
     for _, row in df.iterrows():
         keyword = str(row['keyword']) if pd.notna(row['keyword']) else ""
-        if keyword and is_valid_keyword(keyword):
-            keyword_counter[keyword] += 1
+
+        if keyword:
+            # 형태소 분석으로 명사만 추출
+            cleaned_keyword = process_keyword_with_pos(keyword)
+            if cleaned_keyword and is_valid_keyword(cleaned_keyword):
+                keyword_counter[cleaned_keyword] += 1
 
         title = str(row['title']) if pd.notna(row['title']) else ""
-        if title and is_valid_keyword(title):
-            keyword_counter[title] += 1
+        if title:
+            # 제목도 형태소 분석
+            cleaned_title = process_keyword_with_pos(title)
+            if cleaned_title and is_valid_keyword(cleaned_title):
+                keyword_counter[cleaned_title] += 1
 
     logger.info(f"네이버 지식인 키워드 {len(keyword_counter):,}개 추출 완료")
     return dict(keyword_counter)
 
 
 def prepare_naver_kin_documents(df: pd.DataFrame) -> List[Dict[str, Any]]:
-    """네이버 지식인 데이터를 Elasticsearch 문서로 변환"""
+    """
+    네이버 지식인 데이터를 Elasticsearch 문서로 변환
+
+    형태소 분석을 적용하여 명사만 추출
+    """
     documents = []
-    logger.info("네이버 지식인 데이터 준비 중...")
+    logger.info("네이버 지식인 데이터 준비 중 (형태소 분석 적용)...")
 
     for _, row in df.iterrows():
-        keyword = str(row['keyword']) if pd.notna(row['keyword']) else ""
-        title = str(row['title']) if pd.notna(row['title']) else ""
+        raw_keyword = str(row['keyword']) if pd.notna(row['keyword']) else ""
+        raw_title = str(row['title']) if pd.notna(row['title']) else ""
         category = str(row['category']) if pd.notna(row['category']) else ""
+
+        # 형태소 분석으로 명사만 추출
+        keyword = process_keyword_with_pos(raw_keyword) if raw_keyword else ""
+        title = process_keyword_with_pos(raw_title) if raw_title else ""
 
         if not keyword and not title:
             continue
 
         keyword_chosung = extract_chosung(keyword)
         title_chosung = extract_chosung(title)
-        popularity_score = calculate_popularity_score_naver(row)
+
+        # 기본 인기도 점수 계산
+        base_popularity = calculate_popularity_score_naver(row)
+
+        # 생활 카테고리 가중치 적용
+        life_boost = calculate_life_category_boost(keyword, category)
+        popularity_score = min(base_popularity * life_boost, 100)
 
         doc = {
             "_index": INDEX_NAME,
@@ -923,13 +1116,14 @@ def clean_namuwiki_title(title: str) -> str:
     return cleaned
 
 
-def calculate_popularity_score_namuwiki(keyword: str, frequency: int) -> float:
+def calculate_popularity_score_namuwiki(keyword: str, frequency: int, category: str = None) -> float:
     """
-    나무위키 키워드의 인기도 점수 계산 (품사 태깅 반영)
+    나무위키 키워드의 인기도 점수 계산
 
     - 빈도 기반 점수
     - 길이 보너스
     - 품사 보너스 (고유명사, 복합명사, 전문용어)
+    - 생활 카테고리 보너스 (데이터 기반)
     """
     base_score = min(frequency * 5, 100)
 
@@ -946,7 +1140,11 @@ def calculate_popularity_score_namuwiki(keyword: str, frequency: int) -> float:
     pos_boost = calculate_pos_boost(keyword)
     pos_bonus = (pos_boost - 1.0) * 20  # 1.0배 -> 0점, 1.5배 -> 10점, 2.0배 -> 20점
 
-    total_score = base_score + length_bonus + pos_bonus
+    # 생활 카테고리 보너스
+    life_boost = calculate_life_category_boost(keyword, category)
+    life_bonus = (life_boost - 1.0) * 30  # 1.0배 -> 0점, 2.0배 -> 30점, 3.0배 -> 60점
+
+    total_score = base_score + length_bonus + pos_bonus + life_bonus
     return min(total_score, 100)
 
 
@@ -1125,9 +1323,8 @@ async def backup_index_data(es: AsyncElasticsearch, index_name: str) -> Optional
 
         await es.clear_scroll(scroll_id=scroll_id)
 
-        # 백업 파일 저장
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_file = BACKUP_DIR / f"{index_name}_backup_{timestamp}.json"
+        # 백업 파일 저장 (고정된 파일명 사용)
+        backup_file = BACKUP_DIR / "autocomplete_backup.json"
 
         backup_data = {
             "metadata": {
@@ -1151,6 +1348,60 @@ async def backup_index_data(es: AsyncElasticsearch, index_name: str) -> Optional
     except Exception as e:
         logger.error(f"백업 실패: {e}", exc_info=True)
         return None
+
+
+def download_backup_from_huggingface() -> Path:
+    """
+    Hugging Face Private Repository에서 백업 파일 다운로드
+
+    고정된 파일명(autocomplete_backup.json)을 다운로드
+
+    Returns:
+        다운로드된 백업 파일 경로
+    """
+    HF_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
+    HF_REPO_NAME = "elasticsearch-backups"
+    HF_FIXED_FILENAME = "autocomplete_backup.json"
+
+    if not HF_TOKEN:
+        raise ValueError("HUGGINGFACE_API_TOKEN이 .env 파일에 설정되지 않았습니다.")
+
+    logger.info("\n" + "=" * 80)
+    logger.info("Hugging Face에서 백업 다운로드")
+    logger.info("=" * 80)
+
+    try:
+        from huggingface_hub import HfApi
+
+        # Hugging Face API 초기화
+        api = HfApi()
+        user_info = api.whoami(token=HF_TOKEN)
+        username = user_info['name']
+        repo_id = f"{username}/{HF_REPO_NAME}"
+
+        logger.info(f"Repository: {repo_id}")
+        logger.info(f"파일명: {HF_FIXED_FILENAME}")
+
+        # 파일 다운로드
+        logger.info("다운로드 중...")
+
+        downloaded_path = hf_hub_download(
+            repo_id=repo_id,
+            repo_type="dataset",
+            filename=HF_FIXED_FILENAME,
+            token=HF_TOKEN,
+            cache_dir=str(BACKUP_DIR / ".hf_cache"),
+            force_download=True
+        )
+
+        logger.info(f"✓ 다운로드 완료: {downloaded_path}")
+        logger.info("=" * 80)
+
+        return Path(downloaded_path)
+
+    except Exception as e:
+        logger.error(f"다운로드 실패: {e}", exc_info=True)
+        raise
 
 
 async def restore_from_backup(es: AsyncElasticsearch, backup_file: Path) -> bool:
@@ -1308,6 +1559,7 @@ async def main():
     parser = argparse.ArgumentParser(description="Elasticsearch 인덱싱 (백업/복원 통합)")
     parser.add_argument("--restore", action="store_true", help="최근 백업에서 복원")
     parser.add_argument("--restore-file", type=str, help="특정 백업 파일에서 복원")
+    parser.add_argument("--from-huggingface", action="store_true", help="Hugging Face에서 백업 다운로드 후 복원 (autocomplete_backup.json)")
     parser.add_argument("--no-backup", action="store_true", help="인덱싱 후 자동 백업 비활성화")
     parser.add_argument("--list-backups", action="store_true", help="사용 가능한 백업 파일 목록")
 
@@ -1339,7 +1591,28 @@ async def main():
         logger.info("=" * 80)
         logger.info("Elasticsearch 연결 성공!")
 
-        # 복원 모드
+        # Hugging Face에서 복원 모드
+        if args.from_huggingface:
+            try:
+                backup_file = download_backup_from_huggingface()
+                logger.info(f"Hugging Face에서 다운로드 완료: {backup_file.name}")
+
+                success = await restore_from_backup(es, backup_file)
+
+                if success:
+                    await verify_index(es)
+                    logger.info("\n" + "=" * 80)
+                    logger.info("✓ Hugging Face 백업 복원이 완료되었습니다!")
+                    logger.info("=" * 80)
+                else:
+                    logger.error("복원 실패!")
+
+            except Exception as e:
+                logger.error(f"Hugging Face 복원 중 에러: {e}", exc_info=True)
+
+            return
+
+        # 로컬 백업에서 복원 모드
         if args.restore or args.restore_file:
             backup_file = None
 
@@ -1396,6 +1669,11 @@ async def main():
             logger.info(f"데이터 로드 중: {data_path}")
             df = pd.read_excel(data_path)
             logger.info(f"총 {len(df):,}개 레코드 로드됨")
+
+            # 카테고리별 키워드 맵 생성 (생활 관련 가중치용)
+            global _category_keyword_map
+            _category_keyword_map = build_category_keyword_map(df, top_n=100)
+            logger.info("카테고리 키워드 맵 생성 완료")
 
             # 키워드 추출 (도메인 필터링용)
             naver_keywords = extract_naver_kin_keywords(df)
