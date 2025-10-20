@@ -53,7 +53,7 @@ public class SearchService {
         QuestionListResponseDto questionsResponse = questionsFuture.join();
         SearchMagazinesResponse magazinesResponse = magazinesFuture.join();
 
-        List<QuestionListQueryResponseDto> questions = questionsResponse.questionList();
+        List<QuestionListQueryResponseDto> questions = questionsResponse.questionListItems();
         List<MagazineListItemDto> magazines = magazinesResponse.getMagazinesList().stream()
                 .map(MagazineListItemDto::from)
                 .toList();
@@ -73,5 +73,16 @@ public class SearchService {
         SearchMagazinesResponse response = magazineGrpcClient.searchMagazines(keyword, pageNum, size);
 
         return MagazineListDto.from(response);
+    }
+
+    public QuestionListResponseDto searchQuestion(String keyword, int pageNum, int size) {
+        QuestionListRequest questionListRequest = QuestionListRequest.newBuilder()
+                .addAllCategoryIds(new ArrayList<>(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)))
+                .setKeyword(keyword)
+                .setPageNum(pageNum)
+                .setSize(size)
+                .setIsAdopted(false)
+                .build();
+        return questionGrpcClient.getQuestionList(questionListRequest);
     }
 }

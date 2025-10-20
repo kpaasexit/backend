@@ -7,14 +7,14 @@ import java.util.List;
 
 @Builder
 public record QuestionListResponseDto(
-        List<QuestionListQueryResponseDto> questionList,
+        List<QuestionListQueryResponseDto> questionListItems,
         boolean hasNext,
         Integer currentPage,
         Integer totalPageNum
 ) {
     public static QuestionListResponseDto from(QuestionListResponse questionListResponse) {
         return QuestionListResponseDto.builder()
-                .questionList(questionListResponse.getQuestionsList().stream()
+                .questionListItems(questionListResponse.getQuestionsList().stream()
                         .map(QuestionListQueryResponseDto::from)
                         .toList())
                 .hasNext(questionListResponse.getHasNext())

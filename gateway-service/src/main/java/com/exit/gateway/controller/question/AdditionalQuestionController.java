@@ -38,12 +38,15 @@ public class AdditionalQuestionController {
     @GetMapping("/{followUpRoomId}")
     public SuccessResponse<GetAdditionalQuestionResponseDto> getAdditionalQuestion(
             @PathVariable Long followUpRoomId,
-            @RequestParam Long questionId) {
+            @RequestParam Long questionId,
+            @LoginUser Long userId
+    ) {
         log.info("Get additional question request received for followUpRoomId: {}, questionId: {}", followUpRoomId, questionId);
 
         GetAdditionalQuestionRequest grpcRequest = GetAdditionalQuestionRequest.newBuilder()
                 .setFollowUpRoomId(followUpRoomId)
                 .setQuestionId(questionId)
+                .setUserId(userId)
                 .build();
 
         return SuccessResponse.of(QuestionSuccessCode.QUESTION_DETAIL_SUCCESS,

@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 628
+Content-Length: 712
 
 {
   "code" : "QUESTION_OK_003",
@@ -27,7 +27,11 @@ Content-Length: 628
       "content" : "네, 그 부분은 이렇게 설명드릴 수 있습니다...",
       "images" : [ ],
       "createdAt" : "2024-01-01T00:30:00"
-    } ]
+    } ],
+    "authority" : {
+      "isThirdParty" : true,
+      "canWrite" : true
+    }
   }
 }
 ----

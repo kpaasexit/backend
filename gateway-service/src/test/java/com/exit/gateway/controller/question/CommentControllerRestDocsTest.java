@@ -147,6 +147,7 @@ class CommentControllerRestDocsTest {
                 .nickname("김사용자")
                 .profileImage("https://example.com/profile1.jpg")
                 .createdAt(now)
+                .authority(new com.exit.gateway.controller.question.dto.response.authority.CommentAuthority(true, true))
                 .build();
 
         GetCommentResponseDto.CommentItem comment2 = GetCommentResponseDto.CommentItem.builder()
@@ -155,6 +156,7 @@ class CommentControllerRestDocsTest {
                 .nickname("이사용자")
                 .profileImage("https://example.com/profile2.jpg")
                 .createdAt(now.plusMinutes(30))
+                .authority(new com.exit.gateway.controller.question.dto.response.authority.CommentAuthority(false, false))
                 .build();
 
         GetCommentResponseDto response = GetCommentResponseDto.builder()
@@ -199,6 +201,9 @@ class CommentControllerRestDocsTest {
                                 fieldWithPath("result.commentItemList[].nickname").description("작성자 이름"),
                                 fieldWithPath("result.commentItemList[].profileImage").description("작성자 프로필 URL"),
                                 fieldWithPath("result.commentItemList[].createdAt").description("작성일시"),
+                                fieldWithPath("result.commentItemList[].authority").description("권한 정보"),
+                                fieldWithPath("result.commentItemList[].authority.canModify").description("수정 권한 여부"),
+                                fieldWithPath("result.commentItemList[].authority.canDelete").description("삭제 권한 여부"),
                                 fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
                                 fieldWithPath("result.currentPage").description("현재 페이지 번호"),
                                 fieldWithPath("result.totalPageNum").description("전체 페이지 개수")

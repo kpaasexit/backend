@@ -307,6 +307,8 @@ class ResponseControllerRestDocsTest {
                 .likeCount(15)
                 .createdAt(now)
                 .updatedAt(now)
+                .isAi(false)
+                .authority(new com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority(true, true, true))
                 .build();
 
         ResponseDetailDto response2 = ResponseDetailDto.builder()
@@ -320,6 +322,8 @@ class ResponseControllerRestDocsTest {
                 .likeCount(5)
                 .createdAt(now)
                 .updatedAt(now)
+                .isAi(false)
+                .authority(new com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority(false, true, true))
                 .build();
 
         GetDetailResponseResponseDto response = GetDetailResponseResponseDto.builder()
@@ -362,6 +366,11 @@ class ResponseControllerRestDocsTest {
                                 fieldWithPath("result.responses[].likeCount").description("좋아요 수"),
                                 fieldWithPath("result.responses[].createdAt").description("작성일시"),
                                 fieldWithPath("result.responses[].updatedAt").description("수정일시"),
+                                fieldWithPath("result.responses[].isAi").description("AI 답변 여부"),
+                                fieldWithPath("result.responses[].authority").description("권한 정보"),
+                                fieldWithPath("result.responses[].authority.canAdopt").description("채택 권한 여부"),
+                                fieldWithPath("result.responses[].authority.canModify").description("수정 권한 여부"),
+                                fieldWithPath("result.responses[].authority.canDelete").description("삭제 권한 여부"),
                                 fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
                                 fieldWithPath("result.currentPage").description("현재 페이지 번호"),
                                 fieldWithPath("result.totalPageNum").description("전체 페이지 개수")

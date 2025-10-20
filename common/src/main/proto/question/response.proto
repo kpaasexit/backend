@@ -74,6 +74,7 @@ message ResponseDetail {
   google.protobuf.Timestamp updated_at = 9;
   string profile = 10;
   bool is_ai = 11;
+  Authority authority = 12;
 }
 
 message AnswerAdoptResponse {
@@ -97,7 +98,6 @@ message GetDetailResponseResponse {
   bool has_next = 3;
   int32 current_page = 4;
   int32 total_page_num = 5;
-  Authority authority = 6;
 }
 
 message AnswerCreateResponse {

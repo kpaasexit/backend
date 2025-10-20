@@ -27,6 +27,7 @@ message CreateAdditionalQuestionMessageRequest {
 message GetAdditionalQuestionRequest {
   int64 question_id = 1;
   int64 follow_up_room_id = 2;
+  int64 user_id = 3;
 }
 
 // response
@@ -47,4 +48,5 @@ message CreateAdditionalQuestionMessageResponse {
 message GetAdditionalQuestionResponse {
   int64 follow_up_room_id = 1;
   repeated MessageItem message = 2;
+  Authority authority = 6;
 }

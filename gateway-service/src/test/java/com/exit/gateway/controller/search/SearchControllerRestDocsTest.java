@@ -260,4 +260,83 @@ class SearchControllerRestDocsTest {
                         )
                 ));
     }
+
+    @Test
+    @DisplayName("질문 리스트 검색 API")
+    void getQuestionList() throws Exception {
+        // given
+        LocalDateTime now = LocalDateTime.of(2025, 10, 16, 0, 0);
+
+        com.exit.common.grpc.QuestionListItem question1 = com.exit.common.grpc.QuestionListItem.newBuilder()
+                .setQuestionId(1L)
+                .setQuestionCategory(1L)
+                .setQuestionWriterName("김질문")
+                .setQuestionWriterProfile("profile url")
+                .setQuestionTitle("Spring Boot 질문입니다")
+                .setQuestionContent("Spring Boot에서 JWT 인증은 어떻게 구현하나요?")
+                .setQuestionUrgency(true)
+                .setQuestionAnswerType("GENERAL")
+                .setQuestionAnswerAdopt(false)
+                .setAnswerCount(3)
+                .setCreatedAt(TimeStampUtil.toGrpcTimestamp(now))
+                .build();
+
+        com.exit.common.grpc.QuestionListItem question2 = com.exit.common.grpc.QuestionListItem.newBuilder()
+                .setQuestionId(2L)
+                .setQuestionCategory(2L)
+                .setQuestionWriterName("이개발")
+                .setQuestionWriterProfile("profile url")
+                .setQuestionTitle("MSA 구조 질문")
+                .setQuestionContent("MSA에서 서비스간 통신은 어떻게 하나요?")
+                .setQuestionUrgency(false)
+                .setQuestionAnswerType("GENERAL")
+                .setQuestionAnswerAdopt(true)
+                .setAnswerCount(5)
+                .setCreatedAt(TimeStampUtil.toGrpcTimestamp(now))
+                .build();
+
+        QuestionListResponse questionsResponse = QuestionListResponse.newBuilder()
+                .addAllQuestions(List.of(question1, question2))
+                .setHasNext(false)
+                .build();
+
+        given(questionGrpcClient.getQuestionList(any(QuestionListRequest.class))).willReturn(QuestionListResponseDto.from(questionsResponse));
+
+
+        // when & then
+        mockMvc.perform(get("/api/search/questions")
+                        .param("keyword", "Spring")
+                        .param("page", "1")
+                        .param("size", "5"))
+                .andExpect(status().is2xxSuccessful())
+                .andDo(document("search/questions",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("keyword").description("검색 키워드").optional(),
+                                parameterWithName("page").description("페이지 번호 (1부터 시작, 기본값: 1)").optional(),
+                                parameterWithName("size").description("페이지 크기 (기본값: 5)").optional()
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.questionListItems").description("질문 검색 결과 목록"),
+                                fieldWithPath("result.questionListItems[].questionId").description("질문 ID"),
+                                fieldWithPath("result.questionListItems[].questionCategoryId").description("질문 카테고리 ID"),
+                                fieldWithPath("result.questionListItems[].questionWriterProfile").description("질문 작성자 프로필 url").optional(),
+                                fieldWithPath("result.questionListItems[].questionWriterName").description("질문 작성자 이름"),
+                                fieldWithPath("result.questionListItems[].questionTitle").description("질문 제목"),
+                                fieldWithPath("result.questionListItems[].questionContent").description("질문 내용"),
+                                fieldWithPath("result.questionListItems[].questionUrgency").description("긴급 여부"),
+                                fieldWithPath("result.questionListItems[].questionAnswerType").description("답변 타입"),
+                                fieldWithPath("result.questionListItems[].questionAnswerAdopt").description("답변 채택 여부"),
+                                fieldWithPath("result.questionListItems[].answerCount").description("답변 개수"),
+                                fieldWithPath("result.questionListItems[].createdAt").description("작성일시"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("result.totalPageNum").description("전체 페이지 번호")
+                        )
+                ));
+    }
 }

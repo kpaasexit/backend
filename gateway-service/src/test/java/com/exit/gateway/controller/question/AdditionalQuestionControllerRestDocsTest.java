@@ -1,6 +1,7 @@
 package com.exit.gateway.controller.question;
 
 import com.exit.gateway.config.RestDocsConfiguration;
+import com.exit.gateway.controller.question.dto.response.authority.AdditionalQuestionAuthority;
 import com.exit.gateway.controller.question.dto.response.question.CreateAdditionalQuestionMessageResponseDto;
 import com.exit.gateway.controller.question.dto.response.question.GetAdditionalQuestionResponseDto;
 import com.exit.gateway.controller.question.dto.response.question.MessageItemDto;
@@ -80,7 +81,8 @@ class AdditionalQuestionControllerRestDocsTest {
 
         GetAdditionalQuestionResponseDto response = new GetAdditionalQuestionResponseDto(
                 1L,
-                List.of(message1, message2)
+                List.of(message1, message2),
+                new AdditionalQuestionAuthority(true, true)
         );
 
         given(additionalQuestionGrpcClient.getAdditionalQuestion(any())).willReturn(response);
@@ -109,7 +111,10 @@ class AdditionalQuestionControllerRestDocsTest {
                                 fieldWithPath("result.messageList[].messageId").description("메시지 ID"),
                                 fieldWithPath("result.messageList[].content").description("메시지 내용"),
                                 fieldWithPath("result.messageList[].images").description("이미지 URL 목록"),
-                                fieldWithPath("result.messageList[].createdAt").description("작성일시")
+                                fieldWithPath("result.messageList[].createdAt").description("작성일시"),
+                                fieldWithPath("result.authority").description("권한 정보"),
+                                fieldWithPath("result.authority.isThirdParty").description("제3자 여부"),
+                                fieldWithPath("result.authority.canWrite").description("작성 권한 여부")
                         )
                 ));
     }

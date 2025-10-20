@@ -2,6 +2,7 @@ package com.exit.gateway.controller.question.dto.response.comment;
 
 import com.exit.common.grpc.GetCommentResponse;
 import com.exit.common.util.time.TimeStampUtil;
+import com.exit.gateway.controller.question.dto.response.authority.CommentAuthority;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
@@ -23,6 +24,7 @@ public record GetCommentResponseDto(
                         .nickname(comment.getNickname())
                         .profileImage(comment.getProfileImage())
                         .createdAt(TimeStampUtil.timestampToLocalDateTime(comment.getCreatedAt()))
+                        .authority(CommentAuthority.from(comment.getAuthority()))
                         .build()
                 ).toList();
 
@@ -41,7 +43,8 @@ public record GetCommentResponseDto(
             String nickname,
             String profileImage,
             @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-            LocalDateTime createdAt
+            LocalDateTime createdAt,
+            CommentAuthority authority
     ) {
     }
 }
