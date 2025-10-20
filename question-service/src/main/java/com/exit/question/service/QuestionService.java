@@ -300,10 +300,12 @@ public class QuestionService {
      */
     private void scheduleAiAnswerGeneration(Question question) {
         if (Boolean.TRUE.equals(question.getQuestionUrgency())) {
+            log.info("Question urgency has been scheduled");
             // 긴급 질문은 즉시 생성
             generateAiAnswerAsync(question);
         } else {
             // 일반 질문은 5분 후 생성
+            log.info("Question urgency has been unscheduled");
             Instant scheduledTime = Instant.now().plus(Duration.ofMinutes(5));
             taskScheduler.schedule(() -> generateAiAnswerAsync(question), scheduledTime);
         }
@@ -323,7 +325,7 @@ public class QuestionService {
     private void generateAiAnswerAsync(Question question) {
         // AI 답변 생성 요청
         String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId());
-
+        log.info("Ai answer has been generated: {}", aiAnswer);
         // AI 답변을 Response로 저장
         Response aiResponse = Response.builder()
                 .questionId(question.getQuestionId())

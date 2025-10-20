@@ -29,10 +29,11 @@ public class QuestionController {
 
     @PostMapping(consumes = "multipart/form-data")
     public SuccessResponse<QuestionCreateResponseDto> createQuestion(
-            @Valid @ModelAttribute QuestionCreateRequestDto request
+            @Valid @ModelAttribute QuestionCreateRequestDto request,
+            @LoginUser Long userId
     ) {
         log.info("Question create request received");
-        QuestionCreateRequest grpcRequest = questionRequestMapper.toGrpcQuestionCreateRequest(request);
+        QuestionCreateRequest grpcRequest = questionRequestMapper.toGrpcQuestionCreateRequest(request, userId);
         QuestionCreateResponseDto response = questionGrpcClient.createQuestion(grpcRequest);
         return SuccessResponse.of(QuestionSuccessCode.QUESTION_CREATE_SUCCESS, response);
     }

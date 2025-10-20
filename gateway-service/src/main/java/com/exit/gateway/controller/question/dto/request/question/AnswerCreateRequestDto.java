@@ -20,9 +20,6 @@ public class AnswerCreateRequestDto {
     @NotBlank(message = "답변 내용은 필수입니다.")
     private String responseContent;
 
-    @NotNull(message = "작성자 ID는 필수입니다.")
-    private Long responseWriterId;
-
     private Boolean responseIsAnonymous = false;
 
     private List<MultipartFile> images;

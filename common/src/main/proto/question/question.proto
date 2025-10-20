@@ -20,6 +20,15 @@ service QuestionService {
   rpc GetMyQuestion(GetMyQuestionRequest) returns (GetMyQuestionResponse);
 }
 
+message Authority {
+  bool can_adopt = 1;
+  bool is_adopt = 2;
+  bool can_delete = 3;
+  bool can_modify = 4;
+  bool is_third_party = 5;
+  bool can_write = 6;
+}
+
 message ImageMetadata {
   string filename = 1;
   string content_type = 2;   // e.g. image/jpeg
@@ -144,22 +153,9 @@ message SimilarQuestionResponse {
   repeated SimilarQuestionItem similarQuestions = 1;
 }
 
-message ResponseDetail {
-  int64 response_id = 1;
-  int64 response_writer_id = 2;
-  string response_writer_name = 3;
-  string response_content = 4;
-  bool response_adopt = 5;
-  repeated string urls = 6;
-  int32 like_count = 7;
-  google.protobuf.Timestamp created_at = 8;
-  google.protobuf.Timestamp updated_at = 9;
-  string profile = 10;
-  bool is_ai = 11;
-}
-
 message QuestionDetailResponse {
   QuestionCreateResponse question = 1;
+  Authority authority = 2;
 }
 
 message PopularPostItem {

@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class QuestionRequestMapper {
 
-    public QuestionCreateRequest toGrpcQuestionCreateRequest(QuestionCreateRequestDto dto) {
+    public QuestionCreateRequest toGrpcQuestionCreateRequest(QuestionCreateRequestDto dto, Long userId) {
         QuestionCreateRequest.Builder builder = QuestionCreateRequest.newBuilder()
                 .setQuestionTitle(dto.getQuestionTitle())
                 .setQuestionContent(dto.getQuestionContent())
@@ -25,7 +25,7 @@ public class QuestionRequestMapper {
                 .setQuestionUrgency(dto.getQuestionUrgency() != null ? dto.getQuestionUrgency() : false)
                 .setQuestionAnswerType(dto.getQuestionAnswerType())
                 .setQuestionDisclosureType(dto.getQuestionDisclosureType())
-                .setQuestionWriterId(dto.getQuestionWriterId())
+                .setQuestionWriterId(userId)
                 .setQuestionIsAnonymous(dto.getQuestionIsAnonymous() != null ? dto.getQuestionIsAnonymous() : false);
 
         if (dto.getImages() != null && !dto.getImages().isEmpty()) {
@@ -36,11 +36,11 @@ public class QuestionRequestMapper {
         return builder.build();
     }
 
-    public AnswerCreateRequest toGrpcAnswerCreateRequest(AnswerCreateRequestDto dto) {
+    public AnswerCreateRequest toGrpcAnswerCreateRequest(AnswerCreateRequestDto dto, Long userId) {
         AnswerCreateRequest.Builder builder = AnswerCreateRequest.newBuilder()
                 .setQuestionId(dto.getQuestionId())
                 .setResponseContent(dto.getResponseContent())
-                .setResponseWriterId(dto.getResponseWriterId())
+                .setResponseWriterId(userId)
                 .setResponseIsAnonymous(dto.getResponseIsAnonymous() != null ? dto.getResponseIsAnonymous() : false);
 
         if (dto.getImages() != null && !dto.getImages().isEmpty()) {

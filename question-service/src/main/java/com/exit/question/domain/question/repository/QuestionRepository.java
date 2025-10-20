@@ -61,8 +61,8 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             left join Response r on r.questionId = q.questionId
             where (qc.questionCategoryId in :categoryIds)
               and (:kw is null
-                          or lower(q.questionTitle)  like %:kw%
-                          or lower(q.questionContent) like %:kw%)
+                          or lower(q.questionTitle)  like lower(concat('%', :kw, '%'))
+                          or lower(q.questionContent) like lower(concat('%', :kw, '%')))
               and (coalesce(:adoptedOnly, false) = false or q.questionAnswerAdopt = true)
             group by q.questionId, qc.questionCategoryId, q.questionWriterId, q.questionTitle, q.questionContent,
                      q.questionUrgency, q.questionAnswerType, q.questionAnswerAdopt, q.createdAt
