@@ -1,5 +1,5 @@
 [source,bash]
 ----
 $ http GET 'http://localhost:8080/api/questions/my?pageNum=1&size=5' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA5NDUyMjMsImV4cCI6MTc2NDU0NTIyM30.bNLR4dlANp4-TzfDo6z811Qx_Hj6FdBV2PUp_L9SKpc'
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA5NDk5ODAsImV4cCI6MTc2NDU0OTk4MH0.y1im22vO6XC3edK0r1HwQuxJJaRlST33ZV2PIwJxOAU'
 ----

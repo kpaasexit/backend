@@ -124,7 +124,7 @@ class SearchControllerRestDocsTest {
         // when & then
         mockMvc.perform(get("/api/search")
                         .param("keyword", "Spring")
-                        .param("page", "0")
+                        .param("page", "1")
                         .param("size", "5"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.questions[0].questionId").value(1L))
@@ -190,6 +190,73 @@ class SearchControllerRestDocsTest {
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.terms").type(JsonFieldType.ARRAY).description("추천 검색어 목록")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("매거진 리스트 검색 API")
+    void getMagazineList() throws Exception {
+        // given
+        com.exit.common.grpc.MagazineListItem magazine1 = com.exit.common.grpc.MagazineListItem.newBuilder()
+                .setMagazineId(1L)
+                .setMagazineCategoryId(1L)
+                .setMagazineTitle("K-Paas 플랫폼 소개")
+                .setMagazineSubtitle("클라우드 네이티브 플랫폼의 모든 것")
+                .setMagazineAuthor("김개발")
+                .setAuthorProfileUrl("https://example.com/profile/kim.jpg")
+                .setMagazineThumbnailUrl("https://example.com/thumbnail/kpaas.jpg")
+                .setCreatedAt(TimeStampUtil.toGrpcTimestamp(LocalDateTime.now()))
+                .build();
+
+        com.exit.common.grpc.MagazineListItem magazine2 = com.exit.common.grpc.MagazineListItem.newBuilder()
+                .setMagazineId(2L)
+                .setMagazineCategoryId(1L)
+                .setMagazineTitle("MSA 아키텍처 가이드")
+                .setMagazineSubtitle("마이크로서비스 설계 원칙")
+                .setMagazineAuthor("이아키")
+                .setAuthorProfileUrl("https://example.com/profile/lee.jpg")
+                .setMagazineThumbnailUrl("https://example.com/thumbnail/msa.jpg")
+                .setCreatedAt(TimeStampUtil.toGrpcTimestamp(LocalDateTime.now()))
+                .build();
+
+        SearchMagazinesResponse magazinesResponse = SearchMagazinesResponse.newBuilder()
+                .addAllMagazines(List.of(magazine1, magazine2))
+                .setHasNext(false)
+                .build();
+
+        given(magazineGrpcClient.searchMagazines(anyString(), anyInt(), anyInt())).willReturn(magazinesResponse);
+
+
+        // when & then
+        mockMvc.perform(get("/api/search/magazines")
+                .param("keyword", "Spring")
+                .param("page", "1")
+                .param("size", "5"))
+                .andExpect(status().is2xxSuccessful())
+                .andDo(document("search/magazines",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        queryParameters(
+                                parameterWithName("keyword").description("검색 키워드").optional(),
+                                parameterWithName("page").description("페이지 번호 (1부터 시작, 기본값: 1)").optional(),
+                                parameterWithName("size").description("페이지 크기 (기본값: 5)").optional()
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.magazineListItems").description("매거진 검색 결과 목록"),
+                                fieldWithPath("result.magazineListItems[].magazineId").description("매거진 ID"),
+                                fieldWithPath("result.magazineListItems[].magazineCategoryId").description("매거진 카테고리 ID"),
+                                fieldWithPath("result.magazineListItems[].magazineTitle").description("매거진 제목"),
+                                fieldWithPath("result.magazineListItems[].magazineSubtitle").description("매거진 부제목"),
+                                fieldWithPath("result.magazineListItems[].magazineAuthor").description("매거진 작성자 닉네임"),
+                                fieldWithPath("result.magazineListItems[].authorProfileUrl").description("작성자 프로필 URL"),
+                                fieldWithPath("result.magazineListItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
+                                fieldWithPath("result.magazineListItems[].createdAt").description("작성일시"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
                         )
                 ));
     }

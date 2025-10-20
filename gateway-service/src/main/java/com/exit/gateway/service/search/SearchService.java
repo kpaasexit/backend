@@ -1,8 +1,10 @@
 package com.exit.gateway.service.search;
 
 import com.exit.common.grpc.QuestionListRequest;
+import com.exit.common.grpc.SearchMagazinesRequest;
 import com.exit.common.grpc.SearchMagazinesResponse;
 import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
+import com.exit.gateway.controller.magazine.dto.response.MagazineListDto;
 import com.exit.gateway.controller.magazine.dto.response.MagazineListItemDto;
 import com.exit.gateway.controller.question.dto.response.question.QuestionListQueryResponseDto;
 import com.exit.gateway.controller.question.dto.response.question.QuestionListResponseDto;
@@ -18,10 +20,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 @GrpcToRest(mapper = SearchGrpcErrorMapper.class)
 public class SearchService {
     private final QuestionGrpcClient questionGrpcClient;
@@ -63,5 +67,11 @@ public class SearchService {
                 .questionHasNext(questionHasNext)
                 .magazineHasNext(magazineHasNext)
                 .build();
+    }
+
+    public MagazineListDto searchMagazine(String keyword, int pageNum, int size) {
+        SearchMagazinesResponse response = magazineGrpcClient.searchMagazines(keyword, pageNum, size);
+
+        return MagazineListDto.from(response);
     }
 }
