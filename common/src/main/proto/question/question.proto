@@ -54,7 +54,7 @@ message QuestionCreateRequest {
 message QuestionReportRequest {
   int64 question_id = 1;
   int64 question_report_writer_id = 2;
-  string question_report_title = 3;
+  int32 question_report_reason = 3;
   string question_report_content = 4;
 }
 
@@ -104,7 +104,7 @@ message QuestionCreateResponse {
 message QuestionReportResponse {
   int64 question_report_id = 1;
   int64 question_id = 2;
-  string question_report_title = 3;
+  int32 question_report_reason = 3;
   string question_report_content = 4;
   int64 question_report_writer_id = 5;
   google.protobuf.Timestamp created_at = 6;

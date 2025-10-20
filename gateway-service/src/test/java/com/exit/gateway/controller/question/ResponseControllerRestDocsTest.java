@@ -254,7 +254,7 @@ class ResponseControllerRestDocsTest {
         AnswerReportResponseDto response = AnswerReportResponseDto.builder()
                 .responseReportId(1L)
                 .responseId(1L)
-                .responseReportTitle("부정확한 정보")
+                .responseReportReason(1)
                 .responseReportContent("답변 내용이 부정확합니다.")
                 .responseReportWriterId(1L)
                 .createdAt(now)
@@ -265,7 +265,7 @@ class ResponseControllerRestDocsTest {
         // when & then
         mockMvc.perform(post("/api/responses/answers/{responseId}/report", 1L)
                         .contentType("application/json")
-                        .content("{\"responseReportTitle\": \"부정확한 정보\", \"responseReportContent\": \"답변 내용이 부정확합니다.\"}"))
+                        .content("{\"responseReportReason\": 1, \"responseReportContent\": \"답변 내용이 부정확합니다.\"}"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.responseReportId").value(1L))
                 .andDo(document("response/answer-report",
@@ -273,7 +273,7 @@ class ResponseControllerRestDocsTest {
                                 parameterWithName("responseId").description("답변 ID")
                         ),
                         requestFields(
-                                fieldWithPath("responseReportTitle").description("신고 제목"),
+                                fieldWithPath("responseReportReason").description("신고 사유 ID"),
                                 fieldWithPath("responseReportContent").description("신고 내용")
                         ),
                         responseFields(
@@ -282,7 +282,7 @@ class ResponseControllerRestDocsTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.responseReportId").description("답변 신고 ID"),
                                 fieldWithPath("result.responseId").description("답변 ID"),
-                                fieldWithPath("result.responseReportTitle").description("신고 제목"),
+                                fieldWithPath("result.responseReportReason").description("신고 사유 ID"),
                                 fieldWithPath("result.responseReportContent").description("신고 내용"),
                                 fieldWithPath("result.responseReportWriterId").description("신고자 ID"),
                                 fieldWithPath("result.createdAt").description("신고일시")

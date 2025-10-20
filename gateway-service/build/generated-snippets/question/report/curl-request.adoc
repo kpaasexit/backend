@@ -3,7 +3,7 @@
 $ curl 'http://localhost:8080/api/questions/1/report' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -d '{
-  "questionReportTitle" : "부적절한 내용",
+  "questionReportReason" : 1,
   "questionReportContent" : "질문 내용이 부적절합니다."
 }'
 ----

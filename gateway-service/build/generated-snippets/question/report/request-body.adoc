@@ -1,7 +1,7 @@
 [source,json,options="nowrap"]
 ----
 {
-  "questionReportTitle" : "부적절한 내용",
+  "questionReportReason" : 1,
   "questionReportContent" : "질문 내용이 부적절합니다."
 }
 ----

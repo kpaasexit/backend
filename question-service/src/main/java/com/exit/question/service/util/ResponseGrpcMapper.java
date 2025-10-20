@@ -17,7 +17,7 @@ public class ResponseGrpcMapper {
         return AnswerReportResponse.newBuilder()
                 .setResponseReportId(report.getResponseReportId())
                 .setResponseId(report.getResponseId())
-                .setResponseReportTitle(report.getResponseReportTitle())
+                .setResponseReportReason(report.getResponseReportReason())
                 .setResponseReportContent(report.getResponseReportContent())
                 .setResponseReportWriterId(report.getResponseReportWriterId())
                 .setCreatedAt(toGrpcTimestamp(report.getCreatedAt()))

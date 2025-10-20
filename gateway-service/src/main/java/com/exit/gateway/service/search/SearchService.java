@@ -1,9 +1,7 @@
 package com.exit.gateway.service.search;
 
 import com.exit.common.grpc.QuestionListRequest;
-import com.exit.common.grpc.SearchMagazinesRequest;
 import com.exit.common.grpc.SearchMagazinesResponse;
-import com.exit.gateway.controller.magazine.dto.response.MagazineItemDto;
 import com.exit.gateway.controller.magazine.dto.response.MagazineListDto;
 import com.exit.gateway.controller.magazine.dto.response.MagazineListItemDto;
 import com.exit.gateway.controller.question.dto.response.question.QuestionListQueryResponseDto;
@@ -13,13 +11,12 @@ import com.exit.gateway.global.annotation.GrpcToRest;
 import com.exit.gateway.global.util.mapper.error.search.SearchGrpcErrorMapper;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
 import com.exit.gateway.service.question.QuestionGrpcClient;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -59,7 +56,6 @@ public class SearchService {
                 .toList();
         boolean questionHasNext = questionsResponse.hasNext();
         boolean magazineHasNext = magazinesResponse.getHasNext();
-
 
         return IntegratedSearchResponseDto.builder()
                 .questions(questions)

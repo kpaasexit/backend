@@ -5,7 +5,6 @@ import com.exit.common.util.time.TimeStampUtil;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.QuestionReport;
-import com.exit.question.domain.response.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +20,7 @@ public class QuestionGrpcMapper {
         return QuestionReportResponse.newBuilder()
                 .setQuestionReportId(report.getQuestionReportId())
                 .setQuestionId(report.getQuestionId())
-                .setQuestionReportTitle(report.getQuestionReportTitle())
+                .setQuestionReportReason(report.getQuestionReportReason())
                 .setQuestionReportContent(report.getQuestionReportContent())
                 .setQuestionReportWriterId(report.getQuestionReportWriterId())
                 .setCreatedAt(toGrpcTimestamp(report.getCreatedAt()))

@@ -383,7 +383,7 @@ class QuestionControllerRestDocsTest {
         QuestionReportResponseDto response = QuestionReportResponseDto.builder()
                 .questionId(1L)
                 .questionReportId(1L)
-                .questionReportTitle("부적절한 내용")
+                .questionReportReason(1)
                 .questionReportContent("질문 내용이 부적절합니다.")
                 .questionReportWriterId(1L)
                 .createdAt(now)
@@ -394,7 +394,7 @@ class QuestionControllerRestDocsTest {
         // when & then
         mockMvc.perform(post("/api/questions/{questionId}/report", 1L)
                         .contentType("application/json")
-                        .content("{\"questionReportTitle\": \"부적절한 내용\", \"questionReportContent\": \"질문 내용이 부적절합니다.\"}"))
+                        .content("{\"questionReportReason\": 1, \"questionReportContent\": \"질문 내용이 부적절합니다.\"}"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.questionReportId").value(1L))
                 .andDo(document("question/report",
@@ -402,7 +402,7 @@ class QuestionControllerRestDocsTest {
                                 parameterWithName("questionId").description("질문 ID")
                         ),
                         requestFields(
-                                fieldWithPath("questionReportTitle").description("신고 제목"),
+                                fieldWithPath("questionReportReason").description("신고 사유 id"),
                                 fieldWithPath("questionReportContent").description("신고 내용")
                         ),
                         responseFields(
@@ -411,7 +411,7 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.questionId").description("질문 ID"),
                                 fieldWithPath("result.questionReportId").description("질문 신고 ID"),
-                                fieldWithPath("result.questionReportTitle").description("신고 제목"),
+                                fieldWithPath("result.questionReportReason").description("신고 사유 ID"),
                                 fieldWithPath("result.questionReportContent").description("신고 내용"),
                                 fieldWithPath("result.questionReportWriterId").description("신고자 ID"),
                                 fieldWithPath("result.createdAt").description("신고일시")

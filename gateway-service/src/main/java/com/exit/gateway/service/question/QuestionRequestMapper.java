@@ -55,7 +55,7 @@ public class QuestionRequestMapper {
         return QuestionReportRequest.newBuilder()
                 .setQuestionId(questionId)
                 .setQuestionReportWriterId(userId)
-                .setQuestionReportTitle(dto.getQuestionReportTitle())
+                .setQuestionReportReason(dto.getQuestionReportReason())
                 .setQuestionReportContent(dto.getQuestionReportContent())
                 .build();
     }
@@ -63,7 +63,7 @@ public class QuestionRequestMapper {
     public AnswerReportRequest toGrpcAnswerReportRequest(Long responseId, AnswerReportRequestDto dto) {
         return AnswerReportRequest.newBuilder()
                 .setResponseId(responseId)
-                .setResponseReportTitle(dto.getResponseReportTitle())
+                .setResponseReportReason(dto.getResponseReportReason())
                 .setResponseReportContent(dto.getResponseReportContent())
                 .build();
     }

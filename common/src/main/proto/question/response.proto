@@ -28,7 +28,7 @@ message AnswerAdoptRequest {
 message AnswerReportRequest {
   int64 response_id = 1;
   int64 response_report_writer_id = 2;
-  string response_report_title = 3;
+  int32 response_report_reason = 3;
   string response_report_content = 4;
 }
 
@@ -86,7 +86,7 @@ message AnswerAdoptResponse {
 message AnswerReportResponse {
   int64 response_report_id = 1;
   int64 response_id = 2;
-  string response_report_title = 3;
+  int32 response_report_reason = 3;
   string response_report_content = 4;
   int64 response_report_writer_id = 5;
   google.protobuf.Timestamp created_at = 6;

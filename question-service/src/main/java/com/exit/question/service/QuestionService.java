@@ -6,7 +6,6 @@ import static java.util.stream.Collectors.toSet;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.Authority;
 import com.exit.common.grpc.CategoryRecommendationResponse;
-import com.exit.common.grpc.GetDetailResponseRequest;
 import com.exit.common.grpc.GetMyQuestionRequest;
 import com.exit.common.grpc.GetMyQuestionResponse;
 import com.exit.common.grpc.GetPopularPostResponse;
