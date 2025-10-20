@@ -1,6 +1,6 @@
 [source,bash]
 ----
 $ http --form POST 'http://localhost:8080/api/quiz/1/submit' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA4ODE2NTksImV4cCI6MTc2NDQ4MTY1OX0.J0uUERLA4WFPDd4vF1wNkTGTP2YzuiOn6ImG9X03O8U' \
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA5NDUyMjUsImV4cCI6MTc2NDU0NTIyNX0.pdkOvZtYDWrW0n9Osz3rFXK5ZtIfQLVmtarI_q7Azfs' \
     'answer=3'
 ----
