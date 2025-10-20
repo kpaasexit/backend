@@ -172,12 +172,13 @@ public class MagazineService {
             Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserInfoMap(authorIds);
 
             List<MagazineListItem> searchItems = slice.getContent().stream().map(
-                    magazine -> createMagazineListItem(magazine, userInfoMap.get(request.getUserId()))
+                    magazine -> createMagazineListItem(magazine, userInfoMap.get(magazine.getMagazineAuthorId()))
                     ).toList();
 
             return SearchMagazinesResponse.newBuilder()
                     .addAllMagazines(searchItems)
                     .setHasNext(slice.hasNext())
+                    .setCurrentPage(slice.getNumber() + 1)
                     .build();
         } catch (Exception e) {
             throw new GrpcException(GrpcMagazineErrorCode.SEARCH_INTEGRATED_FAILED, e.getMessage());

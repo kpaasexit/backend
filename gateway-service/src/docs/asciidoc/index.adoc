@@ -505,3 +505,10 @@ operation::search/integrated[snippets='http-request,query-parameters,http-respon
 `GET` 요청을 사용하여 추천 검색어 목록을 조회합니다.
 
 operation::search/recommend[snippets='http-request,http-response,response-fields']
+
+[[search-magazines]]
+== 매거진 리스트 검색
+
+`GET` 요청을 사용하여 매거진 목록을 검색합니다.
+
+operation::search/magazines[snippets='http-request,query-parameters,http-response,response-fields']
