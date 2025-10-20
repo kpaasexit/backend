@@ -3,6 +3,7 @@ package com.exit.question.service;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.*;
 import com.exit.common.util.file.FileUploadUtil;
+import com.exit.question.controller.dto.response.AiBestResponseDto;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.repository.FollowUpRoomRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
@@ -187,6 +188,18 @@ public class ResponseService {
             log.error("Get detail response failed for questionId: {}", request.getQuestionId(), e);
             throw new GrpcException(GrpcResponseErrorCode.GET_DETAIL_RESPONSE_FAILED, e.getMessage());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public GetAiBestResponseResponse getAiBestResponse() {
+        List<AiBestResponseDto> aiBestResponseTop5 = responseRepository.findAiBestResponseTop5();
+        List<AiBestResponse> itemList = aiBestResponseTop5.stream()
+                .map(AiBestResponseDto::toGrpc)
+                .toList();
+
+        return GetAiBestResponseResponse.newBuilder()
+                .addAllAiBestResponse(itemList)
+                .build();
     }
 
     private Authority getResponseAuthority(Response response, GetDetailResponseRequest request) {

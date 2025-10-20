@@ -18,6 +18,7 @@ service ResponseService {
   rpc AnswerRecommend(AnswerRecommendRequest) returns (AnswerRecommendResponse);
   rpc UpdateResponse(UpdateResponseRequest) returns (UpdateResponseResponse);
   rpc DeleteResponse(DeleteResponseRequest) returns (google.protobuf.Empty);
+  rpc GetAiBestResponse(google.protobuf.Empty) returns (GetAiBestResponseResponse);
 }
 
 // Request messages
@@ -118,4 +119,15 @@ message AnswerRecommendResponse {
 message UpdateResponseResponse {
   int64 response_id = 1;
   string content = 2;
+}
+
+message AiBestResponse {
+  string title = 1;
+  string content = 2;
+  int64 question_id = 3;
+  int64 response_id = 4;
+}
+
+message GetAiBestResponseResponse {
+  repeated AiBestResponse ai_best_response = 1;
 }

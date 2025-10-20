@@ -7,6 +7,7 @@ import com.exit.gateway.controller.question.dto.request.question.AnswerCreateReq
 import com.exit.gateway.controller.question.dto.request.question.AnswerReportRequestDto;
 import com.exit.gateway.controller.question.dto.request.question.AnswerUpdateRequestDto;
 import com.exit.gateway.controller.question.dto.response.question.*;
+import com.exit.gateway.controller.question.dto.response.response.GetAiBestResponseDto;
 import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.QuestionRequestMapper;
 import com.exit.gateway.service.question.ResponseGrpcClient;
@@ -104,5 +105,12 @@ public class ResponseController {
         log.info("Get detail response for userId: {}, pageNum: {}", userId, pageNum);
         return SuccessResponse.of(QuestionSuccessCode.GET_DETAIL_RESPONSE,
                 responseGrpcClient.getDetailResponse(questionId, userId, pageNum - 1, size));
+    }
+
+    @GetMapping("/ai")
+    public SuccessResponse<GetAiBestResponseDto> getBestAiResponse() {
+        log.info("Get best ai response");
+        return SuccessResponse.of(QuestionSuccessCode.GET_DETAIL_RESPONSE,
+                responseGrpcClient.getBestAiResponse());
     }
 }
