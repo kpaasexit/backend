@@ -448,6 +448,13 @@ operation::response/answer-report[snippets='http-request,path-parameters,request
 
 operation::response/detail-list[snippets='http-request,path-parameters,query-parameters,http-response,response-fields']
 
+[[response-ai-best-response]]
+== AI 베스트 답변 조회
+
+`GET` 요청을 사용하여 AI가 작성한 베스트 답변 목록을 조회합니다. 좋아요가 많은 상위 5개의 답변을 반환합니다.
+
+operation::response/ai-best-response[snippets='http-request,http-response,response-fields']
+
 [[comment-api]]
 = 댓글 API
 

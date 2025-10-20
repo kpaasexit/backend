@@ -4,6 +4,7 @@ import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.gateway.config.RestDocsConfiguration;
 import com.exit.gateway.controller.question.dto.response.question.*;
+import com.exit.gateway.controller.question.dto.response.response.GetAiBestResponseDto.GetAiBestResponseItem;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.question.QuestionRequestMapper;
 import com.exit.gateway.service.question.ResponseGrpcClient;
@@ -374,6 +375,63 @@ class ResponseControllerRestDocsTest {
                                 fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
                                 fieldWithPath("result.currentPage").description("현재 페이지 번호"),
                                 fieldWithPath("result.totalPageNum").description("전체 페이지 개수")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("AI 베스트 답변 조회 API")
+    void aiBestResponse() throws Exception {
+        // given
+        GetAiBestResponseItem item1 =
+                GetAiBestResponseItem.builder()
+                        .questionId(1L)
+                        .responseId(10L)
+                        .title("JWT 토큰 인증 구현 방법")
+                        .content("JWT 토큰은 다음과 같이 구현할 수 있습니다...")
+                        .build();
+
+        GetAiBestResponseItem item2 =
+                GetAiBestResponseItem.builder()
+                        .questionId(2L)
+                        .responseId(20L)
+                        .title("Spring Security 설정 방법")
+                        .content("Spring Security는 다음과 같이 설정합니다...")
+                        .build();
+
+        GetAiBestResponseItem item3 =
+                com.exit.gateway.controller.question.dto.response.response.GetAiBestResponseDto.GetAiBestResponseItem.builder()
+                        .questionId(3L)
+                        .responseId(30L)
+                        .title("JPA 연관관계 매핑")
+                        .content("JPA에서 연관관계는 이렇게 매핑합니다...")
+                        .build();
+
+        com.exit.gateway.controller.question.dto.response.response.GetAiBestResponseDto response =
+                com.exit.gateway.controller.question.dto.response.response.GetAiBestResponseDto.builder()
+                        .aiBestResponseItemList(List.of(item1, item2, item3))
+                        .build();
+
+        given(responseGrpcClient.getBestAiResponse()).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/responses/ai"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.result.aiBestResponseItemList[0].questionId").value(1L))
+                .andExpect(jsonPath("$.result.aiBestResponseItemList[0].responseId").value(10L))
+                .andExpect(jsonPath("$.result.aiBestResponseItemList[0].title").value("JWT 토큰 인증 구현 방법"))
+                .andExpect(jsonPath("$.result.aiBestResponseItemList[1].questionId").value(2L))
+                .andExpect(jsonPath("$.result.aiBestResponseItemList[2].questionId").value(3L))
+                .andDo(document("response/ai-best-response",
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.aiBestResponseItemList").description("AI 베스트 답변 목록"),
+                                fieldWithPath("result.aiBestResponseItemList[].questionId").description("질문 ID"),
+                                fieldWithPath("result.aiBestResponseItemList[].responseId").description("답변 ID"),
+                                fieldWithPath("result.aiBestResponseItemList[].title").description("질문 제목"),
+                                fieldWithPath("result.aiBestResponseItemList[].content").description("답변 내용")
                         )
                 ));
     }
