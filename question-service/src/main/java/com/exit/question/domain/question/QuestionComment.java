@@ -26,7 +26,7 @@ public class QuestionComment extends BaseEntity implements Comment {
     @Column(name = "question_comment_writer_id")
     private Long writerId;
 
-    @Column(name = "question_comment_content", length = 200)
+    @Column(name = "question_comment_content", length = 500)
     private String content;
 
     @Builder

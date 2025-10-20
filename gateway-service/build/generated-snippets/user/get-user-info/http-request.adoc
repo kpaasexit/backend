@@ -2,7 +2,7 @@
 ----
 GET /api/user/info HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA4Nzk4MDAsImV4cCI6MTc2NDQ3OTgwMH0.bR1_xpkcUc3UvQcLR-i8bT7GwG-TRzq-_WQ2kxfvsDA
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA5NDQwMDIsImV4cCI6MTc2NDU0NDAwMn0.EezZD9olyGg-VqG7t38CQFSaeWdbm7_A0FV-hmE-1qo
 Host: localhost:8080
 
 ----

@@ -62,6 +62,20 @@ message DeleteResponseRequest {
 }
 
 // Response messages
+message ResponseDetail {
+  int64 response_id = 1;
+  int64 response_writer_id = 2;
+  string response_writer_name = 3;
+  string response_content = 4;
+  bool response_adopt = 5;
+  repeated string urls = 6;
+  int32 like_count = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  string profile = 10;
+  bool is_ai = 11;
+}
+
 message AnswerAdoptResponse {
   int64 response_id = 1;
   bool response_adopt = 2;
@@ -83,6 +97,7 @@ message GetDetailResponseResponse {
   bool has_next = 3;
   int32 current_page = 4;
   int32 total_page_num = 5;
+  Authority authority = 6;
 }
 
 message AnswerCreateResponse {

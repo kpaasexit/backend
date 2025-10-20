@@ -25,10 +25,11 @@ public class ResponseController {
 
     @PostMapping(value = "/answers", consumes = "multipart/form-data")
     public SuccessResponse<AnswerCreateResponseDto> createAnswer(
-            @Valid @ModelAttribute AnswerCreateRequestDto request
+            @Valid @ModelAttribute AnswerCreateRequestDto request,
+            @LoginUser Long userId
     ) {
         log.info("Answer create request received");
-        AnswerCreateRequest grpcRequest = questionRequestMapper.toGrpcAnswerCreateRequest(request);
+        AnswerCreateRequest grpcRequest = questionRequestMapper.toGrpcAnswerCreateRequest(request, userId);
         AnswerCreateResponseDto response = responseGrpcClient.createAnswer(grpcRequest);
         return SuccessResponse.of(QuestionSuccessCode.ANSWER_CREATE_SUCCESS, response);
     }
