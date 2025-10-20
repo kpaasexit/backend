@@ -17,7 +17,7 @@ COPY gateway-service/build/generated-snippets gateway-service/build/generated-sn
 RUN ./gradlew :common:jar :gateway-service:asciidoctor :gateway-service:bootJar -Pprofile=prod --no-daemon -x test -x restDocsTest
 
 # dev Runtime Stage
-FROM bellsoft/liberica-runtime-container:jre-17.0.12-musl AS dev
+FROM eclipse-temurin:17-jre-jammy AS dev
 WORKDIR /app
 COPY --from=build-dev /workspace/gateway-service/build/libs/*-dev.jar app.jar
 ENV SPRING_PROFILES_ACTIVE=dev
@@ -25,7 +25,7 @@ EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]
 
 # prod Runtime Stage
-FROM bellsoft/liberica-runtime-container:jre-17.0.12-musl AS prod
+FROM eclipse-temurin:17-jre-jammy AS prod
 WORKDIR /app
 COPY --from=build-prod /workspace/gateway-service/build/libs/*-prod.jar app.jar
 ENV SPRING_PROFILES_ACTIVE=prod
