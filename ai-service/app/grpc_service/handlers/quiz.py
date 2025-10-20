@@ -32,10 +32,13 @@ class QuizHandler:
             return quiz_service_pb2.QUIZ_TYPE_UNSPECIFIED
 
     def _quiz_to_proto(self, quiz) -> quiz_service_pb2.Quiz:
+        # OX 퀴즈의 경우 quiz_title을 빈 문자열로 반환
+        quiz_title = "" if quiz.quiz_type == ModelQuizType.OX else quiz.quiz_title
+
         return quiz_service_pb2.Quiz(
             quiz_id=quiz.quiz_id,
             quiz_category_id=quiz.quiz_category_id,
-            quiz_title=quiz.quiz_title,
+            quiz_title=quiz_title,
             quiz_content=quiz.quiz_content,
             quiz_type=self._convert_quiz_type_to_proto(quiz.quiz_type),
             quiz_correct_answer=quiz.quiz_correct_answer,
@@ -134,45 +137,6 @@ class QuizHandler:
                 success=False,
                 message=f"Failed to generate daily quizzes: {str(e)}"
             )
-
-    async def StartScheduler(self, request, context) -> quiz_service_pb2.SchedulerStatusResponse:
-        try:
-            from app.services.quiz import get_quiz_scheduler
-            scheduler = get_quiz_scheduler()
-            scheduler.start()
-
-            return quiz_service_pb2.SchedulerStatusResponse(
-                is_running=scheduler.scheduler.running,
-                success=True,
-                message="Quiz scheduler started successfully"
-            )
-        except Exception as e:
-            logger.error(f"Error starting scheduler: {e}")
-            return quiz_service_pb2.SchedulerStatusResponse(
-                is_running=False,
-                success=False,
-                message=f"Failed to start scheduler: {str(e)}"
-            )
-
-    async def StopScheduler(self, request, context) -> quiz_service_pb2.SchedulerStatusResponse:
-        try:
-            from app.services.quiz import get_quiz_scheduler
-            scheduler = get_quiz_scheduler()
-            scheduler.stop()
-
-            return quiz_service_pb2.SchedulerStatusResponse(
-                is_running=scheduler.scheduler.running,
-                success=True,
-                message="Quiz scheduler stopped successfully"
-            )
-        except Exception as e:
-            logger.error(f"Error stopping scheduler: {e}")
-            return quiz_service_pb2.SchedulerStatusResponse(
-                is_running=False,
-                success=False,
-                message=f"Failed to stop scheduler: {str(e)}"
-            )
-
 
     async def GetCategories(self, request, context) -> quiz_service_pb2.GetCategoriesResponse:
         try:

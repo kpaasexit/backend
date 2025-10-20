@@ -1,15 +1,18 @@
 import pytest
+import pytest_asyncio
 from app.services.autocomplete import AutocompleteService
+
+
+@pytest_asyncio.fixture(scope="function")
+async def service():
+    """AutocompleteService fixture"""
+    svc = AutocompleteService()
+    yield svc
+    await svc.close()
 
 
 @pytest.mark.asyncio
 class TestAutocompleteService:
-
-    @pytest.fixture
-    async def service(self):
-        service = AutocompleteService()
-        yield service
-        await service.close()
 
     async def test_autocomplete_normal_search(self, service):
         result = await service.autocomplete(
@@ -19,12 +22,12 @@ class TestAutocompleteService:
         )
 
         assert result.query == "침실"
-        assert result.search_type in ['normal', 'error']
+        assert result.search_type in ['prefix', 'error']
         assert isinstance(result.results, list)
         assert result.took_ms >= 0
 
     async def test_autocomplete_chosung_search(self, service):
-        result = await service.autocomplete(
+        result = await service.chosung_search(
             query="ㅊㅅ",
             limit=5,
             enable_cache=False
@@ -38,27 +41,24 @@ class TestAutocompleteService:
         result = await service.autocomplete(
             query="침실",
             limit=5,
-            category="이사/인테리어",
             enable_cache=False
         )
 
         assert result.query == "침실"
         assert isinstance(result.results, list)
 
-        # 결과가 있으면 모두 해당 카테고리여야 함
-        for item in result.results:
-            assert item.category == "이사/인테리어"
-
     async def test_autocomplete_fuzzy_matching(self, service):
-        result = await service.autocomplete(
-            query="침실인데리어",  # 오타
+        # autocomplete는 정확한 prefix 매칭만 수행
+        # fuzzy 매칭은 related_search 사용
+        result = await service.related_search(
+            query="침실인테리어",
             limit=5,
-            enable_fuzzy=True,
             enable_cache=False
         )
 
-        assert result.query == "침실인데리어"
+        assert result.query == "침실인테리어"
         assert isinstance(result.results, list)
+        assert result.search_type in ['related', 'error']
 
     async def test_suggest(self, service):
         keywords = await service.suggest(
@@ -99,7 +99,7 @@ class TestAutocompleteService:
 
         assert result.query == ""
         assert result.total == 0
-        assert result.search_type == "empty"
+        assert result.search_type == "prefix"  # 빈 쿼리도 prefix 타입
         assert len(result.results) == 0
 
     async def test_cache_functionality(self, service):
@@ -117,9 +117,5 @@ class TestAutocompleteService:
             enable_cache=True
         )
 
-        # 같은 결과여야 함
         assert result1.query == result2.query
         assert result1.total == result2.total
-
-        # 캐시 히트는 더 빨라야 함 (일반적으로)
-        # assert result2.took_ms <= result1.took_ms

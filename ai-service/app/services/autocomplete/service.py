@@ -276,7 +276,79 @@ class AutocompleteService:
         limit: int
     ) -> List[AutocompleteResult]:
         """
-        접두사 매칭 검색 - 정확히 입력한 문자열로 시작하는 키워드만 반환
+        접두사 매칭 검색 - Completion Suggester 방식
+        정확히 입력한 문자열로 시작하는 키워드만 반환
+        """
+        # Completion Suggester를 사용한 빠른 접두사 검색
+        suggest_body = {
+            "suggest": {
+                "autocomplete": {
+                    "prefix": query,
+                    "completion": {
+                        "field": "keyword.completion",
+                        "size": limit * 3,  # 조사 필터링을 위해 더 많이 가져옴
+                        "skip_duplicates": True,
+                        "fuzzy": {
+                            "fuzziness": 0  # 접두사 매칭은 정확하게
+                        }
+                    }
+                }
+            },
+            "_source": ["keyword", "category", "title", "answer_count", "popularity_score"]
+        }
+
+        try:
+            response = await self.es.search(index=self.INDEX_NAME, body=suggest_body)
+            suggestions = response.get('suggest', {}).get('autocomplete', [])
+
+            if not suggestions or not suggestions[0].get('options'):
+                # Suggester 실패 시 fallback: 기존 prefix 쿼리 사용
+                self.logger.debug(f"Completion Suggester 결과 없음, prefix 쿼리로 fallback")
+                return await self._search_by_prefix_fallback(query, limit)
+
+            results = []
+            seen_keywords = set()  # 중복 제거용
+
+            for option in suggestions[0]['options']:
+                source = option['_source']
+                keyword = source['keyword']
+
+                # 조사로 끝나는 키워드 필터링
+                if self._has_josa_ending(keyword):
+                    continue
+
+                # 중복 제거
+                if keyword in seen_keywords:
+                    continue
+                seen_keywords.add(keyword)
+
+                results.append(AutocompleteResult(
+                    keyword=keyword,
+                    category=source['category'],
+                    title=source['title'],
+                    answer_count=source['answer_count'],
+                    popularity_score=source['popularity_score'],
+                    matched_by='completion'
+                ))
+
+                # limit에 도달하면 중단
+                if len(results) >= limit:
+                    break
+
+            return results
+
+        except Exception as e:
+            self.logger.error(f"Completion Suggester 에러: {e}, fallback으로 전환")
+            return await self._search_by_prefix_fallback(query, limit)
+
+    async def _search_by_prefix_fallback(
+        self,
+        query: str,
+        limit: int
+    ) -> List[AutocompleteResult]:
+        """
+        접두사 매칭 검색 - Fallback 방식 (기존 prefix 쿼리)
+        Completion Suggester 실패 시 사용
         """
         # 더 많은 결과를 가져와서 조사 필터링 후 limit만큼 반환
         fetch_size = limit * 3
@@ -342,33 +414,58 @@ class AutocompleteService:
         limit: int
     ) -> List[AutocompleteResult]:
         """
-        Fuzzy 매칭 검색 - 오타를 허용한 유사 키워드 검색 (nori 형태소 분석 적용)
+        Fuzzy 매칭 검색 - 오타를 허용한 유사 키워드 검색 (Multi-field Boosting 최적화)
         """
-        # Nori 기반 Fuzzy 매칭 쿼리
+        # Multi-field Boosting 최적화: 필드별 가중치 조정
+        # - keyword.keyword^10: 정확 매칭 최우선
+        # - keyword.edge_ngram^5: Edge N-gram (접두사 매칭)
+        # - keyword.nori^3: Nori 형태소 분석
+        # - keyword.ngram^2: N-gram (부분 매칭)
+        # - title.nori^1.5: 제목 형태소 분석
+        # - title^1: 제목 기본
         fuzzy_query = {
             "multi_match": {
                 "query": query,
-                "fields": ["keyword.nori^4", "keyword^3", "title.nori^2", "title"],
+                "fields": [
+                    "keyword.keyword^10",     # 정확 매칭 최우선
+                    "keyword.edge_ngram^5",   # Edge N-gram (접두사)
+                    "keyword.nori^3",         # Nori 형태소 분석
+                    "keyword.ngram^2",        # N-gram (부분 매칭)
+                    "title.nori^1.5",         # 제목 형태소 분석
+                    "title^1"                 # 제목 기본
+                ],
                 "fuzziness": "AUTO",
                 "prefix_length": 0,  # 접두사 제한 없음 (연관 검색어이므로)
                 "max_expansions": 50,
-                "type": "best_fields"
+                "type": "most_fields",  # most_fields로 변경하여 여러 필드 점수 합산
+                "tie_breaker": 0.3      # 타이 브레이커로 다른 필드 점수도 반영
             }
         }
 
-        # Nori 기반 부분 매칭
+        # Nori 기반 부분 매칭 (AND 조건)
         partial_match = {
             "match": {
                 "keyword.nori": {
                     "query": query,
-                    "operator": "and"
+                    "operator": "and",
+                    "boost": 2.0  # 완전 매칭에 가중치
+                }
+            }
+        }
+
+        # Edge N-gram 접두사 매칭 추가
+        edge_ngram_match = {
+            "match": {
+                "keyword.edge_ngram": {
+                    "query": query,
+                    "boost": 1.5
                 }
             }
         }
 
         # 최종 쿼리 구성
         query_bool = {
-            "should": [fuzzy_query, partial_match],
+            "should": [fuzzy_query, partial_match, edge_ngram_match],
             "minimum_should_match": 1
         }
 
