@@ -4,7 +4,7 @@
   "code" : "QUESTION_OK_002",
   "message" : "질문 목록 조회 성공",
   "result" : {
-    "questionList" : [ {
+    "questionListItems" : [ {
       "questionId" : 1,
       "questionCategoryId" : 1,
       "questionWriterName" : "고구마",

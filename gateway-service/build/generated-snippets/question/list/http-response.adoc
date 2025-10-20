@@ -8,13 +8,13 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 1175
+Content-Length: 1180
 
 {
   "code" : "QUESTION_OK_002",
   "message" : "질문 목록 조회 성공",
   "result" : {
-    "questionList" : [ {
+    "questionListItems" : [ {
       "questionId" : 1,
       "questionCategoryId" : 1,
       "questionWriterName" : "고구마",

@@ -3,6 +3,7 @@ package com.exit.gateway.controller.search;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.success.SearchSuccessCode;
 import com.exit.gateway.controller.magazine.dto.response.MagazineListDto;
+import com.exit.gateway.controller.question.dto.response.question.QuestionListResponseDto;
 import com.exit.gateway.controller.search.dto.response.IntegratedSearchResponseDto;
 import com.exit.gateway.controller.search.dto.response.RecommendedSearchTermsDto;
 import com.exit.gateway.service.search.SearchService;
@@ -45,5 +46,15 @@ public class SearchController {
     ) {
         return SuccessResponse.of(SearchSuccessCode.SEARCH_SUCCESS,
                 searchService.searchMagazine(keyword, page - 1, size));
+    }
+
+    @GetMapping("/questions")
+    public SuccessResponse<QuestionListResponseDto> searchQuestions(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return SuccessResponse.of(SearchSuccessCode.SEARCH_SUCCESS,
+                searchService.searchQuestion(keyword, page - 1, size));
     }
 }

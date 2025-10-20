@@ -110,7 +110,7 @@ class QuestionControllerRestDocsTest {
                 .build();
 
         QuestionListResponseDto response = QuestionListResponseDto.builder()
-                .questionList(List.of(question1, question2))
+                .questionListItems(List.of(question1, question2))
                 .hasNext(true)
                 .build();
 
@@ -124,8 +124,8 @@ class QuestionControllerRestDocsTest {
                         .param("size", "5")
                         .param("isAdopted", "false"))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.result.questionList[0].questionId").value(1L))
-                .andExpect(jsonPath("$.result.questionList[0].questionTitle").value("Spring Boot에서 JWT 인증 구현하는 방법"))
+                .andExpect(jsonPath("$.result.questionListItems[0].questionId").value(1L))
+                .andExpect(jsonPath("$.result.questionListItems[0].questionTitle").value("Spring Boot에서 JWT 인증 구현하는 방법"))
                 .andExpect(jsonPath("$.result.hasNext").value(true))
                 .andDo(document("question/list",
                         queryParameters(
@@ -139,18 +139,18 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.questionList").description("질문 목록"),
-                                fieldWithPath("result.questionList[].questionId").description("질문 ID"),
-                                fieldWithPath("result.questionList[].questionCategoryId").description("질문 카테고리 ID"),
-                                fieldWithPath("result.questionList[].questionWriterName").description("작성자 닉네임"),
-                                fieldWithPath("result.questionList[].questionWriterProfile").description("작성자 프로필 url"),
-                                fieldWithPath("result.questionList[].questionTitle").description("질문 제목"),
-                                fieldWithPath("result.questionList[].questionContent").description("질문 내용"),
-                                fieldWithPath("result.questionList[].questionUrgency").description("긴급 여부"),
-                                fieldWithPath("result.questionList[].questionAnswerType").description("답변 타입"),
-                                fieldWithPath("result.questionList[].questionAnswerAdopt").description("답변 채택 여부"),
-                                fieldWithPath("result.questionList[].answerCount").description("답변 개수"),
-                                fieldWithPath("result.questionList[].createdAt").description("작성일시"),
+                                fieldWithPath("result.questionListItems").description("질문 목록"),
+                                fieldWithPath("result.questionListItems[].questionId").description("질문 ID"),
+                                fieldWithPath("result.questionListItems[].questionCategoryId").description("질문 카테고리 ID"),
+                                fieldWithPath("result.questionListItems[].questionWriterName").description("작성자 닉네임"),
+                                fieldWithPath("result.questionListItems[].questionWriterProfile").description("작성자 프로필 url"),
+                                fieldWithPath("result.questionListItems[].questionTitle").description("질문 제목"),
+                                fieldWithPath("result.questionListItems[].questionContent").description("질문 내용"),
+                                fieldWithPath("result.questionListItems[].questionUrgency").description("긴급 여부"),
+                                fieldWithPath("result.questionListItems[].questionAnswerType").description("답변 타입"),
+                                fieldWithPath("result.questionListItems[].questionAnswerAdopt").description("답변 채택 여부"),
+                                fieldWithPath("result.questionListItems[].answerCount").description("답변 개수"),
+                                fieldWithPath("result.questionListItems[].createdAt").description("작성일시"),
                                 fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
                                 fieldWithPath("result.currentPage").description("현재 페이지 번호"),
                                 fieldWithPath("result.totalPageNum").description("전체 페이지 개수")
