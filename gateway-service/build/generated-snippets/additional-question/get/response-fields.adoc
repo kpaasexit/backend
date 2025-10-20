@@ -41,4 +41,16 @@
 |`+String+`
 |작성일시
 
+|`+result.authority+`
+|`+Object+`
+|권한 정보
+
+|`+result.authority.isThirdParty+`
+|`+Boolean+`
+|제3자 여부
+
+|`+result.authority.canWrite+`
+|`+Boolean+`
+|작성 권한 여부
+
 |===

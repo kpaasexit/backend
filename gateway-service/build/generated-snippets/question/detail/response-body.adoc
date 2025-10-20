@@ -16,6 +16,10 @@
       "questionWriterName" : "김개발",
       "imageUrls" : [ "https://example.com/image1.jpg" ],
       "createdAt" : "2024-01-01T00:00:00"
+    },
+    "authority" : {
+      "canModify" : true,
+      "canDelete" : true
     }
   }
 }

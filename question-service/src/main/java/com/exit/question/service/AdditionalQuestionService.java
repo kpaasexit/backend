@@ -19,6 +19,7 @@ import com.exit.question.service.client.AiGrpcClient;
 import com.exit.question.service.client.NotificationGrpcClient;
 import com.exit.question.service.util.AiGrpcMapper;
 import com.exit.question.service.util.NotificationGrpcMapper;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
@@ -96,9 +97,12 @@ public class AdditionalQuestionService {
                             isUserQuestioner(question.getQuestionWriterId(), message.getFollowUpMessageWriterId())))
                     .toList();
 
+            Authority authority = getAuthority(question, followUpRoom.getResponse(), request.getUserId(), followUpRoom.getFollowUpMessages());
+
             return GetAdditionalQuestionResponse.newBuilder()
                     .setFollowUpRoomId(request.getFollowUpRoomId())
                     .addAllMessage(messageList)
+                    .setAuthority(authority)
                     .build();
         } catch (GrpcException e) {
             throw new GrpcException(com.exit.question.exception.GrpcAdditionalQuestionErrorCode.GET_ADDITIONAL_QUESTION_FAILED,
@@ -108,6 +112,25 @@ public class AdditionalQuestionService {
             throw new GrpcException(com.exit.question.exception.GrpcAdditionalQuestionErrorCode.GET_ADDITIONAL_QUESTION_FAILED,
                     e.getMessage());
         }
+    }
+
+    private Authority getAuthority(Question question, Response response, Long userId, List<FollowUpMessage> messageList) {
+        boolean isThirdParty = isThirdParty(question, response, userId);
+        boolean canWrite = false;
+
+        if (!messageList.isEmpty() && !isThirdParty) {
+            FollowUpMessage messageItem = messageList.get(messageList.size() - 1);
+            canWrite = !Objects.equals(messageItem.getFollowUpMessageWriterId(), userId);
+        }
+
+        return Authority.newBuilder()
+                .setIsThirdParty(isThirdParty)
+                .setCanWrite(canWrite)
+                .build();
+    }
+
+    private boolean isThirdParty(Question question, Response response, Long userId) {
+        return !(Objects.equals(question.getQuestionWriterId(), userId) || Objects.equals(response.getResponseWriterId(), userId));
     }
 
     private Response findResponseById(Long responseId) {

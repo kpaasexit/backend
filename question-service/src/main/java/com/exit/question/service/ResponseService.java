@@ -189,6 +189,17 @@ public class ResponseService {
         }
     }
 
+    private Authority getResponseAuthority(Response response, GetDetailResponseRequest request) {
+        boolean isSameUser = Objects.equals(response.getResponseId(), request.getUserId());
+        Question question = questionRepository.findById(request.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
+        return Authority.newBuilder()
+                .setCanAdopt(!question.getQuestionAnswerAdopt())
+                .setCanDelete(isSameUser)
+                .setCanModify(isSameUser)
+                .build();
+    }
+
     private Response adoptResponse(Long responseId) {
         Response response = responseRepository.findById(responseId)
                 .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
@@ -302,7 +313,9 @@ public class ResponseService {
                         likeCountMap.getOrDefault(response.getResponseId(), 0),
                         writerNameProfileMap.getOrDefault(response.getResponseWriterId(), UpdateAdditionalUserInfoResponse.newBuilder()
                                 .setUserName("UNDEFINED")
-                                .build())
+                                .build()),
+                        getResponseAuthority(response, request)
+
                 ))
                 .toList();
     }

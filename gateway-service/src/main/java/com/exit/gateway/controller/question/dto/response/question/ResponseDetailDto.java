@@ -2,6 +2,7 @@ package com.exit.gateway.controller.question.dto.response.question;
 
 import com.exit.common.grpc.ResponseDetail;
 import com.exit.common.util.time.TimeStampUtil;
+import com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
@@ -21,7 +22,9 @@ public record ResponseDetailDto(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        Boolean isAi,
+        ResponseAuthority authority
 ) {
     public static ResponseDetailDto from(ResponseDetail grpcResponse) {
         ResponseDetailDtoBuilder builder = ResponseDetailDto.builder();
@@ -38,6 +41,8 @@ public record ResponseDetailDto(
                 .likeCount(grpcResponse.getLikeCount())
                 .createdAt(TimeStampUtil.timestampToLocalDateTime(grpcResponse.getCreatedAt()))
                 .updatedAt(TimeStampUtil.timestampToLocalDateTime(grpcResponse.getUpdatedAt()))
+                .isAi(grpcResponse.getIsAi())
+                .authority(ResponseAuthority.from(grpcResponse.getAuthority()))
                 .build();
     }
 }

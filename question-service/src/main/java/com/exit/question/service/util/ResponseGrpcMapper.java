@@ -3,6 +3,7 @@ package com.exit.question.service.util;
 import com.exit.common.grpc.*;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.ResponseReport;
+import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -57,7 +58,8 @@ public class ResponseGrpcMapper {
                 .build();
     }
 
-    public ResponseDetail getResponseDetail(Response response, List<String> urls, Integer likeCount, UpdateAdditionalUserInfoResponse writerNameProfile) {
+    public ResponseDetail getResponseDetail(Response response, List<String> urls, Integer likeCount, UpdateAdditionalUserInfoResponse writerNameProfile,
+                                            Authority responseAuthority) {
         ResponseDetail.Builder builder = ResponseDetail.newBuilder();
 
         if (urls != null && !urls.isEmpty()) {
@@ -77,6 +79,8 @@ public class ResponseGrpcMapper {
                 .setLikeCount(likeCount)
                 .setCreatedAt(toGrpcTimestamp(response.getCreatedAt()))
                 .setUpdatedAt(toGrpcTimestamp(response.getUpdatedAt()))
+                .setAuthority(responseAuthority)
+                .setIsAi(Objects.equals(response.getResponseWriterId(), 1L))
                 .build();
     }
 }

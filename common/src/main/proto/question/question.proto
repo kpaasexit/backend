@@ -22,7 +22,6 @@ service QuestionService {
 
 message Authority {
   bool can_adopt = 1;
-  bool is_adopt = 2;
   bool can_delete = 3;
   bool can_modify = 4;
   bool is_third_party = 5;

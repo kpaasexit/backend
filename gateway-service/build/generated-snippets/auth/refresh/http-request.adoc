@@ -7,6 +7,6 @@ Content-Length: 245
 Host: localhost:8080
 
 {
-  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA5NTk1OTMsImV4cCI6MjM2NTc1OTU5M30.trwOBPXfZ1pZxc0CxN-SguJmDH6laSiziNfk7I4guzU"
+  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA5NjY5NTksImV4cCI6MjM2NTc2Njk1OX0.Iz-NK4PgFPRlV39VvTvdoLpmPXXQYPlM-viY2tXYaAg"
 }
 ----

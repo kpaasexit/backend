@@ -180,7 +180,8 @@ class QuestionControllerRestDocsTest {
 
 
         QuestionDetailResponseDto response = new QuestionDetailResponseDto(
-                question
+                question,
+                new com.exit.gateway.controller.question.dto.response.authority.QuestionAuthority(true, true)
         );
 
         given(questionGrpcClient.getQuestionDetail(any())).willReturn(response);
@@ -209,7 +210,10 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.question.questionWriterId").description("작성자 ID"),
                                 fieldWithPath("result.question.questionWriterName").description("작성자 이름"),
                                 fieldWithPath("result.question.imageUrls").description("이미지 URL 목록"),
-                                fieldWithPath("result.question.createdAt").description("작성일시")
+                                fieldWithPath("result.question.createdAt").description("작성일시"),
+                                fieldWithPath("result.authority").description("권한 정보"),
+                                fieldWithPath("result.authority.canModify").description("수정 권한 여부"),
+                                fieldWithPath("result.authority.canDelete").description("삭제 권한 여부")
                         )
                 ));
     }

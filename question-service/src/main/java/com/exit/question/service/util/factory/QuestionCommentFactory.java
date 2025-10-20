@@ -1,7 +1,13 @@
 package com.exit.question.service.util.factory;
 
 import com.exit.common.exception.grpc.GrpcException;
-import com.exit.common.grpc.*;
+import com.exit.common.grpc.Authority;
+import com.exit.common.grpc.CommentItem;
+import com.exit.common.grpc.GetCommentRequest;
+import com.exit.common.grpc.GetCommentResponse;
+import com.exit.common.grpc.GetUsersNameAndProfileResponse;
+import com.exit.common.grpc.SendNotificationRequest;
+import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
 import com.exit.common.util.time.TimeStampUtil;
 import com.exit.question.controller.dto.request.NotificationContentDto;
 import com.exit.question.domain.Comment;
@@ -12,18 +18,17 @@ import com.exit.question.domain.question.repository.QuestionRepository;
 import com.exit.question.exception.GrpcCommentErrorCode;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.service.client.UserGrpcClient;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -68,14 +73,16 @@ public class QuestionCommentFactory extends CommentFactory {
     @Override
     public GetCommentResponse getCommentList(GetCommentRequest request) {
         PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
-        Page<QuestionComment> questionComments = questionCommentRepository.findAllByQuestion_QuestionId(request.getTargetId(), pageRequest);
+        Page<QuestionComment> questionComments = questionCommentRepository.findAllByQuestion_QuestionId(
+                request.getTargetId(), pageRequest);
 
         Set<Long> commentAuthorIds = getCommentAuthorIds(questionComments.getContent());
         GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(commentAuthorIds);
 
         Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = getUserInfoMap(usersNameAndProfile);
 
-        List<CommentItem> commentItemList = createCommentItemList(questionComments.getContent(), userInfoMap);
+        List<CommentItem> commentItemList = createCommentItemList(questionComments.getContent(), userInfoMap,
+                request.getUserId());
         return GetCommentResponse.newBuilder()
                 .addAllComment(commentItemList)
                 .setHasNext(questionComments.hasNext())
@@ -84,21 +91,35 @@ public class QuestionCommentFactory extends CommentFactory {
                 .build();
     }
 
-    private List<CommentItem> createCommentItemList(List<QuestionComment> questionComments, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
+    private List<CommentItem> createCommentItemList(List<QuestionComment> questionComments,
+                                                    Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap,
+                                                    Long userId) {
         return questionComments.stream()
                 .map(comment -> {
+                    Authority authority = getCommentAuthority(comment, userId);
+
                     return CommentItem.newBuilder()
                             .setCommentId(comment.getCommentId())
                             .setContent(comment.getContent())
                             .setCreatedAt(TimeStampUtil.toGrpcTimestamp(comment.getCreatedAt()))
                             .setNickname(userInfoMap.get(comment.getAuthorId()).getUserName())
                             .setProfileImage(userInfoMap.get(comment.getAuthorId()).getUserProfile())
+                            .setAuthority(authority)
                             .build();
                 })
                 .toList();
     }
 
-    private Map<Long, UpdateAdditionalUserInfoResponse> getUserInfoMap(GetUsersNameAndProfileResponse usersNameAndProfile) {
+    private Authority getCommentAuthority(QuestionComment comment, Long userId) {
+        boolean isSameUser = Objects.equals(comment.getAuthorId(), userId);
+        return Authority.newBuilder()
+                .setCanModify(isSameUser)
+                .setCanDelete(isSameUser)
+                .build();
+    }
+
+    private Map<Long, UpdateAdditionalUserInfoResponse> getUserInfoMap(
+            GetUsersNameAndProfileResponse usersNameAndProfile) {
         return usersNameAndProfile.getUserInfoList().stream()
                 .collect(Collectors.toMap(UpdateAdditionalUserInfoResponse::getUserId,
                         Function.identity(),

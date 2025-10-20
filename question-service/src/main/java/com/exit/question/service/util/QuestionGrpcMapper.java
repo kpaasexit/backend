@@ -83,9 +83,10 @@ public class QuestionGrpcMapper {
                 .build();
     }
 
-    public QuestionDetailResponse getQuestionDetailResponse(QuestionCreateResponse questionCreateResponse) {
+    public QuestionDetailResponse getQuestionDetailResponse(QuestionCreateResponse questionCreateResponse, Authority authority) {
         return QuestionDetailResponse.newBuilder()
                 .setQuestion(questionCreateResponse)
+                .setAuthority(authority)
                 .build();
     }
 }
