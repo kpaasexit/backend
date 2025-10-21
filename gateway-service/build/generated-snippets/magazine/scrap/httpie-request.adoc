@@ -1,5 +1,5 @@
 [source,bash]
 ----
 $ http POST 'http://localhost:8080/api/magazine/1/scrap' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA5NzIyNTcsImV4cCI6MTc2NDU3MjI1N30.2bp_M_qLY0s4AHRUYU-NGyI3xwRWc7qzeDzPN9wcKwY'
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjEwMjYwMTEsImV4cCI6MTc2NDYyNjAxMX0.zLDe58lFGY1C5Tw0pVI304fzEUX-Avh9v_rNVDSvEoc'
 ----

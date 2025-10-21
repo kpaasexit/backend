@@ -1,8 +1,0 @@
-[source,bash]
-----
-$ echo '{
-  "responseReportTitle" : "부정확한 정보",
-  "responseReportContent" : "답변 내용이 부정확합니다."
-}' | http POST 'http://localhost:8080/api/questions/answers/1/report' \
-    'Content-Type:application/json;charset=UTF-8'
-----

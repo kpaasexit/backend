@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.exit.gateway.restdocs.MultipartFormParametersSnippet.multipartFormParameters;
+import static com.exit.gateway.restdocs.MultipartFormParametersSnippet.multipartParameter;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -170,6 +172,11 @@ class AdditionalQuestionControllerRestDocsTest {
                                 partWithName("images")
                                         .description("업로드할 이미지 파일 목록 (선택)")
                                         .optional()
+                        ),
+                        multipartFormParameters(
+                                multipartParameter("questionId").description("질문 ID"),
+                                multipartParameter("responseId").description("답변 ID"),
+                                multipartParameter("content").description("내용")
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),

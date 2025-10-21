@@ -1,7 +1,0 @@
-[source,json,options="nowrap"]
-----
-{
-  "responseReportTitle" : "부정확한 정보",
-  "responseReportContent" : "답변 내용이 부정확합니다."
-}
-----
