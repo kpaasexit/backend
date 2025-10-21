@@ -1,5 +1,6 @@
 pipeline {
     agent any
+    // push to Docker
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
         DOCKER_HUB_REPO = 'leesy010504/exit-user-service'
