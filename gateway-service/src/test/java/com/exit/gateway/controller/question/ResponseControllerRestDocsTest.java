@@ -248,6 +248,9 @@ class ResponseControllerRestDocsTest {
                                 fieldWithPath("result.responseContent").description("답변 내용"),
                                 fieldWithPath("result.questionId").description("질문 ID"),
                                 fieldWithPath("result.responseWriterId").description("답변 작성자 ID"),
+                                fieldWithPath("result.images").description("이미지 객체 목록").optional(),
+                                fieldWithPath("result.images[].imageId").type("Number").description("이미지 ID").optional(),
+                                fieldWithPath("result.images[].imageUrl").type("String").description("이미지 URL").optional(),
                                 fieldWithPath("result.createdAt").description("작성일시")
                         )
                 ));
@@ -311,7 +314,7 @@ class ResponseControllerRestDocsTest {
                 .responseWriterProfile("https://example.com/profile/kim.jpg")
                 .responseContent("JWT 토큰은 다음과 같이 구현할 수 있습니다...")
                 .responseAdopt(true)
-                .urls(List.of("https://example.com/image1.jpg", "https://example.com/image2.jpg"))
+                .images(List.of())
                 .likeCount(15)
                 .createdAt(now)
                 .updatedAt(now)
@@ -326,7 +329,7 @@ class ResponseControllerRestDocsTest {
                 .responseWriterProfile("https://example.com/profile/lee.jpg")
                 .responseContent("다른 방법으로는 이렇게 할 수도 있습니다...")
                 .responseAdopt(false)
-                .urls(List.of())
+                .images(List.of())
                 .likeCount(5)
                 .createdAt(now)
                 .updatedAt(now)
@@ -370,7 +373,9 @@ class ResponseControllerRestDocsTest {
                                 fieldWithPath("result.responses[].responseWriterProfile").description("답변 작성자 프로필 URL").optional(),
                                 fieldWithPath("result.responses[].responseContent").description("답변 내용"),
                                 fieldWithPath("result.responses[].responseAdopt").description("채택 여부"),
-                                fieldWithPath("result.responses[].urls").description("답변 이미지 URL 목록"),
+                                fieldWithPath("result.responses[].images").description("답변 이미지 객체 목록").optional(),
+                                fieldWithPath("result.responses[].images[].imageId").type("Number").description("이미지 ID").optional(),
+                                fieldWithPath("result.responses[].images[].imageUrl").type("String").description("이미지 URL").optional(),
                                 fieldWithPath("result.responses[].likeCount").description("좋아요 수"),
                                 fieldWithPath("result.responses[].createdAt").description("작성일시"),
                                 fieldWithPath("result.responses[].updatedAt").description("수정일시"),

@@ -3,6 +3,7 @@ package com.exit.gateway.controller.question;
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.gateway.config.RestDocsConfiguration;
+import com.exit.gateway.controller.question.dto.ImageObjectDto;
 import com.exit.gateway.controller.question.dto.response.question.*;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.question.QuestionGrpcClient;
@@ -166,6 +167,10 @@ class QuestionControllerRestDocsTest {
         // given
         LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
 
+        ImageObjectDto[] imageObjectDtos = {
+                new ImageObjectDto(1L, "url"),
+                new ImageObjectDto(2L, "url")
+        };
         QuestionCreateResponseDto question = QuestionCreateResponseDto.builder()
                 .questionId(1L)
                 .questionTitle("Spring Boot에서 JWT 인증 구현하는 방법")
@@ -176,7 +181,7 @@ class QuestionControllerRestDocsTest {
                 .questionDisclosureType("PUBLIC")
                 .questionWriterId(1L)
                 .questionWriterName("김개발")
-                .imageUrls(List.of("https://example.com/image1.jpg"))
+                .images(List.of(imageObjectDtos))
                 .createdAt(now)
                 .build();
 
@@ -211,7 +216,10 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.question.questionDisclosureType").description("공개 타입"),
                                 fieldWithPath("result.question.questionWriterId").description("작성자 ID"),
                                 fieldWithPath("result.question.questionWriterName").description("작성자 이름"),
-                                fieldWithPath("result.question.imageUrls").description("이미지 URL 목록"),
+                                fieldWithPath("result.question.questionWriterProfile").description("작성자 프로필"),
+                                fieldWithPath("result.question.images").description("이미지 객체 목록"),
+                                fieldWithPath("result.question.images[].imageId").description("이미지 id"),
+                                fieldWithPath("result.question.images[].imageUrl").description("이미지 URL"),
                                 fieldWithPath("result.question.createdAt").description("작성일시"),
                                 fieldWithPath("result.authority").description("권한 정보"),
                                 fieldWithPath("result.authority.canModify").description("수정 권한 여부"),
@@ -332,7 +340,7 @@ class QuestionControllerRestDocsTest {
                 .questionDisclosureType("PUBLIC")
                 .questionWriterId(1L)
                 .questionWriterName("김사용자")
-                .imageUrls(List.of())
+                .images(List.of())
                 .createdAt(now)
                 .build();
 
@@ -379,7 +387,10 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.questionDisclosureType").description("공개 타입"),
                                 fieldWithPath("result.questionWriterId").description("작성자 ID"),
                                 fieldWithPath("result.questionWriterName").description("작성자 이름"),
-                                fieldWithPath("result.imageUrls").description("이미지 URL 목록"),
+                                fieldWithPath("result.questionWriterProfile").description("작성자 프로필").optional(),
+                                fieldWithPath("result.images").description("이미지 객체 목록").optional(),
+                                fieldWithPath("result.images[].imageId").type("Number").description("이미지 id").optional(),
+                                fieldWithPath("result.images[].imageUrl").type("String").description("이미지 URL").optional(),
                                 fieldWithPath("result.createdAt").description("작성일시")
                         )
                 ));
@@ -474,6 +485,7 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.popularPostList").description("인기 게시물 목록"),
+                                fieldWithPath("result.popularPostList[].questionId").description("질문 ID"),
                                 fieldWithPath("result.popularPostList[].categoryId").description("카테고리 ID"),
                                 fieldWithPath("result.popularPostList[].profileUrl").description("작성자 프로필 URL").optional(),
                                 fieldWithPath("result.popularPostList[].nickname").description("작성자 닉네임"),
@@ -530,6 +542,7 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.questions").description("내 질문 목록"),
+                                fieldWithPath("result.questions[].questionId").description("질문 ID").optional(),
                                 fieldWithPath("result.questions[].categoryId").description("카테고리 ID"),
                                 fieldWithPath("result.questions[].profileUrl").description("작성자 프로필 URL").optional(),
                                 fieldWithPath("result.questions[].nickname").description("작성자 닉네임"),

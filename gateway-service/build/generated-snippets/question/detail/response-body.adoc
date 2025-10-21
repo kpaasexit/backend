@@ -14,7 +14,14 @@
       "questionDisclosureType" : "PUBLIC",
       "questionWriterId" : 1,
       "questionWriterName" : "김개발",
-      "imageUrls" : [ "https://example.com/image1.jpg" ],
+      "questionWriterProfile" : null,
+      "images" : [ {
+        "imageId" : 1,
+        "imageUrl" : "url"
+      }, {
+        "imageId" : 2,
+        "imageUrl" : "url"
+      } ],
       "createdAt" : "2024-01-01T00:00:00"
     },
     "authority" : {

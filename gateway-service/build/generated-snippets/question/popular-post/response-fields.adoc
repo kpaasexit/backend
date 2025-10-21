@@ -17,6 +17,10 @@
 |`+Array+`
 |인기 게시물 목록
 
+|`+result.popularPostList[].questionId+`
+|`+Null+`
+|질문 ID
+
 |`+result.popularPostList[].categoryId+`
 |`+Number+`
 |카테고리 ID

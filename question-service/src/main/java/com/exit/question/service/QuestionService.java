@@ -10,6 +10,7 @@ import com.exit.common.grpc.GetMyQuestionRequest;
 import com.exit.common.grpc.GetMyQuestionResponse;
 import com.exit.common.grpc.GetPopularPostResponse;
 import com.exit.common.grpc.GetUsersNameAndProfileResponse;
+import com.exit.common.grpc.ImageObject;
 import com.exit.common.grpc.PopularPostItem;
 import com.exit.common.grpc.QuestionCreateRequest;
 import com.exit.common.grpc.QuestionCreateResponse;
@@ -45,6 +46,7 @@ import com.exit.question.service.util.QuestionGrpcMapper;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -88,14 +90,15 @@ public class QuestionService {
             Question question = Question.createQuestionFromRequest(request, questionCategory);
             Question savedQuestion = questionRepository.save(question);
 
-            List<String> imageUrls = uploadQuestionImages(request, savedQuestion);
-            String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
+            List<ImageObject> imageObjects = uploadQuestionImages(request, savedQuestion);
+            UpdateAdditionalUserInfoResponse userNameAndProfile = userGrpcClient.getUserNameAndProfile(
+                    question.getQuestionWriterId());
 
             aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
             // AI 답변 자동 생성
             scheduleAiAnswerGeneration(savedQuestion);
 
-            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageUrls, questionWriterName);
+            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile);
         } catch (GrpcException e) {
             throw new GrpcException(GrpcQuestionErrorCode.CREATE_QUESTION_FAILED,
                     e.getGrpcErrorCode().getErrorDescription());
@@ -227,6 +230,7 @@ public class QuestionService {
                     .map(post -> {
                         UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());
                         return PopularPostItem.newBuilder()
+                                .setQuestionId(post.questionId())
                                 .setCategoryId(post.questionCategoryId())
                                 .setProfileUrl(!userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
                                 .setNickname(userInfo.getUserName())
@@ -299,12 +303,22 @@ public class QuestionService {
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         Optional<List<QuestionImage>> images = questionImageRepository.findAllByQuestionId(questionId);
-        List<String> questionUrls = new ArrayList<>();
-        images.ifPresent(questionImages ->
-                questionImages.forEach(image -> questionUrls.add(image.getQuestionImageUrl())));
-        String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
+        List<ImageObject> imageObjectDtos = new ArrayList<>();
+        images.ifPresent(questionImages -> {
+                    questionImages.sort(Comparator.comparing(QuestionImage::getCreatedAt));
+                    questionImages.forEach(image ->
+                            imageObjectDtos.add(
+                                    ImageObject.newBuilder()
+                                            .setImageId(image.getQuestionImageId())
+                                            .setImageUrl(image.getQuestionImageUrl())
+                                            .build()
+                            ));
+                }
+        );
+        UpdateAdditionalUserInfoResponse userNameAndProfile = userGrpcClient.getUserNameAndProfile(
+                question.getQuestionWriterId());
 
-        return questionGrpcMapper.getQuestionCreateResponse(question, questionUrls, questionWriterName);
+        return questionGrpcMapper.getQuestionCreateResponse(question, imageObjectDtos, userNameAndProfile);
     }
 
     private Authority getAuthority(QuestionDetailRequest request) {
@@ -386,19 +400,30 @@ public class QuestionService {
         // TODO: 필요시 사용자에게 알림 전송 또는 재시도 큐에 추가
     }
 
-    private List<String> uploadQuestionImages(QuestionCreateRequest request, Question savedQuestion) {
-        List<String> imageUrls = null;
+    private List<ImageObject> uploadQuestionImages(QuestionCreateRequest request, Question savedQuestion) {
         if (!request.getImagesList().isEmpty()) {
-            imageUrls = fileUploadUtil.uploadImages(request.getImagesList(), QUESTION_FOLDER);
-            List<QuestionImage> questionImages = imageUrls.stream()
-                    .map(url -> QuestionImage.builder()
-                            .questionId(savedQuestion.getQuestionId())
-                            .questionImageUrl(url)
-                            .build())
+            List<String> imageUrls = fileUploadUtil.uploadImages(request.getImagesList(), QUESTION_FOLDER);
+            List<QuestionImage> savedQuestionImages = imageUrls.stream()
+                    .map(url -> {
+                        QuestionImage questionImage = QuestionImage.builder()
+                                .questionId(savedQuestion.getQuestionId())
+                                .questionImageUrl(url)
+                                .build();
+                        return questionImageRepository.save(questionImage);
+                    })
                     .toList();
 
-            questionImageRepository.saveAll(questionImages);
+            return savedQuestionImages.stream()
+                    .sorted(Comparator.comparing(QuestionImage::getCreatedAt))
+                    .map(image -> {
+                                return ImageObject.newBuilder()
+                                        .setImageId(image.getQuestionImageId())
+                                        .setImageUrl(image.getQuestionImageUrl())
+                                        .build();
+                            }
+                    ).toList();
         }
-        return imageUrls;
+
+        return null;
     }
 }

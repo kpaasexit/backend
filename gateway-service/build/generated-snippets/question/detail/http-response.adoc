@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 731
+Content-Length: 861
 
 {
   "code" : "QUESTION_OK_003",
@@ -24,7 +24,14 @@ Content-Length: 731
       "questionDisclosureType" : "PUBLIC",
       "questionWriterId" : 1,
       "questionWriterName" : "김개발",
-      "imageUrls" : [ "https://example.com/image1.jpg" ],
+      "questionWriterProfile" : null,
+      "images" : [ {
+        "imageId" : 1,
+        "imageUrl" : "url"
+      }, {
+        "imageId" : 2,
+        "imageUrl" : "url"
+      } ],
       "createdAt" : "2024-01-01T00:00:00"
     },
     "authority" : {

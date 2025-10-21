@@ -1,6 +1,7 @@
 package com.exit.gateway.controller.question.dto.response.question;
 
 import com.exit.common.grpc.QuestionCreateResponse;
+import com.exit.gateway.controller.question.dto.ImageObjectDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
@@ -20,14 +21,27 @@ public record QuestionCreateResponseDto(
         String questionDisclosureType,
         Long questionWriterId,
         String questionWriterName,
-        List<String> imageUrls,
+        String questionWriterProfile,
+        List<ImageObjectDto> images,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt
 ) {
     public static QuestionCreateResponseDto from(QuestionCreateResponse questionCreateResponse) {
         QuestionCreateResponseDtoBuilder builder = QuestionCreateResponseDto.builder();
-        if (!questionCreateResponse.getImageUrlsList().isEmpty()) {
-            builder.imageUrls(questionCreateResponse.getImageUrlsList());
+        if (!questionCreateResponse.getImagesList().isEmpty()) {
+            List<ImageObjectDto> images = questionCreateResponse.getImagesList().stream().map(
+                    imageObject -> {
+                        return ImageObjectDto.builder()
+                                .imageId(imageObject.getImageId())
+                                .imageUrl(imageObject.getImageUrl())
+                                .build();
+                    }
+            ).toList();
+            builder.images(images);
+        }
+
+        if(!questionCreateResponse.getQuestionWriterProfile().isEmpty()) {
+            builder.questionWriterProfile(questionCreateResponse.getQuestionWriterProfile());
         }
 
         return builder

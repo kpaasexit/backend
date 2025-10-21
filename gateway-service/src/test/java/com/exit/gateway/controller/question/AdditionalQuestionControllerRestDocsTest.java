@@ -69,7 +69,7 @@ class AdditionalQuestionControllerRestDocsTest {
                 .isQuestioner(true)
                 .messageId(1L)
                 .content("추가로 질문드립니다. 이 부분이 잘 이해가 안 되는데...")
-                .images(List.of("https://example.com/image1.jpg"))
+                .images(List.of())
                 .createdAt(now)
                 .build();
 
@@ -112,7 +112,9 @@ class AdditionalQuestionControllerRestDocsTest {
                                 fieldWithPath("result.messageList[].isQuestioner").description("질문자 여부"),
                                 fieldWithPath("result.messageList[].messageId").description("메시지 ID"),
                                 fieldWithPath("result.messageList[].content").description("메시지 내용"),
-                                fieldWithPath("result.messageList[].images").description("이미지 URL 목록"),
+                                fieldWithPath("result.messageList[].images").description("이미지 객체 목록").optional(),
+                                fieldWithPath("result.messageList[].images[].imageId").description("이미지 id").type("Number").optional(),
+                                fieldWithPath("result.messageList[].images[].imageUrl").description("이미지 URL").type("String").optional(),
                                 fieldWithPath("result.messageList[].createdAt").description("작성일시"),
                                 fieldWithPath("result.authority").description("권한 정보"),
                                 fieldWithPath("result.authority.isThirdParty").description("제3자 여부"),
@@ -187,7 +189,9 @@ class AdditionalQuestionControllerRestDocsTest {
                                 fieldWithPath("result.message.isQuestioner").description("질문자 여부"),
                                 fieldWithPath("result.message.messageId").description("메시지 ID"),
                                 fieldWithPath("result.message.content").description("메시지 내용"),
-                                fieldWithPath("result.message.images").description("이미지 URL 목록"),
+                                fieldWithPath("result.message.images").description("이미지 객체 목록").optional(),
+                                fieldWithPath("result.message.images[].imageId").description("이미지 id").type("Number").optional(),
+                                fieldWithPath("result.message.images[].imageUrl").description("이미지 URL").type("String").optional(),
                                 fieldWithPath("result.message.createdAt").description("작성일시")
                         )
                 ));

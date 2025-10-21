@@ -34,8 +34,14 @@ message ImageMetadata {
 }
 
 message UploadBytesRequest {
-  ImageMetadata meta = 1;
-  bytes data = 2;            // 주의: 큰 파일 비권장
+  int32 file_id = 1;
+  ImageMetadata meta = 2;
+  bytes data = 3;            // 주의: 큰 파일 비권장
+}
+
+message ImageObject {
+  int64 image_id = 1;
+  string image_url = 2;
 }
 
 // Request messages
@@ -97,8 +103,9 @@ message QuestionCreateResponse {
   string question_disclosure_type = 7;
   int64 question_writer_id = 8;
   string question_writer_name = 9;
-  repeated string image_urls = 10;
-  google.protobuf.Timestamp created_at = 11;
+  string question_writer_profile = 10;
+  repeated ImageObject images = 11;
+  google.protobuf.Timestamp created_at = 12;
 }
 
 message QuestionReportResponse {
@@ -158,14 +165,15 @@ message QuestionDetailResponse {
 }
 
 message PopularPostItem {
-  int64 category_id = 1;
-  string profile_url = 2;
-  string nickname= 3;
-  string title = 4;
-  string content = 5;
-  bool answer_adopt = 6;
-  int32 answer_count = 7;
-  google.protobuf.Timestamp created_at = 8;
+  int64 question_id = 1;
+  int64 category_id = 2;
+  string profile_url = 3;
+  string nickname= 4;
+  string title = 5;
+  string content = 6;
+  bool answer_adopt = 7;
+  int32 answer_count = 8;
+  google.protobuf.Timestamp created_at = 9;
 }
 
 message GetPopularPostResponse {

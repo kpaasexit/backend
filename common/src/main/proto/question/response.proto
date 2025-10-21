@@ -69,7 +69,7 @@ message ResponseDetail {
   string response_writer_name = 3;
   string response_content = 4;
   bool response_adopt = 5;
-  repeated string urls = 6;
+  repeated ImageObject image = 6;
   int32 like_count = 7;
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
@@ -106,7 +106,7 @@ message AnswerCreateResponse {
   int64 question_id = 2;
   string response_content = 3;
   int64 response_writer_id = 4;
-  repeated string image_urls = 5;
+  repeated ImageObject image = 5;
   google.protobuf.Timestamp created_at = 6;
 }
 

@@ -33,12 +33,11 @@ public class ResponseGrpcMapper {
                 .build();
     }
 
-    public AnswerCreateResponse getAnswerCreateResponse(Response response, List<String> urls) {
+    public AnswerCreateResponse getAnswerCreateResponse(Response response, List<ImageObject> imageObjects) {
 
         AnswerCreateResponse.Builder builder = AnswerCreateResponse.newBuilder();
-
-        if (urls != null && !urls.isEmpty()) {
-            builder.addAllImageUrls(urls);
+        if (imageObjects != null && !imageObjects.isEmpty()) {
+            builder.addAllImage(imageObjects);
         }
 
         return builder
@@ -58,12 +57,12 @@ public class ResponseGrpcMapper {
                 .build();
     }
 
-    public ResponseDetail getResponseDetail(Response response, List<String> urls, Integer likeCount, UpdateAdditionalUserInfoResponse writerNameProfile,
-                                            Authority responseAuthority) {
+    public ResponseDetail getResponseDetail(Response response, List<ImageObject> imageObjects, Integer likeCount,
+                                            UpdateAdditionalUserInfoResponse writerNameProfile, Authority responseAuthority) {
         ResponseDetail.Builder builder = ResponseDetail.newBuilder();
 
-        if (urls != null && !urls.isEmpty()) {
-            builder.addAllUrls(urls);
+        if (imageObjects != null && !imageObjects.isEmpty()) {
+            builder.addAllImage(imageObjects);
         }
 
         if(!writerNameProfile.getUserProfile().isEmpty()){

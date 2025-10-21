@@ -61,17 +61,22 @@ public class QuestionGrpcMapper {
                 .build();
     }
 
-    public QuestionCreateResponse getQuestionCreateResponse(Question question, List<String> urls, String questionWriterName) {
+    public QuestionCreateResponse getQuestionCreateResponse(Question question, List<ImageObject> imageObjects,
+                                                            UpdateAdditionalUserInfoResponse userNameAndProfile) {
         QuestionCreateResponse.Builder builder = QuestionCreateResponse.newBuilder();
 
-        if (urls != null && !urls.isEmpty()) {
-            builder.addAllImageUrls(urls);
+        if (imageObjects != null && !imageObjects.isEmpty()) {
+            builder.addAllImages(imageObjects);
+        }
+
+        if(!userNameAndProfile.getUserProfile().isEmpty()){
+            builder.setQuestionWriterProfile(userNameAndProfile.getUserProfile());
         }
 
         return builder
                 .setQuestionId(question.getQuestionId())
                 .setQuestionWriterId(question.getQuestionWriterId())
-                .setQuestionWriterName(questionWriterName)
+                .setQuestionWriterName(userNameAndProfile.getUserName())
                 .setQuestionTitle(question.getQuestionTitle())
                 .setQuestionContent(question.getQuestionContent())
                 .setQuestionCategory(question.getQuestionCategory().getQuestionCategoryId())
