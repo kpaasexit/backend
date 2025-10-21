@@ -35,7 +35,15 @@
 
 |`+result.message.images+`
 |`+Array+`
-|이미지 URL 목록
+|이미지 객체 목록
+
+|`+result.message.images[].imageId+`
+|`+Number+`
+|이미지 id
+
+|`+result.message.images[].imageUrl+`
+|`+String+`
+|이미지 URL
 
 |`+result.message.createdAt+`
 |`+String+`

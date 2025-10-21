@@ -2,5 +2,5 @@
 ----
 $ http GET 'http://localhost:8080/api/user/info' \
     'Content-Type:application/json;charset=UTF-8' \
-    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjEwMjYwMjEsImV4cCI6MTc2NDYyNjAyMX0.sxyNvuLFsFaH4tUK1jxyDLfaSjxvU36QT5I3r2hjZ5k'
+    'Authorization:Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjEwMzM3MjAsImV4cCI6MTc2NDYzMzcyMH0.dNpTmqQzZsZC4RyBuQxrcP_jRVbg8ae7WilKiTDjw1g'
 ----

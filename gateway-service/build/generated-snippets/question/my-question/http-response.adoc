@@ -8,13 +8,14 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 507
+Content-Length: 535
 
 {
   "code" : "QUESTION_OK_018",
   "message" : "내 질문 목록 조회 성공",
   "result" : {
     "questions" : [ {
+      "questionId" : null,
       "categoryId" : 1,
       "profileUrl" : null,
       "nickname" : "김사용자",

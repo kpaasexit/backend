@@ -2,6 +2,7 @@ package com.exit.gateway.controller.question.dto.response.question;
 
 import com.exit.common.grpc.ResponseDetail;
 import com.exit.common.util.time.TimeStampUtil;
+import com.exit.gateway.controller.question.dto.ImageObjectDto;
 import com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
@@ -17,7 +18,7 @@ public record ResponseDetailDto(
         String responseWriterProfile,
         String responseContent,
         Boolean responseAdopt,
-        List<String> urls,
+        List<ImageObjectDto> images,
         Integer likeCount,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt,
@@ -31,13 +32,24 @@ public record ResponseDetailDto(
         if (!grpcResponse.getProfile().isEmpty())
             builder.responseWriterProfile(grpcResponse.getProfile());
 
+        if (!grpcResponse.getImageList().isEmpty()) {
+            List<ImageObjectDto> images = grpcResponse.getImageList().stream().map(
+                    imageObject -> {
+                        return ImageObjectDto.builder()
+                                .imageId(imageObject.getImageId())
+                                .imageUrl(imageObject.getImageUrl())
+                                .build();
+                    }
+            ).toList();
+            builder.images(images);
+        }
+
         return builder
                 .responseId(grpcResponse.getResponseId())
                 .responseWriterId(grpcResponse.getResponseWriterId())
                 .responseWriterName(grpcResponse.getResponseWriterName())
                 .responseContent(grpcResponse.getResponseContent())
                 .responseAdopt(grpcResponse.getResponseAdopt())
-                .urls(grpcResponse.getUrlsList())
                 .likeCount(grpcResponse.getLikeCount())
                 .createdAt(TimeStampUtil.timestampToLocalDateTime(grpcResponse.getCreatedAt()))
                 .updatedAt(TimeStampUtil.timestampToLocalDateTime(grpcResponse.getUpdatedAt()))
