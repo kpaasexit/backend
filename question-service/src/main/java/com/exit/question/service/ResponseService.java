@@ -320,7 +320,7 @@ public class ResponseService {
                         .build();
                 ResponseImage savedImage = responseImageRepository.save(responseImage);
                 ImageObject imageObjectDto = ImageObject.newBuilder()
-                        .setImageId(savedResponse.getResponseId())
+                        .setImageId(savedImage.getResponseId())
                         .setImageUrl(savedImage.getResponseImageUrl())
                         .build();
                 imageObjectDtoList.add(imageObjectDto);
