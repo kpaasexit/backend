@@ -27,10 +27,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.exit.gateway.restdocs.MultipartFormParametersSnippet.multipartFormParameters;
+import static com.exit.gateway.restdocs.MultipartFormParametersSnippet.multipartParameter;
 
 @WebMvcTest(controllers = QuestionController.class,
         excludeAutoConfiguration = {
@@ -228,10 +232,13 @@ class ResponseControllerRestDocsTest {
                 .andExpect(jsonPath("$.result.responseId").value(1L))
                 .andExpect(jsonPath("$.result.responseContent").value("JWT 토큰은 다음과 같이 구현할 수 있습니다..."))
                 .andDo(document("response/answer-create",
-                        requestParts(
-                                partWithName("images")
-                                        .description("업로드할 이미지 파일 목록 (선택)")
-                                        .optional()
+                        relaxedRequestParts(
+                                partWithName("images").description("업로드할 이미지 파일 목록 (선택)").optional()
+                        ),
+                        multipartFormParameters(
+                                multipartParameter("questionId").description("질문 ID"),
+                                multipartParameter("responseContent").description("답변 내용"),
+                                multipartParameter("responseIsAnonymous").description("익명으로 등록할 것인지 (기본값 false)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),

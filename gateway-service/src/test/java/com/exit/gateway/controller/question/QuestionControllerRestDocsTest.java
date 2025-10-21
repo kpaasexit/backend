@@ -21,6 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.exit.gateway.restdocs.MultipartFormParametersSnippet.multipartFormParameters;
+import static com.exit.gateway.restdocs.MultipartFormParametersSnippet.multipartParameter;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -354,6 +356,15 @@ class QuestionControllerRestDocsTest {
                                 partWithName("images")
                                         .description("업로드할 이미지 파일 목록 (선택)")
                                         .optional()
+                        ),
+                        multipartFormParameters(
+                                multipartParameter("questionTitle").description("질문 제목"),
+                                multipartParameter("questionContent").description("질문 내용"),
+                                multipartParameter("questionCategory").description("질문 카테고리 ID"),
+                                multipartParameter("questionUrgency").description("질문 긴급도 (기본값 false)").optional(),
+                                multipartParameter("questionAnswerType").description("원하는 답변 타입 (INSTANT or COMMUNITY)"),
+                                multipartParameter("questionDisclosureType").description("질문 공개 타입 (PUBLIC or PRIVATE)"),
+                                multipartParameter("questionIsAnonymous").description("익명 여부(기본값 false)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),

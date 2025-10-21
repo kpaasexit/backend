@@ -1,5 +1,0 @@
-[source,bash]
-----
-$ curl 'http://localhost:8080/api/quiz/category/1' -i -X GET \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA4MTEyNTQsImV4cCI6MTc2NDQxMTI1NH0.nH2iAoVCjDkVwTKwFt9B5uR8VVIdkWSN4hk-ShqLe14'
-----
