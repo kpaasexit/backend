@@ -5,7 +5,7 @@ import com.exit.common.util.time.TimeStampUtil;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.QuestionReport;
-import com.exit.question.domain.response.Response;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class QuestionGrpcMapper {
         return QuestionReportResponse.newBuilder()
                 .setQuestionReportId(report.getQuestionReportId())
                 .setQuestionId(report.getQuestionId())
-                .setQuestionReportTitle(report.getQuestionReportTitle())
+                .setQuestionReportReason(report.getQuestionReportReason())
                 .setQuestionReportContent(report.getQuestionReportContent())
                 .setQuestionReportWriterId(report.getQuestionReportWriterId())
                 .setCreatedAt(toGrpcTimestamp(report.getCreatedAt()))
@@ -28,14 +28,16 @@ public class QuestionGrpcMapper {
                 .build();
     }
 
-    public QuestionListResponse getQuestionListResponse(List<QuestionListQueryResponseDto> content, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap, boolean hasNext) {
-        List<QuestionListItem> questionListItems = content.stream()
+    public QuestionListResponse getQuestionListResponse(Page<QuestionListQueryResponseDto> page, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
+        List<QuestionListItem> questionListItems = page.getContent().stream()
                 .map(dto -> QuestionListQueryResponseDto.toQuestionListItem(dto, userInfoMap))
                 .toList();
 
         return QuestionListResponse.newBuilder()
                 .addAllQuestions(questionListItems)
-                .setHasNext(hasNext)
+                .setCurrentPage(page.getNumber() + 1)
+                .setHasNext(page.hasNext())
+                .setTotalPageNum(page.getTotalPages())
                 .build();
     }
 
@@ -59,17 +61,22 @@ public class QuestionGrpcMapper {
                 .build();
     }
 
-    public QuestionCreateResponse getQuestionCreateResponse(Question question, List<String> urls, String questionWriterName) {
+    public QuestionCreateResponse getQuestionCreateResponse(Question question, List<ImageObject> imageObjects,
+                                                            UpdateAdditionalUserInfoResponse userNameAndProfile) {
         QuestionCreateResponse.Builder builder = QuestionCreateResponse.newBuilder();
 
-        if (urls != null && !urls.isEmpty()) {
-            builder.addAllImageUrls(urls);
+        if (imageObjects != null && !imageObjects.isEmpty()) {
+            builder.addAllImages(imageObjects);
+        }
+
+        if(!userNameAndProfile.getUserProfile().isEmpty()){
+            builder.setQuestionWriterProfile(userNameAndProfile.getUserProfile());
         }
 
         return builder
                 .setQuestionId(question.getQuestionId())
                 .setQuestionWriterId(question.getQuestionWriterId())
-                .setQuestionWriterName(questionWriterName)
+                .setQuestionWriterName(userNameAndProfile.getUserName())
                 .setQuestionTitle(question.getQuestionTitle())
                 .setQuestionContent(question.getQuestionContent())
                 .setQuestionCategory(question.getQuestionCategory().getQuestionCategoryId())
@@ -80,9 +87,10 @@ public class QuestionGrpcMapper {
                 .build();
     }
 
-    public QuestionDetailResponse getQuestionDetailResponse(QuestionCreateResponse questionCreateResponse) {
+    public QuestionDetailResponse getQuestionDetailResponse(QuestionCreateResponse questionCreateResponse, Authority authority) {
         return QuestionDetailResponse.newBuilder()
                 .setQuestion(questionCreateResponse)
+                .setAuthority(authority)
                 .build();
     }
 }

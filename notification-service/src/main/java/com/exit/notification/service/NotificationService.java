@@ -49,7 +49,10 @@ public class NotificationService {
                 messageList.add(message);
             });
 
+            log.info("Sending notification to user: {}", request.getReceiverId());
             BatchResponse batchResponse = firebaseMessaging.sendEach(messageList);
+            log.info("Sent notification to user: {}", request.getReceiverId());
+
             List<String> messageIds = batchResponse.getResponses().stream()
                     .map(SendResponse::getMessageId)
                     .toList();

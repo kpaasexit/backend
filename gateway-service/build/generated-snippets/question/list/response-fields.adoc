@@ -13,56 +13,64 @@
 |`+Object+`
 |응답 데이터
 
-|`+result.questionList+`
+|`+result.questionListItems+`
 |`+Array+`
 |질문 목록
 
-|`+result.questionList[].questionId+`
+|`+result.questionListItems[].questionId+`
 |`+Number+`
 |질문 ID
 
-|`+result.questionList[].questionCategoryId+`
+|`+result.questionListItems[].questionCategoryId+`
 |`+Number+`
 |질문 카테고리 ID
 
-|`+result.questionList[].questionWriterName+`
+|`+result.questionListItems[].questionWriterName+`
 |`+String+`
 |작성자 닉네임
 
-|`+result.questionList[].questionWriterProfile+`
+|`+result.questionListItems[].questionWriterProfile+`
 |`+String+`
 |작성자 프로필 url
 
-|`+result.questionList[].questionTitle+`
+|`+result.questionListItems[].questionTitle+`
 |`+String+`
 |질문 제목
 
-|`+result.questionList[].questionContent+`
+|`+result.questionListItems[].questionContent+`
 |`+String+`
 |질문 내용
 
-|`+result.questionList[].questionUrgency+`
+|`+result.questionListItems[].questionUrgency+`
 |`+Boolean+`
 |긴급 여부
 
-|`+result.questionList[].questionAnswerType+`
+|`+result.questionListItems[].questionAnswerType+`
 |`+String+`
 |답변 타입
 
-|`+result.questionList[].questionAnswerAdopt+`
+|`+result.questionListItems[].questionAnswerAdopt+`
 |`+Boolean+`
 |답변 채택 여부
 
-|`+result.questionList[].answerCount+`
+|`+result.questionListItems[].answerCount+`
 |`+Number+`
 |답변 개수
 
-|`+result.questionList[].createdAt+`
+|`+result.questionListItems[].createdAt+`
 |`+String+`
 |작성일시
 
 |`+result.hasNext+`
 |`+Boolean+`
 |다음 페이지 존재 여부
+
+|`+result.currentPage+`
+|`+Null+`
+|현재 페이지 번호
+
+|`+result.totalPageNum+`
+|`+Null+`
+|전체 페이지 개수
 
 |===

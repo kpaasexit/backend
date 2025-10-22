@@ -3,6 +3,7 @@ package com.exit.gateway.controller.question;
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.gateway.config.RestDocsConfiguration;
+import com.exit.gateway.controller.question.dto.ImageObjectDto;
 import com.exit.gateway.controller.question.dto.response.question.*;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.question.QuestionGrpcClient;
@@ -21,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.exit.gateway.restdocs.MultipartFormParametersSnippet.multipartFormParameters;
+import static com.exit.gateway.restdocs.MultipartFormParametersSnippet.multipartParameter;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -110,7 +113,7 @@ class QuestionControllerRestDocsTest {
                 .build();
 
         QuestionListResponseDto response = QuestionListResponseDto.builder()
-                .questionList(List.of(question1, question2))
+                .questionListItems(List.of(question1, question2))
                 .hasNext(true)
                 .build();
 
@@ -121,35 +124,39 @@ class QuestionControllerRestDocsTest {
                         .param("categoryIds", "1", "2")
                         .param("keyword", "Spring")
                         .param("page", "0")
-                        .param("size", "10"))
+                        .param("size", "5")
+                        .param("isExist", "false"))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.result.questionList[0].questionId").value(1L))
-                .andExpect(jsonPath("$.result.questionList[0].questionTitle").value("Spring Boot에서 JWT 인증 구현하는 방법"))
+                .andExpect(jsonPath("$.result.questionListItems[0].questionId").value(1L))
+                .andExpect(jsonPath("$.result.questionListItems[0].questionTitle").value("Spring Boot에서 JWT 인증 구현하는 방법"))
                 .andExpect(jsonPath("$.result.hasNext").value(true))
                 .andDo(document("question/list",
                         queryParameters(
                                 parameterWithName("categoryIds").description("카테고리 ID 목록 (선택)").optional(),
                                 parameterWithName("keyword").description("검색 키워드 (선택)").optional(),
-                                parameterWithName("page").description("페이지 번호 (기본값: 0)").optional(),
-                                parameterWithName("size").description("페이지 크기 (기본값: 10)").optional()
+                                parameterWithName("page").description("페이지 번호 (기본값: 1)").optional(),
+                                parameterWithName("size").description("페이지 크기 (기본값: 5)").optional(),
+                                parameterWithName("isExist").description("답변 채택 여부 (기본값: false)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.questionList").description("질문 목록"),
-                                fieldWithPath("result.questionList[].questionId").description("질문 ID"),
-                                fieldWithPath("result.questionList[].questionCategoryId").description("질문 카테고리 ID"),
-                                fieldWithPath("result.questionList[].questionWriterName").description("작성자 닉네임"),
-                                fieldWithPath("result.questionList[].questionWriterProfile").description("작성자 프로필 url"),
-                                fieldWithPath("result.questionList[].questionTitle").description("질문 제목"),
-                                fieldWithPath("result.questionList[].questionContent").description("질문 내용"),
-                                fieldWithPath("result.questionList[].questionUrgency").description("긴급 여부"),
-                                fieldWithPath("result.questionList[].questionAnswerType").description("답변 타입"),
-                                fieldWithPath("result.questionList[].questionAnswerAdopt").description("답변 채택 여부"),
-                                fieldWithPath("result.questionList[].answerCount").description("답변 개수"),
-                                fieldWithPath("result.questionList[].createdAt").description("작성일시"),
-                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
+                                fieldWithPath("result.questionListItems").description("질문 목록"),
+                                fieldWithPath("result.questionListItems[].questionId").description("질문 ID"),
+                                fieldWithPath("result.questionListItems[].questionCategoryId").description("질문 카테고리 ID"),
+                                fieldWithPath("result.questionListItems[].questionWriterName").description("작성자 닉네임"),
+                                fieldWithPath("result.questionListItems[].questionWriterProfile").description("작성자 프로필 url"),
+                                fieldWithPath("result.questionListItems[].questionTitle").description("질문 제목"),
+                                fieldWithPath("result.questionListItems[].questionContent").description("질문 내용"),
+                                fieldWithPath("result.questionListItems[].questionUrgency").description("긴급 여부"),
+                                fieldWithPath("result.questionListItems[].questionAnswerType").description("답변 타입"),
+                                fieldWithPath("result.questionListItems[].questionAnswerAdopt").description("답변 채택 여부"),
+                                fieldWithPath("result.questionListItems[].answerCount").description("답변 개수"),
+                                fieldWithPath("result.questionListItems[].createdAt").description("작성일시"),
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                                fieldWithPath("result.totalPageNum").description("전체 페이지 개수")
                         )
                 ));
     }
@@ -160,6 +167,10 @@ class QuestionControllerRestDocsTest {
         // given
         LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
 
+        ImageObjectDto[] imageObjectDtos = {
+                new ImageObjectDto(1L, "url"),
+                new ImageObjectDto(2L, "url")
+        };
         QuestionCreateResponseDto question = QuestionCreateResponseDto.builder()
                 .questionId(1L)
                 .questionTitle("Spring Boot에서 JWT 인증 구현하는 방법")
@@ -170,13 +181,14 @@ class QuestionControllerRestDocsTest {
                 .questionDisclosureType("PUBLIC")
                 .questionWriterId(1L)
                 .questionWriterName("김개발")
-                .imageUrls(List.of("https://example.com/image1.jpg"))
+                .images(List.of(imageObjectDtos))
                 .createdAt(now)
                 .build();
 
 
         QuestionDetailResponseDto response = new QuestionDetailResponseDto(
-                question
+                question,
+                new com.exit.gateway.controller.question.dto.response.authority.QuestionAuthority(true, true)
         );
 
         given(questionGrpcClient.getQuestionDetail(any())).willReturn(response);
@@ -204,8 +216,14 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.question.questionDisclosureType").description("공개 타입"),
                                 fieldWithPath("result.question.questionWriterId").description("작성자 ID"),
                                 fieldWithPath("result.question.questionWriterName").description("작성자 이름"),
-                                fieldWithPath("result.question.imageUrls").description("이미지 URL 목록"),
-                                fieldWithPath("result.question.createdAt").description("작성일시")
+                                fieldWithPath("result.question.questionWriterProfile").description("작성자 프로필"),
+                                fieldWithPath("result.question.images").description("이미지 객체 목록"),
+                                fieldWithPath("result.question.images[].imageId").description("이미지 id"),
+                                fieldWithPath("result.question.images[].imageUrl").description("이미지 URL"),
+                                fieldWithPath("result.question.createdAt").description("작성일시"),
+                                fieldWithPath("result.authority").description("권한 정보"),
+                                fieldWithPath("result.authority.canModify").description("수정 권한 여부"),
+                                fieldWithPath("result.authority.canDelete").description("삭제 권한 여부")
                         )
                 ));
     }
@@ -322,7 +340,7 @@ class QuestionControllerRestDocsTest {
                 .questionDisclosureType("PUBLIC")
                 .questionWriterId(1L)
                 .questionWriterName("김사용자")
-                .imageUrls(List.of())
+                .images(List.of())
                 .createdAt(now)
                 .build();
 
@@ -337,8 +355,7 @@ class QuestionControllerRestDocsTest {
                         .param("questionCategory", "1")
                         .param("questionUrgency", "true")
                         .param("questionAnswerType", "PUBLIC")
-                        .param("questionDisclosureType", "PUBLIC")
-                        .param("questionWriterId", "1"))
+                        .param("questionDisclosureType", "PUBLIC"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.questionId").value(1L))
                 .andExpect(jsonPath("$.result.questionTitle").value("Spring JWT 인증 구현"))
@@ -347,6 +364,15 @@ class QuestionControllerRestDocsTest {
                                 partWithName("images")
                                         .description("업로드할 이미지 파일 목록 (선택)")
                                         .optional()
+                        ),
+                        multipartFormParameters(
+                                multipartParameter("questionTitle").description("질문 제목"),
+                                multipartParameter("questionContent").description("질문 내용"),
+                                multipartParameter("questionCategory").description("질문 카테고리 ID"),
+                                multipartParameter("questionUrgency").description("질문 긴급도 (기본값 false)").optional(),
+                                multipartParameter("questionAnswerType").description("원하는 답변 타입 (INSTANT or COMMUNITY)"),
+                                multipartParameter("questionDisclosureType").description("질문 공개 타입 (PUBLIC or PRIVATE)"),
+                                multipartParameter("questionIsAnonymous").description("익명 여부(기본값 false)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
@@ -361,7 +387,10 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.questionDisclosureType").description("공개 타입"),
                                 fieldWithPath("result.questionWriterId").description("작성자 ID"),
                                 fieldWithPath("result.questionWriterName").description("작성자 이름"),
-                                fieldWithPath("result.imageUrls").description("이미지 URL 목록"),
+                                fieldWithPath("result.questionWriterProfile").description("작성자 프로필").optional(),
+                                fieldWithPath("result.images").description("이미지 객체 목록").optional(),
+                                fieldWithPath("result.images[].imageId").type("Number").description("이미지 id").optional(),
+                                fieldWithPath("result.images[].imageUrl").type("String").description("이미지 URL").optional(),
                                 fieldWithPath("result.createdAt").description("작성일시")
                         )
                 ));
@@ -376,7 +405,7 @@ class QuestionControllerRestDocsTest {
         QuestionReportResponseDto response = QuestionReportResponseDto.builder()
                 .questionId(1L)
                 .questionReportId(1L)
-                .questionReportTitle("부적절한 내용")
+                .questionReportReason(1)
                 .questionReportContent("질문 내용이 부적절합니다.")
                 .questionReportWriterId(1L)
                 .createdAt(now)
@@ -387,7 +416,7 @@ class QuestionControllerRestDocsTest {
         // when & then
         mockMvc.perform(post("/api/questions/{questionId}/report", 1L)
                         .contentType("application/json")
-                        .content("{\"questionReportTitle\": \"부적절한 내용\", \"questionReportContent\": \"질문 내용이 부적절합니다.\"}"))
+                        .content("{\"questionReportReason\": 1, \"questionReportContent\": \"질문 내용이 부적절합니다.\"}"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.questionReportId").value(1L))
                 .andDo(document("question/report",
@@ -395,7 +424,7 @@ class QuestionControllerRestDocsTest {
                                 parameterWithName("questionId").description("질문 ID")
                         ),
                         requestFields(
-                                fieldWithPath("questionReportTitle").description("신고 제목"),
+                                fieldWithPath("questionReportReason").description("신고 사유 id"),
                                 fieldWithPath("questionReportContent").description("신고 내용")
                         ),
                         responseFields(
@@ -404,7 +433,7 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.questionId").description("질문 ID"),
                                 fieldWithPath("result.questionReportId").description("질문 신고 ID"),
-                                fieldWithPath("result.questionReportTitle").description("신고 제목"),
+                                fieldWithPath("result.questionReportReason").description("신고 사유 ID"),
                                 fieldWithPath("result.questionReportContent").description("신고 내용"),
                                 fieldWithPath("result.questionReportWriterId").description("신고자 ID"),
                                 fieldWithPath("result.createdAt").description("신고일시")
@@ -456,6 +485,7 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.popularPostList").description("인기 게시물 목록"),
+                                fieldWithPath("result.popularPostList[].questionId").description("질문 ID"),
                                 fieldWithPath("result.popularPostList[].categoryId").description("카테고리 ID"),
                                 fieldWithPath("result.popularPostList[].profileUrl").description("작성자 프로필 URL").optional(),
                                 fieldWithPath("result.popularPostList[].nickname").description("작성자 닉네임"),
@@ -489,12 +519,13 @@ class QuestionControllerRestDocsTest {
                 .hasNext(false)
                 .build();
 
-        given(questionGrpcClient.getMyQuestion(anyLong(), anyInt())).willReturn(response);
+        given(questionGrpcClient.getMyQuestion(anyLong(), anyInt(), anyInt())).willReturn(response);
 
         // when & then
         mockMvc.perform(get("/api/questions/my")
                         .header("Authorization", "Bearer " + validAccessToken)
-                        .param("pageNum", "1"))
+                        .param("pageNum", "1")
+                        .param("size", "5"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.questions[0].title").value("내가 작성한 첫 번째 질문"))
                 .andExpect(jsonPath("$.result.hasNext").value(false))
@@ -503,13 +534,15 @@ class QuestionControllerRestDocsTest {
                                 headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
                         ),
                         queryParameters(
-                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작)")
+                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작)").optional(),
+                                parameterWithName("size").description("페이지 크기").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.questions").description("내 질문 목록"),
+                                fieldWithPath("result.questions[].questionId").description("질문 ID").optional(),
                                 fieldWithPath("result.questions[].categoryId").description("카테고리 ID"),
                                 fieldWithPath("result.questions[].profileUrl").description("작성자 프로필 URL").optional(),
                                 fieldWithPath("result.questions[].nickname").description("작성자 닉네임"),
@@ -518,7 +551,9 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.questions[].content").description("질문 내용"),
                                 fieldWithPath("result.questions[].answerAdopt").description("답변 채택 여부"),
                                 fieldWithPath("result.questions[].answerCount").description("답변 개수"),
-                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                                fieldWithPath("result.totalPageNum").description("전체 페이지 개수")
                         )
                 ));
     }

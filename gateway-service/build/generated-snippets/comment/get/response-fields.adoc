@@ -37,8 +37,28 @@
 |`+String+`
 |작성일시
 
+|`+result.commentItemList[].authority+`
+|`+Object+`
+|권한 정보
+
+|`+result.commentItemList[].authority.canModify+`
+|`+Boolean+`
+|수정 권한 여부
+
+|`+result.commentItemList[].authority.canDelete+`
+|`+Boolean+`
+|삭제 권한 여부
+
 |`+result.hasNext+`
 |`+Boolean+`
 |다음 페이지 존재 여부
+
+|`+result.currentPage+`
+|`+Number+`
+|현재 페이지 번호
+
+|`+result.totalPageNum+`
+|`+Number+`
+|전체 페이지 개수
 
 |===

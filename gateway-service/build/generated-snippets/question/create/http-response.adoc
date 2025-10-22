@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 530
+Content-Length: 564
 
 {
   "code" : "QUESTION_OK_001",
@@ -23,7 +23,8 @@ Content-Length: 530
     "questionDisclosureType" : "PUBLIC",
     "questionWriterId" : 1,
     "questionWriterName" : "김사용자",
-    "imageUrls" : [ ],
+    "questionWriterProfile" : null,
+    "images" : [ ],
     "createdAt" : "2024-01-01T00:00:00"
   }
 }

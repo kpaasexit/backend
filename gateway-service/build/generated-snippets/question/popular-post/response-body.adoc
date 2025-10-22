@@ -5,6 +5,7 @@
   "message" : "인기 게시글 조회 성공",
   "result" : {
     "popularPostList" : [ {
+      "questionId" : null,
       "categoryId" : 1,
       "profileUrl" : "https://example.com/profile.jpg",
       "nickname" : "김개발",
@@ -14,6 +15,7 @@
       "answerAdopt" : true,
       "answerCount" : 15
     }, {
+      "questionId" : null,
       "categoryId" : 2,
       "profileUrl" : null,
       "nickname" : "이프론트",

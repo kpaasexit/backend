@@ -3,6 +3,7 @@ package com.exit.question.service.util;
 import com.exit.common.grpc.*;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.ResponseReport;
+import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class ResponseGrpcMapper {
         return AnswerReportResponse.newBuilder()
                 .setResponseReportId(report.getResponseReportId())
                 .setResponseId(report.getResponseId())
-                .setResponseReportTitle(report.getResponseReportTitle())
+                .setResponseReportReason(report.getResponseReportReason())
                 .setResponseReportContent(report.getResponseReportContent())
                 .setResponseReportWriterId(report.getResponseReportWriterId())
                 .setCreatedAt(toGrpcTimestamp(report.getCreatedAt()))
@@ -32,12 +33,11 @@ public class ResponseGrpcMapper {
                 .build();
     }
 
-    public AnswerCreateResponse getAnswerCreateResponse(Response response, List<String> urls) {
+    public AnswerCreateResponse getAnswerCreateResponse(Response response, List<ImageObject> imageObjects) {
 
         AnswerCreateResponse.Builder builder = AnswerCreateResponse.newBuilder();
-
-        if (urls != null && !urls.isEmpty()) {
-            builder.addAllImageUrls(urls);
+        if (imageObjects != null && !imageObjects.isEmpty()) {
+            builder.addAllImage(imageObjects);
         }
 
         return builder
@@ -57,11 +57,12 @@ public class ResponseGrpcMapper {
                 .build();
     }
 
-    public ResponseDetail getResponseDetail(Response response, List<String> urls, Integer likeCount, UpdateAdditionalUserInfoResponse writerNameProfile) {
+    public ResponseDetail getResponseDetail(Response response, List<ImageObject> imageObjects, Integer likeCount,
+                                            UpdateAdditionalUserInfoResponse writerNameProfile, Authority responseAuthority) {
         ResponseDetail.Builder builder = ResponseDetail.newBuilder();
 
-        if (urls != null && !urls.isEmpty()) {
-            builder.addAllUrls(urls);
+        if (imageObjects != null && !imageObjects.isEmpty()) {
+            builder.addAllImage(imageObjects);
         }
 
         if(!writerNameProfile.getUserProfile().isEmpty()){
@@ -77,6 +78,8 @@ public class ResponseGrpcMapper {
                 .setLikeCount(likeCount)
                 .setCreatedAt(toGrpcTimestamp(response.getCreatedAt()))
                 .setUpdatedAt(toGrpcTimestamp(response.getUpdatedAt()))
+                .setAuthority(responseAuthority)
+                .setIsAi(Objects.equals(response.getResponseWriterId(), 1L))
                 .build();
     }
 }

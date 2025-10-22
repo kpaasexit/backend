@@ -2,11 +2,11 @@
 ----
 POST /api/questions/1/report HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Content-Length: 122
+Content-Length: 103
 Host: localhost:8080
 
 {
-  "questionReportTitle" : "부적절한 내용",
+  "questionReportReason" : 1,
   "questionReportContent" : "질문 내용이 부적절합니다."
 }
 ----

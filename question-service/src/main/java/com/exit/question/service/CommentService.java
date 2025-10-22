@@ -60,7 +60,7 @@ public class CommentService {
     public GetCommentResponse getComment(GetCommentRequest request) {
         try {
             CommentFactory factory = commentFactoryManager.getFactory(CommentType.valueOf(request.getTargetType()));
-            return factory.getCommentList(request.getTargetId(), request.getUserId(), request.getPageNum());
+            return factory.getCommentList(request);
         } catch (Exception e) {
             log.error("Get comment failed for targetId: {}", request.getTargetId(), e);
             throw new GrpcException(GrpcCommentErrorCode.GET_COMMENT_FAILED, e.getMessage());

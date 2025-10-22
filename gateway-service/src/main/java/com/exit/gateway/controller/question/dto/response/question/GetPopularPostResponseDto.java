@@ -20,6 +20,7 @@ public record GetPopularPostResponseDto(
                     if (!post.getProfileUrl().isEmpty()) builder.profileUrl(post.getProfileUrl());
 
                     return builder
+                            .questionId(post.getQuestionId())
                             .categoryId(post.getCategoryId())
                             .nickname(post.getNickname())
                             .createdAt(TimeStampUtil.timestampToLocalDateTime(post.getCreatedAt()))
@@ -37,6 +38,7 @@ public record GetPopularPostResponseDto(
 
     @Builder
     public record PopularPost(
+            Long questionId,
             Long categoryId,
             String profileUrl,
             String nickname,

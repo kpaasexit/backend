@@ -1,6 +1,7 @@
 package com.exit.question.domain.question.repository;
 
 import com.exit.question.domain.question.QuestionComment;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +13,5 @@ import java.util.List;
 public interface QuestionCommentRepository extends JpaRepository<QuestionComment, Long> {
     boolean existsByIdAndWriterId(Long id, Long writerId);
 
-    Slice<QuestionComment> findAllByQuestion_QuestionId(Long targetId, PageRequest pageRequest);
+    Page<QuestionComment> findAllByQuestion_QuestionId(Long targetId, PageRequest pageRequest);
 }

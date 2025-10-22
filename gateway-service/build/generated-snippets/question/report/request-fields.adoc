@@ -1,9 +1,9 @@
 |===
 |Path|Type|Description
 
-|`+questionReportTitle+`
-|`+String+`
-|신고 제목
+|`+questionReportReason+`
+|`+Number+`
+|신고 사유 id
 
 |`+questionReportContent+`
 |`+String+`

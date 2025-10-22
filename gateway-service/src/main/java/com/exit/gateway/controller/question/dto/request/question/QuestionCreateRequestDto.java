@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -31,10 +28,5 @@ public class QuestionCreateRequestDto {
     @NotBlank(message = "공개 타입은 필수입니다.")
     private String questionDisclosureType;
 
-    @NotNull(message = "작성자 ID는 필수입니다.")
-    private Long questionWriterId;
-
     private Boolean questionIsAnonymous = false;
-
-    private List<MultipartFile> images;
 }

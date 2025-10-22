@@ -1,8 +1,32 @@
 package com.exit.question.service;
 
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+
 import com.exit.common.exception.grpc.GrpcException;
-import com.exit.common.grpc.*;
+import com.exit.common.grpc.AiBestResponse;
+import com.exit.common.grpc.AnswerAdoptRequest;
+import com.exit.common.grpc.AnswerAdoptResponse;
+import com.exit.common.grpc.AnswerCreateRequest;
+import com.exit.common.grpc.AnswerCreateResponse;
+import com.exit.common.grpc.AnswerRecommendRequest;
+import com.exit.common.grpc.AnswerRecommendResponse;
+import com.exit.common.grpc.AnswerReportRequest;
+import com.exit.common.grpc.AnswerReportResponse;
+import com.exit.common.grpc.Authority;
+import com.exit.common.grpc.DeleteResponseRequest;
+import com.exit.common.grpc.GetAiBestResponseResponse;
+import com.exit.common.grpc.GetDetailResponseRequest;
+import com.exit.common.grpc.GetDetailResponseResponse;
+import com.exit.common.grpc.GetUsersNameAndProfileResponse;
+import com.exit.common.grpc.ImageObject;
+import com.exit.common.grpc.ResponseDetail;
+import com.exit.common.grpc.SendNotificationRequest;
+import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
+import com.exit.common.grpc.UpdateResponseRequest;
+import com.exit.common.grpc.UpdateResponseResponse;
 import com.exit.common.util.file.FileUploadUtil;
+import com.exit.question.controller.dto.response.AiBestResponseDto;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.repository.FollowUpRoomRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
@@ -20,20 +44,25 @@ import com.exit.question.service.client.NotificationGrpcClient;
 import com.exit.question.service.client.UserGrpcClient;
 import com.exit.question.service.util.NotificationGrpcMapper;
 import com.exit.question.service.util.ResponseGrpcMapper;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +89,7 @@ public class ResponseService {
             Response newResponse = Response.createResponse(request);
             Response savedResponse = responseRepository.save(newResponse);
 
-            List<String> imageUrls = processAnswerImages(request, savedResponse);
+            List<ImageObject> imageObjects = processAnswerImages(request, savedResponse);
             Question question = questionRepository.findById(savedResponse.getQuestionId())
                     .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
@@ -69,9 +98,10 @@ public class ResponseService {
                     subBody, "NEW_ANSWER_ON_QUESTION", question);
             notificationGrpcClient.sendNotification(sendNotificationRequest);
 
-            return responseGrpcMapper.getAnswerCreateResponse(savedResponse, imageUrls);
+            return responseGrpcMapper.getAnswerCreateResponse(savedResponse, imageObjects);
         } catch (GrpcException e) {
-            throw new GrpcException(GrpcResponseErrorCode.CREATE_ANSWER_FAILED, e.getGrpcErrorCode().getErrorDescription());
+            throw new GrpcException(GrpcResponseErrorCode.CREATE_ANSWER_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Create answer failed for questionId: {}", request.getQuestionId(), e);
             throw new GrpcException(GrpcResponseErrorCode.CREATE_ANSWER_FAILED, e.getMessage());
@@ -98,8 +128,9 @@ public class ResponseService {
             Response response = responseRepository.findById(request.getResponseId())
                     .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
 
-            if (Boolean.TRUE.equals(response.getResponseAdopt()))
+            if (Boolean.TRUE.equals(response.getResponseAdopt())) {
                 throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
+            }
 
             response.updateContent(request.getContent());
             responseRepository.save(response);
@@ -109,7 +140,8 @@ public class ResponseService {
                     .setContent(response.getResponseContent())
                     .build();
         } catch (GrpcException e) {
-            throw new GrpcException(GrpcResponseErrorCode.UPDATE_RESPONSE_FAILED, e.getGrpcErrorCode().getErrorDescription());
+            throw new GrpcException(GrpcResponseErrorCode.UPDATE_RESPONSE_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Update response failed for responseId: {}", request.getResponseId(), e);
             throw new GrpcException(GrpcResponseErrorCode.UPDATE_RESPONSE_FAILED, e.getMessage());
@@ -124,7 +156,8 @@ public class ResponseService {
 
             return responseGrpcMapper.getAnswerAdoptResponse(adoptedResponse);
         } catch (GrpcException e) {
-            throw new GrpcException(GrpcResponseErrorCode.ANSWER_ADOPT_FAILED, e.getGrpcErrorCode().getErrorDescription());
+            throw new GrpcException(GrpcResponseErrorCode.ANSWER_ADOPT_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Answer adopt failed for responseId: {}", request.getResponseId(), e);
             throw new GrpcException(GrpcResponseErrorCode.ANSWER_ADOPT_FAILED, e.getMessage());
@@ -136,8 +169,9 @@ public class ResponseService {
             Response response = responseRepository.findById(request.getResponseId())
                     .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
 
-            if (Boolean.TRUE.equals(response.getResponseAdopt()))
+            if (Boolean.TRUE.equals(response.getResponseAdopt())) {
                 throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
+            }
 
             // FollowUpRoom이 있다면 먼저 삭제
             followUpRoomRepository.findByResponse(response)
@@ -145,7 +179,8 @@ public class ResponseService {
 
             responseRepository.delete(response);
         } catch (GrpcException e) {
-            throw new GrpcException(GrpcResponseErrorCode.DELETE_RESPONSE_FAILED, e.getGrpcErrorCode().getErrorDescription());
+            throw new GrpcException(GrpcResponseErrorCode.DELETE_RESPONSE_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Delete response failed for responseId: {}", request.getResponseId(), e);
             throw new GrpcException(GrpcResponseErrorCode.DELETE_RESPONSE_FAILED, e.getMessage());
@@ -162,7 +197,8 @@ public class ResponseService {
             userGrpcClient.increaseReportCount(response.getResponseWriterId());
             return responseGrpcMapper.getAnswerReportResponse(savedResponseReport);
         } catch (GrpcException e) {
-            throw new GrpcException(GrpcResponseErrorCode.ANSWER_REPORT_FAILED, e.getGrpcErrorCode().getErrorDescription());
+            throw new GrpcException(GrpcResponseErrorCode.ANSWER_REPORT_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Answer report failed for responseId: {}", request.getResponseId(), e);
             throw new GrpcException(GrpcResponseErrorCode.ANSWER_REPORT_FAILED, e.getMessage());
@@ -173,16 +209,42 @@ public class ResponseService {
     public GetDetailResponseResponse getDetailResponse(GetDetailResponseRequest request) {
         try {
             List<ResponseDetail> responseDetails = buildResponseDetail(request);
-            boolean hasMore = hasMoreResponses(request.getQuestionId());
+            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
+            Page<Response> questions = responseRepository.findAllByQuestionId(request.getQuestionId(), pageRequest);
 
             return GetDetailResponseResponse.newBuilder()
                     .addAllResponses(responseDetails)
-                    .setHasNext(hasMore)
+                    .setHasNext(questions.hasNext())
+                    .setCurrentPage(questions.getNumber() + 1)
+                    .setTotalPageNum(questions.getTotalPages())
                     .build();
         } catch (Exception e) {
             log.error("Get detail response failed for questionId: {}", request.getQuestionId(), e);
             throw new GrpcException(GrpcResponseErrorCode.GET_DETAIL_RESPONSE_FAILED, e.getMessage());
         }
+    }
+
+    @Transactional(readOnly = true)
+    public GetAiBestResponseResponse getAiBestResponse() {
+        List<AiBestResponseDto> aiBestResponseTop5 = responseRepository.findAiBestResponseTop5();
+        List<AiBestResponse> itemList = aiBestResponseTop5.stream()
+                .map(AiBestResponseDto::toGrpc)
+                .toList();
+
+        return GetAiBestResponseResponse.newBuilder()
+                .addAllAiBestResponse(itemList)
+                .build();
+    }
+
+    private Authority getResponseAuthority(Response response, GetDetailResponseRequest request) {
+        boolean isSameUser = Objects.equals(response.getResponseId(), request.getUserId());
+        Question question = questionRepository.findById(request.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
+        return Authority.newBuilder()
+                .setCanAdopt(!question.getQuestionAnswerAdopt())
+                .setCanDelete(isSameUser)
+                .setCanModify(isSameUser)
+                .build();
     }
 
     private Response adoptResponse(Long responseId) {
@@ -247,19 +309,24 @@ public class ResponseService {
         return true; // 새로운 좋아요
     }
 
-    private List<String> processAnswerImages(AnswerCreateRequest answerCreateRequest, Response savedResponse) {
-        List<String> imageUrls = null;
+    private List<ImageObject> processAnswerImages(AnswerCreateRequest answerCreateRequest, Response savedResponse) {
+        List<ImageObject> imageObjectDtoList = new ArrayList<>();
         if (!answerCreateRequest.getImagesList().isEmpty()) {
-            imageUrls = fileUploadUtil.uploadImages(answerCreateRequest.getImagesList(), RESPONSE_FOLDER);
+            List<String> imageUrls = fileUploadUtil.uploadImages(answerCreateRequest.getImagesList(), RESPONSE_FOLDER);
             for (String imageUrl : imageUrls) {
                 ResponseImage responseImage = ResponseImage.builder()
                         .responseId(savedResponse.getResponseId())
                         .responseImageUrl(imageUrl)
                         .build();
-                responseImageRepository.save(responseImage);
+                ResponseImage savedImage = responseImageRepository.save(responseImage);
+                ImageObject imageObjectDto = ImageObject.newBuilder()
+                        .setImageId(savedImage.getResponseImageId())
+                        .setImageUrl(savedImage.getResponseImageUrl())
+                        .build();
+                imageObjectDtoList.add(imageObjectDto);
             }
         }
-        return imageUrls;
+        return imageObjectDtoList;
     }
 
     private List<ResponseDetail> buildResponseDetail(GetDetailResponseRequest request) {
@@ -267,7 +334,8 @@ public class ResponseService {
 
         // 1. 채택된 답변 조회 (첫 페이지에만)
         if (request.getPageNum() == 0) {
-            Optional<Response> adoptedResponse = responseRepository.findByQuestionIdAndResponseAdoptTrue(request.getQuestionId());
+            Optional<Response> adoptedResponse = responseRepository.findByQuestionIdAndResponseAdoptTrue(
+                    request.getQuestionId());
             if (adoptedResponse.isPresent()) {
                 responses.add(adoptedResponse.get());
             }
@@ -276,7 +344,8 @@ public class ResponseService {
         // 2. 일반 답변 조회 (채택된 답변 제외)
         int size = request.getPageNum() == 0 ? 4 : 5;
         PageRequest pageRequest = PageRequest.of(request.getPageNum(), size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Slice<Response> responseSlice = responseRepository.findAllByQuestionIdAndResponseAdoptFalse(request.getQuestionId(), pageRequest);
+        Slice<Response> responseSlice = responseRepository.findAllByQuestionIdAndResponseAdoptFalse(
+                request.getQuestionId(), pageRequest);
 
         // 일반 답변을 리스트에 추가
         responses.addAll(responseSlice.getContent());
@@ -286,7 +355,7 @@ public class ResponseService {
         }
 
         // 3. 배치로 필요한 데이터 미리 조회 (N+1 문제 해결)
-        Map<Long, List<String>> responseImageUrlsMap = getResponseImageUrlsMap(responses);
+        Map<Long, List<ImageObject>> responseImageUrlsMap = getResponseImageUrlsMap(responses);
         Map<Long, Integer> likeCountMap = getLikeCountMap(responses);
         Map<Long, UpdateAdditionalUserInfoResponse> writerNameProfileMap = getWriterNameAndProfileMap(responses);
 
@@ -296,28 +365,33 @@ public class ResponseService {
                         response,
                         responseImageUrlsMap.getOrDefault(response.getResponseId(), Collections.emptyList()),
                         likeCountMap.getOrDefault(response.getResponseId(), 0),
-                        writerNameProfileMap.getOrDefault(response.getResponseWriterId(), UpdateAdditionalUserInfoResponse.newBuilder()
-                                .setUserName("UNDEFINED")
-                                .build())
+                        writerNameProfileMap.getOrDefault(response.getResponseWriterId(),
+                                UpdateAdditionalUserInfoResponse.newBuilder()
+                                        .setUserName("UNDEFINED")
+                                        .build()),
+                        getResponseAuthority(response, request)
+
                 ))
                 .toList();
     }
 
-    private boolean hasMoreResponses(Long questionId) {
-        PageRequest pageRequest = PageRequest.of(0, 5);
-        return responseRepository.findAllByQuestionId(questionId, pageRequest).hasNext();
-    }
-
-    private Map<Long, List<String>> getResponseImageUrlsMap(List<Response> responses) {
+    private Map<Long, List<ImageObject>> getResponseImageUrlsMap(List<Response> responses) {
         List<Long> responseIds = responses.stream()
                 .map(Response::getResponseId)
                 .toList();
 
         return responseImageRepository.findAllByResponseIdIn(responseIds)
                 .stream()
+                .sorted(Comparator.comparing(ResponseImage::getCreatedAt))
                 .collect(Collectors.groupingBy(
                         ResponseImage::getResponseId,
-                        Collectors.mapping(ResponseImage::getResponseImageUrl, Collectors.toList())
+                        Collectors.mapping(responseImage ->
+                                ImageObject.newBuilder()
+                                        .setImageId(responseImage.getResponseImageId())
+                                        .setImageUrl(responseImage.getResponseImageUrl())
+                                        .build(),
+                                Collectors.toList()
+                        )
                 ));
     }
 
@@ -334,7 +408,8 @@ public class ResponseService {
                 .map(Response::getResponseWriterId)
                 .collect(toSet());
 
-        GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(new HashSet<>(writerIds));
+        GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(
+                new HashSet<>(writerIds));
         return usersNameAndProfile.getUserInfoList().stream()
                 .collect(toMap(
                         UpdateAdditionalUserInfoResponse::getUserId,

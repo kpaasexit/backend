@@ -1,7 +1,7 @@
 [source,bash]
 ----
 $ echo '{
-  "questionReportTitle" : "부적절한 내용",
+  "questionReportReason" : 1,
   "questionReportContent" : "질문 내용이 부적절합니다."
 }' | http POST 'http://localhost:8080/api/questions/1/report' \
     'Content-Type:application/json;charset=UTF-8'

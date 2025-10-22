@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.restdocs.operation.QueryParameters;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +33,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -122,7 +125,8 @@ class QuizControllerRestDocsTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result[].categoryId").description("카테고리 ID"),
                                 fieldWithPath("result[].quizTotalNum").description("전체 퀴즈 수"),
-                                fieldWithPath("result[].quizSolvedNum").description("푼 퀴즈 수")
+                                fieldWithPath("result[].quizSolvedNum").description("푼 퀴즈 수"),
+                                fieldWithPath("result[].canSolveQuiz").description("풀 수 있는 퀴즈 존재 여부")
                         )
                 ));
     }
@@ -265,15 +269,18 @@ class QuizControllerRestDocsTest {
                 .addAttemptQuiz(attemptQuiz1)
                 .addAttemptQuiz(attemptQuiz2)
                 .setHasNext(true)
+                .setCurrentPage(1)
+                .setTotalPageNum(3)
                 .build();
 
-        given(quizGrpcClient.getSolvedQuiz(anyLong(), any(), anyInt())).willReturn(grpcResponse);
+        given(quizGrpcClient.getSolvedQuiz(anyLong(), any(), anyInt(), anyInt())).willReturn(grpcResponse);
 
         // when & then
         mockMvc.perform(get("/api/quiz/solved")
                         .header("Authorization", "Bearer " + validAccessToken)
-                        .param("categoryIds", "1,2")
-                        .param("pageNum", "0"))
+                        .param("categoryIds","1", "2", "3")
+                        .param("pageNum", "1")
+                        .param("size", "5"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.attemptQuiz[0].quizId").value(1L))
                 .andExpect(jsonPath("$.result.attemptQuiz[0].quizTitle").value("연차 사용 시 승인 절차는?"))
@@ -283,6 +290,13 @@ class QuizControllerRestDocsTest {
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰 (Bearer {token})")
                         ),
+                        queryParameters(
+                                parameterWithName("categoryIds") .optional()
+                                        .description("조회할 카테고리 ID들 (반복 전달 가능)")
+                                        .attributes(key("array").value(true), key("itemsType").value("number")),
+                                parameterWithName("pageNum").description("페이지 번호 (1부터 시작, 기본값: 1)").optional(),
+                                parameterWithName("size").description("페이지 크기 (기본값: 5)").optional()
+                        ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
@@ -290,7 +304,9 @@ class QuizControllerRestDocsTest {
                                 fieldWithPath("result.attemptQuiz").description("풀었던 퀴즈 목록"),
                                 fieldWithPath("result.attemptQuiz[].quizId").description("퀴즈 ID"),
                                 fieldWithPath("result.attemptQuiz[].quizTitle").description("퀴즈 제목"),
-                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
+                                fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
+                                fieldWithPath("result.currentPage").description("현재 페이지 번호"),
+                                fieldWithPath("result.totalPageNum").description("전체 페이지 개수")
                         )
                 ));
     }

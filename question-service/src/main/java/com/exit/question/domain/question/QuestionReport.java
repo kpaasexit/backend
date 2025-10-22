@@ -24,8 +24,8 @@ public class QuestionReport extends BaseEntity {
     @Column(name = "question_id", nullable = false)
     private Long questionId;
 
-    @Column(name = "question_report_title", length = 100)
-    private String questionReportTitle;
+    @Column(name = "question_report_reason")
+    private Integer questionReportReason;
 
     @Column(name = "question_report_content", columnDefinition = "TEXT")
     private String questionReportContent;
@@ -34,9 +34,9 @@ public class QuestionReport extends BaseEntity {
     private Long questionReportWriterId;
 
     @Builder
-    public QuestionReport(Long questionId, String questionReportTitle, String questionReportContent, Long questionReportWriterId) {
+    public QuestionReport(Long questionId, Integer questionReportReason, String questionReportContent, Long questionReportWriterId) {
         this.questionId = questionId;
-        this.questionReportTitle = questionReportTitle;
+        this.questionReportReason = questionReportReason;
         this.questionReportContent = questionReportContent;
         this.questionReportWriterId = questionReportWriterId;
     }
@@ -44,7 +44,7 @@ public class QuestionReport extends BaseEntity {
     public static QuestionReport from(QuestionReportRequest request) {
         return QuestionReport.builder()
                 .questionId(request.getQuestionId())
-                .questionReportTitle(request.getQuestionReportTitle())
+                .questionReportReason(request.getQuestionReportReason())
                 .questionReportContent(request.getQuestionReportContent())
                 .questionReportWriterId(request.getQuestionReportWriterId())
                 .build();

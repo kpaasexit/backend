@@ -13,7 +13,8 @@
     "questionDisclosureType" : "PUBLIC",
     "questionWriterId" : 1,
     "questionWriterName" : "김사용자",
-    "imageUrls" : [ ],
+    "questionWriterProfile" : null,
+    "images" : [ ],
     "createdAt" : "2024-01-01T00:00:00"
   }
 }

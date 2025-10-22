@@ -53,12 +53,36 @@
 |`+String+`
 |작성자 이름
 
-|`+result.question.imageUrls+`
+|`+result.question.questionWriterProfile+`
+|`+Null+`
+|작성자 프로필
+
+|`+result.question.images+`
 |`+Array+`
-|이미지 URL 목록
+|이미지 객체 목록
+
+|`+result.question.images[].imageId+`
+|`+Number+`
+|이미지 id
+
+|`+result.question.images[].imageUrl+`
+|`+String+`
+|이미지 URL
 
 |`+result.question.createdAt+`
 |`+String+`
 |작성일시
+
+|`+result.authority+`
+|`+Object+`
+|권한 정보
+
+|`+result.authority.canModify+`
+|`+Boolean+`
+|수정 권한 여부
+
+|`+result.authority.canDelete+`
+|`+Boolean+`
+|삭제 권한 여부
 
 |===

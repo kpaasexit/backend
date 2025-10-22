@@ -25,4 +25,8 @@
 |`+Number+`
 |푼 퀴즈 수
 
+|`+result[].canSolveQuiz+`
+|`+Boolean+`
+|풀 수 있는 퀴즈 존재 여부
+
 |===

@@ -8,13 +8,14 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 860
+Content-Length: 916
 
 {
   "code" : "QUESTION_OK_017",
   "message" : "인기 게시글 조회 성공",
   "result" : {
     "popularPostList" : [ {
+      "questionId" : null,
       "categoryId" : 1,
       "profileUrl" : "https://example.com/profile.jpg",
       "nickname" : "김개발",
@@ -24,6 +25,7 @@ Content-Length: 860
       "answerAdopt" : true,
       "answerCount" : 15
     }, {
+      "questionId" : null,
       "categoryId" : 2,
       "profileUrl" : null,
       "nickname" : "이프론트",

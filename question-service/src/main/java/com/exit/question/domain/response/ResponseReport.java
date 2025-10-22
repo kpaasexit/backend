@@ -24,8 +24,8 @@ public class ResponseReport extends BaseEntity {
     @Column(name = "response_id", nullable = false)
     private Long responseId;
 
-    @Column(name = "response_report_title", length = 100)
-    private String responseReportTitle;
+    @Column(name = "response_report_reason")
+    private Integer responseReportReason;
 
     @Column(name = "response_report_content", columnDefinition = "TEXT")
     private String responseReportContent;
@@ -34,9 +34,9 @@ public class ResponseReport extends BaseEntity {
     private Long responseReportWriterId;
 
     @Builder
-    public ResponseReport(Long responseId, String responseReportTitle, String responseReportContent, Long responseReportWriterId) {
+    public ResponseReport(Long responseId, Integer responseReportReason, String responseReportContent, Long responseReportWriterId) {
         this.responseId = responseId;
-        this.responseReportTitle = responseReportTitle;
+        this.responseReportReason = responseReportReason;
         this.responseReportContent = responseReportContent;
         this.responseReportWriterId = responseReportWriterId;
     }
@@ -45,7 +45,7 @@ public class ResponseReport extends BaseEntity {
         return ResponseReport.builder()
                 .responseId(request.getResponseId())
                 .responseReportWriterId(request.getResponseReportWriterId())
-                .responseReportTitle(request.getResponseReportTitle())
+                .responseReportReason(request.getResponseReportReason())
                 .responseReportContent(request.getResponseReportContent())
                 .build();
     }

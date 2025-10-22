@@ -11,9 +11,11 @@ import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.AdditionalQuestionGrpcClient;
 import com.exit.gateway.service.question.QuestionRequestMapper;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/additional-question")
@@ -25,11 +27,12 @@ public class AdditionalQuestionController {
 
     @PostMapping(value = "/message", consumes = "multipart/form-data")
     public SuccessResponse<CreateAdditionalQuestionMessageResponseDto> createAdditionalQuestionMessage(
-            @LoginUser Long userId,
-            @Valid @ModelAttribute CreateAdditionalQuestionMessageRequestDto request
+            @Valid @ModelAttribute CreateAdditionalQuestionMessageRequestDto request,
+            @RequestPart List<MultipartFile> images,
+            @LoginUser Long userId
     ) {
         log.info("Create additional question message request received");
-        CreateAdditionalQuestionMessageRequest grpcRequest = questionRequestMapper.toGrpcCreateAdditionalQuestionMessageRequest(userId, request);
+        CreateAdditionalQuestionMessageRequest grpcRequest = questionRequestMapper.toGrpcCreateAdditionalQuestionMessageRequest(userId, request, images);
 
         return SuccessResponse.of(QuestionSuccessCode.ADDITIONAL_QUESTION_CREATE_SUCCESS,
                 additionalQuestionGrpcClient.createAdditionalQuestionMessage(grpcRequest));
@@ -38,12 +41,15 @@ public class AdditionalQuestionController {
     @GetMapping("/{followUpRoomId}")
     public SuccessResponse<GetAdditionalQuestionResponseDto> getAdditionalQuestion(
             @PathVariable Long followUpRoomId,
-            @RequestParam Long questionId) {
+            @RequestParam Long questionId,
+            @LoginUser Long userId
+    ) {
         log.info("Get additional question request received for followUpRoomId: {}, questionId: {}", followUpRoomId, questionId);
 
         GetAdditionalQuestionRequest grpcRequest = GetAdditionalQuestionRequest.newBuilder()
                 .setFollowUpRoomId(followUpRoomId)
                 .setQuestionId(questionId)
+                .setUserId(userId)
                 .build();
 
         return SuccessResponse.of(QuestionSuccessCode.QUESTION_DETAIL_SUCCESS,

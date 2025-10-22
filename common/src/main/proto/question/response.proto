@@ -18,6 +18,7 @@ service ResponseService {
   rpc AnswerRecommend(AnswerRecommendRequest) returns (AnswerRecommendResponse);
   rpc UpdateResponse(UpdateResponseRequest) returns (UpdateResponseResponse);
   rpc DeleteResponse(DeleteResponseRequest) returns (google.protobuf.Empty);
+  rpc GetAiBestResponse(google.protobuf.Empty) returns (GetAiBestResponseResponse);
 }
 
 // Request messages
@@ -28,7 +29,7 @@ message AnswerAdoptRequest {
 message AnswerReportRequest {
   int64 response_id = 1;
   int64 response_report_writer_id = 2;
-  string response_report_title = 3;
+  int32 response_report_reason = 3;
   string response_report_content = 4;
 }
 
@@ -36,6 +37,7 @@ message GetDetailResponseRequest {
   int64 question_id = 1;
   int64 user_id = 2;
   int32 page_num = 3;
+  int32 size = 4;
 }
 
 message AnswerCreateRequest {
@@ -61,6 +63,21 @@ message DeleteResponseRequest {
 }
 
 // Response messages
+message ResponseDetail {
+  int64 response_id = 1;
+  int64 response_writer_id = 2;
+  string response_writer_name = 3;
+  string response_content = 4;
+  bool response_adopt = 5;
+  repeated ImageObject image = 6;
+  int32 like_count = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+  string profile = 10;
+  bool is_ai = 11;
+  Authority authority = 12;
+}
+
 message AnswerAdoptResponse {
   int64 response_id = 1;
   bool response_adopt = 2;
@@ -70,7 +87,7 @@ message AnswerAdoptResponse {
 message AnswerReportResponse {
   int64 response_report_id = 1;
   int64 response_id = 2;
-  string response_report_title = 3;
+  int32 response_report_reason = 3;
   string response_report_content = 4;
   int64 response_report_writer_id = 5;
   google.protobuf.Timestamp created_at = 6;
@@ -80,6 +97,8 @@ message AnswerReportResponse {
 message GetDetailResponseResponse {
   repeated ResponseDetail responses = 2;
   bool has_next = 3;
+  int32 current_page = 4;
+  int32 total_page_num = 5;
 }
 
 message AnswerCreateResponse {
@@ -87,7 +106,7 @@ message AnswerCreateResponse {
   int64 question_id = 2;
   string response_content = 3;
   int64 response_writer_id = 4;
-  repeated string image_urls = 5;
+  repeated ImageObject image = 5;
   google.protobuf.Timestamp created_at = 6;
 }
 
@@ -100,4 +119,15 @@ message AnswerRecommendResponse {
 message UpdateResponseResponse {
   int64 response_id = 1;
   string content = 2;
+}
+
+message AiBestResponse {
+  string title = 1;
+  string content = 2;
+  int64 question_id = 3;
+  int64 response_id = 4;
+}
+
+message GetAiBestResponseResponse {
+  repeated AiBestResponse ai_best_response = 1;
 }

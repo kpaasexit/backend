@@ -2,12 +2,15 @@ package com.exit.gateway.service.question;
 
 import com.exit.common.grpc.*;
 import com.exit.gateway.controller.question.dto.response.question.*;
+import com.exit.gateway.controller.question.dto.response.response.GetAiBestResponseDto;
 import com.exit.gateway.global.annotation.GrpcToRest;
 import com.exit.gateway.global.util.mapper.error.question.ResponseGrpcErrorMapper;
+import com.google.protobuf.Empty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 @RequiredArgsConstructor
@@ -58,15 +61,23 @@ public class ResponseGrpcClient {
         log.debug("Received delete response response via gRPC");
     }
 
-    public GetDetailResponseResponseDto getDetailResponse(Long questionId, Long userId, Integer pageNum) {
+    public GetDetailResponseResponseDto getDetailResponse(Long questionId, Long userId, Integer pageNum, Integer size) {
         log.debug("Sending get detail response request via gRPC");
         GetDetailResponseRequest request = GetDetailResponseRequest.newBuilder()
                 .setQuestionId(questionId)
                 .setUserId(userId)
                 .setPageNum(pageNum)
+                .setSize(size)
                 .build();
         GetDetailResponseResponse response = responseServiceStub.getDetailResponse(request);
         log.debug("Received get detail response response via gRPC");
         return GetDetailResponseResponseDto.from(response);
+    }
+
+    public GetAiBestResponseDto getBestAiResponse() {
+        log.debug("Sending get ai best response request via gRPC");
+        GetAiBestResponseResponse response = responseServiceStub.getAiBestResponse(Empty.getDefaultInstance());
+        log.debug("Received get detail response response via gRPC");
+        return GetAiBestResponseDto.from(response);
     }
 }

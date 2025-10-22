@@ -17,6 +17,10 @@
 |`+Array+`
 |내 질문 목록
 
+|`+result.questions[].questionId+`
+|`+Null+`
+|질문 ID
+
 |`+result.questions[].categoryId+`
 |`+Number+`
 |카테고리 ID
@@ -52,5 +56,13 @@
 |`+result.hasNext+`
 |`+Boolean+`
 |다음 페이지 존재 여부
+
+|`+result.currentPage+`
+|`+Null+`
+|현재 페이지 번호
+
+|`+result.totalPageNum+`
+|`+Null+`
+|전체 페이지 개수
 
 |===

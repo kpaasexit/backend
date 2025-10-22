@@ -35,10 +35,30 @@
 
 |`+result.messageList[].images+`
 |`+Array+`
-|이미지 URL 목록
+|이미지 객체 목록
+
+|`+result.messageList[].images[].imageId+`
+|`+Number+`
+|이미지 id
+
+|`+result.messageList[].images[].imageUrl+`
+|`+String+`
+|이미지 URL
 
 |`+result.messageList[].createdAt+`
 |`+String+`
 |작성일시
+
+|`+result.authority+`
+|`+Object+`
+|권한 정보
+
+|`+result.authority.isThirdParty+`
+|`+Boolean+`
+|제3자 여부
+
+|`+result.authority.canWrite+`
+|`+Boolean+`
+|작성 권한 여부
 
 |===

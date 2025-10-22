@@ -7,13 +7,16 @@ import com.exit.gateway.controller.question.dto.request.question.AnswerCreateReq
 import com.exit.gateway.controller.question.dto.request.question.AnswerReportRequestDto;
 import com.exit.gateway.controller.question.dto.request.question.AnswerUpdateRequestDto;
 import com.exit.gateway.controller.question.dto.response.question.*;
+import com.exit.gateway.controller.question.dto.response.response.GetAiBestResponseDto;
 import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.QuestionRequestMapper;
 import com.exit.gateway.service.question.ResponseGrpcClient;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/responses")
@@ -25,10 +28,12 @@ public class ResponseController {
 
     @PostMapping(value = "/answers", consumes = "multipart/form-data")
     public SuccessResponse<AnswerCreateResponseDto> createAnswer(
-            @Valid @ModelAttribute AnswerCreateRequestDto request
+            @Valid @ModelAttribute AnswerCreateRequestDto request,
+            @RequestPart List<MultipartFile> images,
+            @LoginUser Long userId
     ) {
         log.info("Answer create request received");
-        AnswerCreateRequest grpcRequest = questionRequestMapper.toGrpcAnswerCreateRequest(request);
+        AnswerCreateRequest grpcRequest = questionRequestMapper.toGrpcAnswerCreateRequest(request, userId, images);
         AnswerCreateResponseDto response = responseGrpcClient.createAnswer(grpcRequest);
         return SuccessResponse.of(QuestionSuccessCode.ANSWER_CREATE_SUCCESS, response);
     }
@@ -97,10 +102,18 @@ public class ResponseController {
     public SuccessResponse<GetDetailResponseResponseDto> getDetailResponse(
             @PathVariable Long questionId,
             @LoginUser Long userId,
-            @RequestParam(defaultValue = "1") Integer pageNum
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "5") Integer size
     ) {
         log.info("Get detail response for userId: {}, pageNum: {}", userId, pageNum);
         return SuccessResponse.of(QuestionSuccessCode.GET_DETAIL_RESPONSE,
-                responseGrpcClient.getDetailResponse(questionId, userId, pageNum - 1));
+                responseGrpcClient.getDetailResponse(questionId, userId, pageNum - 1, size));
+    }
+
+    @GetMapping("/ai")
+    public SuccessResponse<GetAiBestResponseDto> getBestAiResponse() {
+        log.info("Get best ai response");
+        return SuccessResponse.of(QuestionSuccessCode.GET_DETAIL_RESPONSE,
+                responseGrpcClient.getBestAiResponse());
     }
 }

@@ -19,6 +19,9 @@ import com.exit.question.service.client.AiGrpcClient;
 import com.exit.question.service.client.NotificationGrpcClient;
 import com.exit.question.service.util.AiGrpcMapper;
 import com.exit.question.service.util.NotificationGrpcMapper;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
@@ -53,7 +56,7 @@ public class AdditionalQuestionService {
             Response response = findResponseById(request.getResponseId());
             FollowUpRoom followUpRoom = findOrCreateFollowUpRoom(response);
             FollowUpMessage savedMessage = createAndSaveMessage(request, followUpRoom);
-            List<String> imageUrls = saveUploadedImages(request.getImagesList(), savedMessage);
+            List<ImageObject> imageUrls = saveUploadedImages(request.getImagesList(), savedMessage);
 
             Question question = getQuestion(request.getQuestionId());
             boolean isQuestioner = isUserQuestioner(question.getQuestionWriterId(), request.getUserId());
@@ -92,13 +95,16 @@ public class AdditionalQuestionService {
             Question question = getQuestion(request.getQuestionId());
 
             List<MessageItem> messageList = followUpRoom.getFollowUpMessages().stream()
-                    .map(message -> buildMessageItem(message, message.getImageUrlList(),
+                    .map(message -> buildMessageItem(message, message.getImageObjectList(),
                             isUserQuestioner(question.getQuestionWriterId(), message.getFollowUpMessageWriterId())))
                     .toList();
+
+            Authority authority = getAuthority(question, followUpRoom.getResponse(), request.getUserId(), followUpRoom.getFollowUpMessages());
 
             return GetAdditionalQuestionResponse.newBuilder()
                     .setFollowUpRoomId(request.getFollowUpRoomId())
                     .addAllMessage(messageList)
+                    .setAuthority(authority)
                     .build();
         } catch (GrpcException e) {
             throw new GrpcException(com.exit.question.exception.GrpcAdditionalQuestionErrorCode.GET_ADDITIONAL_QUESTION_FAILED,
@@ -108,6 +114,25 @@ public class AdditionalQuestionService {
             throw new GrpcException(com.exit.question.exception.GrpcAdditionalQuestionErrorCode.GET_ADDITIONAL_QUESTION_FAILED,
                     e.getMessage());
         }
+    }
+
+    private Authority getAuthority(Question question, Response response, Long userId, List<FollowUpMessage> messageList) {
+        boolean isThirdParty = isThirdParty(question, response, userId);
+        boolean canWrite = false;
+
+        if (!messageList.isEmpty() && !isThirdParty) {
+            FollowUpMessage messageItem = messageList.get(messageList.size() - 1);
+            canWrite = !Objects.equals(messageItem.getFollowUpMessageWriterId(), userId);
+        }
+
+        return Authority.newBuilder()
+                .setIsThirdParty(isThirdParty)
+                .setCanWrite(canWrite)
+                .build();
+    }
+
+    private boolean isThirdParty(Question question, Response response, Long userId) {
+        return !(Objects.equals(question.getQuestionWriterId(), userId) || Objects.equals(response.getResponseWriterId(), userId));
     }
 
     private Response findResponseById(Long responseId) {
@@ -130,11 +155,22 @@ public class AdditionalQuestionService {
         return followUpMessageRepository.save(message);
     }
 
-    private List<String> saveUploadedImages(List<UploadBytesRequest> imageList, FollowUpMessage savedMessage) {
+    private List<ImageObject> saveUploadedImages(List<UploadBytesRequest> imageList, FollowUpMessage savedMessage) {
         List<String> uploadedImages = fileUploadUtil.uploadImages(imageList, ADDITIONAL_QUESTION_PATH);
         List<FollowUpImage> followUpImages = FollowUpImage.generateFollowUpImages(savedMessage, uploadedImages);
-        followUpImageRepository.saveAll(followUpImages);
-        return uploadedImages;
+        List<ImageObject> savedImages = new ArrayList<>();
+        followUpImages.sort(Comparator.comparing(FollowUpImage::getCreatedAt));
+        followUpImages.forEach(
+                followUpImage -> {
+                    FollowUpImage savedImage = followUpImageRepository.save(followUpImage);
+                    ImageObject imageObject = ImageObject.newBuilder()
+                            .setImageId(savedImage.getFollowUpImageId())
+                            .setImageUrl(savedImage.getFollowUpImageUrl())
+                            .build();
+                    savedImages.add(imageObject);
+                }
+        );
+        return savedImages;
     }
 
     private boolean isUserQuestioner(Long questionWriterId, Long userId) {
@@ -147,12 +183,12 @@ public class AdditionalQuestionService {
     }
 
 
-    private MessageItem buildMessageItem(FollowUpMessage savedMessage, List<String> imageUrls, boolean isQuestioner) {
+    private MessageItem buildMessageItem(FollowUpMessage savedMessage, List<ImageObject> images, boolean isQuestioner) {
         return MessageItem.newBuilder()
                 .setIsQuestioner(isQuestioner)
                 .setMessageId(savedMessage.getFollowUpMessageId())
                 .setContent(savedMessage.getFollowUpMessageContent())
-                .addAllImages(imageUrls)
+                .addAllImages(images)
                 .setCreatedAt(toGrpcTimestamp(savedMessage.getCreatedAt()))
                 .build();
     }

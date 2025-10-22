@@ -12,7 +12,7 @@ import static com.exit.common.util.time.TimeStampUtil.timestampToLocalDateTime;
 public record QuestionReportResponseDto(
         Long questionId,
         Long questionReportId,
-        String questionReportTitle,
+        Integer questionReportReason,
         String questionReportContent,
         Long questionReportWriterId,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -22,7 +22,7 @@ public record QuestionReportResponseDto(
         return QuestionReportResponseDto.builder()
                 .questionId(questionReportResponse.getQuestionId())
                 .questionReportId(questionReportResponse.getQuestionReportId())
-                .questionReportTitle(questionReportResponse.getQuestionReportTitle())
+                .questionReportReason(questionReportResponse.getQuestionReportReason())
                 .questionReportContent(questionReportResponse.getQuestionReportContent())
                 .questionReportWriterId(questionReportResponse.getQuestionReportWriterId())
                 .createdAt(timestampToLocalDateTime(questionReportResponse.getCreatedAt()))

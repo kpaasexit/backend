@@ -5,6 +5,7 @@
   "message" : "내 질문 목록 조회 성공",
   "result" : {
     "questions" : [ {
+      "questionId" : null,
       "categoryId" : 1,
       "profileUrl" : null,
       "nickname" : "김사용자",
@@ -14,7 +15,9 @@
       "answerAdopt" : true,
       "answerCount" : 5
     } ],
-    "hasNext" : false
+    "hasNext" : false,
+    "currentPage" : null,
+    "totalPageNum" : null
   }
 }
 ----

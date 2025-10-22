@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class QuestionRequestMapper {
 
-    public QuestionCreateRequest toGrpcQuestionCreateRequest(QuestionCreateRequestDto dto) {
+    public QuestionCreateRequest toGrpcQuestionCreateRequest(QuestionCreateRequestDto dto, Long userId, List<MultipartFile> images) {
         QuestionCreateRequest.Builder builder = QuestionCreateRequest.newBuilder()
                 .setQuestionTitle(dto.getQuestionTitle())
                 .setQuestionContent(dto.getQuestionContent())
@@ -25,26 +25,26 @@ public class QuestionRequestMapper {
                 .setQuestionUrgency(dto.getQuestionUrgency() != null ? dto.getQuestionUrgency() : false)
                 .setQuestionAnswerType(dto.getQuestionAnswerType())
                 .setQuestionDisclosureType(dto.getQuestionDisclosureType())
-                .setQuestionWriterId(dto.getQuestionWriterId())
+                .setQuestionWriterId(userId)
                 .setQuestionIsAnonymous(dto.getQuestionIsAnonymous() != null ? dto.getQuestionIsAnonymous() : false);
 
-        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
-            List<UploadBytesRequest> imageRequests = convertMultipartFilesToUploadRequests(dto.getImages());
+        if (images != null && !images.isEmpty()) {
+            List<UploadBytesRequest> imageRequests = convertMultipartFilesToUploadRequests(images);
             builder.addAllImages(imageRequests);
         }
 
         return builder.build();
     }
 
-    public AnswerCreateRequest toGrpcAnswerCreateRequest(AnswerCreateRequestDto dto) {
+    public AnswerCreateRequest toGrpcAnswerCreateRequest(AnswerCreateRequestDto dto, Long userId, List<MultipartFile> images) {
         AnswerCreateRequest.Builder builder = AnswerCreateRequest.newBuilder()
                 .setQuestionId(dto.getQuestionId())
                 .setResponseContent(dto.getResponseContent())
-                .setResponseWriterId(dto.getResponseWriterId())
+                .setResponseWriterId(userId)
                 .setResponseIsAnonymous(dto.getResponseIsAnonymous() != null ? dto.getResponseIsAnonymous() : false);
 
-        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
-            List<UploadBytesRequest> imageRequests = convertMultipartFilesToUploadRequests(dto.getImages());
+        if (images != null && !images.isEmpty()) {
+            List<UploadBytesRequest> imageRequests = convertMultipartFilesToUploadRequests(images);
             builder.addAllImages(imageRequests);
         }
 
@@ -55,7 +55,7 @@ public class QuestionRequestMapper {
         return QuestionReportRequest.newBuilder()
                 .setQuestionId(questionId)
                 .setQuestionReportWriterId(userId)
-                .setQuestionReportTitle(dto.getQuestionReportTitle())
+                .setQuestionReportReason(dto.getQuestionReportReason())
                 .setQuestionReportContent(dto.getQuestionReportContent())
                 .build();
     }
@@ -63,20 +63,20 @@ public class QuestionRequestMapper {
     public AnswerReportRequest toGrpcAnswerReportRequest(Long responseId, AnswerReportRequestDto dto) {
         return AnswerReportRequest.newBuilder()
                 .setResponseId(responseId)
-                .setResponseReportTitle(dto.getResponseReportTitle())
+                .setResponseReportReason(dto.getResponseReportReason())
                 .setResponseReportContent(dto.getResponseReportContent())
                 .build();
     }
 
-    public CreateAdditionalQuestionMessageRequest toGrpcCreateAdditionalQuestionMessageRequest(Long userId, CreateAdditionalQuestionMessageRequestDto dto) {
+    public CreateAdditionalQuestionMessageRequest toGrpcCreateAdditionalQuestionMessageRequest(Long userId, CreateAdditionalQuestionMessageRequestDto dto, List<MultipartFile> images) {
         CreateAdditionalQuestionMessageRequest.Builder builder = CreateAdditionalQuestionMessageRequest.newBuilder()
                 .setUserId(userId)
                 .setQuestionId(dto.getQuestionId())
                 .setResponseId(dto.getResponseId())
                 .setContent(dto.getContent());
 
-        if (dto.getImages() != null && !dto.getImages().isEmpty()) {
-            List<UploadBytesRequest> imageRequests = convertMultipartFilesToUploadRequests(dto.getImages());
+        if (images != null && !images.isEmpty()) {
+            List<UploadBytesRequest> imageRequests = convertMultipartFilesToUploadRequests(images);
             builder.addAllImages(imageRequests);
         }
 

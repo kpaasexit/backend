@@ -9,7 +9,8 @@ import java.util.List;
 public record GetCategoryStatisticsResponseDto(
         Long categoryId,
         Integer quizTotalNum,
-        Integer quizSolvedNum
+        Integer quizSolvedNum,
+        Boolean canSolveQuiz
 ) {
     public static List<GetCategoryStatisticsResponseDto> from(GetCategoryStatisticsResponse response) {
         return response.getCategoryStatList().stream()
@@ -18,6 +19,7 @@ public record GetCategoryStatisticsResponseDto(
                                 .categoryId(stat.getCategoryId())
                                 .quizTotalNum(stat.getCategoryQuizNum())
                                 .quizSolvedNum(stat.getCategorySolvedNum())
+                                .canSolveQuiz(stat.getCanSolveQuiz())
                                 .build())
                 .toList();
     }

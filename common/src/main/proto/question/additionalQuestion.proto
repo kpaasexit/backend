@@ -27,14 +27,16 @@ message CreateAdditionalQuestionMessageRequest {
 message GetAdditionalQuestionRequest {
   int64 question_id = 1;
   int64 follow_up_room_id = 2;
+  int64 user_id = 3;
 }
 
 // response
+
 message MessageItem {
   bool is_questioner = 1;
   int64 message_id = 2;
   string content = 3;
-  repeated string images = 4;
+  repeated ImageObject images = 4;
   google.protobuf.Timestamp created_at = 5;
 }
 
@@ -46,4 +48,5 @@ message CreateAdditionalQuestionMessageResponse {
 message GetAdditionalQuestionResponse {
   int64 follow_up_room_id = 1;
   repeated MessageItem message = 2;
+  Authority authority = 6;
 }

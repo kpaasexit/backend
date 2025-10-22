@@ -1,8 +1,0 @@
-.+/api/quiz/category/{categoryId}+
-|===
-|Parameter|Description
-
-|`+categoryId+`
-|카테고리 ID
-
-|===

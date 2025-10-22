@@ -2,6 +2,7 @@ package com.exit.gateway.controller.question.dto.response.comment;
 
 import com.exit.common.grpc.GetCommentResponse;
 import com.exit.common.util.time.TimeStampUtil;
+import com.exit.gateway.controller.question.dto.response.authority.CommentAuthority;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
@@ -11,7 +12,9 @@ import java.util.List;
 @Builder
 public record GetCommentResponseDto(
         List<CommentItem> commentItemList,
-        Boolean hasNext
+        Boolean hasNext,
+        Integer currentPage,
+        Integer totalPageNum
 ) {
     public static GetCommentResponseDto from(GetCommentResponse response) {
         List<CommentItem> commentItems = response.getCommentList().stream()
@@ -21,12 +24,15 @@ public record GetCommentResponseDto(
                         .nickname(comment.getNickname())
                         .profileImage(comment.getProfileImage())
                         .createdAt(TimeStampUtil.timestampToLocalDateTime(comment.getCreatedAt()))
+                        .authority(CommentAuthority.from(comment.getAuthority()))
                         .build()
                 ).toList();
 
         return GetCommentResponseDto.builder()
                 .commentItemList(commentItems)
                 .hasNext(response.getHasNext())
+                .currentPage(response.getCurrentPage())
+                .totalPageNum(response.getTotalPageNum())
                 .build();
     }
 
@@ -37,7 +43,8 @@ public record GetCommentResponseDto(
             String nickname,
             String profileImage,
             @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-            LocalDateTime createdAt
+            LocalDateTime createdAt,
+            CommentAuthority authority
     ) {
     }
 }

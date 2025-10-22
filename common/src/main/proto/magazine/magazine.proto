@@ -50,7 +50,6 @@ message SearchMagazinesRequest {
   string keyword = 1;
   int32 page = 2;
   int32 size = 3;
-  int64 user_id = 4;
 }
 
 // response
@@ -113,5 +112,6 @@ message GetRecommendedMagazineResponse {
 
 message SearchMagazinesResponse {
   repeated MagazineListItem magazines = 1;
+  int32 current_page = 2;
   bool has_next = 3;
 }

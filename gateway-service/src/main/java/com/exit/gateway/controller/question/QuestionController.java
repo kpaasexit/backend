@@ -10,12 +10,14 @@ import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.QuestionGrpcClient;
 import com.exit.gateway.service.question.QuestionRequestMapper;
 import jakarta.validation.Valid;
+import lombok.Builder.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -28,10 +30,12 @@ public class QuestionController {
 
     @PostMapping(consumes = "multipart/form-data")
     public SuccessResponse<QuestionCreateResponseDto> createQuestion(
-            @Valid @ModelAttribute QuestionCreateRequestDto request
+            @Valid @ModelAttribute QuestionCreateRequestDto request,
+            @RequestPart List<MultipartFile> images,
+            @LoginUser Long userId
     ) {
         log.info("Question create request received");
-        QuestionCreateRequest grpcRequest = questionRequestMapper.toGrpcQuestionCreateRequest(request);
+        QuestionCreateRequest grpcRequest = questionRequestMapper.toGrpcQuestionCreateRequest(request, userId, images);
         QuestionCreateResponseDto response = questionGrpcClient.createQuestion(grpcRequest);
         return SuccessResponse.of(QuestionSuccessCode.QUESTION_CREATE_SUCCESS, response);
     }
@@ -40,9 +44,9 @@ public class QuestionController {
     public SuccessResponse<QuestionListResponseDto> getQuestionList(
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "false", required = false) boolean isAdopted
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "false", required = false) boolean isExist
     ) {
         log.info("Question list request received");
 
@@ -53,9 +57,9 @@ public class QuestionController {
         QuestionListRequest.Builder requestBuilder = QuestionListRequest.newBuilder()
                 .addAllCategoryIds(categoryIds)
                 .setKeyword(keyword != null ? keyword : "")
-                .setPage(page)
+                .setPageNum(page-1)
                 .setSize(size)
-                .setIsAdopted(isAdopted);
+                .setIsExist(isExist);
 
         QuestionListResponseDto response = questionGrpcClient.getQuestionList(requestBuilder.build());
         return SuccessResponse.of(QuestionSuccessCode.QUESTION_LIST_SUCCESS, response);
@@ -123,10 +127,11 @@ public class QuestionController {
     @GetMapping("/my")
     public SuccessResponse<GetMyQuestionResponseDto> getMyQuestion(
             @LoginUser Long userId,
-            @RequestParam Integer pageNum
+            @RequestParam(defaultValue = "1") Integer pageNum,
+            @RequestParam(defaultValue = "5") Integer size
     ) {
         log.info("Get my question for userId: {}, pageNum: {}", userId, pageNum);
         return SuccessResponse.of(QuestionSuccessCode.GET_MY_QUESTION_SUCCESS,
-                questionGrpcClient.getMyQuestion(userId, pageNum - 1));
+                questionGrpcClient.getMyQuestion(userId, pageNum - 1, size));
     }
 }

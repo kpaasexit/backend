@@ -1,7 +1,0 @@
-[source,http,options="nowrap"]
-----
-GET /api/quiz/category/1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjA4MTEyNTQsImV4cCI6MTc2NDQxMTI1NH0.nH2iAoVCjDkVwTKwFt9B5uR8VVIdkWSN4hk-ShqLe14
-Host: localhost:8080
-
-----

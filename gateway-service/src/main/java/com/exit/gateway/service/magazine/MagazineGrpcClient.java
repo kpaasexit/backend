@@ -58,11 +58,10 @@ public class MagazineGrpcClient {
 
     public SearchMagazinesResponse searchMagazines(String keyword, int page, int size) {
         // 빈 문자열이나 공백만 있는 경우 빈 문자열로 정규화
-        String normalizedKeyword = (keyword == null || keyword.trim().isEmpty()) ? "" : keyword.trim();
-        log.debug("Sending search magazines request via gRPC for keyword: '{}'", normalizedKeyword);
+        log.debug("Sending search magazines request via gRPC for keyword: '{}'", keyword);
 
         SearchMagazinesRequest request = SearchMagazinesRequest.newBuilder()
-                .setKeyword(normalizedKeyword)
+                .setKeyword(keyword)
                 .setPage(page)
                 .setSize(size)
                 .build();

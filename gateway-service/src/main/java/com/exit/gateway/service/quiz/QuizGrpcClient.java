@@ -60,11 +60,12 @@ public class QuizGrpcClient {
         return response;
     }
 
-    public GetSolvedQuizResponse getSolvedQuiz(Long userId, List<Long> categoryIds, Integer pageNum) {
+    public GetSolvedQuizResponse getSolvedQuiz(Long userId, List<Long> categoryIds, Integer pageNum, Integer size) {
         GetSolvedQuizRequest request = GetSolvedQuizRequest.newBuilder()
                 .setUserId(userId)
                 .addAllCategoryId(categoryIds)
                 .setPageNum(pageNum)
+                .setSize(size)
                 .build();
 
         log.debug("Sending get solved quiz request via gRPC: userId={}", userId);

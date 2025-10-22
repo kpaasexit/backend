@@ -21,9 +21,9 @@
 |`+Number+`
 |질문 신고 ID
 
-|`+result.questionReportTitle+`
-|`+String+`
-|신고 제목
+|`+result.questionReportReason+`
+|`+Number+`
+|신고 사유 ID
 
 |`+result.questionReportContent+`
 |`+String+`

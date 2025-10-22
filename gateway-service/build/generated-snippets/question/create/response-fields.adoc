@@ -49,9 +49,21 @@
 |`+String+`
 |작성자 이름
 
-|`+result.imageUrls+`
+|`+result.questionWriterProfile+`
+|`+Null+`
+|작성자 프로필
+
+|`+result.images+`
 |`+Array+`
-|이미지 URL 목록
+|이미지 객체 목록
+
+|`+result.images[].imageId+`
+|`+Number+`
+|이미지 id
+
+|`+result.images[].imageUrl+`
+|`+String+`
+|이미지 URL
 
 |`+result.createdAt+`
 |`+String+`

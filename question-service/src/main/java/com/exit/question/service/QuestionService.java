@@ -1,7 +1,27 @@
 package com.exit.question.service;
 
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+
 import com.exit.common.exception.grpc.GrpcException;
-import com.exit.common.grpc.*;
+import com.exit.common.grpc.Authority;
+import com.exit.common.grpc.CategoryRecommendationResponse;
+import com.exit.common.grpc.GetMyQuestionRequest;
+import com.exit.common.grpc.GetMyQuestionResponse;
+import com.exit.common.grpc.GetPopularPostResponse;
+import com.exit.common.grpc.GetUsersNameAndProfileResponse;
+import com.exit.common.grpc.ImageObject;
+import com.exit.common.grpc.PopularPostItem;
+import com.exit.common.grpc.QuestionCreateRequest;
+import com.exit.common.grpc.QuestionCreateResponse;
+import com.exit.common.grpc.QuestionDetailRequest;
+import com.exit.common.grpc.QuestionDetailResponse;
+import com.exit.common.grpc.QuestionListRequest;
+import com.exit.common.grpc.QuestionListResponse;
+import com.exit.common.grpc.QuestionReportRequest;
+import com.exit.common.grpc.QuestionReportResponse;
+import com.exit.common.grpc.SimilarQuestionResponse;
+import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
 import com.exit.common.grpc.ai.SaveQuestionRequest;
 import com.exit.common.grpc.ai.SimilarQuestion;
 import com.exit.common.grpc.ai.SimilarResponse;
@@ -23,24 +43,27 @@ import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.service.client.AiGrpcClient;
 import com.exit.question.service.client.UserGrpcClient;
 import com.exit.question.service.util.QuestionGrpcMapper;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.util.*;
-import java.util.function.Function;
-
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 @Service
 @RequiredArgsConstructor
@@ -67,16 +90,18 @@ public class QuestionService {
             Question question = Question.createQuestionFromRequest(request, questionCategory);
             Question savedQuestion = questionRepository.save(question);
 
-            List<String> imageUrls = uploadQuestionImages(request, savedQuestion);
-            String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
+            List<ImageObject> imageObjects = uploadQuestionImages(request, savedQuestion);
+            UpdateAdditionalUserInfoResponse userNameAndProfile = userGrpcClient.getUserNameAndProfile(
+                    question.getQuestionWriterId());
 
             aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
             // AI 답변 자동 생성
             scheduleAiAnswerGeneration(savedQuestion);
 
-            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageUrls, questionWriterName);
+            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile);
         } catch (GrpcException e) {
-            throw new GrpcException(GrpcQuestionErrorCode.CREATE_QUESTION_FAILED, e.getGrpcErrorCode().getErrorDescription());
+            throw new GrpcException(GrpcQuestionErrorCode.CREATE_QUESTION_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Create question failed for userId: {}", request.getQuestionWriterId(), e);
             throw new GrpcException(GrpcQuestionErrorCode.CREATE_QUESTION_FAILED, e.getMessage());
@@ -94,7 +119,8 @@ public class QuestionService {
             QuestionReport savedQuestionReport = questionReportRepository.save(questionReport);
             return questionGrpcMapper.getQuestionReportResponse(savedQuestionReport);
         } catch (GrpcException e) {
-            throw new GrpcException(GrpcQuestionErrorCode.QUESTION_REPORT_FAILED, e.getGrpcErrorCode().getErrorDescription());
+            throw new GrpcException(GrpcQuestionErrorCode.QUESTION_REPORT_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Question report failed for questionId: {}", request.getQuestionId(), e);
             throw new GrpcException(GrpcQuestionErrorCode.QUESTION_REPORT_FAILED, e.getMessage());
@@ -104,19 +130,20 @@ public class QuestionService {
     @Transactional(readOnly = true)
     public QuestionListResponse questionList(QuestionListRequest filter) {
         try {
-            PageRequest pageRequest = PageRequest.of(filter.getPage(), filter.getSize());
+            PageRequest pageRequest = PageRequest.of(filter.getPageNum(), filter.getSize());
 
-            Slice<QuestionListQueryResponseDto> slice = questionRepository.findQuestionsByFilter(
+            Page<QuestionListQueryResponseDto> page = questionRepository.findQuestionsByFilter(
                     filter.getCategoryIdsList(),
                     filter.getKeyword().isEmpty() ? null : filter.getKeyword(),
-                    filter.getIsAdopted(), pageRequest);
+                    filter.getIsExist(), pageRequest);
 
-            Set<Long> writerIds = slice.getContent().stream().map(QuestionListQueryResponseDto::questionWriterId).collect(toSet());
+            Set<Long> writerIds = page.getContent().stream().map(QuestionListQueryResponseDto::questionWriterId)
+                    .collect(toSet());
             GetUsersNameAndProfileResponse usersNameAndProfile = userGrpcClient.getUsersNameAndProfile(writerIds);
             Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = usersNameAndProfile.getUserInfoList().stream()
                     .collect(toMap(UpdateAdditionalUserInfoResponse::getUserId, Function.identity()));
 
-            return questionGrpcMapper.getQuestionListResponse(slice.getContent(), userInfoMap, slice.hasNext());
+            return questionGrpcMapper.getQuestionListResponse(page, userInfoMap);
         } catch (Exception e) {
             log.error("Get question list failed", e);
             throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_LIST_FAILED, e.getMessage());
@@ -136,7 +163,8 @@ public class QuestionService {
                     .setCategoryName(questionCategory.getQuestionCategoryName())
                     .build();
         } catch (GrpcException e) {
-            throw new GrpcException(GrpcQuestionErrorCode.CATEGORY_RECOMMEND_FAILED, e.getGrpcErrorCode().getErrorDescription());
+            throw new GrpcException(GrpcQuestionErrorCode.CATEGORY_RECOMMEND_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Category recommend failed for title: {}", title, e);
             throw new GrpcException(GrpcQuestionErrorCode.CATEGORY_RECOMMEND_FAILED, e.getMessage());
@@ -152,7 +180,8 @@ public class QuestionService {
                 return null;
             }
 
-            List<Long> similarQuestionIds = similarResponse.getQuestionsList().stream().map(SimilarQuestion::getQuestionId).toList();
+            List<Long> similarQuestionIds = similarResponse.getQuestionsList().stream()
+                    .map(SimilarQuestion::getQuestionId).toList();
             List<Question> similarQuestions = questionRepository.findAllById(similarQuestionIds);
             return questionGrpcMapper.getSimilarQuestionResponse(similarQuestions);
         } catch (Exception e) {
@@ -165,11 +194,14 @@ public class QuestionService {
     @Transactional(readOnly = true)
     public QuestionDetailResponse getQuestionDetail(QuestionDetailRequest request) {
         try {
-            QuestionCreateResponse questionCreateResponse = buildQuestionCreateResponse(request.getQuestionId());
+            QuestionCreateResponse questionCreateResponse = buildQuestionCreateResponse(request.getQuestionId(),
+                    request.getUserId());
 
-            return questionGrpcMapper.getQuestionDetailResponse(questionCreateResponse);
+            Authority authority = getAuthority(request);
+            return questionGrpcMapper.getQuestionDetailResponse(questionCreateResponse, authority);
         } catch (GrpcException e) {
-            throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_DETAIL_FAILED, e.getGrpcErrorCode().getErrorDescription());
+            throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_DETAIL_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
         } catch (Exception e) {
             log.error("Get question detail failed for questionId: {}", request.getQuestionId(), e);
             throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_DETAIL_FAILED, e.getMessage());
@@ -198,6 +230,7 @@ public class QuestionService {
                     .map(post -> {
                         UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());
                         return PopularPostItem.newBuilder()
+                                .setQuestionId(post.questionId())
                                 .setCategoryId(post.questionCategoryId())
                                 .setProfileUrl(!userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
                                 .setNickname(userInfo.getUserName())
@@ -222,8 +255,9 @@ public class QuestionService {
     @Transactional(readOnly = true)
     public GetMyQuestionResponse getMyQuestion(GetMyQuestionRequest request) {
         try {
-            PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
-            Slice<PopularPostDto> myQuestionDtos = questionRepository.findByQuestionWriterId(request.getUserId(), pageRequest);
+            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
+            Page<PopularPostDto> myQuestionDtos = questionRepository.findByQuestionWriterId(request.getUserId(),
+                    pageRequest);
 
             Set<Long> writerIds = myQuestionDtos.getContent().stream()
                     .map(PopularPostDto::questionWriterId)
@@ -235,7 +269,9 @@ public class QuestionService {
 
             return GetMyQuestionResponse.newBuilder()
                     .addAllPost(popularPostItemList)
+                    .setCurrentPage(myQuestionDtos.getNumber() + 1)
                     .setHasNext(myQuestionDtos.hasNext())
+                    .setTotalPageNum(myQuestionDtos.getTotalPages())
                     .build();
         } catch (Exception e) {
             log.error("Get my question failed for userId: {}", request.getUserId(), e);
@@ -243,7 +279,8 @@ public class QuestionService {
         }
     }
 
-    private List<PopularPostItem> getPopularPostItemList(Slice<PopularPostDto> myQuestionDtos, Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
+    private List<PopularPostItem> getPopularPostItemList(Page<PopularPostDto> myQuestionDtos,
+                                                         Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
         return myQuestionDtos.getContent().stream()
                 .map(post -> {
                     UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());
@@ -261,21 +298,42 @@ public class QuestionService {
                 .toList();
     }
 
-    private QuestionCreateResponse buildQuestionCreateResponse(Long questionId) {
+    private QuestionCreateResponse buildQuestionCreateResponse(Long questionId, Long userId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
 
         Optional<List<QuestionImage>> images = questionImageRepository.findAllByQuestionId(questionId);
-        List<String> questionUrls = new ArrayList<>();
-        images.ifPresent(questionImages ->
-                questionImages.forEach(image -> questionUrls.add(image.getQuestionImageUrl())));
-        String questionWriterName = userGrpcClient.getUserName(question.getQuestionWriterId());
+        List<ImageObject> imageObjectDtos = new ArrayList<>();
+        images.ifPresent(questionImages -> {
+                    questionImages.sort(Comparator.comparing(QuestionImage::getCreatedAt));
+                    questionImages.forEach(image ->
+                            imageObjectDtos.add(
+                                    ImageObject.newBuilder()
+                                            .setImageId(image.getQuestionImageId())
+                                            .setImageUrl(image.getQuestionImageUrl())
+                                            .build()
+                            ));
+                }
+        );
+        UpdateAdditionalUserInfoResponse userNameAndProfile = userGrpcClient.getUserNameAndProfile(
+                question.getQuestionWriterId());
 
-        return questionGrpcMapper.getQuestionCreateResponse(question, questionUrls, questionWriterName);
+        return questionGrpcMapper.getQuestionCreateResponse(question, imageObjectDtos, userNameAndProfile);
+    }
+
+    private Authority getAuthority(QuestionDetailRequest request) {
+        Question question = questionRepository.findById(request.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
+        boolean isSameUser = Objects.equals(question.getQuestionWriterId(), request.getUserId());
+        return Authority.newBuilder()
+                .setCanDelete(isSameUser)
+                .setCanModify(isSameUser)
+                .build();
     }
 
     private Map<Long, UpdateAdditionalUserInfoResponse> getUserNicknameAndProfileByWriterIds(Set<Long> writerIds) {
-        List<UpdateAdditionalUserInfoResponse> userInfoList = userGrpcClient.getUsersNameAndProfile(new HashSet<>(writerIds)).getUserInfoList();
+        List<UpdateAdditionalUserInfoResponse> userInfoList = userGrpcClient.getUsersNameAndProfile(
+                new HashSet<>(writerIds)).getUserInfoList();
         Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap = userInfoList.stream()
                 .collect(toMap(UpdateAdditionalUserInfoResponse::getUserId, Function.identity()));
         return userInfoMap;
@@ -291,25 +349,23 @@ public class QuestionService {
     }
 
     /**
-     * AI 답변 생성 스케줄링
-     * 긴급 질문: 즉시 생성
-     * 일반 질문: 5분 후 생성
+     * AI 답변 생성 스케줄링 긴급 질문: 즉시 생성 일반 질문: 5분 후 생성
      */
     private void scheduleAiAnswerGeneration(Question question) {
         if (Boolean.TRUE.equals(question.getQuestionUrgency())) {
+            log.info("Question urgency has been scheduled");
             // 긴급 질문은 즉시 생성
             generateAiAnswerAsync(question);
         } else {
             // 일반 질문은 5분 후 생성
+            log.info("Question urgency has been unscheduled");
             Instant scheduledTime = Instant.now().plus(Duration.ofMinutes(5));
             taskScheduler.schedule(() -> generateAiAnswerAsync(question), scheduledTime);
         }
     }
 
     /**
-     * 질문 생성 시 AI 답변을 자동으로 생성하여 저장
-     * AI 생성 실패 시 최대 3회 재시도 (지수 백오프)
-     * 모든 재시도 실패 시에도 질문 생성은 정상 처리됨
+     * 질문 생성 시 AI 답변을 자동으로 생성하여 저장 AI 생성 실패 시 최대 3회 재시도 (지수 백오프) 모든 재시도 실패 시에도 질문 생성은 정상 처리됨
      */
     @Retryable(
             retryFor = {Exception.class},
@@ -320,7 +376,7 @@ public class QuestionService {
     private void generateAiAnswerAsync(Question question) {
         // AI 답변 생성 요청
         String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId());
-
+        log.info("Ai answer has been generated: {}", aiAnswer);
         // AI 답변을 Response로 저장
         Response aiResponse = Response.builder()
                 .questionId(question.getQuestionId())
@@ -344,19 +400,30 @@ public class QuestionService {
         // TODO: 필요시 사용자에게 알림 전송 또는 재시도 큐에 추가
     }
 
-    private List<String> uploadQuestionImages(QuestionCreateRequest request, Question savedQuestion) {
-        List<String> imageUrls = null;
+    private List<ImageObject> uploadQuestionImages(QuestionCreateRequest request, Question savedQuestion) {
         if (!request.getImagesList().isEmpty()) {
-            imageUrls = fileUploadUtil.uploadImages(request.getImagesList(), QUESTION_FOLDER);
-            List<QuestionImage> questionImages = imageUrls.stream()
-                    .map(url -> QuestionImage.builder()
-                            .questionId(savedQuestion.getQuestionId())
-                            .questionImageUrl(url)
-                            .build())
+            List<String> imageUrls = fileUploadUtil.uploadImages(request.getImagesList(), QUESTION_FOLDER);
+            List<QuestionImage> savedQuestionImages = imageUrls.stream()
+                    .map(url -> {
+                        QuestionImage questionImage = QuestionImage.builder()
+                                .questionId(savedQuestion.getQuestionId())
+                                .questionImageUrl(url)
+                                .build();
+                        return questionImageRepository.save(questionImage);
+                    })
                     .toList();
 
-            questionImageRepository.saveAll(questionImages);
+            return savedQuestionImages.stream()
+                    .sorted(Comparator.comparing(QuestionImage::getCreatedAt))
+                    .map(image -> {
+                                return ImageObject.newBuilder()
+                                        .setImageId(image.getQuestionImageId())
+                                        .setImageUrl(image.getQuestionImageUrl())
+                                        .build();
+                            }
+                    ).toList();
         }
-        return imageUrls;
+
+        return null;
     }
 }

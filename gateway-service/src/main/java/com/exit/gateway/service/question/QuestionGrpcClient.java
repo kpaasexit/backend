@@ -68,11 +68,12 @@ public class QuestionGrpcClient {
         return GetPopularPostResponseDto.from(response);
     }
 
-    public GetMyQuestionResponseDto getMyQuestion(Long userId, Integer pageNum) {
+    public GetMyQuestionResponseDto getMyQuestion(Long userId, Integer pageNum, Integer size) {
         log.debug("Sending get my question response request via gRPC");
         GetMyQuestionRequest request = GetMyQuestionRequest.newBuilder()
                 .setPageNum(pageNum)
                 .setUserId(userId)
+                .setSize(size)
                 .build();
         GetMyQuestionResponse response = questionServiceStub.getMyQuestion(request);
         log.debug("Received my question response response via gRPC");

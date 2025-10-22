@@ -5,6 +5,7 @@ import com.exit.question.controller.dto.response.PopularPostDto;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.response.Response;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -43,7 +44,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<PopularPostDto> findTop5By();
 
     @Query("""
-            select new com.exit.question.controller.dto.response.QuestionListQueryResponseDto(
+            select distinct new com.exit.question.controller.dto.response.QuestionListQueryResponseDto(
                 q.questionId,
                 qc.questionCategoryId,
                 q.questionWriterId,
@@ -52,7 +53,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                 q.questionUrgency,
                 q.questionAnswerType,
                 q.questionAnswerAdopt,
-                count(distinct r.responseId),
+                cast((select count(r2) from Response r2 where r2.questionId = q.questionId) as Long),
                 q.createdAt
             )
             from Question q
@@ -60,16 +61,16 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             left join Response r on r.questionId = q.questionId
             where (qc.questionCategoryId in :categoryIds)
               and (:kw is null
-                          or lower(q.questionTitle)  like %:kw%
-                          or lower(q.questionContent) like %:kw%)
-              and (coalesce(:adoptedOnly, false) = false or q.questionAnswerAdopt = true)
-            group by q.questionId, qc.questionCategoryId, q.questionWriterId, q.questionTitle, q.questionContent,
-                     q.questionUrgency, q.questionAnswerType, q.questionAnswerAdopt, q.createdAt
+                          or lower(q.questionTitle)  like lower(concat('%', :kw, '%'))
+                          or lower(q.questionContent) like lower(concat('%', :kw, '%')))
+            and (:isExist is null or :isExist = false or exists (
+                    select 1 from Response r3 where r3.questionId = q.questionId
+            ))
             """)
-    Slice<QuestionListQueryResponseDto> findQuestionsByFilter(
+    Page<QuestionListQueryResponseDto> findQuestionsByFilter(
             @Param("categoryIds") List<Long> categoryIds,
             @Param("kw") String keywordLike,
-            @Param("adoptedOnly") Boolean adoptedOnly,
+            @Param("isExist") Boolean isExist,
             Pageable pageable
     );
 
@@ -91,5 +92,5 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             group by q.questionId, qc.questionCategoryId, q.questionWriterId,
                      q.questionTitle, q.questionContent, q.questionAnswerAdopt, q.createdAt
             """)
-    Slice<PopularPostDto> findByQuestionWriterId(Long questionWriterId, PageRequest pageRequest);
+    Page<PopularPostDto> findByQuestionWriterId(Long questionWriterId, PageRequest pageRequest);
 }

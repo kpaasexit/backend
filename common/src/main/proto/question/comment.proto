@@ -8,6 +8,7 @@ option java_outer_classname = "CommentServiceProto";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "question/question.proto";
 
 service CommentService {
   rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse);
@@ -35,6 +36,7 @@ message GetCommentRequest {
   string target_type = 2;
   int64 user_id = 3;
   int32 page_num = 4;
+  int32 size = 5;
 }
 
 // response
@@ -51,9 +53,12 @@ message CommentItem {
   string nickname = 3;
   string profile_image = 4;
   google.protobuf.Timestamp created_at = 5;
+  Authority authority = 6;
 }
 
 message GetCommentResponse {
   repeated CommentItem comment = 1;
   bool has_next = 2;
+  int32 current_page = 3;
+  int32 total_page_num = 4;
 }

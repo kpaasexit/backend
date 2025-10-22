@@ -11,6 +11,7 @@ import com.exit.quiz.domain.repository.QuizRepository;
 import com.exit.quiz.exception.GrpcQuizErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -33,11 +34,16 @@ public class QuizService {
         try {
             List<CategoryStat> categoryStats = quizRepository.getQuizByCategoryId(request.getUserId())
                     .stream()
-                    .map(categoryQuizCount -> CategoryStat.newBuilder()
-                            .setCategoryId(categoryQuizCount.categoryId())
-                            .setCategoryQuizNum(categoryQuizCount.quizTotalCount())
-                            .setCategorySolvedNum(categoryQuizCount.quizSolvedCount())
-                            .build())
+                    .map(dto -> {
+                        int totalCountByCategory = dto.quizTotalCount();
+                        int solvedCountByCategory = dto.quizSolvedCount();
+                        return CategoryStat.newBuilder()
+                            .setCategoryId(dto.categoryId())
+                            .setCategoryQuizNum(totalCountByCategory)
+                            .setCategorySolvedNum(solvedCountByCategory)
+                            .setCanSolveQuiz(totalCountByCategory - solvedCountByCategory > 0)
+                            .build();
+                    })
                     .toList();
 
             return GetCategoryStatisticsResponse.newBuilder()
@@ -102,11 +108,11 @@ public class QuizService {
     @Transactional(readOnly = true)
     public GetSolvedQuizResponse getSolvedQuiz(GetSolvedQuizRequest request) {
         try {
-            PageRequest pageRequest = PageRequest.of(request.getPageNum(), 5);
+            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
             List<Short> categoryIds = request.getCategoryIdList().stream().map(Long::shortValue).toList();
-            Slice<GetSolvedQuiz> slice = quizAttemptsRepository.findByQuizCategoryIdIn(
+            Page<GetSolvedQuiz> total = quizAttemptsRepository.findByQuizCategoryIdIn(
                     categoryIds, request.getUserId(), pageRequest);
-            List<AttemptQuiz> attemptQuizzes = slice.getContent()
+            List<AttemptQuiz> attemptQuizzes = total.getContent()
                     .stream()
                     .map(quiz -> AttemptQuiz.newBuilder()
                             .setQuizId(quiz.quizId())
@@ -116,7 +122,9 @@ public class QuizService {
 
             return GetSolvedQuizResponse.newBuilder()
                     .addAllAttemptQuiz(attemptQuizzes)
-                    .setHasNext(slice.hasNext())
+                    .setHasNext(total.hasNext())
+                    .setCurrentPage(total.getNumber() + 1)
+                    .setTotalPageNum(total.getTotalPages())
                     .build();
         } catch (Exception e) {
             throw new GrpcException(GrpcQuizErrorCode.GET_SOLVED_QUIZ_FAILED, e.getMessage());

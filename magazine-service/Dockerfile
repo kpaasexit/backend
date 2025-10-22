@@ -23,7 +23,7 @@ RUN ./gradlew :common:jar magazine-service:bootJar -Pprofile=prod -x test --no-d
 
 
 # dev Runtime Stage
-FROM bellsoft/liberica-runtime-container:jre-17.0.12-musl AS dev
+FROM eclipse-temurin:17-jre-jammy AS dev
 WORKDIR /app
 
 COPY --from=build-dev /workspace/magazine-service/build/libs/*-dev.jar app.jar
@@ -35,7 +35,7 @@ ENTRYPOINT ["java","-jar","/app/app.jar"]
 
 
 # prod Runtime Stage
-FROM bellsoft/liberica-runtime-container:jre-17.0.12-musl AS prod
+FROM eclipse-temurin:17-jre-jammy AS prod
 WORKDIR /app
 
 COPY --from=build-prod /workspace/magazine-service/build/libs/*-prod.jar app.jar
