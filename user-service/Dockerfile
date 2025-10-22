@@ -3,8 +3,20 @@ LABEL authors="sang-yoon"
 
 WORKDIR /workspace
 
-COPY gradlew settings.gradle ./
-COPY gradle gradle
+# Gradle wrapper를 명시적으로 복사
+COPY gradlew ./
+COPY gradle/wrapper gradle/wrapper
+COPY settings.gradle ./
+
+# 디버깅: gradle 디렉토리 구조 확인
+RUN echo "=== Checking workspace directory ===" && \
+    ls -la && \
+    echo "=== Checking gradle directory ===" && \
+    ls -la gradle/ && \
+    echo "=== Checking gradle/wrapper directory ===" && \
+    ls -la gradle/wrapper/ && \
+    echo "=== Checking gradle-wrapper.jar ===" && \
+    file gradle/wrapper/gradle-wrapper.jar || echo "gradle-wrapper.jar not found!"
 
 RUN chmod +x gradlew
 
