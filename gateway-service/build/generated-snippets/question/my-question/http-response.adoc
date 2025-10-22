@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 535
+Content-Length: 534
 
 {
   "code" : "QUESTION_OK_018",
@@ -22,7 +22,7 @@ Content-Length: 535
       "createdAt" : "2024-01-01T00:00:00",
       "title" : "내가 작성한 첫 번째 질문",
       "content" : "질문 내용입니다...",
-      "answerAdopt" : true,
+      "isAnswered" : true,
       "answerCount" : 5
     } ],
     "hasNext" : false,
