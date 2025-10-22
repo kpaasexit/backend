@@ -1,157 +1,195 @@
+// pipeline {
+//     agent any
+// //test
+//     environment {
+//         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
+//         DOCKER_HUB_REPO = 'leesy010504/exit-user-service'
+//         IMAGE_TAG = "1.1.${BUILD_NUMBER}"
+//         GIT_DIFF = ''
+//     }
+//
+//     stages {
+//         stage('Checkout') {
+//             steps {
+//                 checkout scm
+//                 script {
+//                     if (env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
+//                         echo "Comparing with previous successful commit: ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
+//                         GIT_DIFF = sh(
+//                             script: "git diff --name-only ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT} ${env.GIT_COMMIT}",
+//                             returnStdout: true
+//                         ).trim()
+//                     } else {
+//                         echo "No previous successful commit found. This is likely the first build. Building all."
+//                         GIT_DIFF = "ALL"
+//                     }
+//                     echo "Changed files:\n${GIT_DIFF}"
+//                 }
+//             }
+//         }
+//
+//         stage('Detect Changes') {
+//             steps {
+//                 script {
+//                     def changedFiles = GIT_DIFF.split('\n')
+//                     env.BUILD_USER_SERVICE = 'false'
+//
+//                     if (GIT_DIFF == 'ALL') {
+//                         env.BUILD_USER_SERVICE = 'true'
+//                         echo "First build or no previous commit found - will build user-service"
+//                     } else {
+//                         for (String file : changedFiles) {
+//                             if (file.startsWith('user-service/') ||
+//                                 file.startsWith('common/') ||
+//                                 file == 'build.gradle' ||
+//                                 file == 'settings.gradle' ||
+//                                 file.startsWith('gradle/')) {
+//
+//                                 env.BUILD_USER_SERVICE = 'true'
+//                                 echo "Changes detected in '${file}', will build user-service."
+//                                 break
+//                             }
+//                         }
+//                     }
+//
+//                     if (env.BUILD_USER_SERVICE == 'false') {
+//                         echo "No changes in user-service - skipping build"
+//                     }
+//                 }
+//             }
+//         }
+//
+//         stage('Build User Service') {
+//             when {
+//                 expression { env.BUILD_USER_SERVICE == 'true' }
+//             }
+//             steps {
+//                 script {
+//                     echo "Building user-service..."
+//
+//                     sh '''
+//                         echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin
+//                     '''
+//
+//                     sh '''
+//                         if ! docker buildx inspect multi >/dev/null 2>&1; then
+//                             echo "Creating multi-platform builder..."
+//                             docker buildx create --name multi --use
+//                         else
+//                             echo "Using existing builder: multi"
+//                             docker buildx use multi
+//                         fi
+//
+//                         docker buildx inspect --bootstrap
+//                     '''
+//
+//                     sh """
+//                         docker buildx build \\
+//                             --builder multi \\
+//                             --platform linux/amd64 \\
+//                             -f user-service/Dockerfile \\
+//                             --target prod \\
+//                             -t ${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
+//                             -t ${DOCKER_HUB_REPO}:latest \\
+//                             --push \\
+//                             .
+//                     """
+//
+//                     echo "Successfully built and pushed ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+//                 }
+//             }
+//         }
+//
+//         stage('Update Kubernetes') {
+//             when { env.BUILD_USER_SERVICE == 'true' }
+//             steps {
+//                 withKubeconfig(credentialsId: 'k8s-secret-file-config') {
+//                     script {
+//                         echo "Updating Kubernetes deployment..."
+//                         sh """
+//                             kubectl set image deployment/user-deployment \\
+//                                 user-service=${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
+//                                 -n default
+//
+//                             kubectl rollout status deployment/user-deployment -n default --timeout=5m
+//                         """
+//                     }
+//                 }
+//             }
+//         }
+//
+//         stage('Verify Deployment') {
+//             when {
+//                 expression { env.BUILD_USER_SERVICE == 'true' }
+//             }
+//             steps {
+//                 withKubeconfig(credentialsId: 'k8s-secret-file-config') {
+//                     script {
+//                         echo "Verifying deployment..."
+//
+//                         sh '''
+//                             kubectl get pods -l app=user-service -n default
+//
+//                             kubectl wait --for=condition=ready pod -l app=user-service -n default --timeout=5m
+//                         '''
+//
+//                         echo "Deployment verified successfully"
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//
+//     post {
+//         always {
+//             script {
+//                 sh 'docker logout || true'
+//             }
+//         }
+//         success {
+//             echo 'Pipeline completed successfully!'
+//             script {
+//                 if (env.BUILD_USER_SERVICE == 'true') {
+//                     echo "User Service: Built and deployed - ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+//                 } else {
+//                     echo "User Service: No changes detected - skipped"
+//                 }
+//             }
+//         }
+//         failure {
+//             echo 'Pipeline failed!'
+//         }
+//         cleanup {
+//             cleanWs()
+//         }
+//     }
+// }
+
 pipeline {
-    agent any
-    // push to Docker
-    environment {
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
-        DOCKER_HUB_REPO = 'leesy010504/exit-user-service'
-        IMAGE_TAG = "1.0.${BUILD_NUMBER}"
-        GIT_DIFF = ''
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  serviceAccountName: jenkins
+  containers:
+  - name: kubectl
+    image: bitnami/kubectl:1.28
+    command: ['cat']
+    tty: true
+"""
+        }
     }
 
     stages {
-        stage('Checkout') {
+        stage('Test') {
             steps {
-                checkout scm
-                script {
-                    if (env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
-                        echo "Comparing with previous successful commit: ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
-                        GIT_DIFF = sh(
-                            script: "git diff --name-only ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT} ${env.GIT_COMMIT}",
-                            returnStdout: true
-                        ).trim()
-                    } else {
-                        echo "No previous successful commit found. This is likely the first build. Building all."
-                        GIT_DIFF = "ALL"
-                    }
-                    echo "Changed files:\n${GIT_DIFF}"
+                container('kubectl') {
+                    sh 'kubectl version --client'
+                    sh 'kubectl get pods -n default'
                 }
             }
-        }
-
-        stage('Detect Changes') {
-            steps {
-                script {
-                    env.BUILD_USER_SERVICE = 'false'
-
-                    if (GIT_DIFF == 'ALL') {
-                        env.BUILD_USER_SERVICE = 'true'
-                        echo "First build - will build user-service"
-                    } else if (GIT_DIFF.contains('user-service/') ||
-                               GIT_DIFF.contains('common/') ||
-                               GIT_DIFF.contains('gradle') ||
-                               GIT_DIFF.contains('build.gradle') ||
-                               GIT_DIFF.contains('settings.gradle')) {
-                        env.BUILD_USER_SERVICE = 'true'
-                        echo "Changes detected in user-service or common modules"
-                    } else {
-                        echo "No changes in user-service - skipping build"
-                    }
-                }
-            }
-        }
-
-        stage('Build User Service') {
-            when {
-                expression { env.BUILD_USER_SERVICE == 'true' }
-            }
-            steps {
-                script {
-                    echo "Building user-service..."
-
-                    sh '''
-                        echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin
-                    '''
-
-                    sh '''
-                        if ! docker buildx inspect multi >/dev/null 2>&1; then
-                            echo "Creating multi-platform builder..."
-                            docker buildx create --name multi --use
-                        else
-                            echo "Using existing builder: multi"
-                            docker buildx use multi
-                        fi
-
-                        docker buildx inspect --bootstrap
-                    '''
-
-                    sh """
-                        docker buildx build \\
-                            --builder multi \\
-                            --platform linux/amd64 \\
-                            -f user-service/Dockerfile \\
-                            --target prod \\
-                            -t ${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
-                            -t ${DOCKER_HUB_REPO}:latest \\
-                            --push \\
-                            .
-                    """
-
-                    echo "Successfully built and pushed ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
-                }
-            }
-        }
-
-        stage('Update Kubernetes') {
-            when { env.BUILD_USER_SERVICE == 'true' }
-            steps {
-                withKubeconfig([credentialsId: 'my-kubeconfig-credentials', context: 'my-cluster-context']) {
-                    script {
-                        echo "Updating Kubernetes deployment..."
-                        sh """
-                            kubectl set image deployment/user-deployment \\
-                                user-service=${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
-                                -n default
-
-                            kubectl rollout status deployment/user-deployment -n default --timeout=5m
-                        """
-                    }
-                }
-            }
-        }
-
-        stage('Verify Deployment') {
-            when {
-                expression { env.BUILD_USER_SERVICE == 'true' }
-            }
-            steps {
-                script {
-                    echo "Verifying deployment..."
-
-                    sh '''
-                        # Pod 상태 확인
-                        kubectl get pods -l app=user-service -n default
-
-                        # Pod Ready 확인
-                        kubectl wait --for=condition=ready pod -l app=user-service -n default --timeout=5m
-                    '''
-
-                    echo "Deployment verified successfully"
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            script {
-                sh 'docker logout || true'
-            }
-        }
-        success {
-            echo 'Pipeline completed successfully!'
-            script {
-                if (env.BUILD_USER_SERVICE == 'true') {
-                    echo "User Service: Built and deployed - ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
-                } else {
-                    echo "User Service: No changes detected - skipped"
-                }
-            }
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-        cleanup {
-            cleanWs()
         }
     }
 }
