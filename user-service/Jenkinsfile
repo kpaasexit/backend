@@ -11,6 +11,8 @@ spec:
   serviceAccountName: jenkins
   nodeSelector:
     worker: "true"
+  hostNetwork: true
+    dnsPolicy: ClusterFirstWithHostNet
   containers:
   - name: kubectl
     image: alpine:latest
