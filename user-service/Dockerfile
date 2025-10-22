@@ -3,20 +3,22 @@ LABEL authors="sang-yoon"
 
 WORKDIR /workspace
 
-# Gradle wrapper를 명시적으로 복사
+RUN echo "=== Checking if gradle-wrapper.jar exists in build context ==="
+
 COPY gradlew ./
 COPY gradle/wrapper gradle/wrapper
 COPY settings.gradle ./
 
-# 디버깅: gradle 디렉토리 구조 확인
-RUN echo "=== Checking workspace directory ===" && \
-    ls -la && \
-    echo "=== Checking gradle directory ===" && \
-    ls -la gradle/ && \
-    echo "=== Checking gradle/wrapper directory ===" && \
-    ls -la gradle/wrapper/ && \
-    echo "=== Checking gradle-wrapper.jar ===" && \
-    file gradle/wrapper/gradle-wrapper.jar || echo "gradle-wrapper.jar not found!"
+# 복사 직후 확인
+RUN echo "=== After COPY - checking gradle/wrapper ===" && \
+    ls -laR gradle/ && \
+    echo "=== Attempting to access gradle-wrapper.jar ===" && \
+    if [ -f "gradle/wrapper/gradle-wrapper.jar" ]; then \
+        echo "✅ gradle-wrapper.jar EXISTS!"; \
+        ls -lh gradle/wrapper/gradle-wrapper.jar; \
+    else \
+        echo "❌ gradle-wrapper.jar NOT FOUND!"; \
+    fi
 
 RUN chmod +x gradlew
 
