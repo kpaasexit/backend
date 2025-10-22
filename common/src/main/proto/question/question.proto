@@ -34,7 +34,6 @@ message ImageMetadata {
 }
 
 message UploadBytesRequest {
-  int32 file_id = 1;
   ImageMetadata meta = 2;
   bytes data = 3;            // 주의: 큰 파일 비권장
 }

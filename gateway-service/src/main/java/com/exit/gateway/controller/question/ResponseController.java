@@ -12,9 +12,11 @@ import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.QuestionRequestMapper;
 import com.exit.gateway.service.question.ResponseGrpcClient;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/responses")
@@ -27,10 +29,11 @@ public class ResponseController {
     @PostMapping(value = "/answers", consumes = "multipart/form-data")
     public SuccessResponse<AnswerCreateResponseDto> createAnswer(
             @Valid @ModelAttribute AnswerCreateRequestDto request,
+            @RequestPart List<MultipartFile> images,
             @LoginUser Long userId
     ) {
         log.info("Answer create request received");
-        AnswerCreateRequest grpcRequest = questionRequestMapper.toGrpcAnswerCreateRequest(request, userId);
+        AnswerCreateRequest grpcRequest = questionRequestMapper.toGrpcAnswerCreateRequest(request, userId, images);
         AnswerCreateResponseDto response = responseGrpcClient.createAnswer(grpcRequest);
         return SuccessResponse.of(QuestionSuccessCode.ANSWER_CREATE_SUCCESS, response);
     }
