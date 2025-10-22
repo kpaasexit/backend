@@ -723,6 +723,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#question-popular-post_response_fields">Response fields</a></li>
 </ul>
 </li>
+<li><a href="#question-update">질문 수정</a>
+<ul class="sectlevel2">
+<li><a href="#question-update_http_request">HTTP request</a></li>
+<li><a href="#question-update_path_parameters">Path parameters</a></li>
+<li><a href="#question-update_multipart_form-parameters">Multipart form-parameters</a></li>
+<li><a href="#question-update_http_response">HTTP response</a></li>
+<li><a href="#question-update_response_fields">Response fields</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#response-api">답변 API</a>
@@ -1173,7 +1182,7 @@ Content-Length: 245
 Host: localhost:8080
 
 {
-  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTIsImV4cCI6MjM2NTk0MzA5Mn0.xdFD0KKBuY5VmfUvpkopp_lQTcmOjgSB2EGhGPlejwU"
+  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTIsImV4cCI6MjM2NTk0NzA5Mn0.3FIQecyFzbm0dcDxy-csrORUj3hpIknqI0Ine3jMclk"
 }</code></pre>
 </div>
 </div>
@@ -1306,7 +1315,7 @@ Content-Length: 170
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/logout HTTP/1.1
 X-Device-Id: test-device-id
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTIsImV4cCI6MTc2NDc0MzA5Mn0.MyjgzdCHn4aC-UDhRwYi6DKFi6QvHwnJVU1yVhbeEbw
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTIsImV4cCI6MTc2NDc0NzA5Mn0.J1wzihabPnc7E522p5oR9bVblaDe5xk7jUHe4hT1EvM
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
@@ -1406,7 +1415,7 @@ Content-Length: 121
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/withdraw HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTIsImV4cCI6MTc2NDc0MzA5Mn0.MyjgzdCHn4aC-UDhRwYi6DKFi6QvHwnJVU1yVhbeEbw
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTIsImV4cCI6MTc2NDc0NzA5Mn0.J1wzihabPnc7E522p5oR9bVblaDe5xk7jUHe4hT1EvM
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
@@ -1504,7 +1513,7 @@ Content-Length: 125
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/user/device HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTMsImV4cCI6MTc2NDc0MzA5M30.oUtRL25-5AB42ioE4ond9Fq41T3_cTk3akdkDeKDGXo
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTMsImV4cCI6MTc2NDc0NzA5M30.T9bbCdW0YJjRP4vsn9AY6l_nIVsoq3IE8ueT1-VxpnU
 X-Device-Id: test-device-id
 Content-Length: 37
 Host: localhost:8080
@@ -1634,7 +1643,7 @@ Content-Length: 157
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/user/info HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTMsImV4cCI6MTc2NDc0MzA5M30.oUtRL25-5AB42ioE4ond9Fq41T3_cTk3akdkDeKDGXo
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTMsImV4cCI6MTc2NDc0NzA5M30.T9bbCdW0YJjRP4vsn9AY6l_nIVsoq3IE8ueT1-VxpnU
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1743,7 +1752,7 @@ Content-Length: 192
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/user/additional-info HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTMsImV4cCI6MTc2NDc0MzA5M30.oUtRL25-5AB42ioE4ond9Fq41T3_cTk3akdkDeKDGXo
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTMsImV4cCI6MTc2NDc0NzA5M30.T9bbCdW0YJjRP4vsn9AY6l_nIVsoq3IE8ueT1-VxpnU
 Host: localhost:8080
 
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
@@ -2090,7 +2099,7 @@ Content-Length: 127
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/categories/statistics HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTAsImV4cCI6MTc2NDc0MzA5MH0.AbFe60aQq-4J91sbjZzs6LIGiJ7TCSfdP2TUPQVl7Cg
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTAsImV4cCI6MTc2NDc0NzA5MH0.-ngimggjtXdN3qMiQ5fMR7_9Xyy9FFYmtGBrnHC_5Eo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2215,7 +2224,7 @@ Content-Length: 323
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/category/1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTAsImV4cCI6MTc2NDc0MzA5MH0.AbFe60aQq-4J91sbjZzs6LIGiJ7TCSfdP2TUPQVl7Cg
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTAsImV4cCI6MTc2NDc0NzA5MH0.-ngimggjtXdN3qMiQ5fMR7_9Xyy9FFYmtGBrnHC_5Eo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2375,7 +2384,7 @@ Content-Length: 309
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTAsImV4cCI6MTc2NDc0MzA5MH0.AbFe60aQq-4J91sbjZzs6LIGiJ7TCSfdP2TUPQVl7Cg
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTAsImV4cCI6MTc2NDc0NzA5MH0.-ngimggjtXdN3qMiQ5fMR7_9Xyy9FFYmtGBrnHC_5Eo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2535,7 +2544,7 @@ Content-Length: 309
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/quiz/1/submit HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTAsImV4cCI6MTc2NDc0MzA5MH0.AbFe60aQq-4J91sbjZzs6LIGiJ7TCSfdP2TUPQVl7Cg
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTAsImV4cCI6MTc2NDc0NzA5MH0.-ngimggjtXdN3qMiQ5fMR7_9Xyy9FFYmtGBrnHC_5Eo
 Content-Type: application/x-www-form-urlencoded
 Host: localhost:8080
 Content-Length: 8
@@ -2663,7 +2672,7 @@ Content-Length: 113
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/today HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTAsImV4cCI6MTc2NDc0MzA5MH0.AbFe60aQq-4J91sbjZzs6LIGiJ7TCSfdP2TUPQVl7Cg
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTAsImV4cCI6MTc2NDc0NzA5MH0.-ngimggjtXdN3qMiQ5fMR7_9Xyy9FFYmtGBrnHC_5Eo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2765,7 +2774,7 @@ Content-Length: 119
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/solved?categoryIds=1&amp;categoryIds=2&amp;categoryIds=3&amp;pageNum=1&amp;size=5 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTAsImV4cCI6MTc2NDc0MzA5MH0.AbFe60aQq-4J91sbjZzs6LIGiJ7TCSfdP2TUPQVl7Cg
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTAsImV4cCI6MTc2NDc0NzA5MH0.-ngimggjtXdN3qMiQ5fMR7_9Xyy9FFYmtGBrnHC_5Eo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -3284,7 +3293,7 @@ Content-Length: 613
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/magazine/1/scrap HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwODMsImV4cCI6MTc2NDc0MzA4M30.4ycfuKDtUj9k78EreK3-k3-0Ixzw6xzTtIHxzz5bkeE
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwODUsImV4cCI6MTc2NDc0NzA4NX0.fcfoZhkx0vnLXkuW2W9uWFc8HGS70T6poY-J6IYHwX8
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
@@ -3415,7 +3424,7 @@ Content-Length: 149
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/magazine/scrap-box?pageNum=1&amp;size=5 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwODMsImV4cCI6MTc2NDc0MzA4M30.4ycfuKDtUj9k78EreK3-k3-0Ixzw6xzTtIHxzz5bkeE
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwODUsImV4cCI6MTc2NDc0NzA4NX0.fcfoZhkx0vnLXkuW2W9uWFc8HGS70T6poY-J6IYHwX8
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -3591,7 +3600,7 @@ Content-Length: 685
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/magazine/recommend HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwODMsImV4cCI6MTc2NDc0MzA4M30.4ycfuKDtUj9k78EreK3-k3-0Ixzw6xzTtIHxzz5bkeE
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwODUsImV4cCI6MTc2NDc0NzA4NX0.fcfoZhkx0vnLXkuW2W9uWFc8HGS70T6poY-J6IYHwX8
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -3835,7 +3844,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 564
+Content-Length: 627
 
 {
   "code" : "QUESTION_OK_001",
@@ -3852,7 +3861,9 @@ Content-Length: 564
     "questionWriterName" : "김사용자",
     "questionWriterProfile" : null,
     "images" : [ ],
-    "createdAt" : "2024-01-01T00:00:00"
+    "createdAt" : "2024-01-01T00:00:00",
+    "commentNum" : null,
+    "additionalQuestionNum" : null
   }
 }</code></pre>
 </div>
@@ -3958,6 +3969,16 @@ Content-Length: 564
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.createdAt</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">작성일시</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.commentNum</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.additionalQuestionNum</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">추가 질문 수</p></td>
 </tr>
 </tbody>
 </table>
@@ -4227,7 +4248,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 861
+Content-Length: 928
 
 {
   "code" : "QUESTION_OK_003",
@@ -4251,7 +4272,9 @@ Content-Length: 861
         "imageId" : 2,
         "imageUrl" : "url"
       } ],
-      "createdAt" : "2024-01-01T00:00:00"
+      "createdAt" : "2024-01-01T00:00:00",
+      "commentNum" : null,
+      "additionalQuestionNum" : null
     },
     "authority" : {
       "canModify" : true,
@@ -4367,6 +4390,16 @@ Content-Length: 861
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.question.createdAt</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">작성일시</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.question.commentNum</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.question.additionalQuestionNum</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">추가 질문 수</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.authority</code></p></td>
@@ -4828,7 +4861,7 @@ Content-Length: 488
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/questions/my?pageNum=1&amp;size=5 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwODcsImV4cCI6MTc2NDc0MzA4N30.OYE9mRDbOR2jf5iAPi4-RoRW3GJTERsdqkplHq9EToo
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwODMsImV4cCI6MTc2NDc0NzA4M30.QWoxrjB_FBauWRXjfL4vFD6_fAxbOjFL7Gv_dcuTsJc
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -5156,6 +5189,236 @@ Content-Length: 914
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.popularPostList[].answerCount</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">답변 개수</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="question-update"><a class="link" href="#question-update">질문 수정</a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>GET</code> 요청을 사용하여 질문을 수정합니다.</p>
+</div>
+<div class="sect2">
+<h3 id="question-update_http_request"><a class="link" href="#question-update_http_request">HTTP request</a></h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/questions/1/modify HTTP/1.1
+Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Host: localhost:8080
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=images; filename=new-image.jpg
+Content-Type: image/jpeg
+
+new image content
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm--</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="question-update_path_parameters"><a class="link" href="#question-update_path_parameters">Path parameters</a></h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. /api/questions/{questionId}/modify</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>questionId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 ID</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="question-update_multipart_form-parameters"><a class="link" href="#question-update_multipart_form-parameters">Multipart form-parameters</a></h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">content</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">수정할 질문 내용 (선택)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">deleteIds</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">삭제할 이미지 ID 목록 (선택)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="question-update_http_response"><a class="link" href="#question-update_http_response">HTTP response</a></h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 701
+
+{
+  "code" : "QUESTION_OK_007",
+  "message" : "질문 신고 성공",
+  "result" : {
+    "questionId" : 1,
+    "questionTitle" : "Spring JWT 인증 구현",
+    "questionContent" : "수정된 질문 내용입니다.",
+    "questionCategory" : 1,
+    "questionUrgency" : true,
+    "questionAnswerType" : "PUBLIC",
+    "questionDisclosureType" : "PUBLIC",
+    "questionWriterId" : 1,
+    "questionWriterName" : "김사용자",
+    "questionWriterProfile" : null,
+    "images" : [ {
+      "imageId" : 10,
+      "imageUrl" : "https://example.com/images/new-image.jpg"
+    } ],
+    "createdAt" : "2024-01-01T00:00:00",
+    "commentNum" : null,
+    "additionalQuestionNum" : null
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="question-update_response_fields"><a class="link" href="#question-update_response_fields">Response fields</a></h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>code</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">응답 코드</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>message</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">응답 메시지</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">응답 데이터</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.questionId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.questionTitle</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 제목</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.questionContent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">수정된 질문 내용</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.questionCategory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 카테고리 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.questionUrgency</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">긴급 여부</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.questionAnswerType</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">답변 타입</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.questionDisclosureType</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">공개 타입</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.questionWriterId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">작성자 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.questionWriterName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">작성자 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.questionWriterProfile</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">작성자 프로필</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.images</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 이미지 목록</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.images[].imageId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 이미지 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.images[].imageUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">질문 이미지 URL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">작성일시</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.commentNum</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.additionalQuestionNum</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Null</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">추가 질문 수</p></td>
 </tr>
 </tbody>
 </table>
@@ -6382,7 +6645,7 @@ Content-Length: 700
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/comments/1?targetType=RESPONSE&amp;pageNum=1&amp;size=5 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwODYsImV4cCI6MTc2NDc0MzA4Nn0.-oB5EwMGC3Glp2eUCuYtGD6aqiZbZH8fzATKJZ_VUsU
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwODgsImV4cCI6MTc2NDc0NzA4OH0.Wo-ciabSZ4p618D_L4zd_93bTMGLp2zqLDJGokZAa2U
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -7328,7 +7591,7 @@ Content-Length: 1976
       "magazineAuthor" : "김개발",
       "authorProfileUrl" : "https://example.com/profile/kim.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/kpaas.jpg",
-      "createdAt" : "2025-10-22T14:24:51"
+      "createdAt" : "2025-10-22T15:31:31"
     }, {
       "magazineId" : 2,
       "magazineCategoryId" : 1,
@@ -7337,7 +7600,7 @@ Content-Length: 1976
       "magazineAuthor" : "이아키",
       "authorProfileUrl" : "https://example.com/profile/lee.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/msa.jpg",
-      "createdAt" : "2025-10-22T14:24:51"
+      "createdAt" : "2025-10-22T15:31:31"
     } ],
     "questionHasNext" : false,
     "magazineHasNext" : false
@@ -7647,7 +7910,7 @@ Content-Length: 1008
       "magazineAuthor" : "김개발",
       "authorProfileUrl" : "https://example.com/profile/kim.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/kpaas.jpg",
-      "createdAt" : "2025-10-22T14:24:51"
+      "createdAt" : "2025-10-22T15:31:31"
     }, {
       "magazineId" : 2,
       "magazineCategoryId" : 1,
@@ -7656,7 +7919,7 @@ Content-Length: 1008
       "magazineAuthor" : "이아키",
       "authorProfileUrl" : "https://example.com/profile/lee.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/msa.jpg",
-      "createdAt" : "2025-10-22T14:24:51"
+      "createdAt" : "2025-10-22T15:31:31"
     } ],
     "currentPage" : 0,
     "hasNext" : false
@@ -7966,7 +8229,7 @@ Content-Length: 1133
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2025-10-21 15:02:06 +0900
+Last updated 2025-10-22 23:36:20 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

@@ -2,6 +2,7 @@ package com.exit.question.service.util;
 
 import com.exit.common.grpc.*;
 import com.exit.common.util.time.TimeStampUtil;
+import com.exit.question.controller.dto.response.CommentAndAdditionalQuestionNum;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.QuestionReport;
@@ -69,7 +70,8 @@ public class QuestionGrpcMapper {
     }
 
     public QuestionCreateResponse getQuestionCreateResponse(Question question, List<ImageObject> imageObjects,
-                                                            UpdateAdditionalUserInfoResponse userNameAndProfile) {
+                                                            UpdateAdditionalUserInfoResponse userNameAndProfile,
+                                                            CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum) {
         QuestionCreateResponse.Builder builder = QuestionCreateResponse.newBuilder();
 
         if (imageObjects != null && !imageObjects.isEmpty()) {
@@ -91,6 +93,8 @@ public class QuestionGrpcMapper {
                 .setQuestionAnswerType(question.getQuestionAnswerType().name())
                 .setQuestionDisclosureType(question.getQuestionDisclosure().name())
                 .setCreatedAt(toGrpcTimestamp(question.getCreatedAt()))
+                .setCommentNum(commentAndAdditionalQuestionNum.commentNum())
+                .setAdditionalQuestionNum(commentAndAdditionalQuestionNum.additionalQuestionNum())
                 .build();
     }
 

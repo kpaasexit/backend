@@ -396,6 +396,14 @@ operation::question/my-question[snippets='http-request,request-headers,query-par
 
 operation::question/popular-post[snippets='http-request,http-response,response-fields']
 
+[[question-update]]
+== 질문 수정
+
+`GET` 요청을 사용하여 질문을 수정합니다.
+
+operation::question/update[snippets='http-request,path-parameters,multipart-form-parameters,http-response,response-fields']
+
+
 [[response-api]]
 = 답변 API
 

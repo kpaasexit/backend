@@ -28,6 +28,7 @@ import com.exit.common.grpc.ai.SimilarQuestion;
 import com.exit.common.grpc.ai.SimilarResponse;
 import com.exit.common.util.file.FileUploadUtil;
 import com.exit.common.util.time.TimeStampUtil;
+import com.exit.question.controller.dto.response.CommentAndAdditionalQuestionNum;
 import com.exit.question.controller.dto.response.PopularPostDto;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
@@ -83,7 +84,6 @@ public class QuestionService {
     private final TaskScheduler taskScheduler;
     private final QuestionGrpcMapper questionGrpcMapper;
 
-
     public QuestionCreateResponse createQuestion(QuestionCreateRequest request) {
         try {
             QuestionCategory questionCategory = questionCategoryRepository.findById(request.getQuestionCategory())
@@ -98,8 +98,9 @@ public class QuestionService {
             aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
             // AI 답변 자동 생성
             scheduleAiAnswerGeneration(savedQuestion);
-
-            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile);
+            CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum = questionRepository.findCommentAndAdditionalQuestionNumByQuestionId(
+                    question.getQuestionId());
+            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile, commentAndAdditionalQuestionNum);
         } catch (GrpcException e) {
             throw new GrpcException(GrpcQuestionErrorCode.CREATE_QUESTION_FAILED,
                     e.getGrpcErrorCode().getErrorDescription());
@@ -352,7 +353,10 @@ public class QuestionService {
         UpdateAdditionalUserInfoResponse userNameAndProfile = userGrpcClient.getUserNameAndProfile(
                 question.getQuestionWriterId());
 
-        return questionGrpcMapper.getQuestionCreateResponse(question, imageObjectDtos, userNameAndProfile);
+        CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum = questionRepository.findCommentAndAdditionalQuestionNumByQuestionId(
+                question.getQuestionId());
+
+        return questionGrpcMapper.getQuestionCreateResponse(question, imageObjectDtos, userNameAndProfile, commentAndAdditionalQuestionNum);
     }
 
     private Authority getAuthority(QuestionDetailRequest request) {

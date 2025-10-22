@@ -1,6 +1,7 @@
 package com.exit.question.domain.question.repository;
 
 import com.exit.question.controller.dto.request.NotificationContentDto;
+import com.exit.question.controller.dto.response.CommentAndAdditionalQuestionNum;
 import com.exit.question.controller.dto.response.PopularPostDto;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
@@ -103,4 +104,17 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     @Query("select count(r) > 0 from Response r where r.questionId = :questionId")
     boolean existResponseByQuestionId(@Param("questionId") Long questionId);
+
+    @Query(
+            """
+                        select new com.exit.question.controller.dto.response.CommentAndAdditionalQuestionNum(
+                                cast((select count(qc) from QuestionComment qc where qc.question.questionId = :questionId) as int),
+                                cast((select count(fum) from FollowUpMessage fum
+                                      inner join fum.followUpRoom fur
+                                      inner join fur.response r
+                                      where r.questionId = :questionId) as int)
+                            ) from Question q where q.questionId = :questionId
+                    """
+    )
+    CommentAndAdditionalQuestionNum findCommentAndAdditionalQuestionNumByQuestionId(@Param("questionId") Long questionId);
 }

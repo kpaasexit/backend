@@ -73,6 +73,14 @@
 |`+String+`
 |작성일시
 
+|`+result.question.commentNum+`
+|`+Null+`
+|댓글 수
+
+|`+result.question.additionalQuestionNum+`
+|`+Null+`
+|추가 질문 수
+
 |`+result.authority+`
 |`+Object+`
 |권한 정보

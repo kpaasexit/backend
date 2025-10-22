@@ -24,7 +24,9 @@ public record QuestionCreateResponseDto(
         String questionWriterProfile,
         List<ImageObjectDto> images,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        Integer commentNum,
+        Integer additionalQuestionNum
 ) {
     public static QuestionCreateResponseDto from(QuestionCreateResponse questionCreateResponse) {
         QuestionCreateResponseDtoBuilder builder = QuestionCreateResponseDto.builder();
@@ -55,6 +57,8 @@ public record QuestionCreateResponseDto(
                 .questionWriterId(questionCreateResponse.getQuestionWriterId())
                 .questionWriterName(questionCreateResponse.getQuestionWriterName())
                 .createdAt(timestampToLocalDateTime(questionCreateResponse.getCreatedAt()))
+                .commentNum(questionCreateResponse.getCommentNum())
+                .additionalQuestionNum(questionCreateResponse.getAdditionalQuestionNum())
                 .build();
     }
 }

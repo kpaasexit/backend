@@ -1,7 +1,7 @@
 [source,http,options="nowrap"]
 ----
 GET /api/quiz/solved?categoryIds=1&categoryIds=2&categoryIds=3&pageNum=1&size=5 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTAsImV4cCI6MTc2NDc0MzA5MH0.AbFe60aQq-4J91sbjZzs6LIGiJ7TCSfdP2TUPQVl7Cg
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDcwOTAsImV4cCI6MTc2NDc0NzA5MH0.-ngimggjtXdN3qMiQ5fMR7_9Xyy9FFYmtGBrnHC_5Eo
 Host: localhost:8080
 
 ----
