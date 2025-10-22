@@ -27,27 +27,18 @@ spec:
         memory: 256Mi
   - name: docker
     image: docker:24-dind
-    command:
-    - sleep
-    args:
-    - infinity
+    env:
+    - name: DOCKER_TLS_CERTDIR
+      value: ""
     resources:
       requests:
         cpu: 100m
-        memory: 128Mi
+        memory: 256Mi
       limits:
-        cpu: 1000m
-        memory: 512Mi
+        cpu: 300m
+        memory: 1Gi
     securityContext:
       privileged: true
-    volumeMounts:
-    - name: docker-sock
-      mountPath: /var/run/docker.sock
-  volumes:
-  - name: docker-sock
-    hostPath:
-      path: /var/run/docker.sock
-      type: Socket
 """
         }
     }
@@ -56,6 +47,7 @@ spec:
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
         DOCKER_HUB_REPO = 'leesy010504/exit-user-service'
         IMAGE_TAG = "1.1.${BUILD_NUMBER}"
+        DOCKER_HOST = "tcp://localhost:2375"
         GIT_DIFF = ''
     }
 
@@ -108,7 +100,9 @@ spec:
                                 file.startsWith('common/') ||
                                 file == 'build.gradle' ||
                                 file == 'settings.gradle' ||
-                                file.startsWith('gradle/')) {
+                                file.startsWith('gradle/') ||
+                                file == 'Jenkinsfile' ||
+                                file == 'user-service/Jenkinsfile') {
                                 env.BUILD_USER_SERVICE = 'true'
                                 echo "Changes detected: ${file}"
                                 break
@@ -131,6 +125,13 @@ spec:
                 container('docker') {
                     script {
                         echo "🔨 Building user-service..."
+
+                        // Docker daemon 시작 대기
+                        sh '''
+                            echo "Waiting for Docker daemon..."
+                            timeout 60 sh -c 'until docker info >/dev/null 2>&1; do sleep 1; done'
+                            echo "Docker daemon ready!"
+                        '''
 
                         sh '''
                             echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin
