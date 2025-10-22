@@ -161,7 +161,7 @@ spec:
                                 .
                         """
 
-                        echo "Built and pushed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                        echo "✅ Built and pushed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
                     }
                 }
             }
@@ -174,17 +174,20 @@ spec:
             steps {
                 container('kubectl') {
                     script {
-                        echo "Updating deployment..."
+                        echo "🚀 Updating deployment with patch..."
 
                         sh """
-                            kubectl set image deployment/user-deployment \\
-                                user-service=${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
-                                -n default
+                            kubectl patch deployment user-deployment -n default \\
+                                --type='json' \\
+                                -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"${DOCKER_HUB_REPO}:${IMAGE_TAG}"}]'
 
-                            kubectl rollout status deployment/user-deployment -n default --timeout=5m
+                            echo "⏳ Waiting for rollout to complete..."
+                            kubectl rollout status deployment/user-deployment \\
+                                -n default \\
+                                --timeout=5m
                         """
 
-                        echo "Deployment updated"
+                        echo "✅ Deployment patched and rolled out successfully"
                     }
                 }
             }
@@ -197,14 +200,27 @@ spec:
             steps {
                 container('kubectl') {
                     script {
-                        echo "Verifying deployment..."
+                        echo "🔍 Verifying deployment..."
 
                         sh '''
-                            kubectl get pods -l app=user-service -n default
-                            kubectl wait --for=condition=ready pod -l app=user-service -n default --timeout=5m
+                            echo "=== Pod Status ==="
+                            kubectl get pods -l app=user -n default -o wide
+
+                            echo ""
+                            echo "=== Deployment Status ==="
+                            kubectl get deployment user-deployment -n default
+
+                            echo ""
+                            echo "=== Current Image ==="
+                            kubectl get deployment user-deployment -n default -o jsonpath='{.spec.template.spec.containers[0].image}'
+                            echo ""
+
+                            echo ""
+                            echo "=== Waiting for pods to be ready ==="
+                            kubectl wait --for=condition=ready pod -l app=user -n default --timeout=5m
                         '''
 
-                        echo "Deployment verified"
+                        echo "✅ Deployment verified successfully"
                     }
                 }
             }
@@ -218,17 +234,17 @@ spec:
             }
         }
         success {
-            echo 'Pipeline completed successfully!'
+            echo '✅ Pipeline completed successfully!'
             script {
                 if (env.BUILD_USER_SERVICE == 'true') {
-                    echo "User Service deployed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                    echo "🎉 User Service deployed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
                 } else {
-                    echo "ℹUser Service: No changes - skipped"
+                    echo "ℹ️  User Service: No changes - skipped"
                 }
             }
         }
         failure {
-            echo 'Pipeline failed!'
+            echo '❌ Pipeline failed!'
         }
         cleanup {
             cleanWs()
