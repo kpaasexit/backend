@@ -16,7 +16,7 @@ public record SimilarQuestionItemDto(
         Long questionCategory,
         Boolean questionUrgency,
         String questionAnswerType,
-        Boolean questionAnswerAdopt,
+        Boolean isAnswered,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt
 ) {
@@ -28,7 +28,7 @@ public record SimilarQuestionItemDto(
                 .questionCategory(SimilarQuestionItem.getQuestionCategory())
                 .questionUrgency(SimilarQuestionItem.getQuestionUrgency())
                 .questionAnswerType(SimilarQuestionItem.getQuestionAnswerType())
-                .questionAnswerAdopt(SimilarQuestionItem.getQuestionAnswerAdopt())
+                .isAnswered(SimilarQuestionItem.getIsAnswered())
                 .createdAt(timestampToLocalDateTime(SimilarQuestionItem.getCreatedAt()))
                 .build();
     }

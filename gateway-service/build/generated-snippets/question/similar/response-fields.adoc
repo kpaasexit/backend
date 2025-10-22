@@ -41,9 +41,9 @@
 |`+String+`
 |답변 타입
 
-|`+result.similarQuestionResponseDto[].questionAnswerAdopt+`
+|`+result.similarQuestionResponseDto[].isAnswered+`
 |`+Boolean+`
-|답변 채택 여부
+|답변 여부
 
 |`+result.similarQuestionResponseDto[].createdAt+`
 |`+String+`

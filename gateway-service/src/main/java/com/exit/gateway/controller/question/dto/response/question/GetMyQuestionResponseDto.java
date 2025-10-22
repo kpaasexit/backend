@@ -26,7 +26,7 @@ public record GetMyQuestionResponseDto(
                             .createdAt(TimeStampUtil.timestampToLocalDateTime(post.getCreatedAt()))
                             .title(post.getTitle())
                             .content(post.getContent())
-                            .answerAdopt(post.getAnswerAdopt())
+                            .isAnswered(post.getIsAnswered())
                             .answerCount(post.getAnswerCount())
                             .build();
                 }).toList();

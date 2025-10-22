@@ -1,7 +1,7 @@
 [source,http,options="nowrap"]
 ----
 GET /api/comments/1?targetType=RESPONSE&pageNum=1&size=5 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDE3NzMsImV4cCI6MTc2NDc0MTc3M30.OZsE3UaEHoeIvi6idQdtqBkhCOXrzP8ghvYRe_18J-g
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwODYsImV4cCI6MTc2NDc0MzA4Nn0.-oB5EwMGC3Glp2eUCuYtGD6aqiZbZH8fzATKJZ_VUsU
 Host: localhost:8080
 
 ----

@@ -31,7 +31,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                             q.questionWriterId,
                             q.questionTitle,
                             q.questionContent,
-                            q.questionAnswerAdopt,
+                            (count(r) > 0),
                             cast(count(r) as int),
                             q.createdAt
                     )
@@ -64,14 +64,14 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
               and (:kw is null
                           or lower(q.questionTitle)  like lower(concat('%', :kw, '%'))
                           or lower(q.questionContent) like lower(concat('%', :kw, '%')))
-            and (:isExist is null or :isExist = false or exists (
+            and (:isAnswered is null or :isAnswered = false or exists (
                     select 1 from Response r3 where r3.questionId = q.questionId
             ))
             """)
     Page<QuestionListQueryResponseDto> findQuestionsByFilter(
             @Param("categoryIds") List<Long> categoryIds,
             @Param("kw") String keywordLike,
-            @Param("isExist") Boolean isExist,
+            @Param("isAnswered") Boolean isAnswered,
             Pageable pageable
     );
 
@@ -100,4 +100,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
         """
     )
     Optional<Question> notExistsResponseByQuestionId(Long questionId);
+
+    @Query("select count(r) > 0 from Response r where r.questionId = :questionId")
+    boolean existResponseByQuestionId(@Param("questionId") Long questionId);
 }

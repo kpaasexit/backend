@@ -4,6 +4,6 @@ $ curl 'http://localhost:8080/api/auth/refresh' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -H 'X-Device-Id: test-device-id' \
     -d '{
-  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDE3NzksImV4cCI6MjM2NTk0MTc3OX0.y72kdQ0ZojmdmEi85C2iRNUbkjsCi4afcq66by_pBjw"
+  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExNDMwOTIsImV4cCI6MjM2NTk0MzA5Mn0.xdFD0KKBuY5VmfUvpkopp_lQTcmOjgSB2EGhGPlejwU"
 }'
 ----

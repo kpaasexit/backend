@@ -136,7 +136,7 @@ public class QuestionService {
             Page<QuestionListQueryResponseDto> page = questionRepository.findQuestionsByFilter(
                     filter.getCategoryIdsList(),
                     filter.getKeyword().isEmpty() ? null : filter.getKeyword(),
-                    filter.getIsExist(), pageRequest);
+                    filter.getIsAnswered(), pageRequest);
 
             Set<Long> writerIds = page.getContent().stream().map(QuestionListQueryResponseDto::questionWriterId)
                     .collect(toSet());
@@ -237,7 +237,7 @@ public class QuestionService {
                                 .setNickname(userInfo.getUserName())
                                 .setTitle(post.questionTitle())
                                 .setContent(post.questionContent())
-                                .setAnswerAdopt(post.questionAnswerAdopt())
+                                .setIsAnswered(post.isAnswered())
                                 .setAnswerCount(post.answerCount())
                                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(post.createdAt()))
                                 .build();
@@ -324,7 +324,7 @@ public class QuestionService {
                             .setNickname(userInfo.getUserName())
                             .setTitle(post.questionTitle())
                             .setContent(post.questionContent())
-                            .setAnswerAdopt(post.questionAnswerAdopt())
+                            .setIsAnswered(post.isAnswered())
                             .setAnswerCount(post.answerCount())
                             .setCreatedAt(TimeStampUtil.toGrpcTimestamp(post.createdAt()))
                             .build();

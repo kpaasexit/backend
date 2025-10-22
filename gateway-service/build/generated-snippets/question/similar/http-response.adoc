@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 497
+Content-Length: 488
 
 {
   "code" : "QUESTION_OK_010",
@@ -21,7 +21,7 @@ Content-Length: 497
       "questionCategory" : 1,
       "questionUrgency" : false,
       "questionAnswerType" : "GENERAL",
-      "questionAnswerAdopt" : true,
+      "isAnswered" : true,
       "createdAt" : "2024-01-01T00:00:00"
     } ]
   }
