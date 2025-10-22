@@ -18,6 +18,7 @@ service QuestionService {
   rpc GetQuestionDetail(QuestionDetailRequest) returns (QuestionDetailResponse);
   rpc GetPopularPost(google.protobuf.Empty) returns (GetPopularPostResponse);
   rpc GetMyQuestion(GetMyQuestionRequest) returns (GetMyQuestionResponse);
+  rpc UpdateQuestion(UpdateQuestionRequest) returns (QuestionCreateResponse);
 }
 
 message Authority {
@@ -89,6 +90,14 @@ message GetMyQuestionRequest {
   int64 user_id = 1;
   int32 page_num = 2;
   int32 size = 3;
+}
+
+message UpdateQuestionRequest {
+  int64 user_id = 1;
+  int64 question_id = 2;
+  string content = 3;
+  repeated int64 deleted_image_id = 4;
+  repeated UploadBytesRequest images = 5;
 }
 
 // Response messages

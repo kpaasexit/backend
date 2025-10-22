@@ -20,6 +20,9 @@ public enum GrpcResponseErrorCode implements GrpcErrorCode {
     DELETE_RESPONSE_FAILED(Status.Code.INTERNAL, "RESPONSE_ERR_014", "답변 삭제에 실패했습니다."),
     ANSWER_REPORT_FAILED(Status.Code.INTERNAL, "RESPONSE_ERR_015", "답변 신고에 실패했습니다."),
     GET_DETAIL_RESPONSE_FAILED(Status.Code.INTERNAL, "RESPONSE_ERR_016", "답변 상세 조회에 실패했습니다."),
+
+    // 답변 이미지 실패
+    NOT_FOUND_RESPONSE_IMAGE(Status.Code.INTERNAL, "RESPONSE_ERR_017", "답변 이미지가 존재하지 않습니다."),
     ;
 
     private final Status.Code grpcStatusCode;

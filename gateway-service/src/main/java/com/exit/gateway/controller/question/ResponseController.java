@@ -73,16 +73,16 @@ public class ResponseController {
         return SuccessResponse.of(QuestionSuccessCode.ANSWER_REPORT_SUCCESS, response);
     }
 
-    @PutMapping("/answers/{responseId}")
-    public SuccessResponse<AnswerUpdateResponseDto> updateAnswer(
+    @PutMapping(value = "/answers/{responseId}", consumes = "multipart/form-data")
+    public SuccessResponse<AnswerCreateResponseDto> updateAnswer(
             @PathVariable Long responseId,
-            @Valid @RequestBody AnswerUpdateRequestDto request
+            @Valid @ModelAttribute AnswerUpdateRequestDto request,
+            @RequestPart(required = false) List<MultipartFile> images,
+            @LoginUser Long userId
     ) {
         log.info("Answer update request received for responseId: {}", responseId);
-        UpdateResponseRequest grpcRequest = UpdateResponseRequest.newBuilder()
-                .setResponseId(responseId)
-                .setContent(request.content())
-                .build();
+        UpdateResponseRequest grpcRequest = questionRequestMapper.toGrpcAnswerUpdateRequest(
+                responseId, request, userId, images);
 
         return SuccessResponse.of(QuestionSuccessCode.ANSWER_UPDATE_SUCCESS,
                 responseGrpcClient.updateResponse(grpcRequest));

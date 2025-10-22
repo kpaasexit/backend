@@ -5,6 +5,7 @@ import com.exit.question.controller.dto.response.PopularPostDto;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.response.Response;
+import javax.swing.text.html.Option;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -93,4 +94,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                      q.questionTitle, q.questionContent, q.questionAnswerAdopt, q.createdAt
             """)
     Page<PopularPostDto> findByQuestionWriterId(Long questionWriterId, PageRequest pageRequest);
+
+    @Query("""
+            select q from Question q where q.questionId = :questionId and not exists(select r from Response r where r.questionId = :questionId)
+        """
+    )
+    Optional<Question> notExistsResponseByQuestionId(Long questionId);
 }

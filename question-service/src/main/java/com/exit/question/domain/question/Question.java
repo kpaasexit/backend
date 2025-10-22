@@ -81,4 +81,8 @@ public class Question extends BaseEntity {
     public void updateAnswerAdopt() {
         questionAnswerAdopt = true;
     }
+
+    public void updateQuestion(String content) {
+        this.questionContent = content;
+    }
 }

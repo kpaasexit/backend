@@ -24,7 +24,6 @@ import com.exit.common.grpc.ResponseDetail;
 import com.exit.common.grpc.SendNotificationRequest;
 import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
 import com.exit.common.grpc.UpdateResponseRequest;
-import com.exit.common.grpc.UpdateResponseResponse;
 import com.exit.common.util.file.FileUploadUtil;
 import com.exit.question.controller.dto.response.AiBestResponseDto;
 import com.exit.question.domain.question.Question;
@@ -83,7 +82,6 @@ public class ResponseService {
     private final ResponseGrpcMapper responseGrpcMapper;
     private final NotificationGrpcMapper notificationGrpcMapper;
 
-
     public AnswerCreateResponse answerCreate(AnswerCreateRequest request) {
         try {
             Response newResponse = Response.createResponse(request);
@@ -123,7 +121,7 @@ public class ResponseService {
         }
     }
 
-    public UpdateResponseResponse updateResponse(UpdateResponseRequest request) {
+    public AnswerCreateResponse updateResponse(UpdateResponseRequest request) {
         try {
             Response response = responseRepository.findById(request.getResponseId())
                     .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
@@ -132,13 +130,41 @@ public class ResponseService {
                 throw new GrpcException(GrpcResponseErrorCode.ALREADY_RESPONSE_ADOPTED);
             }
 
-            response.updateContent(request.getContent());
-            responseRepository.save(response);
+            if (!request.getContent().isEmpty()) {
+                response.updateContent(request.getContent());
+            }
 
-            return UpdateResponseResponse.newBuilder()
-                    .setResponseId(response.getResponseId())
-                    .setContent(response.getResponseContent())
-                    .build();
+            if (!request.getDeletedImageIdList().isEmpty()) {
+                List<String> imageUrls = responseImageRepository.findAllUrlByResponseId(request.getResponseId())
+                        .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE_IMAGE));
+
+                fileUploadUtil.deleteFiles(imageUrls);
+            }
+
+            if (!request.getImagesList().isEmpty()) {
+                List<String> imageUrls = fileUploadUtil.uploadImages(request.getImagesList(), RESPONSE_FOLDER);
+
+                imageUrls.forEach(imageUrl -> {
+                            ResponseImage responseImage = ResponseImage.builder()
+                                    .responseId(request.getResponseId())
+                                    .responseImageUrl(imageUrl)
+                                    .build();
+                            responseImageRepository.saveAndFlush(responseImage);
+                        }
+                );
+            }
+            Response savedResponse = responseRepository.save(response);
+
+            List<ImageObject> imageObjects = responseImageRepository.findAllByResponseId(
+                            (savedResponse.getResponseId()))
+                    .stream().map(rl -> {
+                                return ImageObject.newBuilder()
+                                        .setImageId(rl.getResponseImageId())
+                                        .setImageUrl(rl.getResponseImageUrl())
+                                        .build();
+                            }
+                    ).toList();
+            return responseGrpcMapper.getAnswerCreateResponse(savedResponse, imageObjects);
         } catch (GrpcException e) {
             throw new GrpcException(GrpcResponseErrorCode.UPDATE_RESPONSE_FAILED,
                     e.getGrpcErrorCode().getErrorDescription());
@@ -386,10 +412,10 @@ public class ResponseService {
                 .collect(Collectors.groupingBy(
                         ResponseImage::getResponseId,
                         Collectors.mapping(responseImage ->
-                                ImageObject.newBuilder()
-                                        .setImageId(responseImage.getResponseImageId())
-                                        .setImageUrl(responseImage.getResponseImageUrl())
-                                        .build(),
+                                        ImageObject.newBuilder()
+                                                .setImageId(responseImage.getResponseImageId())
+                                                .setImageUrl(responseImage.getResponseImageUrl())
+                                                .build(),
                                 Collectors.toList()
                         )
                 ));

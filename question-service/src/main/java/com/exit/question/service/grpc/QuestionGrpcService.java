@@ -1,9 +1,18 @@
 package com.exit.question.service.grpc;
 
-import com.exit.common.grpc.*;
+import com.exit.common.grpc.CategoryRecommendationResponse;
+import com.exit.common.grpc.GetMyQuestionRequest;
+import com.exit.common.grpc.GetMyQuestionResponse;
+import com.exit.common.grpc.GetPopularPostResponse;
+import com.exit.common.grpc.QuestionCreateResponse;
+import com.exit.common.grpc.QuestionDetailResponse;
+import com.exit.common.grpc.QuestionListResponse;
+import com.exit.common.grpc.QuestionReportResponse;
+import com.exit.common.grpc.QuestionServiceGrpc;
+import com.exit.common.grpc.SimilarQuestionResponse;
+import com.exit.common.grpc.UpdateQuestionRequest;
 import com.exit.question.service.QuestionService;
 import com.google.protobuf.Empty;
-import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,127 +38,83 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
     @Override
     public void questionReport(com.exit.common.grpc.QuestionReportRequest request,
                                StreamObserver<com.exit.common.grpc.QuestionReportResponse> responseObserver) {
-        try {
-            log.info("Question report request received for question ID: {}", request.getQuestionId());
-            QuestionReportResponse response = questionService.questionReport(request);
+        log.info("Question report request received for question ID: {}", request.getQuestionId());
+        QuestionReportResponse response = questionService.questionReport(request);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Question report failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("질문 신고 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void questionList(com.exit.common.grpc.QuestionListRequest request,
                              StreamObserver<com.exit.common.grpc.QuestionListResponse> responseObserver) {
-        try {
-            log.info("Question list request received");
-            QuestionListResponse response = questionService.questionList(request);
+        log.info("Question list request received");
+        QuestionListResponse response = questionService.questionList(request);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Question list failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("질문 목록 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void categoryRecommend(com.exit.common.grpc.CategoryRecommendRequest request,
                                   StreamObserver<com.exit.common.grpc.CategoryRecommendationResponse> responseObserver) {
-        try {
-            log.info("Category recommend request received for title: {}", request.getTitle());
+        log.info("Category recommend request received for title: {}", request.getTitle());
 
-            CategoryRecommendationResponse response = questionService.categoryRecommend(request.getTitle());
+        CategoryRecommendationResponse response = questionService.categoryRecommend(request.getTitle());
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Category recommend failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("카테고리 추천 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void similarQuestion(com.exit.common.grpc.SimilarQuestionRequest request,
                                 StreamObserver<com.exit.common.grpc.SimilarQuestionResponse> responseObserver) {
-        try {
-            log.info("Similar question request received for title: {}", request.getTitle());
-            SimilarQuestionResponse response = questionService.similarQuestion(request.getTitle(), request.getContent());
+        log.info("Similar question request received for title: {}", request.getTitle());
+        SimilarQuestionResponse response = questionService.similarQuestion(request.getTitle(), request.getContent());
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-        } catch (Exception e) {
-            log.error("Similar question failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("유사 질문 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+
     }
 
     @Override
     public void getQuestionDetail(com.exit.common.grpc.QuestionDetailRequest request,
                                   StreamObserver<com.exit.common.grpc.QuestionDetailResponse> responseObserver) {
-        try {
-            log.info("Question detail request received for question ID: {}", request.getQuestionId());
-            QuestionDetailResponse response = questionService.getQuestionDetail(request);
+        log.info("Question detail request received for question ID: {}", request.getQuestionId());
+        QuestionDetailResponse response = questionService.getQuestionDetail(request);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Question detail failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("질문 상세 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void getPopularPost(Empty request,
-                               StreamObserver<GetPopularPostResponse> responseObserver) {
-        try {
-            log.info("Get popular post request received");
+                               StreamObserver<com.exit.common.grpc.GetPopularPostResponse> responseObserver) {
+        log.info("Get popular post request received");
 
-            GetPopularPostResponse response = questionService.getPopularPost();
+        GetPopularPostResponse response = questionService.getPopularPost();
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-
-        } catch (Exception e) {
-            log.error("Get popular post failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("인기 게시글 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
     public void getMyQuestion(GetMyQuestionRequest request,
-                              StreamObserver<GetMyQuestionResponse> responseObserver) {
-        try {
-            log.info("Get my question request received");
-            GetMyQuestionResponse response = questionService.getMyQuestion(request);
+                              StreamObserver<com.exit.common.grpc.GetMyQuestionResponse> responseObserver) {
+        log.info("Get my question request received");
+        GetMyQuestionResponse response = questionService.getMyQuestion(request);
 
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 
-        } catch (Exception e) {
-            log.error("Get my question failed", e);
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("나의 Q&A 조회 중 오류가 발생했습니다")
-                    .asRuntimeException());
-        }
+    @Override
+    public void updateQuestion(UpdateQuestionRequest request,
+                               StreamObserver<com.exit.common.grpc.QuestionCreateResponse> responseObserver) {
+        log.info("Update question request received");
+        QuestionCreateResponse response = questionService.updateQuestion(request);
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }

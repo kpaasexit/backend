@@ -2,6 +2,7 @@ package com.exit.gateway.service.question;
 
 import com.exit.common.exception.rest.RestApiException;
 import com.exit.common.grpc.*;
+import com.exit.common.grpc.UpdateQuestionRequest.Builder;
 import com.exit.common.response.error.rest.question.QuestionErrorCode;
 import com.exit.gateway.controller.question.dto.request.question.*;
 import com.google.protobuf.ByteString;
@@ -68,6 +69,24 @@ public class QuestionRequestMapper {
                 .build();
     }
 
+    public UpdateResponseRequest toGrpcAnswerUpdateRequest(Long responseId, AnswerUpdateRequestDto dto, Long userId, List<MultipartFile> images) {
+        UpdateResponseRequest.Builder builder = UpdateResponseRequest.newBuilder()
+                .setResponseId(responseId)
+                .setUserId(userId)
+                .setContent(dto.content());
+
+        if (dto.deletedImageId() != null && !dto.deletedImageId().isEmpty()) {
+            builder.addAllDeletedImageId(dto.deletedImageId());
+        }
+
+        if (images != null && !images.isEmpty()) {
+            List<UploadBytesRequest> imageRequests = convertMultipartFilesToUploadRequests(images);
+            builder.addAllImages(imageRequests);
+        }
+
+        return builder.build();
+    }
+
     public CreateAdditionalQuestionMessageRequest toGrpcCreateAdditionalQuestionMessageRequest(Long userId, CreateAdditionalQuestionMessageRequestDto dto, List<MultipartFile> images) {
         CreateAdditionalQuestionMessageRequest.Builder builder = CreateAdditionalQuestionMessageRequest.newBuilder()
                 .setUserId(userId)
@@ -109,5 +128,29 @@ public class QuestionRequestMapper {
         }
 
         return uploadRequests;
+    }
+
+    public UpdateQuestionRequest toGrpcUpdateQuestionRequest(Long questionId, Long userId, UpdateQuestionRequestDto request, List<MultipartFile> images) {
+
+        Builder builder = UpdateQuestionRequest.newBuilder();
+
+        if(images != null && !images.isEmpty()) {
+            List<UploadBytesRequest> imageRequests = convertMultipartFilesToUploadRequests(images);
+            builder.addAllImages(imageRequests);
+        }
+
+        if (request.getContent() != null && !request.getContent().isEmpty()) {
+            builder.setContent(request.getContent());
+        }
+
+        if(request.getDeleteIds() != null && !request.getDeleteIds().isEmpty()) {
+            builder.addAllDeletedImageId(request.getDeleteIds());
+        }
+
+        return builder
+                .setUserId(userId)
+                .setQuestionId(questionId)
+                .build();
+
     }
 }

@@ -22,6 +22,7 @@ import com.exit.common.grpc.QuestionReportRequest;
 import com.exit.common.grpc.QuestionReportResponse;
 import com.exit.common.grpc.SimilarQuestionResponse;
 import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
+import com.exit.common.grpc.UpdateQuestionRequest;
 import com.exit.common.grpc.ai.SaveQuestionRequest;
 import com.exit.common.grpc.ai.SimilarQuestion;
 import com.exit.common.grpc.ai.SimilarResponse;
@@ -279,6 +280,39 @@ public class QuestionService {
         }
     }
 
+    public QuestionCreateResponse updateQuestion(UpdateQuestionRequest request) {
+        Question question = questionRepository.notExistsResponseByQuestionId(request.getQuestionId())
+                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.ALREADY_EXISTS_RESPONSE));
+
+        if (!request.getContent().isEmpty()) {
+            question.updateQuestion(request.getContent());
+        }
+
+        if (!request.getDeletedImageIdList().isEmpty()) {
+            List<QuestionImage> questionImages = questionImageRepository.findAllByQuestionId(request.getQuestionId())
+                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_EXIST_QUESTION_IMAGE));
+
+            List<String> imageUrls = questionImages.stream().map(QuestionImage::getQuestionImageUrl).toList();
+
+            fileUploadUtil.deleteFiles(imageUrls);
+        }
+
+        if (!request.getImagesList().isEmpty()) {
+            List<String> imageUrls = fileUploadUtil.uploadImages(request.getImagesList(), QUESTION_FOLDER);
+
+            imageUrls.forEach(imageUrl -> {
+                        QuestionImage questionImage = QuestionImage.builder()
+                                .questionId(request.getQuestionId())
+                                .questionImageUrl(imageUrl)
+                                .build();
+                        questionImageRepository.saveAndFlush(questionImage);
+                    }
+            );
+        }
+
+        return buildQuestionCreateResponse(request.getQuestionId(), request.getUserId());
+    }
+
     private List<PopularPostItem> getPopularPostItemList(Page<PopularPostDto> myQuestionDtos,
                                                          Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
         return myQuestionDtos.getContent().stream()
@@ -409,7 +443,7 @@ public class QuestionService {
                                 .questionId(savedQuestion.getQuestionId())
                                 .questionImageUrl(url)
                                 .build();
-                        return questionImageRepository.save(questionImage);
+                        return questionImageRepository.saveAndFlush(questionImage);
                     })
                     .toList();
 

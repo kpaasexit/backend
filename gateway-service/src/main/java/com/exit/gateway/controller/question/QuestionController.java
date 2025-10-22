@@ -1,22 +1,44 @@
 package com.exit.gateway.controller.question;
 
-import com.exit.common.grpc.*;
+import com.exit.common.grpc.CategoryRecommendRequest;
+import com.exit.common.grpc.QuestionCreateRequest;
+import com.exit.common.grpc.QuestionCreateResponse;
+import com.exit.common.grpc.QuestionDetailRequest;
+import com.exit.common.grpc.QuestionListRequest;
+import com.exit.common.grpc.QuestionReportRequest;
+import com.exit.common.grpc.SimilarQuestionRequest;
+import com.exit.common.grpc.UpdateQuestionRequest;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.success.QuestionSuccessCode;
 import com.exit.gateway.controller.question.dto.request.question.QuestionCreateRequestDto;
 import com.exit.gateway.controller.question.dto.request.question.QuestionReportRequestDto;
-import com.exit.gateway.controller.question.dto.response.question.*;
+import com.exit.gateway.controller.question.dto.request.question.UpdateQuestionRequestDto;
+import com.exit.gateway.controller.question.dto.response.question.CategoryRecommendationResponseDto;
+import com.exit.gateway.controller.question.dto.response.question.GetMyQuestionResponseDto;
+import com.exit.gateway.controller.question.dto.response.question.GetPopularPostResponseDto;
+import com.exit.gateway.controller.question.dto.response.question.QuestionCreateResponseDto;
+import com.exit.gateway.controller.question.dto.response.question.QuestionDetailResponseDto;
+import com.exit.gateway.controller.question.dto.response.question.QuestionListResponseDto;
+import com.exit.gateway.controller.question.dto.response.question.QuestionReportResponseDto;
+import com.exit.gateway.controller.question.dto.response.question.SimilarQuestionResponseDto;
 import com.exit.gateway.global.annotation.LoginUser;
 import com.exit.gateway.service.question.QuestionGrpcClient;
 import com.exit.gateway.service.question.QuestionRequestMapper;
 import jakarta.validation.Valid;
-import lombok.Builder.Default;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -57,7 +79,7 @@ public class QuestionController {
         QuestionListRequest.Builder requestBuilder = QuestionListRequest.newBuilder()
                 .addAllCategoryIds(categoryIds)
                 .setKeyword(keyword != null ? keyword : "")
-                .setPageNum(page-1)
+                .setPageNum(page - 1)
                 .setSize(size)
                 .setIsExist(isExist);
 
@@ -86,7 +108,8 @@ public class QuestionController {
             @Valid @RequestBody QuestionReportRequestDto request
     ) {
         log.info("Question report request received for questionId: {}", questionId);
-        QuestionReportRequest grpcRequest = questionRequestMapper.toGrpcQuestionReportRequest(questionId, userId, request);
+        QuestionReportRequest grpcRequest = questionRequestMapper.toGrpcQuestionReportRequest(questionId, userId,
+                request);
         QuestionReportResponseDto response = questionGrpcClient.reportQuestion(grpcRequest);
         return SuccessResponse.of(QuestionSuccessCode.QUESTION_REPORT_SUCCESS, response);
     }
@@ -133,5 +156,18 @@ public class QuestionController {
         log.info("Get my question for userId: {}, pageNum: {}", userId, pageNum);
         return SuccessResponse.of(QuestionSuccessCode.GET_MY_QUESTION_SUCCESS,
                 questionGrpcClient.getMyQuestion(userId, pageNum - 1, size));
+    }
+
+    @PutMapping(value = "/{questionId}/modify", consumes = "multipart/form-data")
+    public SuccessResponse<QuestionCreateResponseDto> updateQuestion(
+            @PathVariable Long questionId,
+            @ModelAttribute UpdateQuestionRequestDto request,
+            @RequestPart List<MultipartFile> images,
+            @LoginUser Long userId
+    ) {
+        log.info("Question update request received for questionId: {}", questionId);
+        UpdateQuestionRequest grpcRequest = questionRequestMapper.toGrpcUpdateQuestionRequest(questionId, userId, request, images);
+        QuestionCreateResponseDto response = questionGrpcClient.updateQuestion(grpcRequest);
+        return SuccessResponse.of(QuestionSuccessCode.QUESTION_REPORT_SUCCESS, response);
     }
 }
