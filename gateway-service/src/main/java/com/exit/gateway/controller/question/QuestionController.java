@@ -44,7 +44,7 @@ public class QuestionController {
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "false", required = false) boolean isAdopted
+            @RequestParam(defaultValue = "false", required = false) boolean isExist
     ) {
         log.info("Question list request received");
 
@@ -57,7 +57,7 @@ public class QuestionController {
                 .setKeyword(keyword != null ? keyword : "")
                 .setPageNum(page-1)
                 .setSize(size)
-                .setIsAdopted(isAdopted);
+                .setIsExist(isExist);
 
         QuestionListResponseDto response = questionGrpcClient.getQuestionList(requestBuilder.build());
         return SuccessResponse.of(QuestionSuccessCode.QUESTION_LIST_SUCCESS, response);

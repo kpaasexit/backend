@@ -125,7 +125,7 @@ class QuestionControllerRestDocsTest {
                         .param("keyword", "Spring")
                         .param("page", "0")
                         .param("size", "5")
-                        .param("isAdopted", "false"))
+                        .param("isExist", "false"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.questionListItems[0].questionId").value(1L))
                 .andExpect(jsonPath("$.result.questionListItems[0].questionTitle").value("Spring Boot에서 JWT 인증 구현하는 방법"))
@@ -136,7 +136,7 @@ class QuestionControllerRestDocsTest {
                                 parameterWithName("keyword").description("검색 키워드 (선택)").optional(),
                                 parameterWithName("page").description("페이지 번호 (기본값: 1)").optional(),
                                 parameterWithName("size").description("페이지 크기 (기본값: 5)").optional(),
-                                parameterWithName("isAdopted").description("답변 채택 여부 (기본값: false)").optional()
+                                parameterWithName("isExist").description("답변 채택 여부 (기본값: false)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),

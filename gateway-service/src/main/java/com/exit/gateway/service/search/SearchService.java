@@ -35,7 +35,7 @@ public class SearchService {
                 .setKeyword(keyword)
                 .setPageNum(page)
                 .setSize(size)
-                .setIsAdopted(false)
+                .setIsExist(false)
                 .build();
 
         // 병렬로 질문과 매거진 검색
@@ -77,7 +77,7 @@ public class SearchService {
                 .setKeyword(keyword)
                 .setPageNum(pageNum)
                 .setSize(size)
-                .setIsAdopted(false)
+                .setIsExist(false)
                 .build();
         return questionGrpcClient.getQuestionList(questionListRequest);
     }

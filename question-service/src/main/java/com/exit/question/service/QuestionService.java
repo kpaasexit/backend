@@ -135,7 +135,7 @@ public class QuestionService {
             Page<QuestionListQueryResponseDto> page = questionRepository.findQuestionsByFilter(
                     filter.getCategoryIdsList(),
                     filter.getKeyword().isEmpty() ? null : filter.getKeyword(),
-                    filter.getIsAdopted(), pageRequest);
+                    filter.getIsExist(), pageRequest);
 
             Set<Long> writerIds = page.getContent().stream().map(QuestionListQueryResponseDto::questionWriterId)
                     .collect(toSet());

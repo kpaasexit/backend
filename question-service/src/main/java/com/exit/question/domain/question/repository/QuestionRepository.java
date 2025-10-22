@@ -44,7 +44,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<PopularPostDto> findTop5By();
 
     @Query("""
-            select new com.exit.question.controller.dto.response.QuestionListQueryResponseDto(
+            select distinct new com.exit.question.controller.dto.response.QuestionListQueryResponseDto(
                 q.questionId,
                 qc.questionCategoryId,
                 q.questionWriterId,
@@ -53,7 +53,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                 q.questionUrgency,
                 q.questionAnswerType,
                 q.questionAnswerAdopt,
-                count(distinct r.responseId),
+                cast((select count(r2) from Response r2 where r2.questionId = q.questionId) as Long),
                 q.createdAt
             )
             from Question q
@@ -63,14 +63,14 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
               and (:kw is null
                           or lower(q.questionTitle)  like lower(concat('%', :kw, '%'))
                           or lower(q.questionContent) like lower(concat('%', :kw, '%')))
-              and (coalesce(:adoptedOnly, false) = false or q.questionAnswerAdopt = true)
-            group by q.questionId, qc.questionCategoryId, q.questionWriterId, q.questionTitle, q.questionContent,
-                     q.questionUrgency, q.questionAnswerType, q.questionAnswerAdopt, q.createdAt
+            and (:isExist is null or :isExist = false or exists (
+                    select 1 from Response r3 where r3.questionId = q.questionId
+            ))
             """)
     Page<QuestionListQueryResponseDto> findQuestionsByFilter(
             @Param("categoryIds") List<Long> categoryIds,
             @Param("kw") String keywordLike,
-            @Param("adoptedOnly") Boolean adoptedOnly,
+            @Param("isExist") Boolean isExist,
             Pageable pageable
     );
 
