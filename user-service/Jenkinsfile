@@ -12,7 +12,7 @@ spec:
   nodeSelector:
     worker: "true"
   hostNetwork: true
-    dnsPolicy: ClusterFirstWithHostNet
+  dnsPolicy: ClusterFirstWithHostNet
   containers:
   - name: kubectl
     image: alpine:latest
