@@ -74,6 +74,7 @@ spec:
                     } else {
                         GIT_DIFF = "ALL"
                     }
+                    echo "Changed files:\n${GIT_DIFF}"
                 }
             }
         }
@@ -86,18 +87,26 @@ spec:
 
                     if (GIT_DIFF == 'ALL') {
                         env.BUILD_USER_SERVICE = 'true'
+                        echo "First build - will build user-service"
                     } else {
                         for (String file : changedFiles) {
                             if (file.startsWith('user-service/') ||
                                 file.startsWith('common/') ||
                                 file == 'build.gradle' ||
                                 file == 'settings.gradle' ||
-                                file.startsWith('gradle/')) {
+                                file.startsWith('gradle/') ||
+                                file == 'Jenkinsfile' ||
+                                file == 'user-service/Jenkinsfile') {
                                 env.BUILD_USER_SERVICE = 'true'
+                                echo "Changes detected: ${file}"
                                 break
                             }
                         }
                     }
+
+                    echo env.BUILD_USER_SERVICE == 'true' ?
+                        "✅ Will build user-service" :
+                        "⏭️ Skipping user-service"
                 }
             }
         }
@@ -156,10 +165,20 @@ spec:
 
     post {
         success {
-            echo '🎉 Success!'
+            echo '🎉 Pipeline completed successfully!'
+            script {
+                if (env.BUILD_USER_SERVICE == 'true') {
+                    echo "✅ User Service deployed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                } else {
+                    echo "ℹ️ User Service: No changes - skipped"
+                }
+            }
         }
         failure {
-            echo '❌ Failed!'
+            echo '❌ Pipeline failed!'
+        }
+        cleanup {
+            cleanWs()
         }
     }
 }
