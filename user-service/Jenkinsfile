@@ -4,9 +4,6 @@ pipeline {
             yaml """
 apiVersion: v1
 kind: Pod
-metadata:
-  labels:
-    jenkins: agent
 spec:
   serviceAccountName: jenkins
   nodeSelector:
@@ -14,46 +11,38 @@ spec:
   containers:
   - name: kubectl
     image: alpine:latest
-    command:
-    - sleep
-    args:
-    - infinity
+    command: ['sleep']
+    args: ['infinity']
     resources:
       requests:
         cpu: 50m
-        memory: 128Mi
+        memory: 64Mi
       limits:
         cpu: 200m
-        memory: 256Mi
-  - name: docker
-    image: docker:24-dind
-    command:
-    - sleep
-    args:
-    - infinity
+        memory: 128Mi
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    command: ['sleep']
+    args: ['infinity']
     resources:
       requests:
         cpu: 100m
-        memory: 128Mi
+        memory: 256Mi
       limits:
         cpu: 1000m
         memory: 512Mi
-    securityContext:
-      privileged: true
     volumeMounts:
-    - name: docker-sock
-      mountPath: /var/run/docker.sock
+    - name: docker-config
+      mountPath: /kaniko/.docker
   volumes:
-  - name: docker-sock
-    hostPath:
-      path: /var/run/docker.sock
-      type: Socket
+  - name: docker-config
+    secret:
+      secretName: docker-hub-secret
 """
         }
     }
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
         DOCKER_HUB_REPO = 'leesy010504/exit-user-service'
         IMAGE_TAG = "1.1.${BUILD_NUMBER}"
         GIT_DIFF = ''
@@ -68,7 +57,6 @@ spec:
                         curl -LO "https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl"
                         chmod +x kubectl
                         mv kubectl /usr/local/bin/
-                        kubectl version --client
                     '''
                 }
             }
@@ -79,16 +67,13 @@ spec:
                 checkout scm
                 script {
                     if (env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
-                        echo "Comparing with previous: ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
                         GIT_DIFF = sh(
                             script: "git diff --name-only ${env.GIT_PREVIOUS_SUCCESSFUL_COMMIT} ${env.GIT_COMMIT}",
                             returnStdout: true
                         ).trim()
                     } else {
-                        echo "First build - building all"
                         GIT_DIFF = "ALL"
                     }
-                    echo "Changed files:\n${GIT_DIFF}"
                 }
             }
         }
@@ -101,7 +86,6 @@ spec:
 
                     if (GIT_DIFF == 'ALL') {
                         env.BUILD_USER_SERVICE = 'true'
-                        echo "First build - will build user-service"
                     } else {
                         for (String file : changedFiles) {
                             if (file.startsWith('user-service/') ||
@@ -110,15 +94,10 @@ spec:
                                 file == 'settings.gradle' ||
                                 file.startsWith('gradle/')) {
                                 env.BUILD_USER_SERVICE = 'true'
-                                echo "Changes detected: ${file}"
                                 break
                             }
                         }
                     }
-
-                    echo env.BUILD_USER_SERVICE == 'true' ?
-                        "✅ Will build user-service" :
-                        "⏭️ Skipping user-service"
                 }
             }
         }
@@ -128,39 +107,17 @@ spec:
                 expression { env.BUILD_USER_SERVICE == 'true' }
             }
             steps {
-                container('docker') {
-                    script {
-                        echo "🔨 Building user-service..."
-
-                        sh '''
-                            echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin
-                        '''
-
-                        sh '''
-                            if ! docker buildx inspect multi >/dev/null 2>&1; then
-                                echo "Creating builder..."
-                                docker buildx create --name multi --use
-                            else
-                                echo "Using existing builder: multi"
-                                docker buildx use multi
-                            fi
-                            docker buildx inspect --bootstrap
-                        '''
-
-                        sh """
-                            docker buildx build \\
-                                --builder multi \\
-                                --platform linux/amd64 \\
-                                -f user-service/Dockerfile \\
-                                --target prod \\
-                                -t ${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
-                                -t ${DOCKER_HUB_REPO}:latest \\
-                                --push \\
-                                .
-                        """
-
-                        echo "✅ Built and pushed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
-                    }
+                container('kaniko') {
+                    sh """
+                        /kaniko/executor \\
+                            --context=\${WORKSPACE} \\
+                            --dockerfile=user-service/Dockerfile \\
+                            --destination=${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
+                            --destination=${DOCKER_HUB_REPO}:latest \\
+                            --cache=true \\
+                            --cache-repo=${DOCKER_HUB_REPO}/cache \\
+                            --target=prod
+                    """
                 }
             }
         }
@@ -171,65 +128,38 @@ spec:
             }
             steps {
                 container('kubectl') {
-                    script {
-                        echo "🚀 Updating deployment..."
+                    sh """
+                        kubectl set image deployment/user-deployment \\
+                            user-service=${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
+                            -n default
 
-                        sh """
-                            kubectl set image deployment/user-deployment \\
-                                user-service=${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
-                                -n default
-
-                            kubectl rollout status deployment/user-deployment -n default --timeout=5m
-                        """
-
-                        echo "✅ Deployment updated"
-                    }
+                        kubectl rollout status deployment/user-deployment -n default --timeout=5m
+                    """
                 }
             }
         }
 
-        stage('Verify Deployment') {
+        stage('Verify') {
             when {
                 expression { env.BUILD_USER_SERVICE == 'true' }
             }
             steps {
                 container('kubectl') {
-                    script {
-                        echo "🔍 Verifying deployment..."
-
-                        sh '''
-                            kubectl get pods -l app=user-service -n default
-                            kubectl wait --for=condition=ready pod -l app=user-service -n default --timeout=5m
-                        '''
-
-                        echo "✅ Deployment verified"
-                    }
+                    sh '''
+                        kubectl get pods -l app=user-service -n default
+                        kubectl wait --for=condition=ready pod -l app=user-service -n default --timeout=5m
+                    '''
                 }
             }
         }
     }
 
     post {
-        always {
-            container('docker') {
-                sh 'docker logout || true'
-            }
-        }
         success {
-            echo '🎉 Pipeline completed successfully!'
-            script {
-                if (env.BUILD_USER_SERVICE == 'true') {
-                    echo "✅ User Service deployed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
-                } else {
-                    echo "ℹ️ User Service: No changes - skipped"
-                }
-            }
+            echo '🎉 Success!'
         }
         failure {
-            echo '❌ Pipeline failed!'
-        }
-        cleanup {
-            cleanWs()
+            echo '❌ Failed!'
         }
     }
 }
