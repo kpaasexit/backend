@@ -54,7 +54,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                 q.questionContent,
                 q.questionUrgency,
                 q.questionAnswerType,
-                q.questionAnswerAdopt,
+                ((select count(r2) from Response r2 where r2.questionId = q.questionId) > 0),
                 cast((select count(r2) from Response r2 where r2.questionId = q.questionId) as Long),
                 q.createdAt
             )
