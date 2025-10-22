@@ -3,8 +3,9 @@ LABEL authors="sang-yoon"
 
 WORKDIR /workspace
 
-COPY gradlew settings.gradle ./
-COPY gradle gradle
+COPY question-service/gradlew ./gradlew
+COPY question-service/gradle gradle
+COPY settings.gradle ./
 
 RUN chmod +x gradlew
 
