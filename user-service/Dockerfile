@@ -3,8 +3,22 @@ LABEL authors="sang-yoon"
 
 WORKDIR /workspace
 
-COPY gradlew settings.gradle ./
-COPY gradle gradle
+RUN echo "=== Checking if gradle-wrapper.jar exists in build context ==="
+
+COPY gradlew ./
+COPY gradle/wrapper gradle/wrapper
+COPY settings.gradle ./
+
+# 복사 직후 확인
+RUN echo "=== After COPY - checking gradle/wrapper ===" && \
+    ls -laR gradle/ && \
+    echo "=== Attempting to access gradle-wrapper.jar ===" && \
+    if [ -f "gradle/wrapper/gradle-wrapper.jar" ]; then \
+        echo "✅ gradle-wrapper.jar EXISTS!"; \
+        ls -lh gradle/wrapper/gradle-wrapper.jar; \
+    else \
+        echo "❌ gradle-wrapper.jar NOT FOUND!"; \
+    fi
 
 RUN chmod +x gradlew
 
