@@ -5,7 +5,8 @@
 **/.gradle/
 
 # Gradle wrapper는 반드시 포함
-!gradle/wrapper/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
 
 # IDE files
 .idea/
