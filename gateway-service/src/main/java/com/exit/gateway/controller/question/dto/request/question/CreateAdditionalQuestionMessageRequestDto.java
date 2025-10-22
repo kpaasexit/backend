@@ -2,6 +2,7 @@ package com.exit.gateway.controller.question.dto.request.question;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,5 @@ public class CreateAdditionalQuestionMessageRequestDto {
     @NotBlank(message = "메시지 내용은 필수입니다.")
     private String content;
 
-    private List<MultipartFile> images;
+    private List<MultipartFile> images = new ArrayList<>();
 }

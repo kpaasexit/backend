@@ -1,5 +1,5 @@
 [source,bash]
 ----
 $ curl 'http://localhost:8080/api/quiz/today' -i -X GET \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExMTI4NDYsImV4cCI6MTc2NDcxMjg0Nn0._-dQkBloreZx_uyM0uoVNhVt2al5y-8ryAKu7gyjZuQ'
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExMTQ1OTAsImV4cCI6MTc2NDcxNDU5MH0.fnpFzz9Gk6U9xT7xkTw127304apYKhZ-QL5UBR6F8ZQ'
 ----
