@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 928
+Content-Length: 955
 
 {
   "code" : "QUESTION_OK_003",
@@ -38,7 +38,8 @@ Content-Length: 928
     },
     "authority" : {
       "canModify" : true,
-      "canDelete" : true
+      "canDelete" : true,
+      "canWrite" : false
     }
   }
 }

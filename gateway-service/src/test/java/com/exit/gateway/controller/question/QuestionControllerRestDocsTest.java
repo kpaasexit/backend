@@ -208,7 +208,7 @@ class QuestionControllerRestDocsTest {
 
         QuestionDetailResponseDto response = new QuestionDetailResponseDto(
                 question,
-                new com.exit.gateway.controller.question.dto.response.authority.QuestionAuthority(true, true)
+                new com.exit.gateway.controller.question.dto.response.authority.QuestionAuthority(true, true, false)
         );
 
         given(questionGrpcClient.getQuestionDetail(any())).willReturn(response);
@@ -245,7 +245,8 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.question.additionalQuestionNum").description("추가 질문 수"),
                                 fieldWithPath("result.authority").description("권한 정보"),
                                 fieldWithPath("result.authority.canModify").description("수정 권한 여부"),
-                                fieldWithPath("result.authority.canDelete").description("삭제 권한 여부")
+                                fieldWithPath("result.authority.canDelete").description("삭제 권한 여부"),
+                                fieldWithPath("result.authority.canWrite").description("답변 작성 권한 여부")
                         )
                 ));
     }

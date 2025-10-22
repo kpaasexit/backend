@@ -93,4 +93,8 @@
 |`+Boolean+`
 |삭제 권한 여부
 
+|`+result.authority.canWrite+`
+|`+Boolean+`
+|답변 작성 권한 여부
+
 |===

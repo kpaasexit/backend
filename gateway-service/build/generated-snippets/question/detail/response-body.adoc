@@ -28,7 +28,8 @@
     },
     "authority" : {
       "canModify" : true,
-      "canDelete" : true
+      "canDelete" : true,
+      "canWrite" : false
     }
   }
 }

@@ -366,6 +366,7 @@ public class QuestionService {
         return Authority.newBuilder()
                 .setCanDelete(isSameUser)
                 .setCanModify(isSameUser)
+                .setCanWrite(!isSameUser)
                 .build();
     }
 
