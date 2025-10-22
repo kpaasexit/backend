@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -30,10 +31,11 @@ public class QuestionController {
     @PostMapping(consumes = "multipart/form-data")
     public SuccessResponse<QuestionCreateResponseDto> createQuestion(
             @Valid @ModelAttribute QuestionCreateRequestDto request,
+            @RequestPart List<MultipartFile> images,
             @LoginUser Long userId
     ) {
         log.info("Question create request received");
-        QuestionCreateRequest grpcRequest = questionRequestMapper.toGrpcQuestionCreateRequest(request, userId);
+        QuestionCreateRequest grpcRequest = questionRequestMapper.toGrpcQuestionCreateRequest(request, userId, images);
         QuestionCreateResponseDto response = questionGrpcClient.createQuestion(grpcRequest);
         return SuccessResponse.of(QuestionSuccessCode.QUESTION_CREATE_SUCCESS, response);
     }

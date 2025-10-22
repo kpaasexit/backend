@@ -1,5 +1,5 @@
 [source,bash]
 ----
 $ curl 'http://localhost:8080/api/auth/withdraw' -i -X POST \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExMTI4NDgsImV4cCI6MTc2NDcxMjg0OH0.enYA861sHL12aaTKgNjZJymf9Hk2SIHkUwlwEnW2wkg'
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExMTg2MTEsImV4cCI6MTc2NDcxODYxMX0.R7pkCI4_i2pV5jUUOPdimAaLEiKohcp-GmaHWzTJzl4'
 ----
