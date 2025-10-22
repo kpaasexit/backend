@@ -113,8 +113,8 @@ spec:
                     }
 
                     echo env.BUILD_USER_SERVICE == 'true' ?
-                        "✅ Will build user-service" :
-                        "⏭️ Skipping user-service"
+                        "Will build user-service" :
+                        "Skipping user-service"
                 }
             }
         }
@@ -128,7 +128,6 @@ spec:
                     script {
                         echo "🔨 Building user-service..."
 
-                        // Docker daemon 시작 대기
                         sh '''
                             echo "Waiting for Docker daemon..."
                             timeout 60 sh -c 'until docker info >/dev/null 2>&1; do sleep 1; done'
@@ -162,7 +161,7 @@ spec:
                                 .
                         """
 
-                        echo "✅ Built and pushed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                        echo "Built and pushed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
                     }
                 }
             }
@@ -175,7 +174,7 @@ spec:
             steps {
                 container('kubectl') {
                     script {
-                        echo "🚀 Updating deployment..."
+                        echo "Updating deployment..."
 
                         sh """
                             kubectl set image deployment/user-deployment \\
@@ -185,7 +184,7 @@ spec:
                             kubectl rollout status deployment/user-deployment -n default --timeout=5m
                         """
 
-                        echo "✅ Deployment updated"
+                        echo "Deployment updated"
                     }
                 }
             }
@@ -198,14 +197,14 @@ spec:
             steps {
                 container('kubectl') {
                     script {
-                        echo "🔍 Verifying deployment..."
+                        echo "Verifying deployment..."
 
                         sh '''
                             kubectl get pods -l app=user-service -n default
                             kubectl wait --for=condition=ready pod -l app=user-service -n default --timeout=5m
                         '''
 
-                        echo "✅ Deployment verified"
+                        echo "Deployment verified"
                     }
                 }
             }
@@ -219,17 +218,17 @@ spec:
             }
         }
         success {
-            echo '🎉 Pipeline completed successfully!'
+            echo 'Pipeline completed successfully!'
             script {
                 if (env.BUILD_USER_SERVICE == 'true') {
-                    echo "✅ User Service deployed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                    echo "User Service deployed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
                 } else {
-                    echo "ℹ️ User Service: No changes - skipped"
+                    echo "ℹUser Service: No changes - skipped"
                 }
             }
         }
         failure {
-            echo '❌ Pipeline failed!'
+            echo 'Pipeline failed!'
         }
         cleanup {
             cleanWs()

@@ -4,6 +4,9 @@
 **/target/
 **/.gradle/
 
+# Gradle wrapper는 반드시 포함
+!gradle/wrapper/
+
 # IDE files
 .idea/
 *.iml
