@@ -60,6 +60,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -132,7 +133,7 @@ public class QuestionService {
     @Transactional(readOnly = true)
     public QuestionListResponse questionList(QuestionListRequest filter) {
         try {
-            PageRequest pageRequest = PageRequest.of(filter.getPageNum(), filter.getSize());
+            PageRequest pageRequest = PageRequest.of(filter.getPageNum(), filter.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
 
             Page<QuestionListQueryResponseDto> page = questionRepository.findQuestionsByFilter(
                     filter.getCategoryIdsList(),
