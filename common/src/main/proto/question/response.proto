@@ -79,6 +79,8 @@ message ResponseDetail {
   string profile = 10;
   bool is_ai = 11;
   Authority authority = 12;
+  int32 comment_num = 13;
+  int32 additional_question_num = 14;
 }
 
 message AnswerAdoptResponse {

@@ -16,8 +16,7 @@
     "questionWriterProfile" : null,
     "images" : [ ],
     "createdAt" : "2024-01-01T00:00:00",
-    "commentNum" : null,
-    "additionalQuestionNum" : null
+    "commentNum" : null
   }
 }
 ----

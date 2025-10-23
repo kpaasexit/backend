@@ -1,7 +1,7 @@
 [source,http,options="nowrap"]
 ----
 POST /api/magazine/1/scrap HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExOTY3NTgsImV4cCI6MTc2NDc5Njc1OH0.YyjzN1mOYo9aH7xQd7KhQ_v6N4y19KUH9YN-CmtdMgc
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExOTg3NDYsImV4cCI6MTc2NDc5ODc0Nn0.SL3wSQQPKJjsegbODDS0l1ig8-IfMwLMZh8rK6qAVQc
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded
 

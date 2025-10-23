@@ -26,6 +26,7 @@ import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
 import com.exit.common.grpc.UpdateResponseRequest;
 import com.exit.common.util.file.FileUploadUtil;
 import com.exit.question.controller.dto.response.AiBestResponseDto;
+import com.exit.question.controller.dto.response.CommentAndAdditionalQuestionNum;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.repository.FollowUpRoomRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
@@ -387,6 +388,9 @@ public class ResponseService {
         Map<Long, Integer> likeCountMap = getLikeCountMap(responses);
         Map<Long, UpdateAdditionalUserInfoResponse> writerNameProfileMap = getWriterNameAndProfileMap(responses);
 
+        Map<Long, CommentAndAdditionalQuestionNum> commentAndAdditionalQuestionNumMap = getCommentAndAdditionalQuestionNumMap(
+                responses);
+
         // 4. ResponseDetail 생성
         return responses.stream()
                 .map(response -> responseGrpcMapper.getResponseDetail(
@@ -397,10 +401,21 @@ public class ResponseService {
                                 UpdateAdditionalUserInfoResponse.newBuilder()
                                         .setUserName("UNDEFINED")
                                         .build()),
-                        getResponseAuthority(response, request)
-
+                        getResponseAuthority(response, request),
+                        commentAndAdditionalQuestionNumMap.get(response.getResponseId())
                 ))
                 .toList();
+    }
+
+    private Map<Long, CommentAndAdditionalQuestionNum> getCommentAndAdditionalQuestionNumMap(List<Response> responses) {
+        List<Long> responseIds = responses.stream()
+                .map(Response::getResponseId)
+                .toList();
+
+        return responseRepository.findCommentAndAdditionalQuestionNumByResponseId(
+                        responseIds)
+                .stream()
+                .collect(toMap(num -> num.targetId(), Function.identity()));
     }
 
     private Map<Long, List<ImageObject>> getResponseImageUrlsMap(List<Response> responses) {

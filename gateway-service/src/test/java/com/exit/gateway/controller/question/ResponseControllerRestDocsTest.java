@@ -359,6 +359,8 @@ class ResponseControllerRestDocsTest {
                 .updatedAt(now)
                 .isAi(false)
                 .authority(new com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority(true, true, true))
+                .commentNum(1)
+                .additionalMessageNum(1)
                 .build();
 
         ResponseDetailDto response2 = ResponseDetailDto.builder()
@@ -374,6 +376,8 @@ class ResponseControllerRestDocsTest {
                 .updatedAt(now)
                 .isAi(false)
                 .authority(new com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority(false, true, true))
+                .commentNum(1)
+                .additionalMessageNum(1)
                 .build();
 
         GetDetailResponseResponseDto response = GetDetailResponseResponseDto.builder()
@@ -423,6 +427,8 @@ class ResponseControllerRestDocsTest {
                                 fieldWithPath("result.responses[].authority.canAdopt").description("채택 권한 여부"),
                                 fieldWithPath("result.responses[].authority.canModify").description("수정 권한 여부"),
                                 fieldWithPath("result.responses[].authority.canDelete").description("삭제 권한 여부"),
+                                fieldWithPath("result.responses[].commentNum").description("댓글 수"),
+                                fieldWithPath("result.responses[].additionalMessageNum").description("추가 질문 수"),
                                 fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
                                 fieldWithPath("result.currentPage").description("현재 페이지 번호"),
                                 fieldWithPath("result.totalPageNum").description("전체 페이지 개수")

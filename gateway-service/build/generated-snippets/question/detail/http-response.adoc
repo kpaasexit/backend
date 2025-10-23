@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 955
+Content-Length: 916
 
 {
   "code" : "QUESTION_OK_003",
@@ -33,8 +33,7 @@ Content-Length: 955
         "imageUrl" : "url"
       } ],
       "createdAt" : "2024-01-01T00:00:00",
-      "commentNum" : null,
-      "additionalQuestionNum" : null
+      "commentNum" : null
     },
     "authority" : {
       "canModify" : true,

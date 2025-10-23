@@ -76,9 +76,6 @@ class QuestionControllerRestDocsTest {
     private QuestionGrpcClient questionGrpcClient;
 
     @MockBean
-    private QuestionRequestMapper questionRequestMapper;
-
-    @MockBean
     private UserIdArgumentResolver userIdArgumentResolver;
 
     private String validAccessToken;
@@ -242,7 +239,6 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.question.images[].imageUrl").description("이미지 URL"),
                                 fieldWithPath("result.question.createdAt").description("작성일시"),
                                 fieldWithPath("result.question.commentNum").description("댓글 수"),
-                                fieldWithPath("result.question.additionalQuestionNum").description("추가 질문 수"),
                                 fieldWithPath("result.authority").description("권한 정보"),
                                 fieldWithPath("result.authority.canModify").description("수정 권한 여부"),
                                 fieldWithPath("result.authority.canDelete").description("삭제 권한 여부"),
@@ -424,8 +420,7 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.images[].imageUrl").type("String").description("이미지 URL")
                                         .optional(),
                                 fieldWithPath("result.createdAt").description("작성일시"),
-                                fieldWithPath("result.commentNum").description("댓글 수"),
-                                fieldWithPath("result.additionalQuestionNum").description("추가 질문 수")
+                                fieldWithPath("result.commentNum").description("댓글 수")
                         )
                 ));
     }
@@ -670,8 +665,7 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.images[].imageUrl").type("String").description("질문 이미지 URL")
                                         .optional(),
                                 fieldWithPath("result.createdAt").description("작성일시"),
-                                fieldWithPath("result.commentNum").description("댓글 수"),
-                                fieldWithPath("result.additionalQuestionNum").description("추가 질문 수")
+                                fieldWithPath("result.commentNum").description("댓글 수")
                         )
                 ));
     }
