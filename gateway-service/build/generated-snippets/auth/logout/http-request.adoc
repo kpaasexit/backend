@@ -2,7 +2,7 @@
 ----
 POST /api/auth/logout HTTP/1.1
 X-Device-Id: test-device-id
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExOTg3NTUsImV4cCI6MTc2NDc5ODc1NX0.0cl7mfQvO9zLycH-rlrZTvYUcntsDcnZPSFhnszKE54
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjEyMDczODAsImV4cCI6MTc2NDgwNzM4MH0.oeGqc_fiTqcIE0ncZ1vVnrxQ1FP1Hj2PARgl_rffB90
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded
 
