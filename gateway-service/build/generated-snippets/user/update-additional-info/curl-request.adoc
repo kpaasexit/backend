@@ -2,6 +2,6 @@
 ----
 $ curl 'http://localhost:8080/api/user/additional-info' -i -X PUT \
     -H 'Content-Type: multipart/form-data;charset=UTF-8' \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjEyMTMzOTIsImV4cCI6MTc2NDgxMzM5Mn0._cNtjuJ8IWSYf1yu-j-0VAnDA2dA1BT1l-96d6O5anE' \
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjEyMTY4MTcsImV4cCI6MTc2NDgxNjgxN30.zVtVxBc87dvrjdt0d0NzahSjTNjxK4UDqjGxIbwL-Dc' \
     -F 'image=@profile.jpg;type=image/jpeg'
 ----
