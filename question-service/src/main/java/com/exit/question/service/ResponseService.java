@@ -139,6 +139,8 @@ public class ResponseService {
                         .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE_IMAGE));
 
                 fileUploadUtil.deleteFiles(imageUrls);
+                responseImageRepository.deleteAllById(request.getDeletedImageIdList());
+                responseImageRepository.flush();
             }
 
             if (!request.getImagesList().isEmpty()) {

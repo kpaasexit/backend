@@ -13,6 +13,7 @@ import com.exit.question.domain.question.repository.FollowUpRoomRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.repository.ResponseRepository;
+import com.exit.question.exception.GrpcAdditionalQuestionErrorCode;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.exception.GrpcResponseErrorCode;
 import com.exit.question.service.client.AiGrpcClient;
@@ -55,6 +56,12 @@ public class AdditionalQuestionService {
         try {
             Response response = findResponseById(request.getResponseId());
             FollowUpRoom followUpRoom = findOrCreateFollowUpRoom(response);
+
+            FollowUpMessage lastMessage = followUpRoom.getLastMessage();
+            if(lastMessage != null && lastMessage.getFollowUpMessageWriterId() == request.getUserId()){
+                throw new GrpcException(GrpcAdditionalQuestionErrorCode.WAIT_OPPONENT_MESSAGE);
+            }
+
             FollowUpMessage savedMessage = createAndSaveMessage(request, followUpRoom);
             List<ImageObject> imageUrls = saveUploadedImages(request.getImagesList(), savedMessage);
 
@@ -159,7 +166,6 @@ public class AdditionalQuestionService {
         List<String> uploadedImages = fileUploadUtil.uploadImages(imageList, ADDITIONAL_QUESTION_PATH);
         List<FollowUpImage> followUpImages = FollowUpImage.generateFollowUpImages(savedMessage, uploadedImages);
         List<ImageObject> savedImages = new ArrayList<>();
-        followUpImages.sort(Comparator.comparing(FollowUpImage::getCreatedAt));
         followUpImages.forEach(
                 followUpImage -> {
                     FollowUpImage savedImage = followUpImageRepository.save(followUpImage);

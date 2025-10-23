@@ -21,7 +21,8 @@ public class QuestionGrpcErrorMapper implements GrpcErrorMapper {
             Map.entry("QUESTION_ERR_014", QuestionErrorCode.GET_POPULAR_POST_FAIL),                    // GET_POPULAR_POST_FAILED
             Map.entry("QUESTION_ERR_015", QuestionErrorCode.GET_MY_QUESTION_FAIL),                    // GET_MY_QUESTION_FAILED
             Map.entry("QUESTION_ERR_016", QuestionErrorCode.CATEGORY_RECOMMEND_FAIL),                    // CATEGORY_RECOMMEND_FAILED
-            Map.entry("QUESTION_ERR_017", QuestionErrorCode.SIMILAR_QUESTION_FAIL)                    // SIMILAR_QUESTION_FAILED
+            Map.entry("QUESTION_ERR_017", QuestionErrorCode.SIMILAR_QUESTION_FAIL)  ,                  // SIMILAR_QUESTION_FAILED
+            Map.entry("QUESTION_ERR_019", QuestionErrorCode.MODIFY_QUESTION_FAIL)                    // MODIFY_QUESTION_FAILED
     );
 
     @Override

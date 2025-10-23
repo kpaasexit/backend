@@ -25,7 +25,7 @@ public interface ResponseRepository extends JpaRepository<Response, Long> {
 
     @Query("select new com.exit.question.controller.dto.request.NotificationContentDto(" +
             "substring(r.responseContent, 0, 100) as content, r.responseWriterId) " +
-            "from Response r where r.questionId = :targetId")
+            "from Response r where r.responseId = :targetId")
     Optional<NotificationContentDto> findContentById(Long targetId);
 
     @Query(

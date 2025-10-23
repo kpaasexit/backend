@@ -83,7 +83,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                 q.questionWriterId,
                 q.questionTitle,
                 q.questionContent,
-                q.questionAnswerAdopt,
+                (count(r) > 0),
                 cast(count(r) as int),
                 q.createdAt
             )

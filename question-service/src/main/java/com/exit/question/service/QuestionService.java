@@ -95,9 +95,9 @@ public class QuestionService {
             UpdateAdditionalUserInfoResponse userNameAndProfile = userGrpcClient.getUserNameAndProfile(
                     question.getQuestionWriterId());
 
-            aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
-            // AI 답변 자동 생성
-            scheduleAiAnswerGeneration(savedQuestion);
+//            aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
+//            // AI 답변 자동 생성
+//            scheduleAiAnswerGeneration(savedQuestion);
             CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum = questionRepository.findCommentAndAdditionalQuestionNumByQuestionId(
                     question.getQuestionId());
             return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile, commentAndAdditionalQuestionNum);
@@ -282,36 +282,47 @@ public class QuestionService {
     }
 
     public QuestionCreateResponse updateQuestion(UpdateQuestionRequest request) {
-        Question question = questionRepository.notExistsResponseByQuestionId(request.getQuestionId())
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.ALREADY_EXISTS_RESPONSE));
+        try {
+            Question question = questionRepository.notExistsResponseByQuestionId(request.getQuestionId())
+                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.ALREADY_EXISTS_RESPONSE));
 
-        if (!request.getContent().isEmpty()) {
-            question.updateQuestion(request.getContent());
+            if (!request.getContent().isEmpty()) {
+                question.updateQuestion(request.getContent());
+            }
+
+            if (!request.getDeletedImageIdList().isEmpty()) {
+                List<QuestionImage> questionImages = questionImageRepository.findAllByQuestionId(
+                                request.getQuestionId())
+                        .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_EXIST_QUESTION_IMAGE));
+
+                List<String> imageUrls = questionImages.stream().map(QuestionImage::getQuestionImageUrl).toList();
+
+                fileUploadUtil.deleteFiles(imageUrls);
+                questionImageRepository.deleteAllById(request.getDeletedImageIdList());
+                questionImageRepository.flush();
+            }
+
+            if (!request.getImagesList().isEmpty()) {
+                List<String> imageUrls = fileUploadUtil.uploadImages(request.getImagesList(), QUESTION_FOLDER);
+
+                imageUrls.forEach(imageUrl -> {
+                            QuestionImage questionImage = QuestionImage.builder()
+                                    .questionId(request.getQuestionId())
+                                    .questionImageUrl(imageUrl)
+                                    .build();
+                            questionImageRepository.saveAndFlush(questionImage);
+                        }
+                );
+            }
+
+            return buildQuestionCreateResponse(request.getQuestionId(), request.getUserId());
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_DETAIL_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Get question detail failed for questionId: {}", request.getQuestionId(), e);
+            throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_DETAIL_FAILED, e.getMessage());
         }
-
-        if (!request.getDeletedImageIdList().isEmpty()) {
-            List<QuestionImage> questionImages = questionImageRepository.findAllByQuestionId(request.getQuestionId())
-                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_EXIST_QUESTION_IMAGE));
-
-            List<String> imageUrls = questionImages.stream().map(QuestionImage::getQuestionImageUrl).toList();
-
-            fileUploadUtil.deleteFiles(imageUrls);
-        }
-
-        if (!request.getImagesList().isEmpty()) {
-            List<String> imageUrls = fileUploadUtil.uploadImages(request.getImagesList(), QUESTION_FOLDER);
-
-            imageUrls.forEach(imageUrl -> {
-                        QuestionImage questionImage = QuestionImage.builder()
-                                .questionId(request.getQuestionId())
-                                .questionImageUrl(imageUrl)
-                                .build();
-                        questionImageRepository.saveAndFlush(questionImage);
-                    }
-            );
-        }
-
-        return buildQuestionCreateResponse(request.getQuestionId(), request.getUserId());
     }
 
     private List<PopularPostItem> getPopularPostItemList(Page<PopularPostDto> myQuestionDtos,
@@ -320,6 +331,7 @@ public class QuestionService {
                 .map(post -> {
                     UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());
                     return PopularPostItem.newBuilder()
+                            .setQuestionId(post.questionId())
                             .setCategoryId(post.questionCategoryId())
                             .setProfileUrl(!userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
                             .setNickname(userInfo.getUserName())

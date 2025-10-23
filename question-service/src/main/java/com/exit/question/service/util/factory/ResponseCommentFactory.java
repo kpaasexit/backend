@@ -37,7 +37,7 @@ public class ResponseCommentFactory extends CommentFactory {
     @Override
     public Comment createAndSaveComment(Long targetId, Long authorId, String content) {
         Response response = responseRepository.findById(targetId)
-                .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
+                .orElseThrow(() -> new GrpcException(GrpcResponseErrorCode.NOT_FOUND_RESPONSE));
 
         ResponseComment comment = ResponseComment.builder()
                 .response(response)
