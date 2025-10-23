@@ -47,7 +47,7 @@ spec:
 
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
-        DOCKER_HUB_REPO = 'leesy010504/exit-user-service'
+        DOCKER_HUB_REPO = 'leesy010504/exit-notification-service'
         IMAGE_TAG = "1.1.${BUILD_NUMBER}"
         DOCKER_HOST = "tcp://localhost:2375"
         GIT_DIFF = ''
@@ -91,42 +91,42 @@ spec:
             steps {
                 script {
                     def changedFiles = GIT_DIFF.split('\n')
-                    env.BUILD_USER_SERVICE = 'false'
+                    env.BUILD_NOTIFICATION_SERVICE = 'false'
 
                     if (GIT_DIFF == 'ALL') {
-                        env.BUILD_USER_SERVICE = 'true'
-                        echo "First build - will build user-service"
+                        env.BUILD_NOTIFICATION_SERVICE = 'true'
+                        echo "First build - will build notification-service"
                     } else {
                         for (String file : changedFiles) {
-                            if (file.startsWith('user-service/') ||
+                            if (file.startsWith('notification-service/') ||
                                 file.startsWith('common/') ||
                                 file == 'build.gradle' ||
                                 file == 'settings.gradle' ||
                                 file.startsWith('gradle/') ||
                                 file == 'Jenkinsfile' ||
-                                file == 'user-service/Jenkinsfile') {
-                                env.BUILD_USER_SERVICE = 'true'
+                                file == 'notification-service/Jenkinsfile') {
+                                env.BUILD_NOTIFICATION_SERVICE = 'true'
                                 echo "Changes detected: ${file}"
                                 break
                             }
                         }
                     }
 
-                    echo env.BUILD_USER_SERVICE == 'true' ?
-                        "Will build user-service" :
-                        "Skipping user-service"
+                    echo env.BUILD_NOTIFICATION_SERVICE == 'true' ?
+                        "Will build notification-service" :
+                        "Skipping notification-service"
                 }
             }
         }
 
-        stage('Build User Service') {
+        stage('Build Notification Service') {
             when {
-                expression { env.BUILD_USER_SERVICE == 'true' }
+                expression { env.BUILD_NOTIFICATION_SERVICE == 'true' }
             }
             steps {
                 container('docker') {
                     script {
-                        echo "🔨 Building user-service..."
+                        echo "🔨 Building notification-service..."
 
                         sh '''
                             echo "Waiting for Docker daemon..."
@@ -153,7 +153,7 @@ spec:
                             docker buildx build \\
                                 --builder multi \\
                                 --platform linux/amd64 \\
-                                -f user-service/Dockerfile \\
+                                -f notification-service/Dockerfile \\
                                 --target prod \\
                                 -t ${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
                                 -t ${DOCKER_HUB_REPO}:latest \\
@@ -169,7 +169,7 @@ spec:
 
         stage('Update Kubernetes') {
             when {
-                expression { env.BUILD_USER_SERVICE == 'true' }
+                expression { env.BUILD_NOTIFICATION_SERVICE == 'true' }
             }
             steps {
                 container('kubectl') {
@@ -177,12 +177,12 @@ spec:
                         echo "Updating deployment with patch..."
 
                         sh """
-                            kubectl patch deployment user-deployment -n default \\
+                            kubectl patch deployment notification-deployment -n default \\
                                 --type='json' \\
                                 -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"${DOCKER_HUB_REPO}:${IMAGE_TAG}"}]'
 
                             echo "Waiting for rollout to complete..."
-                            kubectl rollout status deployment/user-deployment \\
+                            kubectl rollout status deployment/notification-deployment \\
                                 -n default \\
                                 --timeout=5m
                         """
@@ -195,7 +195,7 @@ spec:
 
         stage('Verify Deployment') {
             when {
-                expression { env.BUILD_USER_SERVICE == 'true' }
+                expression { env.BUILD_NOTIFICATION_SERVICE == 'true' }
             }
             steps {
                 container('kubectl') {
@@ -204,20 +204,20 @@ spec:
 
                         sh '''
                             echo "=== Pod Status ==="
-                            kubectl get pods -l app=user -n default -o wide
+                            kubectl get pods -l app=notification -n default -o wide
 
                             echo ""
                             echo "=== Deployment Status ==="
-                            kubectl get deployment user-deployment -n default
+                            kubectl get deployment notification-deployment -n default
 
                             echo ""
                             echo "=== Current Image ==="
-                            kubectl get deployment user-deployment -n default -o jsonpath='{.spec.template.spec.containers[0].image}'
+                            kubectl get deployment notification-deployment -n default -o jsonpath='{.spec.template.spec.containers[0].image}'
                             echo ""
 
                             echo ""
                             echo "=== Waiting for pods to be ready ==="
-                            kubectl wait --for=condition=ready pod -l app=user -n default --timeout=5m
+                            kubectl wait --for=condition=ready pod -l app=notification -n default --timeout=5m
                         '''
 
                         echo "Deployment verified successfully"
@@ -236,10 +236,10 @@ spec:
         success {
             echo 'Pipeline completed successfully!'
             script {
-                if (env.BUILD_USER_SERVICE == 'true') {
-                    echo "User Service deployed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                if (env.BUILD_NOTIFICATION_SERVICE == 'true') {
+                    echo "Notification Service deployed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
                 } else {
-                    echo "User Service: No changes - skipped"
+                    echo "Notification Service: No changes - skipped"
                 }
             }
         }

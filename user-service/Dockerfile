@@ -3,18 +3,9 @@ LABEL authors="sang-yoon"
 
 WORKDIR /workspace
 
-COPY gradlew ./
-COPY gradle/wrapper gradle/wrapper
+COPY user-service/gradlew ./gradlew
+COPY user-service/gradle gradle
 COPY settings.gradle ./
-
-RUN chmod +x gradlew && \
-    if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then \
-        echo "⚠️  Downloading gradle-wrapper.jar..."; \
-        mkdir -p gradle/wrapper && \
-        wget -O gradle/wrapper/gradle-wrapper.jar \
-        https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.jar; \
-    fi && \
-    ls -la gradle/wrapper/
 
 RUN chmod +x gradlew
 

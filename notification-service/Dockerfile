@@ -3,8 +3,9 @@ LABEL authors="sang-yoon"
 
 WORKDIR /workspace
 
-COPY gradlew settings.gradle ./
-COPY gradle gradle
+COPY notification-service/gradlew ./gradlew
+COPY notification-service/gradle gradle
+COPY settings.gradle ./
 
 RUN chmod +x gradlew
 
