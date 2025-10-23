@@ -266,13 +266,17 @@ public class ResponseService {
     }
 
     private Authority getResponseAuthority(Response response, GetDetailResponseRequest request) {
-        boolean isSameUser = Objects.equals(response.getResponseId(), request.getUserId());
+        boolean isSameUser = Objects.equals(response.getResponseWriterId(), request.getUserId());
         Question question = questionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
+        boolean isQuestioner = Objects.equals(question.getQuestionWriterId(), request.getUserId());
+        boolean existsResponse = responseRepository.existsByQuestionIdAndResponseWriterId(request.getQuestionId(),
+                response.getResponseWriterId());
         return Authority.newBuilder()
-                .setCanAdopt(!question.getQuestionAnswerAdopt())
+                .setCanAdopt(isQuestioner && !question.getQuestionAnswerAdopt())
                 .setCanDelete(isSameUser)
                 .setCanModify(isSameUser)
+                .setCanWrite(!existsResponse)
                 .build();
     }
 

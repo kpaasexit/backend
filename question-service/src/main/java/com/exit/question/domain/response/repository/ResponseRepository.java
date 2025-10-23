@@ -60,5 +60,9 @@ public interface ResponseRepository extends JpaRepository<Response, Long> {
                             GROUP BY r.responseId
                     """
     )
-    List<CommentAndAdditionalQuestionNum> findCommentAndAdditionalQuestionNumByResponseId(@Param("responseId") List<Long> responseIds);
+    List<CommentAndAdditionalQuestionNum> findCommentAndAdditionalQuestionNumByResponseId(@Param("responseIds") List<Long> responseIds);
+
+    List<Response> findByQuestionIdAndResponseWriterId(Long questionId, Long responseWriterId);
+
+    boolean existsByQuestionIdAndResponseWriterId(Long questionId, Long responseWriterId);
 }

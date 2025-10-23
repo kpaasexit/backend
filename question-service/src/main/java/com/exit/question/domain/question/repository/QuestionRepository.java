@@ -108,11 +108,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query(
             """
                         select new com.exit.question.controller.dto.response.CommentAndAdditionalQuestionNum(
+                                q.questionId,
                                 cast((select count(qc) from QuestionComment qc where qc.question.questionId = :questionId) as int),
-                                cast((select count(fum) from FollowUpMessage fum
-                                      inner join fum.followUpRoom fur
-                                      inner join fur.response r
-                                      where r.questionId = :questionId) as int)
+                                0
                             ) from Question q where q.questionId = :questionId
                     """
     )
