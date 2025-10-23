@@ -29,7 +29,7 @@ public class ResponseController {
     @PostMapping(value = "/answers", consumes = "multipart/form-data")
     public SuccessResponse<AnswerCreateResponseDto> createAnswer(
             @Valid @ModelAttribute AnswerCreateRequestDto request,
-            @RequestPart List<MultipartFile> images,
+            @RequestPart(required = false) List<MultipartFile> images,
             @LoginUser Long userId
     ) {
         log.info("Answer create request received");

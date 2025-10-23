@@ -28,7 +28,7 @@ public class AdditionalQuestionController {
     @PostMapping(value = "/message", consumes = "multipart/form-data")
     public SuccessResponse<CreateAdditionalQuestionMessageResponseDto> createAdditionalQuestionMessage(
             @Valid @ModelAttribute CreateAdditionalQuestionMessageRequestDto request,
-            @RequestPart List<MultipartFile> images,
+            @RequestPart(required = false) List<MultipartFile> images,
             @LoginUser Long userId
     ) {
         log.info("Create additional question message request received");

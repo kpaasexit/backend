@@ -53,7 +53,7 @@ public class QuestionController {
     @PostMapping(consumes = "multipart/form-data")
     public SuccessResponse<QuestionCreateResponseDto> createQuestion(
             @Valid @ModelAttribute QuestionCreateRequestDto request,
-            @RequestPart List<MultipartFile> images,
+            @RequestPart(required = false) List<MultipartFile> images,
             @LoginUser Long userId
     ) {
         log.info("Question create request received");
