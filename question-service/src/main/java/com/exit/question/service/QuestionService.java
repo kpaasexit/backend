@@ -95,9 +95,9 @@ public class QuestionService {
             UpdateAdditionalUserInfoResponse userNameAndProfile = userGrpcClient.getUserNameAndProfile(
                     question.getQuestionWriterId());
 
-//            aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
-//            // AI 답변 자동 생성
-//            scheduleAiAnswerGeneration(savedQuestion);
+            aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
+            // AI 답변 자동 생성
+            scheduleAiAnswerGeneration(savedQuestion);
             CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum = questionRepository.findCommentAndAdditionalQuestionNumByQuestionId(
                     question.getQuestionId());
             return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile, commentAndAdditionalQuestionNum);
@@ -375,10 +375,11 @@ public class QuestionService {
         Question question = questionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
         boolean isSameUser = Objects.equals(question.getQuestionWriterId(), request.getUserId());
+        boolean existResponse = responseRepository.existsByQuestionIdAndResponseWriterId(question.getQuestionId(),  request.getUserId());
         return Authority.newBuilder()
                 .setCanDelete(isSameUser)
                 .setCanModify(isSameUser)
-                .setCanWrite(!isSameUser)
+                .setCanWrite(!isSameUser && !existResponse)
                 .build();
     }
 

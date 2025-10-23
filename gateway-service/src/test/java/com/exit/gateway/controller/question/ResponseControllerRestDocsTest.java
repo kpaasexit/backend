@@ -358,7 +358,7 @@ class ResponseControllerRestDocsTest {
                 .createdAt(now)
                 .updatedAt(now)
                 .isAi(false)
-                .authority(new com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority(true, true, true, false))
+                .authority(new com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority(true, true, true))
                 .commentNum(1)
                 .additionalMessageNum(1)
                 .build();
@@ -375,7 +375,7 @@ class ResponseControllerRestDocsTest {
                 .createdAt(now)
                 .updatedAt(now)
                 .isAi(false)
-                .authority(new com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority(false, true, true, false))
+                .authority(new com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority(false, true, true))
                 .commentNum(1)
                 .additionalMessageNum(1)
                 .build();
@@ -427,7 +427,6 @@ class ResponseControllerRestDocsTest {
                                 fieldWithPath("result.responses[].authority.canAdopt").description("채택 권한 여부"),
                                 fieldWithPath("result.responses[].authority.canModify").description("수정 권한 여부"),
                                 fieldWithPath("result.responses[].authority.canDelete").description("삭제 권한 여부"),
-                                fieldWithPath("result.responses[].authority.canWrite").description("답변 작성 권한 여부"),
                                 fieldWithPath("result.responses[].commentNum").description("댓글 수"),
                                 fieldWithPath("result.responses[].additionalMessageNum").description("추가 질문 수"),
                                 fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),

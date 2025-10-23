@@ -270,13 +270,10 @@ public class ResponseService {
         Question question = questionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
         boolean isQuestioner = Objects.equals(question.getQuestionWriterId(), request.getUserId());
-        boolean existsResponse = responseRepository.existsByQuestionIdAndResponseWriterId(request.getQuestionId(),
-                response.getResponseWriterId());
         return Authority.newBuilder()
                 .setCanAdopt(isQuestioner && !question.getQuestionAnswerAdopt())
                 .setCanDelete(isSameUser)
                 .setCanModify(isSameUser)
-                .setCanWrite(!existsResponse)
                 .build();
     }
 
