@@ -21,6 +21,7 @@ public record GetMyQuestionResponseDto(
                     if (!post.getProfileUrl().isEmpty()) builder.profileUrl(post.getProfileUrl());
 
                     return builder
+                            .questionId(post.getQuestionId())
                             .categoryId(post.getCategoryId())
                             .nickname(post.getNickname())
                             .createdAt(TimeStampUtil.timestampToLocalDateTime(post.getCreatedAt()))
