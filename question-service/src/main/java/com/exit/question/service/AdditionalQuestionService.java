@@ -68,7 +68,7 @@ public class AdditionalQuestionService {
             Question question = getQuestion(request.getQuestionId());
             boolean isQuestioner = isUserQuestioner(question.getQuestionWriterId(), request.getUserId());
             if (isQuestioner && response.getResponseWriterId() == 1L) {
-                generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question);
+                generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question, request.getImagesList());
             }
 
             MessageItem messageItem = buildMessageItem(savedMessage, imageUrls, isQuestioner);
@@ -225,9 +225,9 @@ public class AdditionalQuestionService {
             backoff = @Backoff(delay = 1000, multiplier = 2),
             recover = "recoverGenerateAiAnswer"
     )
-    private void generateAiAnswerAsync(String content, Question question) {
+    private void generateAiAnswerAsync(String content, Question question, List<UploadBytesRequest> imageList) {
         aiGrpcClient.saveQuestion(aiGrpcMapper.getSaveQuestionRequest(content, question));
-        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId());
+        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId(), imageList);
 
         FollowUpMessage aiFollowUpMessage = FollowUpMessage.builder()
                 .followUpMessageContent(aiAnswer)

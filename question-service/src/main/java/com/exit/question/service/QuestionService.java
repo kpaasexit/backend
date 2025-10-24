@@ -23,6 +23,7 @@ import com.exit.common.grpc.QuestionReportResponse;
 import com.exit.common.grpc.SimilarQuestionResponse;
 import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
 import com.exit.common.grpc.UpdateQuestionRequest;
+import com.exit.common.grpc.UploadBytesRequest;
 import com.exit.common.grpc.ai.SaveQuestionRequest;
 import com.exit.common.grpc.ai.SimilarQuestion;
 import com.exit.common.grpc.ai.SimilarResponse;
@@ -98,7 +99,7 @@ public class QuestionService {
 
             aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
             // AI 답변 자동 생성
-            scheduleAiAnswerGeneration(savedQuestion);
+            scheduleAiAnswerGeneration(savedQuestion, request.getImagesList());
             CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum = questionRepository.findCommentAndAdditionalQuestionNumByQuestionId(
                     question.getQuestionId());
             return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile, commentAndAdditionalQuestionNum);
@@ -404,16 +405,16 @@ public class QuestionService {
     /**
      * AI 답변 생성 스케줄링 긴급 질문: 즉시 생성 일반 질문: 5분 후 생성
      */
-    private void scheduleAiAnswerGeneration(Question question) {
+    private void scheduleAiAnswerGeneration(Question question, List<UploadBytesRequest> uploadBytesRequests) {
         if (Boolean.TRUE.equals(question.getQuestionUrgency())) {
             log.info("Question urgency has been scheduled");
             // 긴급 질문은 즉시 생성
-            generateAiAnswerAsync(question);
+            generateAiAnswerAsync(question, uploadBytesRequests);
         } else {
             // 일반 질문은 5분 후 생성
             log.info("Question urgency has been unscheduled");
             Instant scheduledTime = Instant.now().plus(Duration.ofMinutes(5));
-            taskScheduler.schedule(() -> generateAiAnswerAsync(question), scheduledTime);
+            taskScheduler.schedule(() -> generateAiAnswerAsync(question, uploadBytesRequests), scheduledTime);
         }
     }
 
@@ -426,9 +427,9 @@ public class QuestionService {
             backoff = @Backoff(delay = 1000, multiplier = 2),
             recover = "recoverGenerateAiAnswer"
     )
-    private void generateAiAnswerAsync(Question question) {
+    private void generateAiAnswerAsync(Question question, List<UploadBytesRequest> uploadBytesRequests) {
         // AI 답변 생성 요청
-        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId());
+        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId(), uploadBytesRequests);
         log.info("Ai answer has been generated: {}", aiAnswer);
         // AI 답변을 Response로 저장
         Response aiResponse = Response.builder()
