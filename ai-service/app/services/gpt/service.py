@@ -61,18 +61,33 @@ class GPTService:
         self,
         question: str,
         context: Optional[str] = None,
+        images: Optional[List[Dict[str, Any]]] = None,
         max_retries: int = 3
     ) -> Dict[str, Any]:
-        """Async version of generate_answer."""
-        # Always check cache
-        cache_key = f"answer:{hash(question)}"
+        """Async version of generate_answer.
+
+        Args:
+            question: The question text
+            context: Optional context
+            images: Optional list of dicts with 'data' (bytes) and 'mime_type' (str)
+            max_retries: Maximum retry attempts
+        """
+        # Cache key includes images if present
+        cache_key_base = f"{hash(question)}"
+        if images:
+            # Hash image data for cache key
+            images_hash = hash(tuple(img['data'] for img in images))
+            cache_key = f"answer:{cache_key_base}:img:{images_hash}"
+        else:
+            cache_key = f"answer:{cache_key_base}"
+
         cached_result = await self.cache_service.aget(cache_key)
         if cached_result:
             logger.debug(f"Answer retrieved from cache: {question[:50]}...")
             return cached_result
 
         # Generate new answer
-        result = await self.generator.agenerate_answer(question, context, max_retries)
+        result = await self.generator.agenerate_answer(question, context, images, max_retries)
 
         # Always cache result
         await self.cache_service.aset(
