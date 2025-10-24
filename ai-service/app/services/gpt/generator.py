@@ -88,27 +88,73 @@ class AnswerGenerator:
         self,
         question: str,
         context: Optional[str] = None,
+        images: Optional[List[Dict[str, Any]]] = None,
         max_retries: int = 3
     ) -> Dict[str, Any]:
-        """Async version of generate_answer."""
+        """Async version of generate_answer.
+
+        Args:
+            question: The question text
+            context: Optional context
+            images: Optional list of dicts with 'data' (bytes) and 'mime_type' (str)
+            max_retries: Maximum retry attempts
+        """
         prompt = self.prompt_builder.create_answer_prompt(question, context)
 
         for attempt in range(max_retries):
             try:
                 start_time = time.time()
 
+                # Prepare messages
+                messages = [
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant that provides practical life advice in Korean. Provide direct, concise answers in plain text without any markdown formatting."
+                    }
+                ]
+
+                # Determine which model to use
+                use_vision = images and len(images) > 0
+                model = self.settings.openai.openai_vision_model if use_vision else self.settings.openai.openai_model
+
+                # If images are provided, use vision format
+                if use_vision:
+                    import base64
+
+                    content = [{"type": "text", "text": prompt}]
+
+                    # Add images to content with proper mime type
+                    for img_dict in images:
+                        img_data = img_dict.get('data')
+                        mime_type = img_dict.get('mime_type', 'image/jpeg')
+
+                        # Encode image to base64
+                        base64_image = base64.b64encode(img_data).decode('utf-8')
+
+                        # Create data URL with correct mime type
+                        content.append({
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:{mime_type};base64,{base64_image}"
+                            }
+                        })
+
+                    messages.append({
+                        "role": "user",
+                        "content": content
+                    })
+
+                    logger.info(f"Using vision model ({model}) with {len(images)} image(s)")
+                else:
+                    # Text-only message
+                    messages.append({
+                        "role": "user",
+                        "content": prompt
+                    })
+
                 response = await self.client.async_client.chat.completions.create(
-                    model=self.settings.openai.openai_model,
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": "You are a helpful assistant that provides practical life advice in Korean. Provide direct, concise answers in plain text without any markdown formatting."
-                        },
-                        {
-                            "role": "user",
-                            "content": prompt
-                        }
-                    ],
+                    model=model,
+                    messages=messages,
                     max_tokens=self.settings.openai.openai_max_tokens,
                     temperature=self.settings.openai.openai_temperature,
                     top_p=0.9,
@@ -124,11 +170,11 @@ class AnswerGenerator:
                 result = {
                     "answer": answer,
                     "tokens_used": tokens_used,
-                    "model": self.settings.openai.openai_model,
+                    "model": model,  # Use actual model used
                     "response_time": response_time
                 }
 
-                logger.info(f"Generated answer: {tokens_used} tokens, {response_time:.2f}s")
+                logger.info(f"Generated answer using {model}: {tokens_used} tokens, {response_time:.2f}s")
                 return result
 
             except Exception as e:
