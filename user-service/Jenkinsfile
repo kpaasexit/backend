@@ -32,6 +32,12 @@ spec:
     env:
     - name: DOCKER_TLS_CERTDIR
       value: ""
+    - name: DOCKER_OPTS
+      value: "--insecure-registry=nexus.cicd.svc.cluster.local:5000"
+    command:
+    - dockerd-entrypoint.sh
+    args:
+    - --insecure-registry=nexus.cicd.svc.cluster.local:5000
     resources:
       requests:
         cpu: 100m
