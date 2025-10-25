@@ -12,7 +12,7 @@
       "createdAt" : "2024-01-01T00:00:00",
       "title" : "내가 작성한 첫 번째 질문",
       "content" : "질문 내용입니다...",
-      "answerAdopt" : true,
+      "isAnswered" : true,
       "answerCount" : 5
     } ],
     "hasNext" : false,

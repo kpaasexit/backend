@@ -1,9 +1,12 @@
 package com.exit.question.service.client;
 
 import com.exit.common.exception.grpc.GrpcException;
+import com.exit.common.grpc.UploadBytesRequest;
 import com.exit.common.grpc.ai.*;
 import com.exit.question.exception.GrpcAiErrorCode;
 import io.grpc.StatusRuntimeException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
@@ -27,12 +30,22 @@ public class AiGrpcClient {
      * @param questionId 질문 내용 (제목 + 본문)
      * @return AI가 생성한 답변 텍스트
      */
-    public String generateAiAnswer(Long questionId) {
+    public String generateAiAnswer(Long questionId, List<UploadBytesRequest> uploadBytesRequests) {
         try {
             log.info("Requesting AI answer generation for question: {}", questionId);
 
+            List<ImageData> imageDataList = new ArrayList<>();
+            uploadBytesRequests.forEach(image -> {
+                ImageData imageData = ImageData.newBuilder()
+                        .setData(image.getData())
+                        .setMimeType(image.getMeta().getContentType())
+                        .build();
+                imageDataList.add(imageData);
+            });
+
             AnswerRequest request = AnswerRequest.newBuilder()
                     .setQuestionId(questionId)
+                    .addAllImages(imageDataList)
                     .build();
 
             AnswerResponse response = aiQuestionServiceBlockingStub.generateAIAnswer(request);

@@ -79,4 +79,17 @@ public class QuestionGrpcClient {
         log.debug("Received my question response response via gRPC");
         return GetMyQuestionResponseDto.from(response);
     }
+
+    public QuestionCreateResponseDto updateQuestion(UpdateQuestionRequest grpcRequest) {
+        log.debug("Sending question update request via gRPC");
+        QuestionCreateResponse response = questionServiceStub.updateQuestion(grpcRequest);
+        log.debug("Received question update response via gRPC");
+        return QuestionCreateResponseDto.from(response);
+    }
+
+    public void deleteQuestion(DeleteQuestionRequest grpcRequest) {
+        log.debug("Sending question delete request via gRPC");
+        questionServiceStub.deleteQuestion(grpcRequest);
+        log.debug("Received question delete response via gRPC");
+    }
 }

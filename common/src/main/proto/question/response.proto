@@ -16,7 +16,7 @@ service ResponseService {
   rpc GetDetailResponse(GetDetailResponseRequest) returns (GetDetailResponseResponse);
   rpc AnswerCreate(AnswerCreateRequest) returns (AnswerCreateResponse);
   rpc AnswerRecommend(AnswerRecommendRequest) returns (AnswerRecommendResponse);
-  rpc UpdateResponse(UpdateResponseRequest) returns (UpdateResponseResponse);
+  rpc UpdateResponse(UpdateResponseRequest) returns (AnswerCreateResponse);
   rpc DeleteResponse(DeleteResponseRequest) returns (google.protobuf.Empty);
   rpc GetAiBestResponse(google.protobuf.Empty) returns (GetAiBestResponseResponse);
 }
@@ -55,7 +55,10 @@ message AnswerRecommendRequest {
 
 message UpdateResponseRequest {
   int64 response_id = 1;
-  string content = 2;
+  int64 user_id = 2;
+  string content = 3;
+  repeated int64 deleted_image_id = 4;
+  repeated UploadBytesRequest images = 5;
 }
 
 message DeleteResponseRequest {
@@ -76,6 +79,8 @@ message ResponseDetail {
   string profile = 10;
   bool is_ai = 11;
   Authority authority = 12;
+  int32 comment_num = 13;
+  int32 additional_question_num = 14;
 }
 
 message AnswerAdoptResponse {
@@ -114,11 +119,6 @@ message AnswerRecommendResponse {
   int64 response_id = 1;
   int32 count = 2;
   bool is_recommended = 3;
-}
-
-message UpdateResponseResponse {
-  int64 response_id = 1;
-  string content = 2;
 }
 
 message AiBestResponse {

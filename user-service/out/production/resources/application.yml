@@ -1,0 +1,5 @@
+# 로컬 개발환경을 위한 최소 설정
+# 나머지 설정은 Config Server에서 가져옴
+logging:
+  level:
+    com.exit.user: DEBUG

@@ -4,8 +4,7 @@
   "code" : "AUTH_OK_001",
   "message" : "로그인 성공",
   "result" : {
-    "accessToken" : "new-access-token",
-    "refreshToken" : "new-refresh-token"
+    "accessToken" : "new-access-token"
   }
 }
 ----

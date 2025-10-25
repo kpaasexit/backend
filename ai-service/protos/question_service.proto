@@ -34,10 +34,16 @@ message CategoryResponse {
     int64 processing_time_ms = 3;
 }
 
+// 이미지 데이터
+message ImageData {
+    bytes data = 1;  // 이미지 바이너리
+    string mime_type = 2;  // 타입 (예: image/jpeg, image/png)
+}
 
 // AI 답변 생성 요청
 message AnswerRequest {
     int64 question_id = 1;
+    repeated ImageData images = 2;  // 선택적 이미지 첨부 (최대 3개)
 }
 
 // AI 답변 생성 응답
@@ -46,7 +52,6 @@ message AnswerResponse {
     int32 tokens_used = 2;
     int64 processing_time_ms = 3;
 }
-
 
 // 유사성 검색 요청
 message SimilarRequest {

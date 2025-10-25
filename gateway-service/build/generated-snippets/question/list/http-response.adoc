@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 1180
+Content-Length: 1162
 
 {
   "code" : "QUESTION_OK_002",
@@ -23,7 +23,7 @@ Content-Length: 1180
       "questionContent" : "JWT 토큰을 사용한 인증을 구현하고 싶습니다...",
       "questionUrgency" : true,
       "questionAnswerType" : "GENERAL",
-      "questionAnswerAdopt" : false,
+      "isAnswered" : false,
       "answerCount" : 3,
       "createdAt" : "2024-01-01T00:00:00"
     }, {
@@ -35,7 +35,7 @@ Content-Length: 1180
       "questionContent" : "멀티 컨테이너 환경에서...",
       "questionUrgency" : false,
       "questionAnswerType" : "GENERAL",
-      "questionAnswerAdopt" : true,
+      "isAnswered" : true,
       "answerCount" : 5,
       "createdAt" : "2024-01-01T00:00:00"
     } ],

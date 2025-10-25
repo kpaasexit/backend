@@ -18,7 +18,7 @@ public record QuestionListQueryResponseDto(
         String questionContent,
         Boolean questionUrgency,
         String questionAnswerType,
-        Boolean questionAnswerAdopt,
+        Boolean isAnswered,
         Integer answerCount,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt
@@ -37,7 +37,7 @@ public record QuestionListQueryResponseDto(
                 .questionContent(questionListItem.getQuestionContent())
                 .questionUrgency(questionListItem.getQuestionUrgency())
                 .questionAnswerType(questionListItem.getQuestionAnswerType())
-                .questionAnswerAdopt(questionListItem.getQuestionAnswerAdopt())
+                .isAnswered(questionListItem.getIsAnswered())
                 .answerCount(questionListItem.getAnswerCount())
                 .createdAt(timestampToLocalDateTime(questionListItem.getCreatedAt()))
                 .build();

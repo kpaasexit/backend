@@ -1,5 +1,21 @@
 package com.exit.gateway.controller.search;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.exit.common.grpc.QuestionListRequest;
 import com.exit.common.grpc.QuestionListResponse;
 import com.exit.common.grpc.SearchMagazinesResponse;
@@ -8,6 +24,8 @@ import com.exit.gateway.config.RestDocsConfiguration;
 import com.exit.gateway.controller.question.dto.response.question.QuestionListResponseDto;
 import com.exit.gateway.service.magazine.MagazineGrpcClient;
 import com.exit.gateway.service.question.QuestionGrpcClient;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,21 +35,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = SearchController.class,
         excludeAutoConfiguration = {
@@ -66,7 +69,7 @@ class SearchControllerRestDocsTest {
                 .setQuestionContent("Spring Boot에서 JWT 인증은 어떻게 구현하나요?")
                 .setQuestionUrgency(true)
                 .setQuestionAnswerType("GENERAL")
-                .setQuestionAnswerAdopt(false)
+                .setIsAnswered(false)
                 .setAnswerCount(3)
                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(now))
                 .build();
@@ -80,7 +83,7 @@ class SearchControllerRestDocsTest {
                 .setQuestionContent("MSA에서 서비스간 통신은 어떻게 하나요?")
                 .setQuestionUrgency(false)
                 .setQuestionAnswerType("GENERAL")
-                .setQuestionAnswerAdopt(true)
+                .setIsAnswered(true)
                 .setAnswerCount(5)
                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(now))
                 .build();
@@ -118,7 +121,8 @@ class SearchControllerRestDocsTest {
                 .setHasNext(false)
                 .build();
 
-        given(questionGrpcClient.getQuestionList(any(QuestionListRequest.class))).willReturn(QuestionListResponseDto.from(questionsResponse));
+        given(questionGrpcClient.getQuestionList(any(QuestionListRequest.class))).willReturn(
+                QuestionListResponseDto.from(questionsResponse));
         given(magazineGrpcClient.searchMagazines(anyString(), anyInt(), anyInt())).willReturn(magazinesResponse);
 
         // when & then
@@ -148,13 +152,14 @@ class SearchControllerRestDocsTest {
                                 fieldWithPath("result.questions").description("질문 검색 결과 목록"),
                                 fieldWithPath("result.questions[].questionId").description("질문 ID"),
                                 fieldWithPath("result.questions[].questionCategoryId").description("질문 카테고리 ID"),
-                                fieldWithPath("result.questions[].questionWriterProfile").description("질문 작성자 프로필 url").optional(),
+                                fieldWithPath("result.questions[].questionWriterProfile").description("질문 작성자 프로필 url")
+                                        .optional(),
                                 fieldWithPath("result.questions[].questionWriterName").description("질문 작성자 이름"),
                                 fieldWithPath("result.questions[].questionTitle").description("질문 제목"),
                                 fieldWithPath("result.questions[].questionContent").description("질문 내용"),
                                 fieldWithPath("result.questions[].questionUrgency").description("긴급 여부"),
                                 fieldWithPath("result.questions[].questionAnswerType").description("답변 타입"),
-                                fieldWithPath("result.questions[].questionAnswerAdopt").description("답변 채택 여부"),
+                                fieldWithPath("result.questions[].isAnswered").description("답변 여부"),
                                 fieldWithPath("result.questions[].answerCount").description("답변 개수"),
                                 fieldWithPath("result.questions[].createdAt").description("작성일시"),
                                 fieldWithPath("result.magazines").description("매거진 검색 결과 목록"),
@@ -227,12 +232,11 @@ class SearchControllerRestDocsTest {
 
         given(magazineGrpcClient.searchMagazines(anyString(), anyInt(), anyInt())).willReturn(magazinesResponse);
 
-
         // when & then
         mockMvc.perform(get("/api/search/magazines")
-                .param("keyword", "Spring")
-                .param("page", "1")
-                .param("size", "5"))
+                        .param("keyword", "Spring")
+                        .param("page", "1")
+                        .param("size", "5"))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(document("search/magazines",
                         preprocessRequest(prettyPrint()),
@@ -248,12 +252,14 @@ class SearchControllerRestDocsTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.magazineListItems").description("매거진 검색 결과 목록"),
                                 fieldWithPath("result.magazineListItems[].magazineId").description("매거진 ID"),
-                                fieldWithPath("result.magazineListItems[].magazineCategoryId").description("매거진 카테고리 ID"),
+                                fieldWithPath("result.magazineListItems[].magazineCategoryId").description(
+                                        "매거진 카테고리 ID"),
                                 fieldWithPath("result.magazineListItems[].magazineTitle").description("매거진 제목"),
                                 fieldWithPath("result.magazineListItems[].magazineSubtitle").description("매거진 부제목"),
                                 fieldWithPath("result.magazineListItems[].magazineAuthor").description("매거진 작성자 닉네임"),
                                 fieldWithPath("result.magazineListItems[].authorProfileUrl").description("작성자 프로필 URL"),
-                                fieldWithPath("result.magazineListItems[].magazineThumbnailUrl").description("매거진 썸네일 URL"),
+                                fieldWithPath("result.magazineListItems[].magazineThumbnailUrl").description(
+                                        "매거진 썸네일 URL"),
                                 fieldWithPath("result.magazineListItems[].createdAt").description("작성일시"),
                                 fieldWithPath("result.currentPage").description("현재 페이지 번호"),
                                 fieldWithPath("result.hasNext").description("다음 페이지 존재 여부")
@@ -276,7 +282,7 @@ class SearchControllerRestDocsTest {
                 .setQuestionContent("Spring Boot에서 JWT 인증은 어떻게 구현하나요?")
                 .setQuestionUrgency(true)
                 .setQuestionAnswerType("GENERAL")
-                .setQuestionAnswerAdopt(false)
+                .setIsAnswered(false)
                 .setAnswerCount(3)
                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(now))
                 .build();
@@ -290,7 +296,7 @@ class SearchControllerRestDocsTest {
                 .setQuestionContent("MSA에서 서비스간 통신은 어떻게 하나요?")
                 .setQuestionUrgency(false)
                 .setQuestionAnswerType("GENERAL")
-                .setQuestionAnswerAdopt(true)
+                .setIsAnswered(true)
                 .setAnswerCount(5)
                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(now))
                 .build();
@@ -300,8 +306,8 @@ class SearchControllerRestDocsTest {
                 .setHasNext(false)
                 .build();
 
-        given(questionGrpcClient.getQuestionList(any(QuestionListRequest.class))).willReturn(QuestionListResponseDto.from(questionsResponse));
-
+        given(questionGrpcClient.getQuestionList(any(QuestionListRequest.class))).willReturn(
+                QuestionListResponseDto.from(questionsResponse));
 
         // when & then
         mockMvc.perform(get("/api/search/questions")
@@ -323,14 +329,16 @@ class SearchControllerRestDocsTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.questionListItems").description("질문 검색 결과 목록"),
                                 fieldWithPath("result.questionListItems[].questionId").description("질문 ID"),
-                                fieldWithPath("result.questionListItems[].questionCategoryId").description("질문 카테고리 ID"),
-                                fieldWithPath("result.questionListItems[].questionWriterProfile").description("질문 작성자 프로필 url").optional(),
+                                fieldWithPath("result.questionListItems[].questionCategoryId").description(
+                                        "질문 카테고리 ID"),
+                                fieldWithPath("result.questionListItems[].questionWriterProfile").description(
+                                        "질문 작성자 프로필 url").optional(),
                                 fieldWithPath("result.questionListItems[].questionWriterName").description("질문 작성자 이름"),
                                 fieldWithPath("result.questionListItems[].questionTitle").description("질문 제목"),
                                 fieldWithPath("result.questionListItems[].questionContent").description("질문 내용"),
                                 fieldWithPath("result.questionListItems[].questionUrgency").description("긴급 여부"),
                                 fieldWithPath("result.questionListItems[].questionAnswerType").description("답변 타입"),
-                                fieldWithPath("result.questionListItems[].questionAnswerAdopt").description("답변 채택 여부"),
+                                fieldWithPath("result.questionListItems[].isAnswered").description("답변 여부"),
                                 fieldWithPath("result.questionListItems[].answerCount").description("답변 개수"),
                                 fieldWithPath("result.questionListItems[].createdAt").description("작성일시"),
                                 fieldWithPath("result.currentPage").description("현재 페이지 번호"),

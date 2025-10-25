@@ -13,7 +13,7 @@
       "questionContent" : "JWT 토큰을 사용한 인증을 구현하고 싶습니다...",
       "questionUrgency" : true,
       "questionAnswerType" : "GENERAL",
-      "questionAnswerAdopt" : false,
+      "isAnswered" : false,
       "answerCount" : 3,
       "createdAt" : "2024-01-01T00:00:00"
     }, {
@@ -25,7 +25,7 @@
       "questionContent" : "멀티 컨테이너 환경에서...",
       "questionUrgency" : false,
       "questionAnswerType" : "GENERAL",
-      "questionAnswerAdopt" : true,
+      "isAnswered" : true,
       "answerCount" : 5,
       "createdAt" : "2024-01-01T00:00:00"
     } ],

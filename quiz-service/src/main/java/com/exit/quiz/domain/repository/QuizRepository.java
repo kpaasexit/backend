@@ -23,9 +23,9 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
                 select new com.exit.quiz.controller.dto.response.CategoryQuizCountDto(
                     cast(q.quizCategory.id as long),
                     cast(count(distinct q.id) as int),
-                    cast(count(distinct qa.id) as int)
+                    cast(count(distinct qa.quiz.id) as int)
                 )
-                from Quiz q left join QuizAttempts qa on qa.quiz.id = q.id AND qa.userId = :userId
+                from Quiz q left join QuizAttempts qa on qa.quiz.id = q.id and qa.userId = :userId
                 group by q.quizCategory.id
             """)
     List<CategoryQuizCountDto> getQuizByCategoryId(@Param("userId") Long userId);

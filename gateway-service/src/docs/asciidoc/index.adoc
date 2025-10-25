@@ -396,6 +396,21 @@ operation::question/my-question[snippets='http-request,request-headers,query-par
 
 operation::question/popular-post[snippets='http-request,http-response,response-fields']
 
+[[question-update]]
+== 질문 수정
+
+`GET` 요청을 사용하여 질문을 수정합니다.
+
+operation::question/update[snippets='http-request,path-parameters,multipart-form-parameters,http-response,response-fields']
+
+[[question-delete]]
+== 질문 삭제
+
+`GET` 요청을 사용하여 질문을 삭제합니다.
+
+operation::question/question-delete[snippets='http-request,path-parameters,http-response,response-fields']
+
+
 [[response-api]]
 = 답변 API
 
@@ -404,7 +419,7 @@ operation::question/popular-post[snippets='http-request,http-response,response-f
 
 `PUT` 요청을 사용하여 답변 내용을 수정합니다.
 
-operation::response/answer-update[snippets='http-request,path-parameters,http-response,response-fields']
+operation::response/answer-update[snippets='http-request,path-parameters,multipart-form-parameters,http-response,response-fields']
 
 [[response-answer-delete]]
 == 답변 삭제

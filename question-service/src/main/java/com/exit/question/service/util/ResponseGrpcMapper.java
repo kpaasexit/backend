@@ -1,8 +1,10 @@
 package com.exit.question.service.util;
 
 import com.exit.common.grpc.*;
+import com.exit.question.controller.dto.response.CommentAndAdditionalQuestionNum;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.ResponseReport;
+import java.util.Map;
 import java.util.Objects;
 import org.springframework.stereotype.Component;
 
@@ -58,7 +60,8 @@ public class ResponseGrpcMapper {
     }
 
     public ResponseDetail getResponseDetail(Response response, List<ImageObject> imageObjects, Integer likeCount,
-                                            UpdateAdditionalUserInfoResponse writerNameProfile, Authority responseAuthority) {
+                                            UpdateAdditionalUserInfoResponse writerNameProfile, Authority responseAuthority,
+                                            CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum) {
         ResponseDetail.Builder builder = ResponseDetail.newBuilder();
 
         if (imageObjects != null && !imageObjects.isEmpty()) {
@@ -80,6 +83,8 @@ public class ResponseGrpcMapper {
                 .setUpdatedAt(toGrpcTimestamp(response.getUpdatedAt()))
                 .setAuthority(responseAuthority)
                 .setIsAi(Objects.equals(response.getResponseWriterId(), 1L))
+                .setCommentNum(commentAndAdditionalQuestionNum.commentNum())
+                .setCommentNum(commentAndAdditionalQuestionNum.additionalQuestionNum())
                 .build();
     }
 }

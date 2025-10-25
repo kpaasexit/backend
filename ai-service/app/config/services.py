@@ -10,6 +10,7 @@ class OpenAIConfig(BaseConfig):
 
     openai_api_key: Optional[str] = Field(default=None)
     openai_model: str = Field(default="gpt-4o-2024-08-06")
+    openai_vision_model: str = Field(default="gpt-4o")  # Vision 지원 모델
     openai_max_tokens: int = Field(default=800)
     openai_temperature: float = Field(default=0.7)
     openai_timeout: int = Field(default=30)

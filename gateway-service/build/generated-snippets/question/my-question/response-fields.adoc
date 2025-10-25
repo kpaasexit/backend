@@ -45,9 +45,9 @@
 |`+String+`
 |질문 내용
 
-|`+result.questions[].answerAdopt+`
+|`+result.questions[].isAnswered+`
 |`+Boolean+`
-|답변 채택 여부
+|답변 여부
 
 |`+result.questions[].answerCount+`
 |`+Number+`

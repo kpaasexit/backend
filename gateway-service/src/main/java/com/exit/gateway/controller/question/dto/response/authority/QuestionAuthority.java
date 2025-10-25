@@ -6,12 +6,14 @@ import lombok.Builder;
 @Builder
 public record QuestionAuthority(
         Boolean canModify,
-        Boolean canDelete
+        Boolean canDelete,
+        Boolean canWrite
 ) {
     public static QuestionAuthority from(Authority authority) {
         return QuestionAuthority.builder()
                 .canModify(authority.getCanModify())
                 .canDelete(authority.getCanDelete())
+                .canWrite(authority.getCanWrite())
                 .build();
     }
 }
