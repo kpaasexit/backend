@@ -16,9 +16,16 @@ import java.util.List;
 public interface QuizAttemptsRepository extends JpaRepository<QuizAttempts, Long> {
 
     @Query("""
-                    select distinct new com.exit.quiz.controller.dto.response.GetSolvedQuiz(q.id, substring(q.title, 1, 100) )
-                    from QuizAttempts qa join qa.quiz q join q.quizCategory qc
-                    where qc.id in(:categoryIdList) and qa.userId = :userId
+                    select new com.exit.quiz.controller.dto.response.GetSolvedQuiz(
+                        q.id,
+                        substring(q.title, 1, 100)
+                    )
+                    from Quiz q
+                    join q.quizCategory qc
+                    where qc.id in(:categoryIdList)
+                      and q.id in (
+                          select distinct qa.quiz.id from QuizAttempts qa where qa.userId = :userId
+                      )
             """)
     Page<GetSolvedQuiz> findByQuizCategoryIdIn(@Param("categoryIdList") List<Short> categoryIdList,
                                                @Param("userId") Long userId,
