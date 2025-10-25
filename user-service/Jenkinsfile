@@ -156,13 +156,12 @@ spec:
                         """
 
                         sh """
-                            # buildkitd.toml 생성
                             mkdir -p /etc/buildkit
-                            cat > /etc/buildkit/buildkitd.toml <<EOF
-        [registry."nexus.cicd.svc.cluster.local:5000"]
-          http = true
-          insecure = true
-        EOF
+                            cat > /etc/buildkit/buildkitd.toml <<'EOF'
+                        [registry."nexus.cicd.svc.cluster.local:5000"]
+                          http = true
+                          insecure = true
+                        EOF
                             cat /etc/buildkit/buildkitd.toml
                         """
 
