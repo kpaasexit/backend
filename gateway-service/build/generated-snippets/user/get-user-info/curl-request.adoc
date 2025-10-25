@@ -2,5 +2,5 @@
 ----
 $ curl 'http://localhost:8080/api/user/info' -i -X GET \
     -H 'Content-Type: application/json;charset=UTF-8' \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODUsImV4cCI6MTc2NTAxNDE4NX0.XpMIsfcufRNpsU4ImozDRInU9HNapluHEO-CAjXQ42Q'
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjYsImV4cCI6MTc2NTAxOTYyNn0.HvV4GYBFukofmalYojME1BiNIo4lFSjlth-AXoigIi0'
 ----

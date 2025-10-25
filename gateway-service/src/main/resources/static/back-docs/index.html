@@ -1186,13 +1186,8 @@ Host: api.exit.com</code></pre>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/refresh HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-X-Device-Id: test-device-id
-Content-Length: 245
 Host: localhost:8080
-
-{
-  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODMsImV4cCI6MjM2NjIxNDE4M30.6dkmktrmektNQmUhJhRjB4LuYaytS3l4y3Rp-6T_F20"
-}</code></pre>
+Cookie: refreshToken=eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjUsImV4cCI6MTc2NTAxOTYyNX0.HD2BZzZ7_p3PmmNW8NoyACL0qfKKQRj94LiESSSZP_o</code></pre>
 </div>
 </div>
 </div>
@@ -1253,14 +1248,13 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 170
+Content-Length: 127
 
 {
   "code" : "AUTH_OK_001",
   "message" : "로그인 성공",
   "result" : {
-    "accessToken" : "new-access-token",
-    "refreshToken" : "new-refresh-token"
+    "accessToken" : "new-access-token"
   }
 }</code></pre>
 </div>
@@ -1302,11 +1296,6 @@ Content-Length: 170
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">새로운 액세스 토큰</p></td>
 </tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>result.refreshToken</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">새로운 리프레시 토큰</p></td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -1324,7 +1313,7 @@ Content-Length: 170
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/logout HTTP/1.1
 X-Device-Id: test-device-id
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODMsImV4cCI6MTc2NTAxNDE4M30.lIHZiquCaPo3TyNxfifZGgBR88B2My1fkDehcsrtiwU
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjQsImV4cCI6MTc2NTAxOTYyNH0.nr63Xk8dgMnclHIzrI9L9iZ0v1_38Tz3qI-O0LAGOp0
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
@@ -1360,6 +1349,7 @@ Content-Type: application/x-www-form-urlencoded</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Set-Cookie: refreshToken=; Path=/; Max-Age=0; Expires=Thu, 1 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -1424,7 +1414,7 @@ Content-Length: 121
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/auth/withdraw HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODMsImV4cCI6MTc2NTAxNDE4M30.lIHZiquCaPo3TyNxfifZGgBR88B2My1fkDehcsrtiwU
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjUsImV4cCI6MTc2NTAxOTYyNX0.HD2BZzZ7_p3PmmNW8NoyACL0qfKKQRj94LiESSSZP_o
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
@@ -1522,7 +1512,7 @@ Content-Length: 125
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/user/device HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODQsImV4cCI6MTc2NTAxNDE4NH0.cst5_BqcQmaWT5YM2B-wI9M9DOkfQImaxDlkuDIj-sI
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjYsImV4cCI6MTc2NTAxOTYyNn0.HvV4GYBFukofmalYojME1BiNIo4lFSjlth-AXoigIi0
 X-Device-Id: test-device-id
 Content-Length: 37
 Host: localhost:8080
@@ -1652,7 +1642,7 @@ Content-Length: 157
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/user/info HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODUsImV4cCI6MTc2NTAxNDE4NX0.XpMIsfcufRNpsU4ImozDRInU9HNapluHEO-CAjXQ42Q
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjYsImV4cCI6MTc2NTAxOTYyNn0.HvV4GYBFukofmalYojME1BiNIo4lFSjlth-AXoigIi0
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -1761,7 +1751,7 @@ Content-Length: 192
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">PUT /api/user/additional-info HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODQsImV4cCI6MTc2NTAxNDE4NH0.cst5_BqcQmaWT5YM2B-wI9M9DOkfQImaxDlkuDIj-sI
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjYsImV4cCI6MTc2NTAxOTYyNn0.HvV4GYBFukofmalYojME1BiNIo4lFSjlth-AXoigIi0
 Host: localhost:8080
 
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
@@ -2108,7 +2098,7 @@ Content-Length: 127
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/categories/statistics HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODEsImV4cCI6MTc2NTAxNDE4MX0.ByIySGXTfW4jMdH7rg6CAFnBKYCW_KkfwTOkzW2MsPE
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjIsImV4cCI6MTc2NTAxOTYyMn0.v6_mcDKSZxOj0ePkwJfju8ljgB1yvpIFa5E07wxB2bo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2233,7 +2223,7 @@ Content-Length: 323
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/category/1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODEsImV4cCI6MTc2NTAxNDE4MX0.ByIySGXTfW4jMdH7rg6CAFnBKYCW_KkfwTOkzW2MsPE
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjIsImV4cCI6MTc2NTAxOTYyMn0.v6_mcDKSZxOj0ePkwJfju8ljgB1yvpIFa5E07wxB2bo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2393,7 +2383,7 @@ Content-Length: 309
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/1 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODEsImV4cCI6MTc2NTAxNDE4MX0.ByIySGXTfW4jMdH7rg6CAFnBKYCW_KkfwTOkzW2MsPE
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjIsImV4cCI6MTc2NTAxOTYyMn0.v6_mcDKSZxOj0ePkwJfju8ljgB1yvpIFa5E07wxB2bo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2553,7 +2543,7 @@ Content-Length: 309
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/quiz/1/submit HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODEsImV4cCI6MTc2NTAxNDE4MX0.ByIySGXTfW4jMdH7rg6CAFnBKYCW_KkfwTOkzW2MsPE
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjIsImV4cCI6MTc2NTAxOTYyMn0.v6_mcDKSZxOj0ePkwJfju8ljgB1yvpIFa5E07wxB2bo
 Content-Type: application/x-www-form-urlencoded
 Host: localhost:8080
 Content-Length: 8
@@ -2681,7 +2671,7 @@ Content-Length: 113
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/today HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODEsImV4cCI6MTc2NTAxNDE4MX0.ByIySGXTfW4jMdH7rg6CAFnBKYCW_KkfwTOkzW2MsPE
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjIsImV4cCI6MTc2NTAxOTYyMn0.v6_mcDKSZxOj0ePkwJfju8ljgB1yvpIFa5E07wxB2bo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -2783,7 +2773,7 @@ Content-Length: 119
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/quiz/solved?categoryIds=1&amp;categoryIds=2&amp;categoryIds=3&amp;pageNum=1&amp;size=5 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxODEsImV4cCI6MTc2NTAxNDE4MX0.ByIySGXTfW4jMdH7rg6CAFnBKYCW_KkfwTOkzW2MsPE
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjIsImV4cCI6MTc2NTAxOTYyMn0.v6_mcDKSZxOj0ePkwJfju8ljgB1yvpIFa5E07wxB2bo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -3302,7 +3292,7 @@ Content-Length: 613
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/magazine/1/scrap HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxNzQsImV4cCI6MTc2NTAxNDE3NH0.8AO9hcGUnNRriyLaQcHm6wZ_ZTH4ylOW2TKll7kN-Ac
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MTUsImV4cCI6MTc2NTAxOTYxNX0.VvHMafb0-ljDxJ9159U6AZ6L3CQsWbrPKhpdDN7gIjo
 Host: localhost:8080
 Content-Type: application/x-www-form-urlencoded</code></pre>
 </div>
@@ -3433,7 +3423,7 @@ Content-Length: 149
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/magazine/scrap-box?pageNum=1&amp;size=5 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxNzQsImV4cCI6MTc2NTAxNDE3NH0.8AO9hcGUnNRriyLaQcHm6wZ_ZTH4ylOW2TKll7kN-Ac
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MTUsImV4cCI6MTc2NTAxOTYxNX0.VvHMafb0-ljDxJ9159U6AZ6L3CQsWbrPKhpdDN7gIjo
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -3609,7 +3599,7 @@ Content-Length: 685
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/magazine/recommend HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxNzQsImV4cCI6MTc2NTAxNDE3NH0.8AO9hcGUnNRriyLaQcHm6wZ_ZTH4ylOW2TKll7kN-Ac
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MTQsImV4cCI6MTc2NTAxOTYxNH0.v6DY-dKKx8yZhbmmOKWtN-_prNty-BjYogHRsOBsOUg
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -4864,7 +4854,7 @@ Content-Length: 488
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/questions/my?pageNum=1&amp;size=5 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxNzksImV4cCI6MTc2NTAxNDE3OX0.MR32-tEpGlDXyBu91Z2at5Q71i6oH4YLX7VQVTnWlXg
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjAsImV4cCI6MTc2NTAxOTYyMH0.Oc4DATM7zUbMr7sL9qZdBBydyVIya7aY3z0T8pF0Iqk
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -6790,7 +6780,7 @@ Content-Length: 700
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/comments/1?targetType=RESPONSE&amp;pageNum=1&amp;size=5 HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTQxNzcsImV4cCI6MTc2NTAxNDE3N30.p6gcTPO9gQPhvFuVfFRPRJPDerFVYNxhuF_nHgBdkmA
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MTgsImV4cCI6MTc2NTAxOTYxOH0.KS_AwFDM9s_K08M765rJ6tANGb2ZulK9F7GKA5J7cgM
 Host: localhost:8080</code></pre>
 </div>
 </div>
@@ -7736,7 +7726,7 @@ Content-Length: 1976
       "magazineAuthor" : "김개발",
       "authorProfileUrl" : "https://example.com/profile/kim.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/kpaas.jpg",
-      "createdAt" : "2025-10-25T17:43:02"
+      "createdAt" : "2025-10-25T19:13:43"
     }, {
       "magazineId" : 2,
       "magazineCategoryId" : 1,
@@ -7745,7 +7735,7 @@ Content-Length: 1976
       "magazineAuthor" : "이아키",
       "authorProfileUrl" : "https://example.com/profile/lee.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/msa.jpg",
-      "createdAt" : "2025-10-25T17:43:02"
+      "createdAt" : "2025-10-25T19:13:43"
     } ],
     "questionHasNext" : false,
     "magazineHasNext" : false
@@ -8055,7 +8045,7 @@ Content-Length: 1008
       "magazineAuthor" : "김개발",
       "authorProfileUrl" : "https://example.com/profile/kim.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/kpaas.jpg",
-      "createdAt" : "2025-10-25T17:43:02"
+      "createdAt" : "2025-10-25T19:13:43"
     }, {
       "magazineId" : 2,
       "magazineCategoryId" : 1,
@@ -8064,7 +8054,7 @@ Content-Length: 1008
       "magazineAuthor" : "이아키",
       "authorProfileUrl" : "https://example.com/profile/lee.jpg",
       "magazineThumbnailUrl" : "https://example.com/thumbnail/msa.jpg",
-      "createdAt" : "2025-10-25T17:43:02"
+      "createdAt" : "2025-10-25T19:13:43"
     } ],
     "currentPage" : 0,
     "hasNext" : false

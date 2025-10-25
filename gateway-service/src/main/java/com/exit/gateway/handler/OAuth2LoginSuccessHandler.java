@@ -10,9 +10,12 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -38,6 +41,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Value("${app.oauth2.default-client-url:https://localhost:5761}")
     private String defaultClientUrl;
 
+    @Value("${app.oauth2.cookie-secure:true}")
+    private boolean cookieSecure;
+
     private List<String> allowedOrigins;
 
 
@@ -48,6 +54,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         log.info("=== OAuth2LoginSuccessHandler 초기화 ===");
         log.info("Allowed Origins: {}", allowedOrigins);
         log.info("Default Client URL: {}", defaultClientUrl);
+        log.info("Cookie Secure: {}", cookieSecure);
         log.info("=======================================");
     }
 
@@ -154,10 +161,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     }
 
     private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(maxAge);
-        response.addCookie(cookie);
+        ResponseCookie cookie = ResponseCookie
+                .from(name, value)
+                .path("/")
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .sameSite(cookieSecure ? "None" : "Lax")
+                .maxAge(Duration.ofSeconds(maxAge))
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 }
