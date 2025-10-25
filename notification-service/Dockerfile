@@ -6,7 +6,6 @@ WORKDIR /workspace
 COPY notification-service/gradlew ./gradlew
 COPY notification-service/gradle gradle
 COPY settings.gradle ./
-
 RUN chmod +x gradlew
 
 RUN sed -i 's/timeout = 10000/timeout = 60000/g' gradle/wrapper/gradle-wrapper.properties || true
@@ -17,13 +16,12 @@ COPY notification-service notification-service
 
 # dev Build Stage
 FROM base AS build-dev
-RUN ./gradlew :common:jar notification-service:bootJar -Pprofile=dev -x test --no-daemon
+RUN ./gradlew :common:jar notification-service:bootJar -Pprofile=dev -x test --no-daemon -Dsun.net.client.defaultReadTimeout=600000 -Dsun.net.client.defaultConnectTimeout=600000
 
 
 # prod Build Stage
 FROM base AS build-prod
-RUN ./gradlew :common:jar notification-service:bootJar -Pprofile=prod -x test --no-daemon
-
+RUN ./gradlew :common:jar notification-service:bootJar -Pprofile=prod -x test --no-daemon -Dsun.net.client.defaultReadTimeout=600000 -Dsun.net.client.defaultConnectTimeout=600000
 
 # dev Runtime Stage
 FROM eclipse-temurin:17-jre-jammy AS dev
