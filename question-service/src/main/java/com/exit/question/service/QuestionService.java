@@ -394,11 +394,12 @@ public class QuestionService {
         Question question = questionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
         boolean isSameUser = Objects.equals(question.getQuestionWriterId(), request.getUserId());
-        boolean existResponse = responseRepository.existsByQuestionIdAndResponseWriterId(question.getQuestionId(),  request.getUserId());
+        boolean existResponseByUserId = responseRepository.existsByQuestionIdAndResponseWriterId(question.getQuestionId(),  request.getUserId());
+        boolean existResponseByQuestionId = questionRepository.existResponseByQuestionId(question.getQuestionId());
         return Authority.newBuilder()
-                .setCanDelete(isSameUser)
-                .setCanModify(isSameUser)
-                .setCanWrite(!isSameUser && !existResponse)
+                .setCanDelete(isSameUser && !existResponseByQuestionId)
+                .setCanModify(isSameUser && !existResponseByQuestionId)
+                .setCanWrite(!isSameUser && !existResponseByUserId)
                 .build();
     }
 
