@@ -30,12 +30,14 @@ spec:
     env:
     - name: DOCKER_TLS_CERTDIR
       value: ""
-    - name: DOCKER_OPTS
-      value: "--insecure-registry=nexus.cicd.svc.cluster.local:5000"
     command:
-    - dockerd-entrypoint.sh
+    - sh
     args:
-    - --insecure-registry=nexus.cicd.svc.cluster.local:5000
+    - -c
+    - |
+      mkdir -p /etc/docker
+      echo '{"insecure-registries":["nexus.cicd.svc.cluster.local:5000"]}' > /etc/docker/daemon.json
+      dockerd-entrypoint.sh --host=tcp://0.0.0.0:2375
     resources:
       requests:
         cpu: 100m
@@ -164,16 +166,14 @@ spec:
                             docker buildx inspect --bootstrap
                         '''
 
-                        def http_nexus_registry = "http://${env.NEXUS_REGISTRY}"
-
                         sh """
                             docker buildx build \\
                                 --builder multi \\
                                 --platform linux/amd64 \\
                                 -f user-service/Dockerfile \\
                                 --target prod \\
-                                -t ${http_nexus_registry}/${NEXUS_REPO}/${IMAGE_NAME}:${IMAGE_TAG} \
-                                -t ${http_nexus_registry}/${NEXUS_REPO}/${IMAGE_NAME}:latest \
+                                -t ${FULL_IMAGE_PATH}:${IMAGE_TAG} \
+                                -t ${FULL_IMAGE_PATH}:latest \
                                 --push \\
                                 .
                         """
