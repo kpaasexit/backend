@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/**", "/login/**", "/api/auth/refresh").permitAll()
                         .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator").permitAll()
                         .requestMatchers("/back-docs/**", "/favicon.ico").permitAll()
+                        .requestMatchers(getPublicApiEndpoints()).permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
@@ -100,5 +101,24 @@ public class SecurityConfig {
 
             response.getWriter().write("{\"code\": \"NP\", \"message\": \"No Permission.\"}");
         }
+    }
+
+    private String[] getPublicApiEndpoints() {
+        return new String[]{
+                "/api/magazine/category/*",
+                "/api/magazine/{id:\\d+}",
+                "/api/magazine/recommend",
+                "/api/questions",
+                "/api/questions/{id:\\d+}",
+                "/api/questions/popular-post",
+                "/api/responses/{id:\\d+}/responses",
+                "/api/responses/ai",
+                "/api/comments/{id:\\d+}",
+                "/api/additional-question/{id:\\d+}",
+                "/api/search",
+                "/api/search/recommend",
+                "/api/search/magazines",
+                "/api/search/questions"
+        };
     }
 }

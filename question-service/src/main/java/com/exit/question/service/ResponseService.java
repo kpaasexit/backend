@@ -266,6 +266,14 @@ public class ResponseService {
     }
 
     private Authority getResponseAuthority(Response response, GetDetailResponseRequest request) {
+        if(request.getUserId() == -1) {
+            return Authority.newBuilder()
+                    .setCanAdopt(false)
+                    .setCanDelete(false)
+                    .setCanModify(false)
+                    .build();
+        }
+
         boolean isSameUser = Objects.equals(response.getResponseWriterId(), request.getUserId());
         Question question = questionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));

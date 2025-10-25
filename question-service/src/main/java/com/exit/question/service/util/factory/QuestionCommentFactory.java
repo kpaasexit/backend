@@ -111,6 +111,13 @@ public class QuestionCommentFactory extends CommentFactory {
     }
 
     private Authority getCommentAuthority(QuestionComment comment, Long userId) {
+        if(userId == -1) {
+            return Authority.newBuilder()
+                    .setCanModify(false)
+                    .setCanDelete(false)
+                    .build();
+        }
+
         boolean isSameUser = Objects.equals(comment.getAuthorId(), userId);
         return Authority.newBuilder()
                 .setCanModify(isSameUser)

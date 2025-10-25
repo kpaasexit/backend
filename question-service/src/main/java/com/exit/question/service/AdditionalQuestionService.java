@@ -124,6 +124,13 @@ public class AdditionalQuestionService {
     }
 
     private Authority getAuthority(Question question, Response response, Long userId, List<FollowUpMessage> messageList) {
+        if(userId == -1) {
+            return Authority.newBuilder()
+                    .setIsThirdParty(false)
+                    .setCanWrite(false)
+                    .build();
+        }
+
         boolean isThirdParty = isThirdParty(question, response, userId);
         boolean canWrite = false;
 

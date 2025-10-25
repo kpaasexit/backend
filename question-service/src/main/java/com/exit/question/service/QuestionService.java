@@ -384,6 +384,13 @@ public class QuestionService {
     }
 
     private Authority getAuthority(QuestionDetailRequest request) {
+        if(request.getUserId() == -1) {
+            return Authority.newBuilder()
+                    .setCanDelete(false)
+                    .setCanModify(false)
+                    .setCanWrite(false)
+                    .build();
+        }
         Question question = questionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
         boolean isSameUser = Objects.equals(question.getQuestionWriterId(), request.getUserId());

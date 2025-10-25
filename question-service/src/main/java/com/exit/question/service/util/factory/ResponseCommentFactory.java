@@ -103,6 +103,13 @@ public class ResponseCommentFactory extends CommentFactory {
     }
 
     private Authority getCommentAuthority(ResponseComment comment, Long userId) {
+        if(userId == -1) {
+            return Authority.newBuilder()
+                    .setCanModify(false)
+                    .setCanDelete(false)
+                    .build();
+        }
+
         boolean isSameUser = Objects.equals(comment.getAuthorId(), userId);
 
         return Authority.newBuilder()
