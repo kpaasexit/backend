@@ -11,8 +11,6 @@ spec:
   serviceAccountName: jenkins
   nodeSelector:
     worker: "true"
-  hostNetwork: true
-  dnsPolicy: ClusterFirstWithHostNet
   containers:
   - name: kubectl
     image: alpine:latest
@@ -32,6 +30,14 @@ spec:
     env:
     - name: DOCKER_TLS_CERTDIR
       value: ""
+    command:
+    - sh
+    args:
+    - -c
+    - |
+      mkdir -p /etc/docker
+      echo '{"insecure-registries":["nexus.cicd.svc.cluster.local:5000"]}' > /etc/docker/daemon.json
+      dockerd-entrypoint.sh --host=tcp://0.0.0.0:2375
     resources:
       requests:
         cpu: 100m
@@ -45,10 +51,22 @@ spec:
         }
     }
 
+    options {
+                disableConcurrentBuilds()
+                timeout(time: 60, unit: 'MINUTES')
+                lock(resource: 'backend-build')
+    }
+
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
-        DOCKER_HUB_REPO = 'leesy010504/exit-notification-service'
+        NEXUS_CREDENTIALS = credentials('nexus-docker-credentials')
+
+        NEXUS_REGISTRY = 'nexus.cicd.svc.cluster.local:5000'
+        NEXUS_REPO = 'docker-hosted'
+
+        IMAGE_NAME = 'exit-notification-service'
         IMAGE_TAG = "1.1.${BUILD_NUMBER}"
+        FULL_IMAGE_PATH = "${NEXUS_REGISTRY}/${NEXUS_REPO}/${IMAGE_NAME}"
+
         DOCKER_HOST = "tcp://localhost:2375"
         GIT_DIFF = ''
     }
@@ -134,18 +152,34 @@ spec:
                             echo "Docker daemon ready!"
                         '''
 
+                        sh """
+                            echo \$NEXUS_CREDENTIALS_PSW | docker login -u \$NEXUS_CREDENTIALS_USR --password-stdin ${NEXUS_REGISTRY}
+                        """
+
                         sh '''
-                            echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin
+                            mkdir -p /etc/buildkit
+                            echo '[registry."nexus.cicd.svc.cluster.local:5000"]' > /etc/buildkit/buildkitd.toml
+                            echo '  http = true' >> /etc/buildkit/buildkitd.toml
+                            echo '  insecure = true' >> /etc/buildkit/buildkitd.toml
+
+                            echo "=== buildkitd.toml content ==="
+                            cat /etc/buildkit/buildkitd.toml
                         '''
 
                         sh '''
-                            if ! docker buildx inspect multi >/dev/null 2>&1; then
-                                echo "Creating builder..."
-                                docker buildx create --name multi --use
-                            else
-                                echo "Using existing builder: multi"
-                                docker buildx use multi
+                            if docker buildx inspect multi >/dev/null 2>&1; then
+                                echo "Removing existing builder..."
+                                docker buildx rm multi || true
                             fi
+
+                            echo "Creating new builder with config..."
+                            docker buildx create --name multi \
+                                --driver docker-container \
+                                --driver-opt network=host \
+                                --buildkitd-flags '--allow-insecure-entitlement network.host' \
+                                --config /etc/buildkit/buildkitd.toml \
+                                --use
+
                             docker buildx inspect --bootstrap
                         '''
 
@@ -155,13 +189,13 @@ spec:
                                 --platform linux/amd64 \\
                                 -f notification-service/Dockerfile \\
                                 --target prod \\
-                                -t ${DOCKER_HUB_REPO}:${IMAGE_TAG} \\
-                                -t ${DOCKER_HUB_REPO}:latest \\
+                                -t ${FULL_IMAGE_PATH}:${IMAGE_TAG} \\
+                                -t ${FULL_IMAGE_PATH}:latest \\
                                 --push \\
                                 .
                         """
 
-                        echo "Built and pushed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                        echo "Built and pushed: ${FULL_IMAGE_PATH}:${IMAGE_TAG}"
                     }
                 }
             }
@@ -179,7 +213,7 @@ spec:
                         sh """
                             kubectl patch deployment notification-deployment -n default \\
                                 --type='json' \\
-                                -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"${DOCKER_HUB_REPO}:${IMAGE_TAG}"}]'
+                                -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"${FULL_IMAGE_PATH}:${IMAGE_TAG}"}]'
 
                             echo "Waiting for rollout to complete..."
                             kubectl rollout status deployment/notification-deployment \\
@@ -217,7 +251,7 @@ spec:
 
                             echo ""
                             echo "=== Waiting for pods to be ready ==="
-                            kubectl wait --for=condition=ready pod -l app=notification -n default --timeout=5m
+                            kubectl wait --for=condition=ready pod -l app=notification -n default --timeout=10m
                         '''
 
                         echo "Deployment verified successfully"
@@ -230,14 +264,16 @@ spec:
     post {
         always {
             container('docker') {
-                sh 'docker logout || true'
+                sh """
+                    docker logout ${NEXUS_REGISTRY} || true
+                """
             }
         }
         success {
             echo 'Pipeline completed successfully!'
             script {
                 if (env.BUILD_NOTIFICATION_SERVICE == 'true') {
-                    echo "Notification Service deployed: ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                    echo "Notification Service deployed: ${FULL_IMAGE_PATH}:${IMAGE_TAG}"
                 } else {
                     echo "Notification Service: No changes - skipped"
                 }
