@@ -115,31 +115,68 @@ class QuizService:
                 existing_context += "\n\n위 퀴즈들과 완전히 다른 주제와 내용으로 새로운 퀴즈를 생성해주세요."
 
         if quiz_type == QuizType.OX:
-            return f"""다음 조건에 맞는 OX 퀴즈를 1개 생성해주세요:
-
-카테고리: {category_name}
-형식: OX 퀴즈 (참/거짓을 판단하는 문제)
-대상: 독립생활을 하거나 일상생활에서 실용적인 정보가 필요한 사람들
+            return f"""# Role and Objective
+당신은 독립 생활을 하는 성인을 위한 실용적인 퀴즈를 생성하는 전문가입니다.
+목표: '{category_name}' 카테고리와 직접 연관된, 실생활에서 활용 가능한 구체적 지식을 테스트하는 고품질 OX 퀴즈 1개를 생성합니다.
 {existing_context}
 
-다음 JSON 형식으로 정확히 응답해주세요:
+# Critical Quality Standards (모든 기준을 반드시 충족해야 함)
+
+## 1. 난이도 기준 - STRICTLY ENFORCED
+**절대 생성하지 말아야 할 퀴즈 유형:**
+- ❌ 너무 당연한 상식: "손을 씻으면 위생에 도움이 된다", "규칙적인 운동은 건강에 좋다"
+- ❌ 주관적이거나 애매모호한 진술: "자취생은 ~하는 것이 좋다", "~하면 편리하다"
+- ❌ 일반적인 조언: "절약하려면 계획을 세워야 한다", "건강을 위해 영양소를 골고루 섭취해야 한다"
+- ❌ 검증 불가능한 진술: "대부분의 사람들은 ~", "일반적으로 ~"
+- ❌ 논란의 여지가 있는 내용: 개인차가 큰 내용, 상황에 따라 달라지는 내용
+
+**반드시 생성해야 할 퀴즈 유형:**
+- ✓ 구체적인 숫자/기준이 포함된 사실: "전입신고는 계약일로부터 14일 이내에 해야 한다"
+- ✓ 검증 가능한 방법/절차: "계란을 물에 넣었을 때 가라앉으면 신선한 것이다"
+- ✓ 법적/제도적 사실: "월세 세액공제는 연말정산 시 신청할 수 있다"
+- ✓ 과학적으로 검증된 방법: "화상을 입었을 때 얼음물에 직접 대는 것은 피부 손상을 악화시킬 수 있다"
+- ✓ 실무적으로 활용 가능한 팁: "세탁 기호에서 삼각형은 표백 가능 여부를 나타낸다"
+
+## 2. 카테고리 준수 - MANDATORY
+- 반드시 '{category_name}' 카테고리와 **직접적으로** 연관되어야 합니다
+- 간접적인 연관성만으로는 불충분합니다
+- 카테고리에서 벗어난 일반적인 상식 문제는 절대 생성하지 마세요
+
+## 3. 명확성과 정확성 - NON-NEGOTIABLE
+- 논란의 여지가 전혀 없어야 합니다
+- 정답이 명확하게 O 또는 X로 판단 가능해야 합니다
+- 예외 상황이 있다면 문제에 명시하거나 다른 주제를 선택하세요
+
+## 4. 실용성 - ESSENTIAL
+- 알고 있으면 실생활에서 직접 활용할 수 있어야 합니다
+- "알면 좋은" 정도가 아닌, "알아야 하는" 수준의 정보여야 합니다
+
+# Reasoning Steps (퀴즈 생성 전 반드시 따라야 할 단계)
+
+1. **주제 선택**: '{category_name}' 카테고리에서 구체적이고 실용적인 주제를 선택합니다
+2. **난이도 검증**: 선택한 주제가 위의 "절대 생성하지 말아야 할 유형"에 해당하는지 확인합니다
+   - 해당한다면 다른 주제를 선택합니다
+   - "반드시 생성해야 할 유형"에 해당하는지 재확인합니다
+3. **명제 작성**: 검증 가능한 구체적 사실을 명제 형태로 작성합니다
+4. **정답 확인**: 명제가 명확하게 O 또는 X로 판단 가능한지 확인합니다
+5. **최종 검증**: 이 퀴즈가 성인에게 너무 쉽거나 당연하지 않은지 확인합니다
+
+# Output Format
+다음 JSON 형식으로 **정확히** 응답하세요 (다른 텍스트 포함 금지):
 {{
-    "quiz_content": "퀴즈 문제 내용 (명제 형태로 작성)",
+    "quiz_content": "명확하고 구체적인 사실을 담은 명제 (예: '전월세 계약 시 전입신고는 계약일로부터 14일 이내에 해야 한다')",
     "quiz_correct_answer": 0,
-    "explanation": "정답이 왜 O(또는 X)인지에 대한 상세한 설명. 문제의 배경 지식, 정답의 근거, 오답일 경우의 이유 등을 포함하여 작성"
+    "explanation": "정답의 근거를 구체적으로 설명 (최소 2-3문장, 관련 법규/과학적 원리/실무 기준 등 포함)"
 }}
 
-필수 준수사항:
-- **카테고리 준수**: 반드시 '{category_name}' 카테고리와 직접적으로 연관된 내용이어야 합니다
-- quiz_correct_answer는 반드시 0(정답) 또는 1(오답) 중 하나의 숫자여야 합니다
-- 문제는 명확하고 모호하지 않아야 하며, 논란의 여지가 없어야 합니다
-- **난이도 기준**: 너무 쉽거나 상식적인 문제는 피하고, 구체적인 지식이 필요한 수준으로 작성하세요
-  * 예시 (너무 쉬움, 피해야 함): "자취생은 샤워 시 물을 아끼는 것이 필수다", "건강을 위해 운동은 필요하다"
-  * 예시 (적절한 난이도): "계란의 신선도를 확인할 때 물에 넣었을 때 가라앉으면 신선한 것이다", "전월세 계약 시 전입신고는 계약일로부터 14일 이내에 해야 한다"
-- **실용성과 구체성**: 실생활에서 직접 활용 가능한 구체적이고 검증 가능한 사실을 다루세요
-- **자연스러운 표현**: '젊은층', '청년', '사회초년생' 등의 직접적인 키워드는 문제에 포함하지 마세요
-- 기존 퀴즈와 중복되지 않는 참신한 문제를 만들어주세요
-- explanation은 단순히 정답만 언급하지 말고, 왜 그것이 정답인지, 어떤 배경 지식이 필요한지, 실생활에서 어떻게 활용할 수 있는지 상세히 설명해야 합니다
+# Technical Requirements
+- quiz_correct_answer: 0(정답) 또는 1(오답) **숫자만** 입력
+- quiz_content: '젊은층', '청년', '사회초년생', 'MZ세대' 등의 키워드 **절대 사용 금지**
+- explanation: 단순 "정답은 O입니다" 수준이 아닌, 왜 그런지 배경 지식과 근거를 포함한 상세 설명
+
+# Final Instruction
+위의 모든 기준을 충족하는지 스스로 검증한 후, 확신이 있을 때만 퀴즈를 생성하세요.
+기준을 충족하지 못하는 퀴즈는 절대 생성하지 마세요.
 
 문제 예시 방향 (20대 사회초년생, 독립 생활자 중심):
 
@@ -275,35 +312,86 @@ class QuizService:
 - 배달앱 쿠폰 활용, 구독 서비스 관리, 멤버십 혜택 비교
 - SNS 개인정보 보호 설정, 스팸 차단, 사이버 불링 대응"""
         else:
-            return f"""다음 조건에 맞는 4지선다 퀴즈를 1개 생성해주세요:
-
-카테고리: {category_name}
-형식: 4지선다 (4개 중 택1)
-대상: 독립생활을 하거나 일상생활에서 실용적인 정보가 필요한 사람들
+            return f"""# Role and Objective
+당신은 독립 생활을 하는 성인을 위한 실용적인 퀴즈를 생성하는 전문가입니다.
+목표: '{category_name}' 카테고리와 직접 연관된, 실생활에서 활용 가능한 구체적 지식을 테스트하는 고품질 4지선다 퀴즈 1개를 생성합니다.
 {existing_context}
 
-다음 JSON 형식으로 정확히 응답해주세요:
+# Critical Quality Standards (모든 기준을 반드시 충족해야 함)
+
+## 1. 난이도 기준 - STRICTLY ENFORCED
+**절대 생성하지 말아야 할 퀴즈 유형:**
+- ❌ 너무 당연하거나 추상적인 질문: "건강한 식생활을 위해 필요한 것은?", "청소를 잘하려면?"
+- ❌ 주관적이거나 정답이 여러 개인 질문: "가장 좋은 방법은?", "가장 중요한 것은?"
+- ❌ 일반적인 상식으로 풀 수 있는 문제: "손을 씻어야 하는 이유는?", "운동이 건강에 좋은 이유는?"
+- ❌ 구체성이 없는 애매한 질문: "절약하는 방법은?", "효율적으로 하는 법은?"
+- ❌ 검색 없이 추측으로 풀 수 있는 문제
+
+**반드시 생성해야 할 퀴즈 유형:**
+- ✓ 구체적인 숫자/절차/방법을 묻는 질문: "전월세 계약 시 중개수수료 상한선은?", "냉동 밥을 해동할 때 가장 좋은 방법은?"
+- ✓ 법적/제도적 지식: "전입신고 기한은?", "연말정산 공제 항목 중 틀린 것은?"
+- ✓ 실무적 방법/절차: "세탁 기호 중 삼각형의 의미는?", "화상 응급처치 방법은?"
+- ✓ 과학적 원리/검증된 팁: "계란 신선도 확인법은?", "냉장고 야채칸이 아래에 있는 이유는?"
+
+## 2. 선택지 품질 기준 - MANDATORY
+**오답 선택지 작성 규칙:**
+- 그럴듯하게 들려야 합니다 (명백히 틀린 것은 안됨)
+- 실제로 혼동할 수 있는 내용이어야 합니다
+- 모든 선택지가 비슷한 길이와 구체성을 가져야 합니다
+- "모두 해당", "없음" 같은 선택지는 피하세요
+
+**절대 하지 말아야 할 것:**
+- ❌ 정답이 너무 명확하게 드러나는 선택지 구성
+- ❌ 오답이 말도 안 되게 이상한 경우
+- ❌ 선택지 간 길이나 구체성이 너무 다른 경우
+- ❌ "1번과 2번", "모두 정답" 같은 복합 선택지
+
+## 3. 카테고리 준수 - MANDATORY
+- 반드시 '{category_name}' 카테고리와 **직접적으로** 연관되어야 합니다
+- 간접적인 연관성만으로는 불충분합니다
+- 카테고리에서 벗어난 일반적인 상식 문제는 절대 생성하지 마세요
+
+## 4. 실용성 - ESSENTIAL
+- 알고 있으면 실생활에서 직접 활용할 수 있어야 합니다
+- "알면 좋은" 정도가 아닌, "알아야 하는" 수준의 정보여야 합니다
+- 성인이 독립 생활을 하면서 실제로 마주칠 수 있는 상황이어야 합니다
+
+# Reasoning Steps (퀴즈 생성 전 반드시 따라야 할 단계)
+
+1. **주제 선택**: '{category_name}' 카테고리에서 구체적이고 실용적인 주제를 선택합니다
+2. **난이도 검증**: 선택한 주제가 위의 "절대 생성하지 말아야 할 유형"에 해당하는지 확인합니다
+   - 해당한다면 다른 주제를 선택합니다
+   - "반드시 생성해야 할 유형"에 해당하는지 재확인합니다
+3. **질문 작성**: 명확하고 구체적인 질문을 작성합니다 (애매모호하지 않게)
+4. **선택지 작성**:
+   - 정답 1개를 먼저 작성합니다
+   - 그럴듯한 오답 3개를 작성합니다 (추측으로 맞히기 어렵게)
+   - 모든 선택지가 비슷한 수준의 구체성을 가지도록 조정합니다
+5. **최종 검증**:
+   - 이 퀴즈가 성인에게 너무 쉽거나 당연하지 않은지 확인합니다
+   - 선택지만 보고도 정답이 명확하게 드러나지 않는지 확인합니다
+
+# Output Format
+다음 JSON 형식으로 **정확히** 응답하세요 (다른 텍스트 포함 금지):
 {{
-    "quiz_title": "문제를 풀기 위한 지문과 질문 (100자 이내)",
-    "quiz_content": "선택지 1\\n선택지 2\\n선택지 3\\n선택지 4",
+    "quiz_title": "명확하고 구체적인 질문 (예: '냉동 밥을 해동할 때 가장 영양소 손실이 적은 방법은?')",
+    "quiz_content": "선택지1\\n선택지2\\n선택지3\\n선택지4",
     "quiz_correct_answer": 0,
-    "explanation": "정답이 왜 해당 번호인지에 대한 상세한 설명. 정답의 근거와 배경 지식, 다른 선택지가 오답인 이유 등을 포함하여 작성"
+    "explanation": "정답의 근거를 구체적으로 설명하고, 왜 다른 선택지들이 오답인지도 간략히 설명 (최소 3-4문장)"
 }}
 
-필수 준수사항:
-- **카테고리 준수**: 반드시 '{category_name}' 카테고리와 직접적으로 연관된 내용이어야 합니다
-- quiz_title에는 문제 지문과 질문이 포함되어야 합니다 (예: "계란의 신선도를 확인하는 가장 정확한 방법은?")
-- quiz_content에는 4개의 선택지만 줄바꿈(\\n)으로 구분하여 작성해주세요
-- 선택지 앞에 번호(1., 2., 3., 4.)를 붙이지 말고 순수한 텍스트만 작성해주세요
-- quiz_correct_answer는 반드시 0, 1, 2, 3 중 하나의 숫자여야 합니다 (0: 첫번째 선택지, 1: 두번째, 2: 세번째, 3: 네번째)
-- 선택지는 명확하게 구분되어야 하며, 오답도 그럴듯하게 만들어야 합니다
-- **난이도 기준**: 너무 쉽거나 상식적인 문제는 피하고, 구체적인 지식이 필요한 수준으로 작성하세요
-  * 예시 (너무 쉬움, 피해야 함): "건강한 식생활을 위해 필요한 것은?", "청소를 자주 하면 어떻게 되는가?"
-  * 예시 (적절한 난이도): "냉동 밥을 해동할 때 가장 좋은 방법은?", "전월세 계약 시 중개수수료 상한선은?"
-- **실용성과 구체성**: 실생활에서 직접 활용 가능한 구체적이고 검증 가능한 사실을 다루세요
-- **자연스러운 표현**: '젊은층', '청년', '사회초년생', 'MZ세대' 등의 직접적인 키워드는 문제에 포함하지 마세요
-- 기존 퀴즈와 중복되지 않는 참신한 문제를 만들어주세요
-- explanation은 단순히 정답만 언급하지 말고, 왜 그것이 정답인지, 관련 배경 지식과 오답 분석, 실생활 활용법을 포함하여 상세히 설명해야 합니다
+# Technical Requirements
+- quiz_title: 구체적인 질문 (100자 이내, 애매모호한 표현 금지)
+- quiz_content: 4개의 선택지를 \\n으로만 구분 (번호 없이 순수 텍스트만)
+- quiz_correct_answer: 0, 1, 2, 3 중 하나 **숫자만** (0=첫번째, 1=두번째, 2=세번째, 3=네번째)
+- 모든 선택지는 비슷한 길이와 구체성을 가져야 함
+- '젊은층', '청년', '사회초년생', 'MZ세대' 등의 키워드 **절대 사용 금지**
+- explanation: 정답의 근거 + 오답 분석을 포함한 상세 설명
+
+# Final Instruction
+위의 모든 기준을 충족하는지 스스로 검증한 후, 확신이 있을 때만 퀴즈를 생성하세요.
+기준을 충족하지 못하는 퀴즈는 절대 생성하지 마세요.
+특히 "너무 쉽거나 당연한 문제"는 절대 만들지 마세요.
 
 문제 예시 방향 (20대 사회초년생, 독립 생활자 중심):
 
@@ -493,11 +581,33 @@ class QuizService:
                     response = await self.openai_client.chat.completions.create(
                         model="gpt-4o-mini",
                         messages=[
-                            {"role": "system", "content": "You are a creative quiz generator. Generate unique and interesting quizzes that are different from existing ones. Always respond with valid JSON only."},
+                            {"role": "system", "content": """You are a professional quiz creator specialized in generating high-quality, practical quizzes for independent adults.
+
+# Core Principles
+- NEVER generate trivial or obvious questions that any adult would know
+- ALWAYS ensure questions require specific, verifiable knowledge
+- Questions must be directly applicable to real-life situations
+- Every quiz must meet ALL quality standards specified in the user prompt
+
+# Response Requirements
+- Respond ONLY with valid JSON (no additional text or explanation)
+- Follow the exact JSON schema provided in the user prompt
+- Verify your quiz meets ALL criteria before responding
+- If you cannot generate a quiz that meets ALL standards, try a different topic
+
+# Quality Commitment
+You are committed to excellence. Every quiz you generate must be:
+1. Specific and concrete (not vague or general)
+2. Practical and useful (applicable to real life)
+3. Appropriately challenging (not too easy for adults)
+4. Factually accurate and verifiable
+5. Category-relevant (directly related to the specified category)
+
+Remember: It is better to select a different topic than to compromise on quality standards."""},
                             {"role": "user", "content": prompt}
                         ],
                         response_format={"type": "json_object"},
-                        temperature=0.9
+                        temperature=0.7
                     )
 
                     quiz_data = json.loads(response.choices[0].message.content)
