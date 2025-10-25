@@ -155,15 +155,15 @@ spec:
                             echo \$NEXUS_CREDENTIALS_PSW | docker login -u \$NEXUS_CREDENTIALS_USR --password-stdin ${NEXUS_REGISTRY}
                         """
 
-                        sh """
+                        sh '''
                             mkdir -p /etc/buildkit
-                            cat > /etc/buildkit/buildkitd.toml <<'EOF'
-                        [registry."nexus.cicd.svc.cluster.local:5000"]
-                          http = true
-                          insecure = true
-                        EOF
+                            echo '[registry."nexus.cicd.svc.cluster.local:5000"]' > /etc/buildkit/buildkitd.toml
+                            echo '  http = true' >> /etc/buildkit/buildkitd.toml
+                            echo '  insecure = true' >> /etc/buildkit/buildkitd.toml
+
+                            echo "=== buildkitd.toml content ==="
                             cat /etc/buildkit/buildkitd.toml
-                        """
+                        '''
 
                         sh '''
                             if docker buildx inspect multi >/dev/null 2>&1; then
