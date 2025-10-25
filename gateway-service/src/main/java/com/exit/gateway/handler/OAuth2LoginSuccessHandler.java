@@ -76,12 +76,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     .orElse("/");
 
             String clientUrl = determineClientUrl(request);
-            addCookie(response, "accessToken", oauth2User.getAccessToken(), jwtProperties.getAccessTokenExpiration().intValue());
             addCookie(response, "refreshToken", oauth2User.getRefreshToken(), jwtProperties.getRefreshTokenExpiration().intValue());
 
             String finalRedirectUrl = String.format(
-                    "%s/oauth/callback?returnTo=%s",
-                    clientUrl, URLEncoder.encode(returnTo, StandardCharsets.UTF_8)
+                    "%s/oauth/callback?returnTo=%s&accessToken=%s", clientUrl,
+                    URLEncoder.encode(returnTo, StandardCharsets.UTF_8),
+                    URLEncoder.encode(oauth2User.getAccessToken(), StandardCharsets.UTF_8)
             );
 
             authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
