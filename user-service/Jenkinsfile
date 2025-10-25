@@ -59,12 +59,12 @@ spec:
     environment {
         NEXUS_CREDENTIALS = credentials('nexus-docker-credentials')
 
-        NEXUS_REGISTRY = 'nexus.cicd.svc.cluster.local:5000'
-        NEXUS_REPO = 'docker-hosted'
+        NEXUS_REGISTRY = 'nexus-docker.210-178-1-144.nip.io'
+        NEXUS_REPO = ''
 
         IMAGE_NAME = 'exit-user-service'
         IMAGE_TAG = "1.1.${BUILD_NUMBER}"
-        FULL_IMAGE_PATH = "${NEXUS_REGISTRY}/${NEXUS_REPO}/${IMAGE_NAME}"
+        FULL_IMAGE_PATH = "${NEXUS_REGISTRY}/${IMAGE_NAME}"
 
         DOCKER_HOST = "tcp://localhost:2375"
         GIT_DIFF = ''
@@ -210,19 +210,19 @@ spec:
                         echo "Updating deployment with patch..."
 
                         sh """
-                             kubectl patch deployment quiz-deployment -n default \\
+                             kubectl patch deployment user-deployment -n default \\
                                  --type='json' \\
                                  -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"${FULL_IMAGE_PATH}:${IMAGE_TAG}"}]'
                          """
 
                          sh """
                              echo "Deleting old pods..."
-                             kubectl delete pod -l app=quiz -n default --force --grace-period=0 || true
+                             kubectl delete pod -l app=user -n default --force --grace-period=0 || true
                          """
 
                          echo "Waiting for rollout to complete..."
                          sh """
-                             kubectl rollout status deployment/quiz-deployment \\
+                             kubectl rollout status deployment/user-deployment \\
                                  -n default \\
                                  --timeout=10m
                          """
