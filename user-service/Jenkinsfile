@@ -11,8 +11,6 @@ spec:
   serviceAccountName: jenkins
   nodeSelector:
     worker: "true"
-#   hostNetwork: true
-#   dnsPolicy: ClusterFirstWithHostNet
   containers:
   - name: kubectl
     image: alpine:latest
@@ -158,7 +156,7 @@ spec:
                         sh '''
                             if ! docker buildx inspect multi >/dev/null 2>&1; then
                                 echo "Creating builder..."
-                                docker buildx create --name multi --use
+                                docker buildx create --name multi --driver-opt network=host --use
                             else
                                 echo "Using existing builder: multi"
                                 docker buildx use multi
