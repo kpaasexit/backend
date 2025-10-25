@@ -215,11 +215,6 @@ spec:
                                 -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"${FULL_IMAGE_PATH}:${IMAGE_TAG}"}]'
                         """
 
-                        sh """
-                            echo "Deleting old pods..."
-                            kubectl delete pod -l app=quiz -n default --force --grace-period=0 || true
-                        """
-
                         echo "Waiting for rollout to complete..."
                         sh """
                             kubectl rollout status deployment/quiz-deployment \\
