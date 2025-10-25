@@ -174,7 +174,7 @@ class ResponseControllerRestDocsTest {
         mockMvc.perform(org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart("/api/responses/answers/{responseId}", 1L)
                         .file(image1)
                         .param("content", "수정된 답변 내용입니다.")
-                        .param("deletedImageId", "1", "2")
+                        .param("deleteIds", "1", "2")
                         .with(request -> {
                             request.setMethod("PUT");
                             return request;
@@ -191,7 +191,7 @@ class ResponseControllerRestDocsTest {
                         ),
                         multipartFormParameters(
                                 multipartParameter("content").description("수정할 답변 내용"),
-                                multipartParameter("deletedImageId").description("삭제할 이미지 ID 목록 (선택)").optional()
+                                multipartParameter("deleteIds").description("삭제할 이미지 ID 목록 (선택)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
