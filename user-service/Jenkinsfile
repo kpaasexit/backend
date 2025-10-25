@@ -155,14 +155,31 @@ spec:
                             echo \$NEXUS_CREDENTIALS_PSW | docker login -u \$NEXUS_CREDENTIALS_USR --password-stdin ${NEXUS_REGISTRY}
                         """
 
+                        sh """
+                            # buildkitd.toml 생성
+                            mkdir -p /etc/buildkit
+                            cat > /etc/buildkit/buildkitd.toml <<EOF
+        [registry."nexus.cicd.svc.cluster.local:5000"]
+          http = true
+          insecure = true
+        EOF
+                            cat /etc/buildkit/buildkitd.toml
+                        """
+
                         sh '''
-                            if ! docker buildx inspect multi >/dev/null 2>&1; then
-                                echo "Creating builder..."
-                                docker buildx create --name multi --driver-opt network=host --use
-                            else
-                                echo "Using existing builder: multi"
-                                docker buildx use multi
+                            if docker buildx inspect multi >/dev/null 2>&1; then
+                                echo "Removing existing builder..."
+                                docker buildx rm multi || true
                             fi
+
+                            echo "Creating new builder with config..."
+                            docker buildx create --name multi \
+                                --driver docker-container \
+                                --driver-opt network=host \
+                                --buildkitd-flags '--allow-insecure-entitlement network.host' \
+                                --config /etc/buildkit/buildkitd.toml \
+                                --use
+
                             docker buildx inspect --bootstrap
                         '''
 
@@ -172,8 +189,8 @@ spec:
                                 --platform linux/amd64 \\
                                 -f user-service/Dockerfile \\
                                 --target prod \\
-                                -t ${FULL_IMAGE_PATH}:${IMAGE_TAG} \
-                                -t ${FULL_IMAGE_PATH}:latest \
+                                -t ${FULL_IMAGE_PATH}:${IMAGE_TAG} \\
+                                -t ${FULL_IMAGE_PATH}:latest \\
                                 --push \\
                                 .
                         """
