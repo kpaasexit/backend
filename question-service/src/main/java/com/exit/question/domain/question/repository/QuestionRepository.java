@@ -42,6 +42,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
                     group by q.questionId, qc.questionCategoryId, q.questionWriterId,
                              q.questionTitle, q.questionContent, q.questionAnswerAdopt, q.createdAt
                     order by count(r) desc
+                    limit 5
             """)
     List<PopularPostDto> findTop5By();
 
