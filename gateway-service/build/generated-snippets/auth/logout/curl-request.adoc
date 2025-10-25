@@ -2,5 +2,5 @@
 ----
 $ curl 'http://localhost:8080/api/auth/logout' -i -X POST \
     -H 'X-Device-Id: test-device-id' \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MjQsImV4cCI6MTc2NTAxOTYyNH0.nr63Xk8dgMnclHIzrI9L9iZ0v1_38Tz3qI-O0LAGOp0'
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MjA1ODgsImV4cCI6MTc2NTAyMDU4OH0.bPiuw_rVfl4Je0qe2jCJIWH1_XyBePaVGXYmDb1HFFs'
 ----

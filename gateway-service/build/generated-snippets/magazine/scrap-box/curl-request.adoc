@@ -1,5 +1,5 @@
 [source,bash]
 ----
 $ curl 'http://localhost:8080/api/magazine/scrap-box?pageNum=1&size=5' -i -X GET \
-    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MTk2MTUsImV4cCI6MTc2NTAxOTYxNX0.VvHMafb0-ljDxJ9159U6AZ6L3CQsWbrPKhpdDN7gIjo'
+    -H 'Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MjA1NzksImV4cCI6MTc2NTAyMDU3OX0.chn-v5se5gTOIhDRclDlj_lgpDFn5PpTswT-HMHv8RA'
 ----
