@@ -12,6 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateQuestionRequestDto {
+    private Long questionCategoryId;
+    private String title;
     private String content;
     private List<Long> deleteIds = new ArrayList<>();
 }

@@ -627,6 +627,8 @@ class QuestionControllerRestDocsTest {
                         .file(image1)
                         .param("content", "수정된 질문 내용입니다.")
                         .param("deleteIds", "1", "2")
+                        .param("title", "수정된 제목 내용입니다.")
+                        .param("questionCategoryId", "1")
                         .with(request -> {
                             request.setMethod("PUT");
                             return request;
@@ -643,7 +645,9 @@ class QuestionControllerRestDocsTest {
                         ),
                         multipartFormParameters(
                                 multipartParameter("content").description("수정할 질문 내용 (선택)").optional(),
-                                multipartParameter("deleteIds").description("삭제할 이미지 ID 목록 (선택)").optional()
+                                multipartParameter("deleteIds").description("삭제할 이미지 ID 목록 (선택)").optional(),
+                                multipartParameter("title").description("수정할 제목(선택)").optional(),
+                                multipartParameter("questionCategoryId").description("수정할 질문 카테고리 ID(선택)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),

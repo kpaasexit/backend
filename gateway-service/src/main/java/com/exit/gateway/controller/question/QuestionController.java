@@ -162,7 +162,7 @@ public class QuestionController {
     public SuccessResponse<QuestionCreateResponseDto> updateQuestion(
             @PathVariable Long questionId,
             @ModelAttribute UpdateQuestionRequestDto request,
-            @RequestPart List<MultipartFile> images,
+            @RequestPart(required = false) List<MultipartFile> images,
             @LoginUser Long userId
     ) {
         log.info("Question update request received for questionId: {}", questionId);

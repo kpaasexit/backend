@@ -147,10 +147,19 @@ public class QuestionRequestMapper {
             builder.addAllDeletedImageId(request.getDeleteIds());
         }
 
+        if (request.getQuestionCategoryId() != null) {
+            builder.setQuestionCategoryId(request.getQuestionCategoryId());
+        }
+
+        if(request.getTitle() != null && !request.getTitle().isEmpty()) {
+            builder.setTitle(request.getTitle());
+        }
+
         return builder
                 .setUserId(userId)
                 .setQuestionId(questionId)
+                .setQuestionCategoryId(request.getQuestionCategoryId())
+                .setTitle(request.getTitle())
                 .build();
-
     }
 }

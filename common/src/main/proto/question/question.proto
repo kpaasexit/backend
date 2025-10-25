@@ -95,9 +95,11 @@ message GetMyQuestionRequest {
 message UpdateQuestionRequest {
   int64 user_id = 1;
   int64 question_id = 2;
-  string content = 3;
-  repeated int64 deleted_image_id = 4;
-  repeated UploadBytesRequest images = 5;
+  int64 question_category_id = 3;
+  string title = 4;
+  string content = 5;
+  repeated int64 deleted_image_id = 6;
+  repeated UploadBytesRequest images = 7;
 }
 
 // Response messages

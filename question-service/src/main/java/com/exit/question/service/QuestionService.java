@@ -289,7 +289,7 @@ public class QuestionService {
                     .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.ALREADY_EXISTS_RESPONSE));
 
             if (!request.getContent().isEmpty()) {
-                question.updateQuestion(request.getContent());
+                question.updateQuestionContent(request.getContent());
             }
 
             if (!request.getDeletedImageIdList().isEmpty()) {
@@ -315,6 +315,16 @@ public class QuestionService {
                             questionImageRepository.saveAndFlush(questionImage);
                         }
                 );
+            }
+
+            if(!request.getTitle().isEmpty()) {
+                question.updateQuestionTitle(request.getTitle());
+            }
+
+            if(request.getQuestionCategoryId() != 0) {
+                QuestionCategory questionCategory = questionCategoryRepository.findById(request.getQuestionCategoryId())
+                        .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.UNAVAILABLE_QUESTION_CATEGORY));
+                question.updateQuestionCategory(questionCategory);
             }
 
             return buildQuestionCreateResponse(request.getQuestionId(), request.getUserId());
