@@ -210,15 +210,22 @@ spec:
                         echo "Updating deployment with patch..."
 
                         sh """
-                            kubectl patch deployment user-deployment -n default \\
-                                --type='json' \\
-                                -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"${FULL_IMAGE_PATH}:${IMAGE_TAG}"}]'
+                             kubectl patch deployment quiz-deployment -n default \\
+                                 --type='json' \\
+                                 -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"${FULL_IMAGE_PATH}:${IMAGE_TAG}"}]'
+                         """
 
-                            echo "Waiting for rollout to complete..."
-                            kubectl rollout status deployment/user-deployment \\
-                                -n default \\
-                                --timeout=5m
-                        """
+                         sh """
+                             echo "Deleting old pods..."
+                             kubectl delete pod -l app=quiz -n default --force --grace-period=0 || true
+                         """
+
+                         echo "Waiting for rollout to complete..."
+                         sh """
+                             kubectl rollout status deployment/quiz-deployment \\
+                                 -n default \\
+                                 --timeout=10m
+                         """
 
                         echo "Deployment patched and rolled out successfully"
                     }
