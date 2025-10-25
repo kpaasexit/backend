@@ -105,14 +105,14 @@ public class SecurityConfig {
 
     private String[] getPublicApiEndpoints() {
         return new String[]{
-                "/api/magazine/category/*",
-                "/api/magazine/{id:\\d+}",
+                "/api/magazine/category/{id:\\d+}",
                 "/api/magazine/recommend",
+                "/api/magazine/{id:\\d+}",
                 "/api/questions",
-                "/api/questions/{id:\\d+}",
                 "/api/questions/popular-post",
-                "/api/responses/{id:\\d+}/responses",
+                "/api/questions/{id:\\d+}",
                 "/api/responses/ai",
+                "/api/responses/{id:\\d+}/responses",
                 "/api/comments/{id:\\d+}",
                 "/api/additional-question/{id:\\d+}",
                 "/api/search",

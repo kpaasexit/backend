@@ -32,20 +32,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            // Public API endpoints
+            // Public API endpoints (숫자 ID 패턴은 shouldNotFilter에서 별도 처리)
             "/api/auth/refresh",
             "/oauth2/**",
             "/login/**",
-            "/api/magazine/category/**",
-            "/api/magazine/*",  // 숫자 ID
             "/api/magazine/recommend",
             "/api/questions",
-            "/api/questions/*",  // 숫자 ID
             "/api/questions/popular-post",
-            "/api/responses/*/responses",  // 숫자 ID
             "/api/responses/ai",
-            "/api/comments/*",  // 숫자 ID
-            "/api/additional-question/*",  // 숫자 ID
             "/api/search",
             "/api/search/recommend",
             "/api/search/magazines",
@@ -113,6 +107,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
+
+        // 숫자 ID 패턴 체크 (SecurityConfig와 동일한 방식)
+        if (path.matches("/api/magazine/\\d+") ||
+            path.matches("/api/questions/\\d+") ||
+            path.matches("/api/responses/\\d+/responses") ||
+            path.matches("/api/comments/\\d+") ||
+            path.matches("/api/additional-question/\\d+") ||
+            path.matches("/api/magazine/category/\\d+")) {
+            return true;
+        }
+
+        // 나머지 패턴은 AntPathMatcher로 체크
         return Arrays.stream(PUBLIC_ENDPOINTS)
                 .anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
