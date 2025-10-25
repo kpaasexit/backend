@@ -21,6 +21,7 @@ import com.exit.common.grpc.QuestionListRequest;
 import com.exit.common.grpc.QuestionListResponse;
 import com.exit.common.grpc.QuestionReportRequest;
 import com.exit.common.grpc.QuestionReportResponse;
+import com.exit.common.grpc.SendNotificationRequest;
 import com.exit.common.grpc.SimilarQuestionResponse;
 import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
 import com.exit.common.grpc.UpdateQuestionRequest;
@@ -46,7 +47,9 @@ import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.service.client.AiGrpcClient;
+import com.exit.question.service.client.NotificationGrpcClient;
 import com.exit.question.service.client.UserGrpcClient;
+import com.exit.question.service.util.NotificationGrpcMapper;
 import com.exit.question.service.util.QuestionGrpcMapper;
 import java.time.Duration;
 import java.time.Instant;
@@ -89,6 +92,8 @@ public class QuestionService {
     private final AiGrpcClient aiGrpcClient;
     private final TaskScheduler taskScheduler;
     private final QuestionGrpcMapper questionGrpcMapper;
+    private final NotificationGrpcClient notificationGrpcClient;
+    private final NotificationGrpcMapper notificationGrpcMapper;
 
     public QuestionCreateResponse createQuestion(QuestionCreateRequest request) {
         try {
@@ -479,6 +484,9 @@ public class QuestionService {
 
         responseRepository.save(aiResponse);
         log.info("AI answer generated and saved for question ID: {}", question.getQuestionId());
+        SendNotificationRequest sendNotificationRequest = notificationGrpcMapper.getSendNotificationRequest(
+                truncateContent(question.getQuestionContent()), "NEW_ANSWER_ON_QUESTION", question);
+        notificationGrpcClient.sendNotification(sendNotificationRequest);
     }
 
     /**
@@ -516,5 +524,15 @@ public class QuestionService {
         }
 
         return null;
+    }
+
+    private String truncateContent(String content) {
+        String subBody;
+        if (content.length() <= 100) {
+            subBody = content.substring(0, content.length() - 1);
+        } else {
+            subBody = content.substring(0, 100);
+        }
+        return subBody;
     }
 }
