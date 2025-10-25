@@ -1,6 +1,7 @@
 package com.exit.gateway.handler;
 
 import com.exit.common.exception.rest.RestApiException;
+import com.exit.common.properties.JwtProperties;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.KakaoOAuth2UserInfo;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.NaverOAuth2UserInfo;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
@@ -38,6 +39,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private List<String> allowedOrigins;
 
+    private JwtProperties jwtProperties;
+
     @PostConstruct
     public void init() {
         this.allowedOrigins = Arrays.stream(allowedOriginsRaw.split("\\s*,\\s*")).toList();
@@ -72,25 +75,16 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     .map(Cookie::getValue)
                     .orElse("/");
 
-            log.info("=== OAuth2 로그인 디버깅 ===");
-            log.info("Origin Header: {}", request.getHeader("Origin"));
-            log.info("Referer Header: {}", request.getHeader("Referer"));
             String clientUrl = determineClientUrl(request);
-            log.info("Determined Client URL: {}", clientUrl);
-            log.info("===========================");
+            addCookie(response, "accessToken", oauth2User.getAccessToken(), jwtProperties.getAccessTokenExpiration().intValue());
+            addCookie(response, "refreshToken", oauth2User.getRefreshToken(), jwtProperties.getRefreshTokenExpiration().intValue());
 
             String finalRedirectUrl = String.format(
-                    "%s/oauth/callback?token=%s&refresh=%s&returnTo=%s",
-                    clientUrl,
-                    URLEncoder.encode(oauth2User.getAccessToken(), StandardCharsets.UTF_8),
-                    URLEncoder.encode(oauth2User.getRefreshToken(), StandardCharsets.UTF_8),
-                    URLEncoder.encode(returnTo, StandardCharsets.UTF_8)
+                    "%s/oauth/callback?returnTo=%s",
+                    clientUrl, URLEncoder.encode(returnTo, StandardCharsets.UTF_8)
             );
 
             authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
-
-            log.info("OAuth2 로그인 완료 - Client URL: {}", clientUrl);
-            log.info("OAuth2 로그인 완료 - Return To: {}", returnTo);
             log.info("OAuth2 로그인 완료 - 최종 리다이렉트: {}", finalRedirectUrl);
 
             response.sendRedirect(finalRedirectUrl);
@@ -157,5 +151,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     .findFirst();
         }
         return Optional.empty();
+    }
+
+    private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(maxAge);
+        response.addCookie(cookie);
     }
 }

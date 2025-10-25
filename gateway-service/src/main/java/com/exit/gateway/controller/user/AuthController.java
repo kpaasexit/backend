@@ -15,6 +15,7 @@ import com.exit.gateway.service.user.UserGrpcClient;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,11 +32,11 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public SuccessResponse<TokenResponseDto> refresh(
-            @Valid @RequestBody RefreshTokenRequestDto request) {
+            @CookieValue("refreshToken") String refreshToken) {
         log.info("Token refresh request received");
-        String deviceId = jwtTokenProvider.getDeviceIdFromRefreshToken(request.getRefreshToken());
+        String deviceId = jwtTokenProvider.getDeviceIdFromRefreshToken(refreshToken);
         log.debug("Refresh token received : {}", deviceId);
-        RefreshTokenResponse grpcResponse = authGrpcClient.refreshToken(request.getRefreshToken(), deviceId);
+        RefreshTokenResponse grpcResponse = authGrpcClient.refreshToken(refreshToken, deviceId);
         TokenResponseDto response = new TokenResponseDto(
                 grpcResponse.getAccessToken(),
                 grpcResponse.getRefreshToken()
