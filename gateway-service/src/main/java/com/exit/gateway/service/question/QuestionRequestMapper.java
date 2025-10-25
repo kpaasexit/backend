@@ -73,10 +73,10 @@ public class QuestionRequestMapper {
         UpdateResponseRequest.Builder builder = UpdateResponseRequest.newBuilder()
                 .setResponseId(responseId)
                 .setUserId(userId)
-                .setContent(dto.content());
+                .setContent(dto.getContent());
 
-        if (dto.deleteIds() != null && !dto.deleteIds().isEmpty()) {
-            builder.addAllDeletedImageId(dto.deleteIds());
+        if (dto.getDeleteIds() != null && !dto.getDeleteIds().isEmpty()) {
+            builder.addAllDeletedImageId(dto.getDeleteIds());
         }
 
         if (images != null && !images.isEmpty()) {
