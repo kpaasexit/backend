@@ -6,6 +6,9 @@ COPY gateway-service/gradle gradle
 COPY settings.gradle ./
 
 RUN chmod +x gradlew
+
+RUN sed -i 's/timeout = 10000/timeout = 60000/g' gradle/wrapper/gradle-wrapper.properties || true
+
 COPY common common
 COPY gateway-service gateway-service
 
