@@ -30,6 +30,7 @@ import java.util.Optional;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
+    private final JwtProperties jwtProperties;
 
     @Value("${app.oauth2.allowed-origins}")
     private String allowedOriginsRaw;
@@ -39,7 +40,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private List<String> allowedOrigins;
 
-    private JwtProperties jwtProperties;
 
     @PostConstruct
     public void init() {
