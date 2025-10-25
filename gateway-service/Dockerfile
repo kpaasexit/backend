@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-jammy AS base
+FROM gradle:8.14.3-jdk17 AS base
 WORKDIR /workspace
 COPY gradlew settings.gradle ./
 COPY gradle gradle

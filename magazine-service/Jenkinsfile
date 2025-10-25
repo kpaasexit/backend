@@ -63,7 +63,7 @@ spec:
         NEXUS_REGISTRY = 'nexus.cicd.svc.cluster.local:5000'
         NEXUS_REPO = 'docker-hosted'
 
-        IMAGE_NAME = 'exit-notification-service'
+        IMAGE_NAME = 'exit-magazine-service'
         IMAGE_TAG = "1.1.${BUILD_NUMBER}"
         FULL_IMAGE_PATH = "${NEXUS_REGISTRY}/${NEXUS_REPO}/${IMAGE_NAME}"
 
@@ -109,42 +109,42 @@ spec:
             steps {
                 script {
                     def changedFiles = GIT_DIFF.split('\n')
-                    env.BUILD_NOTIFICATION_SERVICE = 'false'
+                    env.BUILD_MAGAZINE_SERVICE = 'false'
 
                     if (GIT_DIFF == 'ALL') {
-                        env.BUILD_NOTIFICATION_SERVICE = 'true'
-                        echo "First build - will build notification-service"
+                        env.BUILD_MAGAZINE_SERVICE = 'true'
+                        echo "First build - will build magazine-service"
                     } else {
                         for (String file : changedFiles) {
-                            if (file.startsWith('notification-service/') ||
+                            if (file.startsWith('magazine-service/') ||
                                 file.startsWith('common/') ||
                                 file == 'build.gradle' ||
                                 file == 'settings.gradle' ||
                                 file.startsWith('gradle/') ||
                                 file == 'Jenkinsfile' ||
-                                file == 'notification-service/Jenkinsfile') {
-                                env.BUILD_NOTIFICATION_SERVICE = 'true'
+                                file == 'magazine-service/Jenkinsfile') {
+                                env.BUILD_MAGAZINE_SERVICE = 'true'
                                 echo "Changes detected: ${file}"
                                 break
                             }
                         }
                     }
 
-                    echo env.BUILD_NOTIFICATION_SERVICE == 'true' ?
-                        "Will build notification-service" :
-                        "Skipping notification-service"
+                    echo env.BUILD_MAGAZINE_SERVICE == 'true' ?
+                        "Will build magazine-service" :
+                        "Skipping magazine-service"
                 }
             }
         }
 
-        stage('Build Notification Service') {
+        stage('Build Magazine Service') {
             when {
-                expression { env.BUILD_NOTIFICATION_SERVICE == 'true' }
+                expression { env.BUILD_MAGAZINE_SERVICE == 'true' }
             }
             steps {
                 container('docker') {
                     script {
-                        echo "🔨 Building notification-service..."
+                        echo "🔨 Building magazine-service..."
 
                         sh '''
                             echo "Waiting for Docker daemon..."
@@ -187,7 +187,7 @@ spec:
                             docker buildx build \\
                                 --builder multi \\
                                 --platform linux/amd64 \\
-                                -f notification-service/Dockerfile \\
+                                -f magazine-service/Dockerfile \\
                                 --target prod \\
                                 -t ${FULL_IMAGE_PATH}:${IMAGE_TAG} \\
                                 -t ${FULL_IMAGE_PATH}:latest \\
@@ -203,7 +203,7 @@ spec:
 
         stage('Update Kubernetes') {
             when {
-                expression { env.BUILD_NOTIFICATION_SERVICE == 'true' }
+                expression { env.BUILD_MAGAZINE_SERVICE == 'true' }
             }
             steps {
                 container('kubectl') {
@@ -211,12 +211,12 @@ spec:
                         echo "Updating deployment with patch..."
 
                         sh """
-                            kubectl patch deployment notification-deployment -n default \\
+                            kubectl patch deployment magazine-deployment -n default \\
                                 --type='json' \\
                                 -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"${FULL_IMAGE_PATH}:${IMAGE_TAG}"}]'
 
                             echo "Waiting for rollout to complete..."
-                            kubectl rollout status deployment/notification-deployment \\
+                            kubectl rollout status deployment/magazine-deployment \\
                                 -n default \\
                                 --timeout=5m
                         """
@@ -229,7 +229,7 @@ spec:
 
         stage('Verify Deployment') {
             when {
-                expression { env.BUILD_NOTIFICATION_SERVICE == 'true' }
+                expression { env.BUILD_MAGAZINE_SERVICE == 'true' }
             }
             steps {
                 container('kubectl') {
@@ -238,20 +238,20 @@ spec:
 
                         sh '''
                             echo "=== Pod Status ==="
-                            kubectl get pods -l app=notification -n default -o wide
+                            kubectl get pods -l app=magazine -n default -o wide
 
                             echo ""
                             echo "=== Deployment Status ==="
-                            kubectl get deployment notification-deployment -n default
+                            kubectl get deployment magazine-deployment -n default
 
                             echo ""
                             echo "=== Current Image ==="
-                            kubectl get deployment notification-deployment -n default -o jsonpath='{.spec.template.spec.containers[0].image}'
+                            kubectl get deployment magazine-deployment -n default -o jsonpath='{.spec.template.spec.containers[0].image}'
                             echo ""
 
                             echo ""
                             echo "=== Waiting for pods to be ready ==="
-                            kubectl wait --for=condition=ready pod -l app=notification -n default --timeout=10m
+                            kubectl wait --for=condition=ready pod -l app=magazine -n default --timeout=10m
                         '''
 
                         echo "Deployment verified successfully"
@@ -272,10 +272,10 @@ spec:
         success {
             echo 'Pipeline completed successfully!'
             script {
-                if (env.BUILD_NOTIFICATION_SERVICE == 'true') {
-                    echo "Notification Service deployed: ${FULL_IMAGE_PATH}:${IMAGE_TAG}"
+                if (env.BUILD_MAGAZINE_SERVICE == 'true') {
+                    echo "Magazine Service deployed: ${FULL_IMAGE_PATH}:${IMAGE_TAG}"
                 } else {
-                    echo "Notification Service: No changes - skipped"
+                    echo "Magazine Service: No changes - skipped"
                 }
             }
         }
