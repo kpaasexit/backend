@@ -59,12 +59,12 @@ spec:
     environment {
         NEXUS_CREDENTIALS = credentials('nexus-docker-credentials')
 
-        NEXUS_REGISTRY = 'nexus.cicd.svc.cluster.local:5000'
-        NEXUS_REPO = 'docker-hosted'
+        NEXUS_REGISTRY = 'nexus-docker.210-178-1-144.nip.io'
+        NEXUS_REPO = ''
 
         IMAGE_NAME = 'exit-question-service'
         IMAGE_TAG = "1.1.${BUILD_NUMBER}"
-        FULL_IMAGE_PATH = "${NEXUS_REGISTRY}/${NEXUS_REPO}/${IMAGE_NAME}"
+        FULL_IMAGE_PATH = "${NEXUS_REGISTRY}/${IMAGE_NAME}"
 
         DOCKER_HOST = "tcp://localhost:2375"
         GIT_DIFF = ''
