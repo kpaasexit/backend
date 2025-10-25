@@ -164,14 +164,16 @@ spec:
                             docker buildx inspect --bootstrap
                         '''
 
+                        def http_nexus_registry = "http://${env.NEXUS_REGISTRY}"
+
                         sh """
                             docker buildx build \\
                                 --builder multi \\
                                 --platform linux/amd64 \\
                                 -f user-service/Dockerfile \\
                                 --target prod \\
-                                -t ${FULL_IMAGE_PATH}:${IMAGE_TAG} \
-                                -t ${FULL_IMAGE_PATH}:latest \
+                                -t ${http_nexus_registry}/${NEXUS_REPO}/${IMAGE_NAME}:${IMAGE_TAG} \
+                                -t ${http_nexus_registry}/${NEXUS_REPO}/${IMAGE_NAME}:latest \
                                 --push \\
                                 .
                         """
