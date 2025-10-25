@@ -6,9 +6,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -670,6 +672,28 @@ class QuestionControllerRestDocsTest {
                                         .optional(),
                                 fieldWithPath("result.createdAt").description("작성일시"),
                                 fieldWithPath("result.commentNum").description("댓글 수")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("질문 삭제 API")
+    void deleteAnswer() throws Exception {
+        // given
+        willDoNothing().given(questionGrpcClient).deleteQuestion(any());
+
+        // when & then
+        mockMvc.perform(delete("/api/questions/{questionId}", 1L))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.result").value("성공적으로 삭제하였습니다."))
+                .andDo(document("question/question-delete",
+                        pathParameters(
+                                parameterWithName("questionId").description("질문 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터")
                         )
                 ));
     }

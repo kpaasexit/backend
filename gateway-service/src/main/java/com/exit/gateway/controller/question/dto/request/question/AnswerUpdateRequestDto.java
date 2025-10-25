@@ -6,6 +6,6 @@ import java.util.List;
 public record AnswerUpdateRequestDto(
         @NotBlank(message = "답변 내용은 필수입니다.")
         String content,
-        List<Long> deletedImageId
+        List<Long> deleteIds
 ) {
 }

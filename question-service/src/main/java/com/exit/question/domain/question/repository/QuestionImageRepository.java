@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface QuestionImageRepository extends JpaRepository<QuestionImage, Long> {
     Optional<List<QuestionImage>> findAllByQuestionId(Long questionId);
+
+    void deleteByQuestionId(Long questionId);
 }

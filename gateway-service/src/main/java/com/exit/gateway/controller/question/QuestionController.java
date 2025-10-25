@@ -1,6 +1,7 @@
 package com.exit.gateway.controller.question;
 
 import com.exit.common.grpc.CategoryRecommendRequest;
+import com.exit.common.grpc.DeleteQuestionRequest;
 import com.exit.common.grpc.QuestionCreateRequest;
 import com.exit.common.grpc.QuestionCreateResponse;
 import com.exit.common.grpc.QuestionDetailRequest;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -169,5 +171,16 @@ public class QuestionController {
         UpdateQuestionRequest grpcRequest = questionRequestMapper.toGrpcUpdateQuestionRequest(questionId, userId, request, images);
         QuestionCreateResponseDto response = questionGrpcClient.updateQuestion(grpcRequest);
         return SuccessResponse.of(QuestionSuccessCode.QUESTION_REPORT_SUCCESS, response);
+    }
+
+    @DeleteMapping("/{questionId}")
+    public SuccessResponse<String> updateQuestion(
+            @PathVariable Long questionId,
+            @LoginUser Long userId
+    ) {
+        log.info("Question delete request received for questionId: {}", questionId);
+        DeleteQuestionRequest grpcRequest = questionRequestMapper.toGrpcDeleteQuestionRequest(questionId, userId);
+        questionGrpcClient.deleteQuestion(grpcRequest);
+        return SuccessResponse.of(QuestionSuccessCode.QUESTION_REPORT_SUCCESS, "성공적으로 삭제하였습니다.");
     }
 }

@@ -1,6 +1,7 @@
 package com.exit.question.service.grpc;
 
 import com.exit.common.grpc.CategoryRecommendationResponse;
+import com.exit.common.grpc.DeleteQuestionRequest;
 import com.exit.common.grpc.GetMyQuestionRequest;
 import com.exit.common.grpc.GetMyQuestionResponse;
 import com.exit.common.grpc.GetPopularPostResponse;
@@ -115,6 +116,16 @@ public class QuestionGrpcService extends QuestionServiceGrpc.QuestionServiceImpl
         QuestionCreateResponse response = questionService.updateQuestion(request);
 
         responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void deleteQuestion(DeleteQuestionRequest request,
+                               StreamObserver<com.google.protobuf.Empty> responseObserver) {
+        log.info("Update question request received");
+        questionService.deleteQuestion(request);
+
+        responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }
 }

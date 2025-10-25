@@ -75,8 +75,8 @@ public class QuestionRequestMapper {
                 .setUserId(userId)
                 .setContent(dto.content());
 
-        if (dto.deletedImageId() != null && !dto.deletedImageId().isEmpty()) {
-            builder.addAllDeletedImageId(dto.deletedImageId());
+        if (dto.deleteIds() != null && !dto.deleteIds().isEmpty()) {
+            builder.addAllDeletedImageId(dto.deleteIds());
         }
 
         if (images != null && !images.isEmpty()) {
@@ -160,6 +160,13 @@ public class QuestionRequestMapper {
                 .setQuestionId(questionId)
                 .setQuestionCategoryId(request.getQuestionCategoryId())
                 .setTitle(request.getTitle())
+                .build();
+    }
+
+    public DeleteQuestionRequest toGrpcDeleteQuestionRequest(Long questionId, Long userId) {
+        return DeleteQuestionRequest.newBuilder()
+                .setQuestionId(questionId)
+                .setUserId(userId)
                 .build();
     }
 }

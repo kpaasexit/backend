@@ -14,4 +14,6 @@ public interface QuestionCommentRepository extends JpaRepository<QuestionComment
     boolean existsByIdAndWriterId(Long id, Long writerId);
 
     Page<QuestionComment> findAllByQuestion_QuestionId(Long targetId, PageRequest pageRequest);
+
+    void deleteAllByQuestion_QuestionId(long questionId);
 }

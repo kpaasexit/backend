@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toSet;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.Authority;
 import com.exit.common.grpc.CategoryRecommendationResponse;
+import com.exit.common.grpc.DeleteQuestionRequest;
 import com.exit.common.grpc.GetMyQuestionRequest;
 import com.exit.common.grpc.GetMyQuestionResponse;
 import com.exit.common.grpc.GetPopularPostResponse;
@@ -37,6 +38,7 @@ import com.exit.question.domain.question.QuestionCategory;
 import com.exit.question.domain.question.QuestionImage;
 import com.exit.question.domain.question.QuestionReport;
 import com.exit.question.domain.question.repository.QuestionCategoryRepository;
+import com.exit.question.domain.question.repository.QuestionCommentRepository;
 import com.exit.question.domain.question.repository.QuestionImageRepository;
 import com.exit.question.domain.question.repository.QuestionReportRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
@@ -66,6 +68,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,6 +82,7 @@ public class QuestionService {
     private final QuestionCategoryRepository questionCategoryRepository;
     private final QuestionImageRepository questionImageRepository;
     private final QuestionReportRepository questionReportRepository;
+    private final QuestionCommentRepository questionCommentRepository;
     private final ResponseRepository responseRepository;
     private final FileUploadUtil fileUploadUtil;
     private final UserGrpcClient userGrpcClient;
@@ -337,6 +341,20 @@ public class QuestionService {
         }
     }
 
+    public void deleteQuestion(DeleteQuestionRequest request) {
+        log.info("Deleting question with id {}", request.getQuestionId());
+        Optional<List<QuestionImage>> allByQuestionId = questionImageRepository.findAllByQuestionId(request.getQuestionId());
+        if(allByQuestionId.isPresent()) {
+            List<String> imageUrls = allByQuestionId.get().stream().map(QuestionImage::getQuestionImageUrl).toList();
+            fileUploadUtil.deleteFiles(imageUrls);
+        }
+        questionImageRepository.deleteByQuestionId(request.getQuestionId());
+
+        questionCommentRepository.deleteAllByQuestion_QuestionId(request.getQuestionId());
+        questionRepository.deleteById(request.getQuestionId());
+        log.info("Deleted question with id {}", request.getQuestionId());
+    }
+
     private List<PopularPostItem> getPopularPostItemList(Page<PopularPostDto> myQuestionDtos,
                                                          Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
         return myQuestionDtos.getContent().stream()
@@ -439,13 +457,14 @@ public class QuestionService {
     /**
      * 질문 생성 시 AI 답변을 자동으로 생성하여 저장 AI 생성 실패 시 최대 3회 재시도 (지수 백오프) 모든 재시도 실패 시에도 질문 생성은 정상 처리됨
      */
+    @Async("aiAnswerTaskExecutor")
     @Retryable(
             retryFor = {Exception.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2),
             recover = "recoverGenerateAiAnswer"
     )
-    private void generateAiAnswerAsync(Question question, List<UploadBytesRequest> uploadBytesRequests) {
+    protected void generateAiAnswerAsync(Question question, List<UploadBytesRequest> uploadBytesRequests) {
         // AI 답변 생성 요청
         String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId(), uploadBytesRequests);
         log.info("Ai answer has been generated: {}", aiAnswer);
