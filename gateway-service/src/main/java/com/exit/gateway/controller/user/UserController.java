@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/user")
@@ -40,9 +41,10 @@ public class UserController {
     @PutMapping(value = "/additional-info", consumes = "multipart/form-data")
     public SuccessResponse<UpdateAdditionalUserInfoResponseDto> updateAdditionalUserInfo(
             @LoginUser Long userId,
-            @Valid @ModelAttribute UpdateAdditionalUserInfoRequestDto request) {
+            @Valid @ModelAttribute UpdateAdditionalUserInfoRequestDto request,
+            @RequestPart(required = false) MultipartFile image) {
         log.info("Update additional user info request received");
-        UpdateAdditionalUserInfoResponse grpcResponse = userGrpcClient.updateAdditionalUserInfo(userId, request);
+        UpdateAdditionalUserInfoResponse grpcResponse = userGrpcClient.updateAdditionalUserInfo(userId, request, image);
 
         return SuccessResponse.of(UserSuccessCode.UPDATE_ADDITIONAL_INFO_SUCCESS,
                 UpdateAdditionalUserInfoResponseDto.from(grpcResponse));

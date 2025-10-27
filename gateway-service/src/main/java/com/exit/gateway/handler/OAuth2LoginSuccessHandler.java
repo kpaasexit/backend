@@ -84,10 +84,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
             String clientUrl = determineClientUrl(request);
 
-            // 로컬 HTTP 환경 감지 (http://localhost:*)
-            boolean isLocalHttpEnvironment = clientUrl.startsWith("http://localhost");
-            addCookie(response, "refreshToken", oauth2User.getRefreshToken(),
-                     jwtProperties.getRefreshTokenExpiration().intValue(), isLocalHttpEnvironment);
+            addCookie(response, "refreshToken", oauth2User.getRefreshToken(), jwtProperties.getRefreshTokenExpiration().intValue());
 
             String finalRedirectUrl = String.format(
                     "%s/oauth/callback?returnTo=%s&accessToken=%s", clientUrl,
@@ -164,22 +161,17 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         return Optional.empty();
     }
 
-    private void addCookie(HttpServletResponse response, String name, String value, int maxAge, boolean forceInsecure) {
-        // 로컬 HTTP 환경에서는 secure=false로 설정
-        boolean useSecure = !forceInsecure && cookieSecure;
+    private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
 
         ResponseCookie cookie = ResponseCookie
                 .from(name, value)
                 .path("/")
                 .httpOnly(true)
-                .secure(useSecure)
-                .sameSite(useSecure ? "None" : "Lax")
+                .secure(true)
+                .sameSite("None")
                 .maxAge(Duration.ofSeconds(maxAge))
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
-        log.info("쿠키 설정 - name: {}, secure: {}, sameSite: {}, forceInsecure: {}",
-                name, useSecure, useSecure ? "None" : "Lax", forceInsecure);
     }
 }

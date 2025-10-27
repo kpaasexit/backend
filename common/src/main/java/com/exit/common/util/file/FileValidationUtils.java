@@ -5,7 +5,9 @@ import com.google.protobuf.ByteString;
 
 import java.util.Arrays;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class FileValidationUtils {
 
     private static final List<String> ALLOWED_IMAGE_EXTENSIONS = Arrays.asList(
@@ -22,20 +24,26 @@ public class FileValidationUtils {
         ByteString data = request.getData();
         String fileName = request.getMeta().getFilename();
         String contentType = request.getMeta().getContentType();
+
+        log.info("data : {}", data);
         if (data.isEmpty()) {
+            log.info("data is empty");
             return false;
         }
 
+        log.info("data.size() : {}", data.size());
         // 파일 크기 검증
         if (data.size() > MAX_FILE_SIZE) {
             return false;
         }
 
+        log.info("contentType : {}", contentType);
         // MIME 타입 검증
         if (contentType.isEmpty() || !ALLOWED_MIME_TYPES.contains(contentType.toLowerCase())) {
             return false;
         }
 
+        log.info("fileName : {}", fileName);
         // 파일 확장자 검증
         if (fileName.isEmpty()) {
             return false;
@@ -61,6 +69,7 @@ public class FileValidationUtils {
 
     public static boolean isImageFile(String filename) {
         String extension = getFileExtension(filename);
+        log.info("extension : {}", extension);
         return ALLOWED_IMAGE_EXTENSIONS.contains(extension.toLowerCase());
     }
 }

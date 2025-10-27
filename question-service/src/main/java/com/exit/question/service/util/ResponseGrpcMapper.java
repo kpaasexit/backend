@@ -61,7 +61,8 @@ public class ResponseGrpcMapper {
 
     public ResponseDetail getResponseDetail(Response response, List<ImageObject> imageObjects, Integer likeCount,
                                             UpdateAdditionalUserInfoResponse writerNameProfile, Authority responseAuthority,
-                                            CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum) {
+                                            CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum,
+                                            Long followUpRoomId) {
         ResponseDetail.Builder builder = ResponseDetail.newBuilder();
 
         if (imageObjects != null && !imageObjects.isEmpty()) {
@@ -84,7 +85,8 @@ public class ResponseGrpcMapper {
                 .setAuthority(responseAuthority)
                 .setIsAi(Objects.equals(response.getResponseWriterId(), 1L))
                 .setCommentNum(commentAndAdditionalQuestionNum.commentNum())
-                .setCommentNum(commentAndAdditionalQuestionNum.additionalQuestionNum())
+                .setAdditionalQuestionNum(commentAndAdditionalQuestionNum.additionalQuestionNum())
+                .setFollowUpRoomId(followUpRoomId != null ? followUpRoomId : 0L)
                 .build();
     }
 }
