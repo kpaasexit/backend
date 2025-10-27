@@ -10,7 +10,7 @@ metadata:
 spec:
   serviceAccountName: jenkins
   nodeSelector:
-    kubernetes.io/hostname: kpaas-contest-9.worker01
+    worker: "true"
   containers:
   - name: kubectl
     image: alpine:latest
