@@ -2,8 +2,5 @@
 ----
 $ curl 'http://localhost:8080/api/auth/refresh' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
-    -H 'X-Device-Id: test-device-id' \
-    -d '{
-  "refreshToken" : "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJ0b2tlbklkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjExMTg2MTEsImV4cCI6MjM2NTkxODYxMX0.h-grXY-sFpYbkYM4Sdq0bBtQbJ2T7BrogLRyI93N6_o"
-}'
+    --cookie 'refreshToken=eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE0MjA1ODgsImV4cCI6MTc2NTAyMDU4OH0.bPiuw_rVfl4Je0qe2jCJIWH1_XyBePaVGXYmDb1HFFs'
 ----

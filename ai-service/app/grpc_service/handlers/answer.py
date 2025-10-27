@@ -165,6 +165,19 @@ class AnswerHandler(BaseHandler):
 
             self.logger.info(f"Processing question_id: {request.question_id}, question: {question_text[:50]}...")
 
+            # Extract images if provided (최대 3개)
+            images = None
+            if request.images and len(request.images) > 0:
+                # Validate maximum image count
+                if len(request.images) > 3:
+                    self.logger.error(f"Too many images: {len(request.images)} (maximum 3)")
+                    self.handle_error(context, "GenerateAIAnswer", ValueError(f"Too many images: {len(request.images)}. Maximum 3 images allowed."))
+                    return question_service_pb2.AnswerResponse()
+
+                # Extract image data and mime_type
+                images = [{"data": img.data, "mime_type": img.mime_type} for img in request.images]
+                self.logger.info(f"✓ Received {len(images)} image(s) for processing")
+
             # RAG 컨텍스트 생성 (이전 대화 이력 포함)
             rag_context = self._get_rag_context(
                 question=full_question,
@@ -181,7 +194,8 @@ class AnswerHandler(BaseHandler):
 
             # Generate answer (always uses cache)
             result = await self.gpt_service.agenerate_answer(
-                question=enhanced_question
+                question=enhanced_question,
+                images=images
             )
 
             processing_time_ms = int((time.time() - start_time) * 1000)

@@ -56,4 +56,11 @@ public class FollowUpRoom extends BaseEntity {
         this.response = response;
         this.followUpMessages = followUpMessages;
     }
+
+    public FollowUpMessage getLastMessage() {
+        if(followUpMessages.isEmpty()) return null;
+
+        int size = followUpMessages.size();
+        return followUpMessages.get(size - 1);
+    }
 }

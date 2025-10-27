@@ -26,7 +26,7 @@ public record GetPopularPostResponseDto(
                             .createdAt(TimeStampUtil.timestampToLocalDateTime(post.getCreatedAt()))
                             .title(post.getTitle())
                             .content(post.getContent())
-                            .answerAdopt(post.getAnswerAdopt())
+                            .isAnswered(post.getIsAnswered())
                             .answerCount(post.getAnswerCount())
                             .build();
                 }).toList();
@@ -46,7 +46,7 @@ public record GetPopularPostResponseDto(
             LocalDateTime createdAt,
             String title,
             String content,
-            Boolean answerAdopt,
+            Boolean isAnswered,
             Integer answerCount
     ) {
     }

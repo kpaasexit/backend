@@ -73,6 +73,7 @@ app:
   oauth2:
     allowed-origins: https://localhost:*,https://house-it.*,http://localhost:*
     default-client-url: https://house-it.210-178-1-144.nip.io
+    cookie-secure: true  # true: 크로스 도메인 지원 (secure + sameSite=None)
 
 # gRPC Client 설정 (Eureka 기반 로드밸런싱)
 grpc:

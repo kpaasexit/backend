@@ -4,13 +4,11 @@ import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.auth.jwt.dto.UserDetailRequest;
 import com.exit.common.grpc.RefreshTokenResponse;
 import com.exit.gateway.config.RestDocsConfiguration;
-import com.exit.gateway.controller.user.dto.request.auth.DeviceFcmTokenRequestDto;
-import com.exit.gateway.controller.user.dto.request.auth.RefreshTokenRequestDto;
 import com.exit.gateway.global.resolver.DeviceIdArgumentResolver;
 import com.exit.gateway.global.resolver.UserIdArgumentResolver;
 import com.exit.gateway.service.user.AuthGrpcClient;
-import com.exit.gateway.service.user.UserGrpcClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.operation.RequestCookie;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -91,41 +90,28 @@ class AuthControllerRestDocsTest {
     void refreshToken() throws Exception {
         // given
         UserDetailRequest userDetail = new UserDetailRequest(1L, "test-device-id");
-        String testRefreshToken = jwtTokenProvider.generateRefreshToken(userDetail, "test-device-id");
-
-        RefreshTokenRequestDto request = new RefreshTokenRequestDto();
-        request.setRefreshToken(testRefreshToken);
+        Cookie cookie = new Cookie("refreshToken", validAccessToken);
 
         RefreshTokenResponse grpcResponse = RefreshTokenResponse.newBuilder()
                 .setAccessToken("new-access-token")
-                .setRefreshToken("new-refresh-token")
                 .build();
 
         given(authGrpcClient.refreshToken(anyString(), anyString())).willReturn(grpcResponse);
 
         // when & then
-mockMvc.perform(post("/api/auth/refresh")
+        mockMvc.perform(post("/api/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Device-Id", "test-device-id")
-                        .content(objectMapper.writeValueAsString(request)))
+                        .cookie(cookie))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result.accessToken").value("new-access-token"))
-                .andExpect(jsonPath("$.result.refreshToken").value("new-refresh-token"))
                 .andDo(document("auth/refresh",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
-                        requestHeaders(
-                                headerWithName("X-Device-Id").description("디바이스 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("refreshToken").description("리프레시 토큰")
-                        ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.accessToken").description("새로운 액세스 토큰"),
-                                fieldWithPath("result.refreshToken").description("새로운 리프레시 토큰")
+                                fieldWithPath("result.accessToken").description("새로운 액세스 토큰")
                         )
                 ));
     }

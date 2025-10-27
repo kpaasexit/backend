@@ -16,6 +16,7 @@ public enum QuestionErrorCode implements ErrorCode {
     CATEGORY_RECOMMEND_FAIL("QUESTION_ERR_005", HttpStatus.BAD_REQUEST, "카테고리 추천에 실패하였습니다."),
     SIMILAR_QUESTION_FAIL("QUESTION_ERR_006", HttpStatus.BAD_REQUEST, "유사 질문 조회에 실패하였습니다."),
     GET_MY_QUESTION_FAIL("QUESTION_ERR_042", HttpStatus.BAD_REQUEST, "내 질문 목록 조회에 실패하였습니다."),
+    MODIFY_QUESTION_FAIL("QUESTION_ERR_043", HttpStatus.BAD_REQUEST, "질문 수정에 실패하였습니다."),
 
     // 기타,
     GET_POPULAR_POST_FAIL("QUESTION_ERR_040", HttpStatus.BAD_REQUEST, "인기 게시글 조회에 실패하였습니다."),

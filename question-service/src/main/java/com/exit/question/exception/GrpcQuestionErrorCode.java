@@ -2,6 +2,7 @@ package com.exit.question.exception;
 
 import com.exit.common.response.error.grpc.GrpcErrorCode;
 import io.grpc.Status;
+import io.grpc.Status.Code;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,11 @@ public enum GrpcQuestionErrorCode implements GrpcErrorCode {
     GET_MY_QUESTION_FAILED(Status.Code.INTERNAL, "QUESTION_ERR_015", "내 질문 조회에 실패했습니다."),
     CATEGORY_RECOMMEND_FAILED(Status.Code.INTERNAL, "QUESTION_ERR_016", "카테고리 추천에 실패했습니다."),
     SIMILAR_QUESTION_FAILED(Status.Code.INTERNAL, "QUESTION_ERR_017", "유사 질문 조회에 실패했습니다."),
+    ALREADY_EXISTS_RESPONSE(Status.Code.ALREADY_EXISTS, "QUESTION_ERR_018", "이미 답변이 달려있어, 수정이 불가능합니다."),
+    MODIFY_QUESTION_FAILED(Status.Code.ALREADY_EXISTS, "QUESTION_ERR_019", "질문 수정에 실패하였습니다."),
+
+    // 질문 이미지 작업 실패
+    NOT_EXIST_QUESTION_IMAGE(Status.Code.NOT_FOUND, "QUESTION_ERR_019", "질문 이미지가 없습니다."),
     ;
 
     private final Status.Code grpcStatusCode;

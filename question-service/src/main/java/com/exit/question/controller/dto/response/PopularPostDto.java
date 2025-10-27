@@ -10,7 +10,7 @@ public record PopularPostDto(
         Long questionWriterId,
         String questionTitle,
         String questionContent,
-        Boolean questionAnswerAdopt,
+        Boolean isAnswered,
         Integer answerCount,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime createdAt

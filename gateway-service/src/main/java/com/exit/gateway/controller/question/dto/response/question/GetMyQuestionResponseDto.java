@@ -21,12 +21,13 @@ public record GetMyQuestionResponseDto(
                     if (!post.getProfileUrl().isEmpty()) builder.profileUrl(post.getProfileUrl());
 
                     return builder
+                            .questionId(post.getQuestionId())
                             .categoryId(post.getCategoryId())
                             .nickname(post.getNickname())
                             .createdAt(TimeStampUtil.timestampToLocalDateTime(post.getCreatedAt()))
                             .title(post.getTitle())
                             .content(post.getContent())
-                            .answerAdopt(post.getAnswerAdopt())
+                            .isAnswered(post.getIsAnswered())
                             .answerCount(post.getAnswerCount())
                             .build();
                 }).toList();

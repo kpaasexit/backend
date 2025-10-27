@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toSet;
 import com.exit.common.exception.grpc.GrpcException;
 import com.exit.common.grpc.Authority;
 import com.exit.common.grpc.CategoryRecommendationResponse;
+import com.exit.common.grpc.DeleteQuestionRequest;
 import com.exit.common.grpc.GetMyQuestionRequest;
 import com.exit.common.grpc.GetMyQuestionResponse;
 import com.exit.common.grpc.GetPopularPostResponse;
@@ -20,13 +21,17 @@ import com.exit.common.grpc.QuestionListRequest;
 import com.exit.common.grpc.QuestionListResponse;
 import com.exit.common.grpc.QuestionReportRequest;
 import com.exit.common.grpc.QuestionReportResponse;
+import com.exit.common.grpc.SendNotificationRequest;
 import com.exit.common.grpc.SimilarQuestionResponse;
 import com.exit.common.grpc.UpdateAdditionalUserInfoResponse;
+import com.exit.common.grpc.UpdateQuestionRequest;
+import com.exit.common.grpc.UploadBytesRequest;
 import com.exit.common.grpc.ai.SaveQuestionRequest;
 import com.exit.common.grpc.ai.SimilarQuestion;
 import com.exit.common.grpc.ai.SimilarResponse;
 import com.exit.common.util.file.FileUploadUtil;
 import com.exit.common.util.time.TimeStampUtil;
+import com.exit.question.controller.dto.response.CommentAndAdditionalQuestionNum;
 import com.exit.question.controller.dto.response.PopularPostDto;
 import com.exit.question.controller.dto.response.QuestionListQueryResponseDto;
 import com.exit.question.domain.question.Question;
@@ -34,6 +39,7 @@ import com.exit.question.domain.question.QuestionCategory;
 import com.exit.question.domain.question.QuestionImage;
 import com.exit.question.domain.question.QuestionReport;
 import com.exit.question.domain.question.repository.QuestionCategoryRepository;
+import com.exit.question.domain.question.repository.QuestionCommentRepository;
 import com.exit.question.domain.question.repository.QuestionImageRepository;
 import com.exit.question.domain.question.repository.QuestionReportRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
@@ -41,7 +47,9 @@ import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.repository.ResponseRepository;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.service.client.AiGrpcClient;
+import com.exit.question.service.client.NotificationGrpcClient;
 import com.exit.question.service.client.UserGrpcClient;
+import com.exit.question.service.util.NotificationGrpcMapper;
 import com.exit.question.service.util.QuestionGrpcMapper;
 import java.time.Duration;
 import java.time.Instant;
@@ -58,10 +66,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,13 +85,15 @@ public class QuestionService {
     private final QuestionCategoryRepository questionCategoryRepository;
     private final QuestionImageRepository questionImageRepository;
     private final QuestionReportRepository questionReportRepository;
+    private final QuestionCommentRepository questionCommentRepository;
     private final ResponseRepository responseRepository;
     private final FileUploadUtil fileUploadUtil;
     private final UserGrpcClient userGrpcClient;
     private final AiGrpcClient aiGrpcClient;
     private final TaskScheduler taskScheduler;
     private final QuestionGrpcMapper questionGrpcMapper;
-
+    private final NotificationGrpcClient notificationGrpcClient;
+    private final NotificationGrpcMapper notificationGrpcMapper;
 
     public QuestionCreateResponse createQuestion(QuestionCreateRequest request) {
         try {
@@ -96,9 +108,10 @@ public class QuestionService {
 
             aiGrpcClient.saveQuestion(createSaveQuestionToVectorDBRequest(question));
             // AI 답변 자동 생성
-            scheduleAiAnswerGeneration(savedQuestion);
-
-            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile);
+            scheduleAiAnswerGeneration(savedQuestion, request.getImagesList());
+            CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum = questionRepository.findCommentAndAdditionalQuestionNumByQuestionId(
+                    question.getQuestionId());
+            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile, commentAndAdditionalQuestionNum);
         } catch (GrpcException e) {
             throw new GrpcException(GrpcQuestionErrorCode.CREATE_QUESTION_FAILED,
                     e.getGrpcErrorCode().getErrorDescription());
@@ -130,12 +143,12 @@ public class QuestionService {
     @Transactional(readOnly = true)
     public QuestionListResponse questionList(QuestionListRequest filter) {
         try {
-            PageRequest pageRequest = PageRequest.of(filter.getPageNum(), filter.getSize());
+            PageRequest pageRequest = PageRequest.of(filter.getPageNum(), filter.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
 
             Page<QuestionListQueryResponseDto> page = questionRepository.findQuestionsByFilter(
                     filter.getCategoryIdsList(),
                     filter.getKeyword().isEmpty() ? null : filter.getKeyword(),
-                    filter.getIsExist(), pageRequest);
+                    filter.getIsAnswered(), pageRequest);
 
             Set<Long> writerIds = page.getContent().stream().map(QuestionListQueryResponseDto::questionWriterId)
                     .collect(toSet());
@@ -236,7 +249,7 @@ public class QuestionService {
                                 .setNickname(userInfo.getUserName())
                                 .setTitle(post.questionTitle())
                                 .setContent(post.questionContent())
-                                .setAnswerAdopt(post.questionAnswerAdopt())
+                                .setIsAnswered(post.isAnswered())
                                 .setAnswerCount(post.answerCount())
                                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(post.createdAt()))
                                 .build();
@@ -279,18 +292,87 @@ public class QuestionService {
         }
     }
 
+    public QuestionCreateResponse updateQuestion(UpdateQuestionRequest request) {
+        try {
+            Question question = questionRepository.notExistsResponseByQuestionId(request.getQuestionId())
+                    .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.ALREADY_EXISTS_RESPONSE));
+
+            if (!request.getContent().isEmpty()) {
+                question.updateQuestionContent(request.getContent());
+            }
+
+            if (!request.getDeletedImageIdList().isEmpty()) {
+                List<QuestionImage> questionImages = questionImageRepository.findAllByQuestionId(
+                                request.getQuestionId())
+                        .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_EXIST_QUESTION_IMAGE));
+
+                List<String> imageUrls = questionImages.stream().map(QuestionImage::getQuestionImageUrl).toList();
+
+                fileUploadUtil.deleteFiles(imageUrls);
+                questionImageRepository.deleteAllById(request.getDeletedImageIdList());
+                questionImageRepository.flush();
+            }
+
+            if (!request.getImagesList().isEmpty()) {
+                List<String> imageUrls = fileUploadUtil.uploadImages(request.getImagesList(), QUESTION_FOLDER);
+
+                imageUrls.forEach(imageUrl -> {
+                            QuestionImage questionImage = QuestionImage.builder()
+                                    .questionId(request.getQuestionId())
+                                    .questionImageUrl(imageUrl)
+                                    .build();
+                            questionImageRepository.saveAndFlush(questionImage);
+                        }
+                );
+            }
+
+            if(!request.getTitle().isEmpty()) {
+                question.updateQuestionTitle(request.getTitle());
+            }
+
+            if(request.getQuestionCategoryId() != 0) {
+                QuestionCategory questionCategory = questionCategoryRepository.findById(request.getQuestionCategoryId())
+                        .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.UNAVAILABLE_QUESTION_CATEGORY));
+                question.updateQuestionCategory(questionCategory);
+            }
+
+            return buildQuestionCreateResponse(request.getQuestionId(), request.getUserId());
+        } catch (GrpcException e) {
+            throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_DETAIL_FAILED,
+                    e.getGrpcErrorCode().getErrorDescription());
+        } catch (Exception e) {
+            log.error("Get question detail failed for questionId: {}", request.getQuestionId(), e);
+            throw new GrpcException(GrpcQuestionErrorCode.GET_QUESTION_DETAIL_FAILED, e.getMessage());
+        }
+    }
+
+    public void deleteQuestion(DeleteQuestionRequest request) {
+        log.info("Deleting question with id {}", request.getQuestionId());
+        Optional<List<QuestionImage>> allByQuestionId = questionImageRepository.findAllByQuestionId(request.getQuestionId());
+        if(allByQuestionId.isPresent()) {
+            List<String> imageUrls = allByQuestionId.get().stream().map(QuestionImage::getQuestionImageUrl).toList();
+            fileUploadUtil.deleteFiles(imageUrls);
+        }
+        questionImageRepository.deleteByQuestionId(request.getQuestionId());
+
+        questionCommentRepository.deleteAllByQuestion_QuestionId(request.getQuestionId());
+        questionRepository.deleteById(request.getQuestionId());
+        log.info("Deleted question with id {}", request.getQuestionId());
+    }
+
     private List<PopularPostItem> getPopularPostItemList(Page<PopularPostDto> myQuestionDtos,
                                                          Map<Long, UpdateAdditionalUserInfoResponse> userInfoMap) {
         return myQuestionDtos.getContent().stream()
                 .map(post -> {
                     UpdateAdditionalUserInfoResponse userInfo = userInfoMap.get(post.questionWriterId());
                     return PopularPostItem.newBuilder()
+                            .setQuestionId(post.questionId())
                             .setCategoryId(post.questionCategoryId())
                             .setProfileUrl(!userInfo.getUserProfile().isEmpty() ? userInfo.getUserProfile() : "")
                             .setNickname(userInfo.getUserName())
                             .setTitle(post.questionTitle())
                             .setContent(post.questionContent())
-                            .setAnswerAdopt(post.questionAnswerAdopt())
+                            .setIsAnswered(post.isAnswered())
                             .setAnswerCount(post.answerCount())
                             .setCreatedAt(TimeStampUtil.toGrpcTimestamp(post.createdAt()))
                             .build();
@@ -318,16 +400,29 @@ public class QuestionService {
         UpdateAdditionalUserInfoResponse userNameAndProfile = userGrpcClient.getUserNameAndProfile(
                 question.getQuestionWriterId());
 
-        return questionGrpcMapper.getQuestionCreateResponse(question, imageObjectDtos, userNameAndProfile);
+        CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum = questionRepository.findCommentAndAdditionalQuestionNumByQuestionId(
+                question.getQuestionId());
+
+        return questionGrpcMapper.getQuestionCreateResponse(question, imageObjectDtos, userNameAndProfile, commentAndAdditionalQuestionNum);
     }
 
     private Authority getAuthority(QuestionDetailRequest request) {
+        if(request.getUserId() == -1) {
+            return Authority.newBuilder()
+                    .setCanDelete(false)
+                    .setCanModify(false)
+                    .setCanWrite(false)
+                    .build();
+        }
         Question question = questionRepository.findById(request.getQuestionId())
                 .orElseThrow(() -> new GrpcException(GrpcQuestionErrorCode.NOT_FOUND_QUESTION));
         boolean isSameUser = Objects.equals(question.getQuestionWriterId(), request.getUserId());
+        boolean existResponseByUserId = responseRepository.existsByQuestionIdAndResponseWriterId(question.getQuestionId(),  request.getUserId());
+        boolean existResponseByQuestionId = questionRepository.existResponseByQuestionId(question.getQuestionId());
         return Authority.newBuilder()
-                .setCanDelete(isSameUser)
-                .setCanModify(isSameUser)
+                .setCanDelete(isSameUser && !existResponseByQuestionId)
+                .setCanModify(isSameUser && !existResponseByQuestionId)
+                .setCanWrite(!isSameUser && !existResponseByUserId)
                 .build();
     }
 
@@ -351,31 +446,32 @@ public class QuestionService {
     /**
      * AI 답변 생성 스케줄링 긴급 질문: 즉시 생성 일반 질문: 5분 후 생성
      */
-    private void scheduleAiAnswerGeneration(Question question) {
+    private void scheduleAiAnswerGeneration(Question question, List<UploadBytesRequest> uploadBytesRequests) {
         if (Boolean.TRUE.equals(question.getQuestionUrgency())) {
             log.info("Question urgency has been scheduled");
             // 긴급 질문은 즉시 생성
-            generateAiAnswerAsync(question);
+            generateAiAnswerAsync(question, uploadBytesRequests);
         } else {
             // 일반 질문은 5분 후 생성
             log.info("Question urgency has been unscheduled");
             Instant scheduledTime = Instant.now().plus(Duration.ofMinutes(5));
-            taskScheduler.schedule(() -> generateAiAnswerAsync(question), scheduledTime);
+            taskScheduler.schedule(() -> generateAiAnswerAsync(question, uploadBytesRequests), scheduledTime);
         }
     }
 
     /**
      * 질문 생성 시 AI 답변을 자동으로 생성하여 저장 AI 생성 실패 시 최대 3회 재시도 (지수 백오프) 모든 재시도 실패 시에도 질문 생성은 정상 처리됨
      */
+    @Async("aiAnswerTaskExecutor")
     @Retryable(
             retryFor = {Exception.class},
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2),
             recover = "recoverGenerateAiAnswer"
     )
-    private void generateAiAnswerAsync(Question question) {
+    protected void generateAiAnswerAsync(Question question, List<UploadBytesRequest> uploadBytesRequests) {
         // AI 답변 생성 요청
-        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId());
+        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId(), uploadBytesRequests);
         log.info("Ai answer has been generated: {}", aiAnswer);
         // AI 답변을 Response로 저장
         Response aiResponse = Response.builder()
@@ -388,6 +484,9 @@ public class QuestionService {
 
         responseRepository.save(aiResponse);
         log.info("AI answer generated and saved for question ID: {}", question.getQuestionId());
+        SendNotificationRequest sendNotificationRequest = notificationGrpcMapper.getSendNotificationRequest(
+                truncateContent(question.getQuestionContent()), "NEW_ANSWER_ON_QUESTION", question);
+        notificationGrpcClient.sendNotification(sendNotificationRequest);
     }
 
     /**
@@ -409,7 +508,7 @@ public class QuestionService {
                                 .questionId(savedQuestion.getQuestionId())
                                 .questionImageUrl(url)
                                 .build();
-                        return questionImageRepository.save(questionImage);
+                        return questionImageRepository.saveAndFlush(questionImage);
                     })
                     .toList();
 
@@ -425,5 +524,15 @@ public class QuestionService {
         }
 
         return null;
+    }
+
+    private String truncateContent(String content) {
+        String subBody;
+        if (content.length() <= 100) {
+            subBody = content.substring(0, content.length() - 1);
+        } else {
+            subBody = content.substring(0, 100);
+        }
+        return subBody;
     }
 }

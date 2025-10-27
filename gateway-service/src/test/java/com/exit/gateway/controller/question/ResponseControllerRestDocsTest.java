@@ -145,27 +145,66 @@ class ResponseControllerRestDocsTest {
     @DisplayName("답변 수정 API")
     void updateAnswer() throws Exception {
         // given
-        AnswerUpdateResponseDto response = new AnswerUpdateResponseDto(1L, "수정된 답변 내용입니다.");
+        MockMultipartFile image1 = new MockMultipartFile(
+                "images",
+                "new-image.jpg",
+                "image/jpeg",
+                "new image content".getBytes()
+        );
+
+        LocalDateTime now = LocalDateTime.of(2024, 1, 1, 0, 0);
+
+        AnswerCreateResponseDto response = AnswerCreateResponseDto.builder()
+                .responseId(1L)
+                .responseContent("수정된 답변 내용입니다.")
+                .questionId(1L)
+                .responseWriterId(2L)
+                .images(List.of(
+                        com.exit.gateway.controller.question.dto.ImageObjectDto.builder()
+                                .imageId(10L)
+                                .imageUrl("https://example.com/images/new-image.jpg")
+                                .build()
+                ))
+                .createdAt(now)
+                .build();
 
         given(responseGrpcClient.updateResponse(any())).willReturn(response);
 
         // when & then
-        mockMvc.perform(put("/api/responses/answers/{responseId}", 1L)
-                        .contentType("application/json")
-                        .content("{\"content\": \"수정된 답변 내용입니다.\"}"))
+        mockMvc.perform(org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart("/api/responses/answers/{responseId}", 1L)
+                        .file(image1)
+                        .param("content", "수정된 답변 내용입니다.")
+                        .param("deleteIds", "1", "2")
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        }))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.result.responseId").value(1L))
-                .andExpect(jsonPath("$.result.content").value("수정된 답변 내용입니다."))
+                .andExpect(jsonPath("$.result.responseContent").value("수정된 답변 내용입니다."))
                 .andDo(document("response/answer-update",
                         pathParameters(
                                 parameterWithName("responseId").description("답변 ID")
+                        ),
+                        relaxedRequestParts(
+                                partWithName("images").description("추가할 이미지 파일 목록 (선택)").optional()
+                        ),
+                        multipartFormParameters(
+                                multipartParameter("content").description("수정할 답변 내용"),
+                                multipartParameter("deleteIds").description("삭제할 이미지 ID 목록 (선택)").optional()
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.responseId").description("답변 ID"),
-                                fieldWithPath("result.content").description("수정된 답변 내용")
+                                fieldWithPath("result.responseContent").description("수정된 답변 내용"),
+                                fieldWithPath("result.questionId").description("질문 ID"),
+                                fieldWithPath("result.responseWriterId").description("답변 작성자 ID"),
+                                fieldWithPath("result.images").description("답변 이미지 목록").optional(),
+                                fieldWithPath("result.images[].imageId").type("Number").description("답변 이미지 ID").optional(),
+                                fieldWithPath("result.images[].imageUrl").type("String").description("답변 이미지 URL").optional(),
+                                fieldWithPath("result.createdAt").description("답변 생성 시간")
                         )
                 ));
     }
@@ -320,6 +359,8 @@ class ResponseControllerRestDocsTest {
                 .updatedAt(now)
                 .isAi(false)
                 .authority(new com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority(true, true, true))
+                .commentNum(1)
+                .additionalMessageNum(1)
                 .build();
 
         ResponseDetailDto response2 = ResponseDetailDto.builder()
@@ -335,6 +376,8 @@ class ResponseControllerRestDocsTest {
                 .updatedAt(now)
                 .isAi(false)
                 .authority(new com.exit.gateway.controller.question.dto.response.authority.ResponseAuthority(false, true, true))
+                .commentNum(1)
+                .additionalMessageNum(1)
                 .build();
 
         GetDetailResponseResponseDto response = GetDetailResponseResponseDto.builder()
@@ -384,6 +427,8 @@ class ResponseControllerRestDocsTest {
                                 fieldWithPath("result.responses[].authority.canAdopt").description("채택 권한 여부"),
                                 fieldWithPath("result.responses[].authority.canModify").description("수정 권한 여부"),
                                 fieldWithPath("result.responses[].authority.canDelete").description("삭제 권한 여부"),
+                                fieldWithPath("result.responses[].commentNum").description("댓글 수"),
+                                fieldWithPath("result.responses[].additionalMessageNum").description("추가 질문 수"),
                                 fieldWithPath("result.hasNext").description("다음 페이지 존재 여부"),
                                 fieldWithPath("result.currentPage").description("현재 페이지 번호"),
                                 fieldWithPath("result.totalPageNum").description("전체 페이지 개수")

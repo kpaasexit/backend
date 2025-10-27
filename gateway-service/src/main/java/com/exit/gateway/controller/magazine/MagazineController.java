@@ -81,10 +81,10 @@ public class MagazineController {
     }
 
     @GetMapping("/recommend")
-    public SuccessResponse<GetRecommendedMagazineResponseDto> getScrapBox(
+    public SuccessResponse<GetRecommendedMagazineResponseDto> getRecommendMagazine(
             @LoginUser Long userId
     ) {
-        log.info("Get scrap-box request received");
+        log.info("Get recomment magazine request received");
         GetRecommendedMagazineRequest request = GetRecommendedMagazineRequest.newBuilder()
                 .setUserId(userId)
                 .build();

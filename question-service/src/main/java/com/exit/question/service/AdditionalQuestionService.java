@@ -13,6 +13,7 @@ import com.exit.question.domain.question.repository.FollowUpRoomRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
 import com.exit.question.domain.response.Response;
 import com.exit.question.domain.response.repository.ResponseRepository;
+import com.exit.question.exception.GrpcAdditionalQuestionErrorCode;
 import com.exit.question.exception.GrpcQuestionErrorCode;
 import com.exit.question.exception.GrpcResponseErrorCode;
 import com.exit.question.service.client.AiGrpcClient;
@@ -55,13 +56,19 @@ public class AdditionalQuestionService {
         try {
             Response response = findResponseById(request.getResponseId());
             FollowUpRoom followUpRoom = findOrCreateFollowUpRoom(response);
+
+            FollowUpMessage lastMessage = followUpRoom.getLastMessage();
+            if(lastMessage != null && lastMessage.getFollowUpMessageWriterId() == request.getUserId()){
+                throw new GrpcException(GrpcAdditionalQuestionErrorCode.WAIT_OPPONENT_MESSAGE);
+            }
+
             FollowUpMessage savedMessage = createAndSaveMessage(request, followUpRoom);
             List<ImageObject> imageUrls = saveUploadedImages(request.getImagesList(), savedMessage);
 
             Question question = getQuestion(request.getQuestionId());
             boolean isQuestioner = isUserQuestioner(question.getQuestionWriterId(), request.getUserId());
             if (isQuestioner && response.getResponseWriterId() == 1L) {
-                generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question);
+                generateAiAnswerAsync(savedMessage.getFollowUpMessageContent(), question, request.getImagesList());
             }
 
             MessageItem messageItem = buildMessageItem(savedMessage, imageUrls, isQuestioner);
@@ -117,6 +124,13 @@ public class AdditionalQuestionService {
     }
 
     private Authority getAuthority(Question question, Response response, Long userId, List<FollowUpMessage> messageList) {
+        if(userId == -1) {
+            return Authority.newBuilder()
+                    .setIsThirdParty(false)
+                    .setCanWrite(false)
+                    .build();
+        }
+
         boolean isThirdParty = isThirdParty(question, response, userId);
         boolean canWrite = false;
 
@@ -159,7 +173,6 @@ public class AdditionalQuestionService {
         List<String> uploadedImages = fileUploadUtil.uploadImages(imageList, ADDITIONAL_QUESTION_PATH);
         List<FollowUpImage> followUpImages = FollowUpImage.generateFollowUpImages(savedMessage, uploadedImages);
         List<ImageObject> savedImages = new ArrayList<>();
-        followUpImages.sort(Comparator.comparing(FollowUpImage::getCreatedAt));
         followUpImages.forEach(
                 followUpImage -> {
                     FollowUpImage savedImage = followUpImageRepository.save(followUpImage);
@@ -219,9 +232,9 @@ public class AdditionalQuestionService {
             backoff = @Backoff(delay = 1000, multiplier = 2),
             recover = "recoverGenerateAiAnswer"
     )
-    private void generateAiAnswerAsync(String content, Question question) {
+    private void generateAiAnswerAsync(String content, Question question, List<UploadBytesRequest> imageList) {
         aiGrpcClient.saveQuestion(aiGrpcMapper.getSaveQuestionRequest(content, question));
-        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId());
+        String aiAnswer = aiGrpcClient.generateAiAnswer(question.getQuestionId(), imageList);
 
         FollowUpMessage aiFollowUpMessage = FollowUpMessage.builder()
                 .followUpMessageContent(aiAnswer)

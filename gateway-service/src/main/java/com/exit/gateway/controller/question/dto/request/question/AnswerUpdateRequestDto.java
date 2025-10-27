@@ -1,9 +1,16 @@
 package com.exit.gateway.controller.question.dto.request.question;
 
-import jakarta.validation.constraints.NotBlank;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record AnswerUpdateRequestDto(
-        @NotBlank(message = "답변 내용은 필수입니다.")
-        String content
-) {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class AnswerUpdateRequestDto {
+    private String content;
+    private List<Long> deleteIds;
 }

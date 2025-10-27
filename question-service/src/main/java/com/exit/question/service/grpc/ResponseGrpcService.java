@@ -69,10 +69,10 @@ public class ResponseGrpcService extends ResponseServiceGrpc.ResponseServiceImpl
 
     @Override
     public void updateResponse(com.exit.common.grpc.UpdateResponseRequest request,
-                               StreamObserver<com.exit.common.grpc.UpdateResponseResponse> responseObserver) {
+                               StreamObserver<com.exit.common.grpc.AnswerCreateResponse> responseObserver) {
             log.info("Update response request received for response id: {}", request.getResponseId());
 
-            UpdateResponseResponse response = responseService.updateResponse(request);
+        AnswerCreateResponse response = responseService.updateResponse(request);
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();

@@ -25,7 +25,9 @@ public record ResponseDetailDto(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime updatedAt,
         Boolean isAi,
-        ResponseAuthority authority
+        ResponseAuthority authority,
+        Integer commentNum,
+        Integer additionalMessageNum
 ) {
     public static ResponseDetailDto from(ResponseDetail grpcResponse) {
         ResponseDetailDtoBuilder builder = ResponseDetailDto.builder();
@@ -55,6 +57,8 @@ public record ResponseDetailDto(
                 .updatedAt(TimeStampUtil.timestampToLocalDateTime(grpcResponse.getUpdatedAt()))
                 .isAi(grpcResponse.getIsAi())
                 .authority(ResponseAuthority.from(grpcResponse.getAuthority()))
+                .commentNum(grpcResponse.getCommentNum())
+                .additionalMessageNum(grpcResponse.getAdditionalQuestionNum())
                 .build();
     }
 }

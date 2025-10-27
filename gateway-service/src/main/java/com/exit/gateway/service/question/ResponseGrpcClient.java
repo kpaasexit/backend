@@ -48,11 +48,11 @@ public class ResponseGrpcClient {
         return AnswerAdoptResponseDto.from(response);
     }
 
-    public AnswerUpdateResponseDto updateResponse(UpdateResponseRequest request) {
+    public AnswerCreateResponseDto updateResponse(UpdateResponseRequest request) {
         log.debug("Sending update response request via gRPC for responseId: {}", request.getResponseId());
-        UpdateResponseResponse response = responseServiceStub.updateResponse(request);
+        AnswerCreateResponse response = responseServiceStub.updateResponse(request);
         log.debug("Received update response response via gRPC");
-        return new AnswerUpdateResponseDto(response.getResponseId(), response.getContent());
+        return AnswerCreateResponseDto.from(response);
     }
 
     public void deleteResponse(DeleteResponseRequest request) {

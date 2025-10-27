@@ -1,6 +1,7 @@
 package com.exit.gateway.handler;
 
 import com.exit.common.exception.rest.RestApiException;
+import com.exit.common.properties.JwtProperties;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.KakaoOAuth2UserInfo;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.NaverOAuth2UserInfo;
 import com.exit.gateway.controller.user.dto.response.auth.oauth2.OAuth2UserInfo;
@@ -9,9 +10,12 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -29,6 +33,7 @@ import java.util.Optional;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final HttpCookieOAuth2AuthorizationRequestRepository authorizationRequestRepository;
+    private final JwtProperties jwtProperties;
 
     @Value("${app.oauth2.allowed-origins}")
     private String allowedOriginsRaw;
@@ -36,7 +41,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Value("${app.oauth2.default-client-url:https://localhost:5761}")
     private String defaultClientUrl;
 
+    @Value("${app.oauth2.cookie-secure:true}")
+    private boolean cookieSecure;
+
     private List<String> allowedOrigins;
+
 
     @PostConstruct
     public void init() {
@@ -45,6 +54,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         log.info("=== OAuth2LoginSuccessHandler 초기화 ===");
         log.info("Allowed Origins: {}", allowedOrigins);
         log.info("Default Client URL: {}", defaultClientUrl);
+        log.info("Cookie Secure: {}", cookieSecure);
         log.info("=======================================");
     }
 
@@ -72,25 +82,20 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     .map(Cookie::getValue)
                     .orElse("/");
 
-            log.info("=== OAuth2 로그인 디버깅 ===");
-            log.info("Origin Header: {}", request.getHeader("Origin"));
-            log.info("Referer Header: {}", request.getHeader("Referer"));
             String clientUrl = determineClientUrl(request);
-            log.info("Determined Client URL: {}", clientUrl);
-            log.info("===========================");
+
+            // 로컬 HTTP 환경 감지 (http://localhost:*)
+            boolean isLocalHttpEnvironment = clientUrl.startsWith("http://localhost");
+            addCookie(response, "refreshToken", oauth2User.getRefreshToken(),
+                     jwtProperties.getRefreshTokenExpiration().intValue(), isLocalHttpEnvironment);
 
             String finalRedirectUrl = String.format(
-                    "%s/oauth/callback?token=%s&refresh=%s&returnTo=%s",
-                    clientUrl,
-                    URLEncoder.encode(oauth2User.getAccessToken(), StandardCharsets.UTF_8),
-                    URLEncoder.encode(oauth2User.getRefreshToken(), StandardCharsets.UTF_8),
-                    URLEncoder.encode(returnTo, StandardCharsets.UTF_8)
+                    "%s/oauth/callback?returnTo=%s&accessToken=%s", clientUrl,
+                    URLEncoder.encode(returnTo, StandardCharsets.UTF_8),
+                    URLEncoder.encode(oauth2User.getAccessToken(), StandardCharsets.UTF_8)
             );
 
             authorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
-
-            log.info("OAuth2 로그인 완료 - Client URL: {}", clientUrl);
-            log.info("OAuth2 로그인 완료 - Return To: {}", returnTo);
             log.info("OAuth2 로그인 완료 - 최종 리다이렉트: {}", finalRedirectUrl);
 
             response.sendRedirect(finalRedirectUrl);
@@ -157,5 +162,24 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     .findFirst();
         }
         return Optional.empty();
+    }
+
+    private void addCookie(HttpServletResponse response, String name, String value, int maxAge, boolean forceInsecure) {
+        // 로컬 HTTP 환경에서는 secure=false로 설정
+        boolean useSecure = !forceInsecure && cookieSecure;
+
+        ResponseCookie cookie = ResponseCookie
+                .from(name, value)
+                .path("/")
+                .httpOnly(true)
+                .secure(useSecure)
+                .sameSite(useSecure ? "None" : "Lax")
+                .maxAge(Duration.ofSeconds(maxAge))
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        log.info("쿠키 설정 - name: {}, secure: {}, sameSite: {}, forceInsecure: {}",
+                name, useSecure, useSecure ? "None" : "Lax", forceInsecure);
     }
 }

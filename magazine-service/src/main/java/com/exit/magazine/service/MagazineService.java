@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +36,7 @@ public class MagazineService {
     @Transactional(readOnly = true)
     public GetMagazinesByCategoryResponse getMagazinesByCategory(GetMagazinesByCategoryRequest request) {
         try {
-            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
+            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
             Slice<Magazines> magazines = magazineRepository.findAllByMagazineCategoryMagazineCategoryId(request.getCategoryId(), pageRequest);
             Set<Long> authorIds = magazines.getContent().stream().map(Magazines::getMagazineAuthorId).collect(Collectors.toSet());
 
@@ -99,7 +100,7 @@ public class MagazineService {
     @Transactional(readOnly = true)
     public GetScrapBoxResponse getScrapBox(GetScrapBoxRequest request) {
         try {
-            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize());
+            PageRequest pageRequest = PageRequest.of(request.getPageNum(), request.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
             Slice<MagazineScraps> slice = magazineScrapRepository.findByUserId(request.getUserId(), pageRequest);
             List<Magazines> magazines = slice.getContent().stream()
                     .map(MagazineScraps::getMagazine)
@@ -153,7 +154,7 @@ public class MagazineService {
             log.info("Searching magazines with keyword: {}, page: {}, size: {}",
                     request.getKeyword(), request.getPage(), request.getSize());
 
-            PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize());
+            PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
 
             // keyword로 매거진 검색 (제목 + 부제목 + 내용)
             // 키워드가 비어있으면 모든 매거진 조회
