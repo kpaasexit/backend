@@ -139,6 +139,10 @@ public class AdditionalQuestionService {
             canWrite = !Objects.equals(messageItem.getFollowUpMessageWriterId(), userId);
         }
 
+        if(messageList.isEmpty() && question.getQuestionWriterId().equals(userId)) {
+            canWrite = true;
+        }
+
         return Authority.newBuilder()
                 .setIsThirdParty(isThirdParty)
                 .setCanWrite(canWrite)
