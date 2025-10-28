@@ -20,11 +20,24 @@ spec:
     - infinity
     resources:
       requests:
-        cpu: 50m
+        cpu: 10m
         memory: 128Mi
       limits:
         cpu: 200m
         memory: 256Mi
+  - name: gradle
+      image: gradle:8.14.3-jdk17
+      command:
+      - sleep
+      args:
+      - infinity
+      resources:
+        requests:
+          cpu: 10m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 2Gi
   - name: docker
     image: docker:24-dind
     env:
@@ -145,7 +158,6 @@ spec:
                     script {
                         sh '''
                             echo "Running tests to generate REST Docs snippets..."
-                            # gradlew에 실행 권한이 있는지 확인하고 실행
                             chmod +x ./gradlew
                             ./gradlew :gateway-service:restDocsTest --no-daemon
                         '''
@@ -160,9 +172,9 @@ spec:
                         ).trim()
 
                         if (fileExists == 'EXISTS') {
-                            echo "✅ Success: index.html found at ${docsPath}"
+                            echo "Success: index.html found at ${docsPath}"
                         } else {
-                            error "❌ FATAL: index.html not found at ${docsPath}. REST Docs generation failed."
+                            error "FATAL: index.html not found at ${docsPath}. REST Docs generation failed."
                         }
                     }
                 }
