@@ -22,14 +22,12 @@ COPY gateway-service/build/generated-snippets gateway-service/build/generated-sn
 RUN ./gradlew :common:jar :gateway-service:asciidoctor :gateway-service:bootJar -Pprofile=dev --no-daemon -x test -x restDocsTest
 
 # prod Build Stage - Use pre-built docs from local build
-FROM base AS build-prod
 COPY gateway-service/build/generated-snippets gateway-service/build/generated-snippets
 RUN for i in 1 2 3; do \
       ./gradlew :common:jar :gateway-service:asciidoctor :gateway-service:bootJar \
-        -Pprofile=prod --no-daemon -x test restDocsTest && break || \
+        -Pprofile=prod --no-daemon -x test -x restDocsTest && break || \
       (echo "Build retry $i..." && sleep 15); \
     done
-
 # dev Runtime Stage
 FROM eclipse-temurin:17-jre-jammy AS dev
 WORKDIR /app
