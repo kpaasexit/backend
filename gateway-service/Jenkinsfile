@@ -145,6 +145,8 @@ spec:
                     script {
                         sh '''
                             echo "Running tests to generate REST Docs snippets..."
+                            cp gateway-service/src/test/resources/application-secret.yml.example \
+                               gateway-service/src/test/resources/application-secret.yml
                             gradle :gateway-service:restDocsTest --no-daemon -Dspring.profiles.active=test
                         '''
 
