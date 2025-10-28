@@ -3,10 +3,10 @@ LABEL authors="sang-yoon"
 
 WORKDIR /workspace
 
-COPY quiz-service/gradlew ./gradlew
-COPY gradle.properties ./
-COPY quiz-service/gradle gradle
+COPY gradlew ./
+COPY gradle gradle/
 COPY settings.gradle ./
+COPY gradle.properties ./
 
 RUN chmod +x gradlew
 

@@ -145,7 +145,7 @@ spec:
                     script {
                         sh '''
                             echo "Running tests to generate REST Docs snippets..."
-                            gradle :gateway-service:restDocsTest --no-daemon
+                            gradle :gateway-service:restDocsTest --no-daemon -Dspring.profiles.active=test
                         '''
 
                         echo "Verifying REST Docs index.html existence..."

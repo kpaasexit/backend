@@ -3,10 +3,11 @@ LABEL authors="sang-yoon"
 
 WORKDIR /workspace
 
-COPY notification-service/gradlew ./gradlew
-COPY gradle.properties ./
-COPY notification-service/gradle gradle
+COPY gradlew ./
+COPY gradle gradle/
 COPY settings.gradle ./
+COPY gradle.properties ./
+
 RUN chmod +x gradlew
 
 RUN for i in 1 2 3; do \

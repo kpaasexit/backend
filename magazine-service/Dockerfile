@@ -3,10 +3,10 @@ LABEL authors="sang-yoon"
 
 WORKDIR /workspace
 
-COPY magazine-service/gradlew ./gradlew
-COPY gradle.properties ./
-COPY magazine-service/gradle gradle
+COPY gradlew ./
+COPY gradle gradle/
 COPY settings.gradle ./
+COPY gradle.properties ./
 
 RUN chmod +x gradlew
 
