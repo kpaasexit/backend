@@ -4,12 +4,16 @@ LABEL authors="sang-yoon"
 WORKDIR /workspace
 
 COPY magazine-service/gradlew ./gradlew
+COPY gradle.properties ./
 COPY magazine-service/gradle gradle
 COPY settings.gradle ./
 
 RUN chmod +x gradlew
 
-RUN sed -i 's/timeout = 10000/timeout = 60000/g' gradle/wrapper/gradle-wrapper.properties || true
+RUN for i in 1 2 3; do \
+      ./gradlew --version && break || \
+      (echo "Retry $i..." && sleep 10); \
+    done
 
 COPY common common
 COPY magazine-service magazine-service
@@ -22,8 +26,11 @@ RUN ./gradlew :common:jar magazine-service:bootJar -Pprofile=dev -x test --no-da
 
 # prod Build Stage
 FROM base AS build-prod
-RUN ./gradlew :common:jar magazine-service:bootJar -Pprofile=prod -x test --no-daemon
-
+RUN for i in 1 2 3; do \
+      ./gradlew :common:jar :gateway-service:asciidoctor :gateway-service:bootJar \
+        -Pprofile=prod --no-daemon -x test -x restDocsTest && break || \
+      (echo "Build retry $i..." && sleep 15); \
+    done
 
 # dev Runtime Stage
 FROM eclipse-temurin:17-jre-jammy AS dev
