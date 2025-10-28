@@ -22,6 +22,7 @@ COPY gateway-service/build/generated-snippets gateway-service/build/generated-sn
 RUN ./gradlew :common:jar :gateway-service:asciidoctor :gateway-service:bootJar -Pprofile=dev --no-daemon -x test -x restDocsTest
 
 # prod Build Stage - Use pre-built docs from local build
+FROM base AS build-prod
 COPY gateway-service/build/generated-snippets gateway-service/build/generated-snippets
 RUN for i in 1 2 3; do \
       ./gradlew :common:jar :gateway-service:asciidoctor :gateway-service:bootJar \
