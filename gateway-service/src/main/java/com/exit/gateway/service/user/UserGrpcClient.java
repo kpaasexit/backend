@@ -25,8 +25,7 @@ public class UserGrpcClient {
     @GrpcClient("user-service")
     private UserServiceGrpc.UserServiceBlockingStub userServiceStub;
 
-    public UpdateAdditionalUserInfoResponse updateAdditionalUserInfo(Long userId, UpdateAdditionalUserInfoRequestDto requestDto) {
-        MultipartFile image = requestDto.image();
+    public UpdateAdditionalUserInfoResponse updateAdditionalUserInfo(Long userId, UpdateAdditionalUserInfoRequestDto requestDto, MultipartFile image) {
         UpdateAdditionalUserInfoRequest.Builder builder = UpdateAdditionalUserInfoRequest.newBuilder();
         try {
             if (image != null) {
@@ -46,18 +45,18 @@ public class UserGrpcClient {
             throw new RestApiException(UserErrorCode.UPDATE_ADDITIONAL_INFO_FAIL);
         }
 
-        if (requestDto.nickname() != null && !requestDto.nickname().isEmpty()) {
-            builder.setUserName(requestDto.nickname());
+        if (requestDto.getNickname() != null && !requestDto.getNickname().isEmpty()) {
+            builder.setUserName(requestDto.getNickname());
         }
 
         UpdateAdditionalUserInfoRequest request = builder
                 .setUserId(userId)
-                .setIsProfileImageDeleted(requestDto.isProfileImageDeleted())
+                .setIsProfileImageDeleted(requestDto.getIsProfileImageDeleted())
                 .build();
 
-        log.debug("Sending updateAdditionalUserInfo request via gRPC: {}", request);
+        log.debug("Sending updateAdditionalUserInfo request via gRPC: {}", request.getUserId());
         UpdateAdditionalUserInfoResponse response = userServiceStub.updateAdditionalUserInfo(request);
-        log.debug("Received updateAdditionalUserInfo response via gRPC: {}", response);
+        log.debug("Received updateAdditionalUserInfo response via gRPC: {}", request.getUserId());
 
         return response;
     }

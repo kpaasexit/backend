@@ -26,7 +26,7 @@ RUN ./gradlew :common:jar user-service:bootJar -Pprofile=dev -x test --no-daemon
 # prod Build Stage
 FROM base AS build-prod
 RUN for i in 1 2 3; do \
-      ./gradlew :common:jar :user-service:asciidoctor :user-service:bootJar \
+      ./gradlew :common:jar :user-service:bootJar \
         -Pprofile=prod --no-daemon -x test -x restDocsTest && break || \
       (echo "Build retry $i..." && sleep 15); \
     done

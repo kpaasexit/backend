@@ -399,6 +399,7 @@ public class ResponseService {
 
         Map<Long, CommentAndAdditionalQuestionNum> commentAndAdditionalQuestionNumMap = getCommentAndAdditionalQuestionNumMap(
                 responses);
+        Map<Long, Long> followUpRoomIdMap = getFollowUpRoomIdMap(responses);
 
         // 4. ResponseDetail 생성
         return responses.stream()
@@ -411,9 +412,21 @@ public class ResponseService {
                                         .setUserName("UNDEFINED")
                                         .build()),
                         getResponseAuthority(response, request),
-                        commentAndAdditionalQuestionNumMap.get(response.getResponseId())
+                        commentAndAdditionalQuestionNumMap.get(response.getResponseId()),
+                        followUpRoomIdMap.get(response.getResponseId())
                 ))
                 .toList();
+    }
+
+    private Map<Long, Long> getFollowUpRoomIdMap(List<Response> responses) {
+        List<Long> responseIds = responses.stream()
+                .map(Response::getResponseId)
+                .toList();
+
+        return followUpRoomRepository.findAllByResponse_ResponseIdIn(responseIds)
+                .stream()
+                .collect(toMap(fur -> fur.getResponse().getResponseId(),
+                        fur -> fur.getFollowUpRoomId()));
     }
 
     private Map<Long, CommentAndAdditionalQuestionNum> getCommentAndAdditionalQuestionNumMap(List<Response> responses) {

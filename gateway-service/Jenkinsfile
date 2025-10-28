@@ -12,8 +12,8 @@ spec:
   nodeSelector:
     kubernetes.io/hostname: kpaas-contest-9.worker01
   containers:
-  - name: kubectl
-    image: alpine:latest
+  - name: gradle
+    image: gradle:8.14.3-jdk17
     command:
     - sleep
     args:

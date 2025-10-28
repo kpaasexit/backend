@@ -2,6 +2,7 @@ package com.exit.gateway.controller.user;
 
 import com.exit.common.auth.jwt.JwtTokenProvider;
 import com.exit.common.grpc.RefreshTokenResponse;
+import com.exit.common.properties.JwtProperties;
 import com.exit.common.response.SuccessResponse;
 import com.exit.common.response.success.AuthSuccessCode;
 import com.exit.gateway.controller.user.dto.response.auth.TokenResponseDto;
@@ -25,10 +26,12 @@ public class AuthController {
 
     private final AuthGrpcClient authGrpcClient;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProperties jwtProperties;
 
     @PostMapping("/refresh")
     public SuccessResponse<TokenResponseDto> refresh(
-            @CookieValue("refreshToken") String refreshToken
+            @CookieValue("refreshToken") String refreshToken,
+            HttpServletResponse servletResponse
     ) {
         log.info("Token refresh request received");
         String deviceId = jwtTokenProvider.getDeviceIdFromRefreshToken(refreshToken);
@@ -37,6 +40,16 @@ public class AuthController {
         TokenResponseDto response = new TokenResponseDto(
                 grpcResponse.getAccessToken()
         );
+
+        ResponseCookie newRefreshToken = ResponseCookie.from("refreshToken", grpcResponse.getRefreshToken())
+                .path("/")
+                .maxAge(jwtProperties.getRefreshTokenExpiration())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .build();
+
+        servletResponse.addHeader("Set-Cookie", newRefreshToken.toString());
 
         return SuccessResponse.of(AuthSuccessCode.LOGIN_SUCCESS, response);
     }
