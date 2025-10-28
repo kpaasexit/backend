@@ -1,10 +1,11 @@
 FROM gradle:8.14.3-jdk17 AS base
 WORKDIR /workspace
 
-COPY gradle/wrapper gradle/wrapper
-COPY gradlew ./gradlew
-COPY gradle.properties ./
+COPY gradlew ./
+COPY gradle gradle/
 COPY settings.gradle ./
+COPY gradle.properties ./
+
 RUN chmod +x gradlew
 
 RUN for i in 1 2 3; do \
