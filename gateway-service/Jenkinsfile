@@ -145,8 +145,7 @@ spec:
                     script {
                         sh '''
                             echo "Running tests to generate REST Docs snippets..."
-                            chmod +x ./gradlew
-                            ./gradlew :gateway-service:restDocsTest --no-daemon
+                            gradle :gateway-service:restDocsTest --no-daemon
                         '''
 
                         echo "Verifying REST Docs index.html existence..."
