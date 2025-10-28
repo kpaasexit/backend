@@ -12,8 +12,8 @@ spec:
   nodeSelector:
     kubernetes.io/hostname: kpaas-contest-9.worker01
   containers:
-  - name: gradle
-    image: gradle:8.14.3-jdk17
+  - name: kubectl
+    image: bitnami/kubectl:1.27
     command:
     - sleep
     args:
@@ -26,18 +26,18 @@ spec:
         cpu: 200m
         memory: 256Mi
   - name: gradle
-      image: gradle:8.14.3-jdk17
-      command:
-      - sleep
-      args:
-      - infinity
-      resources:
-        requests:
-          cpu: 10m
-          memory: 512Mi
-        limits:
-          cpu: 500m
-          memory: 2Gi
+    image: gradle:8.14.3-jdk17
+    command:
+    - sleep
+    args:
+    - infinity
+    resources:
+      requests:
+        cpu: 10m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 2Gi
   - name: docker
     image: docker:24-dind
     env:
@@ -84,19 +84,6 @@ spec:
     }
 
     stages {
-        stage('Install kubectl') {
-            steps {
-                container('kubectl') {
-                    sh '''
-                        apk add --no-cache curl
-                        curl -LO "https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl"
-                        chmod +x kubectl
-                        mv kubectl /usr/local/bin/
-                        kubectl version --client
-                    '''
-                }
-            }
-        }
 
         stage('Checkout') {
             steps {
