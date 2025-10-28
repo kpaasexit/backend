@@ -203,6 +203,8 @@ class QuestionControllerRestDocsTest {
                 .questionWriterName("김개발")
                 .images(List.of(imageObjectDtos))
                 .createdAt(now)
+                .commentNum(1)
+                .isAuthor(true)
                 .build();
 
         QuestionDetailResponseDto response = new QuestionDetailResponseDto(
@@ -241,6 +243,7 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.question.images[].imageUrl").description("이미지 URL"),
                                 fieldWithPath("result.question.createdAt").description("작성일시"),
                                 fieldWithPath("result.question.commentNum").description("댓글 수"),
+                                fieldWithPath("result.question.isAuthor").description("질문 작성자인지"),
                                 fieldWithPath("result.authority").description("권한 정보"),
                                 fieldWithPath("result.authority.canModify").description("수정 권한 여부"),
                                 fieldWithPath("result.authority.canDelete").description("삭제 권한 여부"),
@@ -368,6 +371,8 @@ class QuestionControllerRestDocsTest {
                 .questionWriterName("김사용자")
                 .images(List.of())
                 .createdAt(now)
+                .commentNum(1)
+                .isAuthor(true)
                 .build();
 
         given(questionGrpcClient.createQuestion(any())).willReturn(response);
@@ -422,7 +427,8 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.images[].imageUrl").type("String").description("이미지 URL")
                                         .optional(),
                                 fieldWithPath("result.createdAt").description("작성일시"),
-                                fieldWithPath("result.commentNum").description("댓글 수")
+                                fieldWithPath("result.commentNum").description("댓글 수"),
+                                fieldWithPath("result.isAuthor").description("질문 작성자인지")
                         )
                 ));
     }
@@ -620,6 +626,8 @@ class QuestionControllerRestDocsTest {
                                 .build()
                 ))
                 .createdAt(now)
+                .commentNum(1)
+                .isAuthor(true)
                 .build();
 
         given(questionGrpcClient.updateQuestion(any())).willReturn(response);
@@ -671,7 +679,8 @@ class QuestionControllerRestDocsTest {
                                 fieldWithPath("result.images[].imageUrl").type("String").description("질문 이미지 URL")
                                         .optional(),
                                 fieldWithPath("result.createdAt").description("작성일시"),
-                                fieldWithPath("result.commentNum").description("댓글 수")
+                                fieldWithPath("result.commentNum").description("댓글 수"),
+                                fieldWithPath("result.isAuthor").description("질문 작성자인지")
                         )
                 ));
     }

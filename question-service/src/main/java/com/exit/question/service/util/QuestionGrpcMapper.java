@@ -94,6 +94,7 @@ public class QuestionGrpcMapper {
                 .setQuestionDisclosureType(question.getQuestionDisclosure().name())
                 .setCreatedAt(toGrpcTimestamp(question.getCreatedAt()))
                 .setCommentNum(commentAndAdditionalQuestionNum.commentNum())
+                .setIsAuthor(question.getQuestionWriterId().equals(userNameAndProfile.getUserId()))
                 .build();
     }
 

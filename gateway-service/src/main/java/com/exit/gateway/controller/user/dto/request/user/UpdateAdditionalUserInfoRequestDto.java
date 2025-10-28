@@ -1,10 +1,15 @@
 package com.exit.gateway.controller.user.dto.request.user;
 
-import org.springframework.web.multipart.MultipartFile;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record UpdateAdditionalUserInfoRequestDto(
-        String nickname,
-        MultipartFile image,
-        Boolean isProfileImageDeleted
-) {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateAdditionalUserInfoRequestDto{
+    String nickname;
+    Boolean isProfileImageDeleted;
 }

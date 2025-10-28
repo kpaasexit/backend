@@ -123,6 +123,7 @@ message QuestionCreateResponse {
   repeated ImageObject images = 11;
   google.protobuf.Timestamp created_at = 12;
   int32 comment_num = 13;
+  bool is_author = 14;
 }
 
 message QuestionReportResponse {
