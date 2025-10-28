@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
         "com.exit.common"      // Common 패키지 추가
 })
 public class MagazineServiceApplication {
-
+    // test
     public static void main(String[] args) {
         SpringApplication.run(MagazineServiceApplication.class, args);
     }
