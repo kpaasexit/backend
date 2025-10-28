@@ -13,7 +13,7 @@ spec:
     kubernetes.io/hostname: kpaas-contest-9.worker01
   containers:
   - name: kubectl
-    image: bitnami/kubectl:1.27
+    image: alpine:latest
     command:
     - sleep
     args:
@@ -84,6 +84,20 @@ spec:
     }
 
     stages {
+
+        stage('Install kubectl') {
+            steps {
+                container('kubectl') {
+                    sh '''
+                        apk add --no-cache curl
+                        curl -LO "https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl"
+                        chmod +x kubectl
+                        mv kubectl /usr/local/bin/
+                        kubectl version --client
+                    '''
+                }
+            }
+        }
 
         stage('Checkout') {
             steps {
