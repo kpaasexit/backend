@@ -250,7 +250,7 @@ spec:
 
                             echo ""
                             echo "=== Waiting for pods to be ready ==="
-                            kubectl wait --for=condition=ready pod -l app=gateway-sercvice -n default --timeout=10m
+                            kubectl wait --for=condition=ready pod -l app=gateway-service -n default --timeout=10m
                         '''
 
                         echo "Deployment verified successfully"
