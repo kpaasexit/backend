@@ -74,8 +74,12 @@
 |작성일시
 
 |`+result.question.commentNum+`
-|`+Null+`
+|`+Number+`
 |댓글 수
+
+|`+result.question.isAuthor+`
+|`+Boolean+`
+|질문 작성자인지
 
 |`+result.authority+`
 |`+Object+`

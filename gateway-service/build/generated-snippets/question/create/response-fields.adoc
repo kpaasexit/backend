@@ -70,7 +70,11 @@
 |작성일시
 
 |`+result.commentNum+`
-|`+Null+`
+|`+Number+`
 |댓글 수
+
+|`+result.isAuthor+`
+|`+Boolean+`
+|질문 작성자인지
 
 |===

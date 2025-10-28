@@ -23,7 +23,8 @@
         "imageUrl" : "url"
       } ],
       "createdAt" : "2024-01-01T00:00:00",
-      "commentNum" : null
+      "commentNum" : 1,
+      "isAuthor" : true
     },
     "authority" : {
       "canModify" : true,

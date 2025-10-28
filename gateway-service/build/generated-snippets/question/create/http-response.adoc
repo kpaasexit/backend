@@ -8,7 +8,7 @@ Cache-Control: no-cache, no-store, max-age=0, must-revalidate
 Pragma: no-cache
 Expires: 0
 X-Frame-Options: DENY
-Content-Length: 590
+Content-Length: 611
 
 {
   "code" : "QUESTION_OK_001",
@@ -26,7 +26,8 @@ Content-Length: 590
     "questionWriterProfile" : null,
     "images" : [ ],
     "createdAt" : "2024-01-01T00:00:00",
-    "commentNum" : null
+    "commentNum" : 1,
+    "isAuthor" : true
   }
 }
 ----
