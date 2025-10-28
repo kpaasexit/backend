@@ -29,6 +29,7 @@ RUN for i in 1 2 3; do \
         -Pprofile=prod --no-daemon -x test -x restDocsTest && break || \
       (echo "Build retry $i..." && sleep 15); \
     done
+
 # dev Runtime Stage
 FROM eclipse-temurin:17-jre-jammy AS dev
 WORKDIR /app

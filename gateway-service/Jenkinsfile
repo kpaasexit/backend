@@ -12,8 +12,8 @@ spec:
   nodeSelector:
     kubernetes.io/hostname: kpaas-contest-9.worker01
   containers:
-  - name: kubectl
-    image: alpine:latest
+  - name: gradle
+    image: gradle:8.14.3-jdk17
     command:
     - sleep
     args:
@@ -132,6 +132,39 @@ spec:
                     echo env.BUILD_GATEWAY_SERVICE == 'true' ?
                         "Will build gateway-service" :
                         "Skipping gateway-service"
+                }
+            }
+        }
+
+        stage('Generate REST Docs Snippets') {
+            when {
+                expression { env.BUILD_GATEWAY_SERVICE == 'true' }
+            }
+            steps {
+                container('gradle') {
+                    script {
+                        sh '''
+                            echo "Running tests to generate REST Docs snippets..."
+                            # gradlew에 실행 권한이 있는지 확인하고 실행
+                            chmod +x ./gradlew
+                            ./gradlew :gateway-service:restDocsTest --no-daemon
+                        '''
+
+                        echo "Verifying REST Docs index.html existence..."
+
+                        def docsPath = "gateway-service/src/main/resources/static/back-docs/index.html"
+
+                        def fileExists = sh(
+                            script: "test -f ${docsPath} && echo 'EXISTS' || echo 'NOT_FOUND'",
+                            returnStdout: true
+                        ).trim()
+
+                        if (fileExists == 'EXISTS') {
+                            echo "✅ Success: index.html found at ${docsPath}"
+                        } else {
+                            error "❌ FATAL: index.html not found at ${docsPath}. REST Docs generation failed."
+                        }
+                    }
                 }
             }
         }
