@@ -20,11 +20,24 @@ spec:
     - infinity
     resources:
       requests:
-        cpu: 50m
+        cpu: 10m
         memory: 128Mi
       limits:
         cpu: 200m
         memory: 256Mi
+  - name: gradle
+      image: gradle:8.14.3-jdk17
+      command:
+      - sleep
+      args:
+      - infinity
+      resources:
+        requests:
+          cpu: 10m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 2Gi
   - name: docker
     image: docker:24-dind
     env:
@@ -132,6 +145,38 @@ spec:
                     echo env.BUILD_GATEWAY_SERVICE == 'true' ?
                         "Will build gateway-service" :
                         "Skipping gateway-service"
+                }
+            }
+        }
+
+        stage('Generate REST Docs Snippets') {
+            when {
+                expression { env.BUILD_GATEWAY_SERVICE == 'true' }
+            }
+            steps {
+                container('gradle') {
+                    script {
+                        sh '''
+                            echo "Running tests to generate REST Docs snippets..."
+                            chmod +x ./gradlew
+                            ./gradlew :gateway-service:restDocsTest --no-daemon
+                        '''
+
+                        echo "Verifying REST Docs index.html existence..."
+
+                        def docsPath = "gateway-service/src/main/resources/static/back-docs/index.html"
+
+                        def fileExists = sh(
+                            script: "test -f ${docsPath} && echo 'EXISTS' || echo 'NOT_FOUND'",
+                            returnStdout: true
+                        ).trim()
+
+                        if (fileExists == 'EXISTS') {
+                            echo "Success: index.html found at ${docsPath}"
+                        } else {
+                            error "FATAL: index.html not found at ${docsPath}. REST Docs generation failed."
+                        }
+                    }
                 }
             }
         }
