@@ -183,6 +183,7 @@ public class FileUploadUtil {
             throw new FileUploadException("업로드할 파일이 없습니다.");
         }
 
+        log.info("validating file: {}", request.getMeta().getFilename());
         if (!FileValidationUtils.isValidImageFile(request)) {
             throw new FileUploadException.InvalidFileTypeException("지원하지 않는 파일 형식입니다. (지원 형식: JPG, PNG, GIF, BMP, WEBP)");
         }

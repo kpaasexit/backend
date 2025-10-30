@@ -23,6 +23,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.exit.gateway.restdocs.MultipartFormParametersSnippet.multipartFormParameters;
+import static com.exit.gateway.restdocs.MultipartFormParametersSnippet.multipartParameter;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -106,7 +108,7 @@ class UserControllerRestDocsTest {
                         .setUserProfile("https://example.com/profile.jpg")
                         .build();
 
-        given(userGrpcClient.updateAdditionalUserInfo(anyLong(), any()))
+        given(userGrpcClient.updateAdditionalUserInfo(anyLong(), any(), any()))
                 .willReturn(grpcResponse);
 
         // when & then
@@ -135,10 +137,9 @@ class UserControllerRestDocsTest {
                                         .description("프로필 이미지 파일 (JPG, PNG)")
                                         .optional()
                         ),
-                        formParameters(
-                                parameterWithName("nickname")
-                                        .description("사용자 닉네임 (2-20자)")
-                                        .optional()
+                        multipartFormParameters(
+                                multipartParameter("nickname").description("사용자 닉네임 (2-20자)").optional(),
+                                multipartParameter("isProfileImageDeleted").description("이미지 삭제 여부")
                         ),
                         responseFields(
                                 fieldWithPath("code").description("응답 코드"),

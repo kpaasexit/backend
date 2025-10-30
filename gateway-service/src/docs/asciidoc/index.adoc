@@ -237,7 +237,7 @@ operation::user/get-user-info[snippets='http-request,request-headers,http-respon
 
 `PUT` 요청을 사용하여 사용자의 추가 정보(닉네임, 프로필 이미지)를 수정합니다.
 
-operation::user/update-additional-info[snippets='http-request,request-headers,request-parts,http-response,response-fields']
+operation::user/update-additional-info[snippets='http-request,request-headers,multipart-form-parameters,request-parts,http-response,response-fields']
 
 [[user-check-nickname-duplicate]]
 == 닉네임 중복 확인

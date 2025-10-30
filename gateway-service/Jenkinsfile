@@ -20,11 +20,24 @@ spec:
     - infinity
     resources:
       requests:
-        cpu: 50m
+        cpu: 10m
         memory: 128Mi
       limits:
         cpu: 200m
         memory: 256Mi
+  - name: gradle
+    image: gradle:8.14.3-jdk17
+    command:
+    - sleep
+    args:
+    - infinity
+    resources:
+      requests:
+        cpu: 10m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 2Gi
   - name: docker
     image: docker:24-dind
     env:
@@ -71,6 +84,7 @@ spec:
     }
 
     stages {
+
         stage('Install kubectl') {
             steps {
                 container('kubectl') {
@@ -132,6 +146,39 @@ spec:
                     echo env.BUILD_GATEWAY_SERVICE == 'true' ?
                         "Will build gateway-service" :
                         "Skipping gateway-service"
+                }
+            }
+        }
+
+        stage('Generate REST Docs Snippets') {
+            when {
+                expression { env.BUILD_GATEWAY_SERVICE == 'true' }
+            }
+            steps {
+                container('gradle') {
+                    script {
+                        sh '''
+                            echo "Running tests to generate REST Docs snippets..."
+                            cp gateway-service/src/test/resources/application-secret.yml.example \
+                               gateway-service/src/test/resources/application-secret.yml
+                            gradle :gateway-service:restDocsTest --no-daemon -Dspring.profiles.active=test
+                        '''
+
+                        echo "Verifying REST Docs index.html existence..."
+
+                        def docsPath = "gateway-service/src/main/resources/static/back-docs/index.html"
+
+                        def fileExists = sh(
+                            script: "test -f ${docsPath} && echo 'EXISTS' || echo 'NOT_FOUND'",
+                            returnStdout: true
+                        ).trim()
+
+                        if (fileExists == 'EXISTS') {
+                            echo "Success: index.html found at ${docsPath}"
+                        } else {
+                            error "FATAL: index.html not found at ${docsPath}. REST Docs generation failed."
+                        }
+                    }
                 }
             }
         }
@@ -237,7 +284,7 @@ spec:
 
                         sh '''
                             echo "=== Pod Status ==="
-                            kubectl get pods -l app=gateway -n default -o wide
+                            kubectl get pods -l app=gateway-service -n default -o wide
 
                             echo ""
                             echo "=== Deployment Status ==="
@@ -250,7 +297,7 @@ spec:
 
                             echo ""
                             echo "=== Waiting for pods to be ready ==="
-                            kubectl wait --for=condition=ready pod -l app=gateway -n default --timeout=10m
+                            kubectl wait --for=condition=ready pod -l app=gateway-service -n default --timeout=10m
                         '''
 
                         echo "Deployment verified successfully"

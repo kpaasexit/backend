@@ -244,7 +244,7 @@ spec:
 
                         sh '''
                             echo "=== Pod Status ==="
-                            kubectl get pods -l app=user -n default -o wide
+                            kubectl get pods -l app=user-service -n default -o wide
 
                             echo ""
                             echo "=== Deployment Status ==="
@@ -257,7 +257,7 @@ spec:
 
                             echo ""
                             echo "=== Waiting for pods to be ready ==="
-                            kubectl wait --for=condition=ready pod -l app=user -n default --timeout=10m
+                            kubectl wait --for=condition=ready pod -l app=user-service -n default --timeout=10m
                         '''
 
                         echo "Deployment verified successfully"

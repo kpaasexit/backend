@@ -3,12 +3,17 @@ LABEL authors="sang-yoon"
 
 WORKDIR /workspace
 
-COPY notification-service/gradlew ./gradlew
-COPY notification-service/gradle gradle
+COPY gradlew ./
+COPY gradle gradle/
 COPY settings.gradle ./
+COPY gradle.properties ./
+
 RUN chmod +x gradlew
 
-RUN sed -i 's/timeout = 10000/timeout = 60000/g' gradle/wrapper/gradle-wrapper.properties || true
+RUN for i in 1 2 3; do \
+      ./gradlew --version && break || \
+      (echo "Retry $i..." && sleep 10); \
+    done
 
 COPY common common
 COPY notification-service notification-service
@@ -21,8 +26,11 @@ RUN ./gradlew :common:jar notification-service:bootJar -Pprofile=dev -x test --n
 
 # prod Build Stage
 FROM base AS build-prod
-RUN ./gradlew :common:jar notification-service:bootJar -Pprofile=prod -x test --no-daemon -Dsun.net.client.defaultReadTimeout=600000 -Dsun.net.client.defaultConnectTimeout=600000
-
+RUN for i in 1 2 3; do \
+      ./gradlew :common:jar :notification-service:bootJar \
+        -Pprofile=prod --no-daemon -x test && break || \
+      (echo "Build retry $i..." && sleep 15); \
+    done
 # dev Runtime Stage
 FROM eclipse-temurin:17-jre-jammy AS dev
 WORKDIR /app

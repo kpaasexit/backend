@@ -27,7 +27,8 @@ public record ResponseDetailDto(
         Boolean isAi,
         ResponseAuthority authority,
         Integer commentNum,
-        Integer additionalMessageNum
+        Integer additionalMessageNum,
+        Long followUpRoomId
 ) {
     public static ResponseDetailDto from(ResponseDetail grpcResponse) {
         ResponseDetailDtoBuilder builder = ResponseDetailDto.builder();
@@ -59,6 +60,7 @@ public record ResponseDetailDto(
                 .authority(ResponseAuthority.from(grpcResponse.getAuthority()))
                 .commentNum(grpcResponse.getCommentNum())
                 .additionalMessageNum(grpcResponse.getAdditionalQuestionNum())
+                .followUpRoomId(grpcResponse.getFollowUpRoomId() != 0 ? grpcResponse.getFollowUpRoomId() : null)
                 .build();
     }
 }
