@@ -30,7 +30,7 @@ class AnswerGenerator:
         max_retries: int = 3
     ) -> Dict[str, Any]:
         """Generate answer using GPT."""
-        prompt = self.prompt_builder.create_answer_prompt(question, context)
+        prompt = self.prompt_builder.create_answer_prompt(question, context, has_images=False)
 
         for attempt in range(max_retries):
             try:
@@ -41,7 +41,13 @@ class AnswerGenerator:
                     messages=[
                         {
                             "role": "system",
-                            "content": "You are a helpful assistant that provides practical life advice in Korean. Provide direct, concise answers in plain text without any markdown formatting."
+                            "content": """당신은 한국어로 실생활 조언을 제공하는 전문 어시스턴트입니다.
+
+# 핵심 지침
+- 항상 순수 텍스트로만 답변하세요 (마크다운 문법 절대 사용 금지)
+- 자세하고 충분한 설명을 제공하세요 (간결함보다 완전성 우선)
+- 불필요한 서론이나 인사말 없이 바로 핵심 답변을 시작하세요
+- 제공된 지침과 형식을 정확히 따르세요"""
                         },
                         {
                             "role": "user",
@@ -99,17 +105,35 @@ class AnswerGenerator:
             images: Optional list of dicts with 'data' (bytes) and 'mime_type' (str)
             max_retries: Maximum retry attempts
         """
-        prompt = self.prompt_builder.create_answer_prompt(question, context)
+        has_images = images and len(images) > 0
+        prompt = self.prompt_builder.create_answer_prompt(question, context, has_images=has_images)
 
         for attempt in range(max_retries):
             try:
                 start_time = time.time()
 
-                # Prepare messages
+                # Prepare system message based on whether images are present
+                system_content = """당신은 한국어로 실생활 조언을 제공하는 전문 어시스턴트입니다.
+
+# 핵심 지침
+- 항상 순수 텍스트로만 답변하세요 (마크다운 문법 절대 사용 금지)
+- 자세하고 충분한 설명을 제공하세요 (간결함보다 완전성 우선)
+- 불필요한 서론이나 인사말 없이 바로 핵심 답변을 시작하세요
+- 제공된 지침과 형식을 정확히 따르세요"""
+
+                if has_images:
+                    system_content += """
+
+# 이미지 분석 필수
+- 제공된 이미지를 반드시 면밀히 검토하세요
+- 이미지의 모든 세부사항을 분석하여 답변에 활용하세요
+- 이미지에서 관찰되는 구체적인 내용을 반드시 언급하세요
+- 일반적인 답변이 아닌 이미지 기반 맞춤 답변을 제공하세요"""
+
                 messages = [
                     {
                         "role": "system",
-                        "content": "You are a helpful assistant that provides practical life advice in Korean. Provide direct, concise answers in plain text without any markdown formatting."
+                        "content": system_content
                     }
                 ]
 

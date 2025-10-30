@@ -40,6 +40,6 @@ download_model() {
 # Download models
 download_model "MongsangGa/embeddings_onnx-all-minilm-l6-v2" "$BASE_DIR/embeddings_onnx/all-MiniLM-L6-v2" "$BASE_DIR/embeddings_onnx/all-MiniLM-L6-v2/model.onnx"
 download_model "MongsangGa/embeddings_onnx-ko-sroberta" "$BASE_DIR/embeddings_onnx/ko-sroberta" "$BASE_DIR/embeddings_onnx/ko-sroberta/model.onnx"
-download_model "MongsangGa/home_life_finetuned-final_model" "$BASE_DIR/home_life_finetuned/final_model" "$BASE_DIR/home_life_finetuned/final_model/model.onnx"
+download_model "MongsangGa/home_life_improved-onnx" "$BASE_DIR/home_life_finetuned/final_model" "$BASE_DIR/home_life_finetuned/final_model/model.onnx"
 
 echo "=== All models downloaded successfully ==="
