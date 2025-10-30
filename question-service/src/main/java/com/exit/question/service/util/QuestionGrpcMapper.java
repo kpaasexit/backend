@@ -71,7 +71,8 @@ public class QuestionGrpcMapper {
 
     public QuestionCreateResponse getQuestionCreateResponse(Question question, List<ImageObject> imageObjects,
                                                             UpdateAdditionalUserInfoResponse userNameAndProfile,
-                                                            CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum) {
+                                                            CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum,
+                                                            Long userId) {
         QuestionCreateResponse.Builder builder = QuestionCreateResponse.newBuilder();
 
         if (imageObjects != null && !imageObjects.isEmpty()) {
@@ -94,7 +95,7 @@ public class QuestionGrpcMapper {
                 .setQuestionDisclosureType(question.getQuestionDisclosure().name())
                 .setCreatedAt(toGrpcTimestamp(question.getCreatedAt()))
                 .setCommentNum(commentAndAdditionalQuestionNum.commentNum())
-                .setIsAuthor(question.getQuestionWriterId().equals(userNameAndProfile.getUserId()))
+                .setIsAuthor(question.getQuestionWriterId().equals(userId))
                 .build();
     }
 

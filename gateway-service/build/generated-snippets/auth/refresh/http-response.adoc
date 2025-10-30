@@ -1,7 +1,7 @@
 [source,http,options="nowrap"]
 ----
 HTTP/1.1 200 OK
-Set-Cookie: refreshToken=; Path=/; Max-Age=604800000; Expires=Tue, 27 Dec 2044 07:01:52 GMT; Secure; HttpOnly; SameSite=None
+Set-Cookie: refreshToken=; Path=/; Max-Age=604800000; Expires=Tue, 27 Dec 2044 22:58:15 GMT; Secure; HttpOnly; SameSite=None
 Content-Type: application/json
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0

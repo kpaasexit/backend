@@ -1,7 +1,7 @@
 [source,http,options="nowrap"]
 ----
 GET /api/quiz/categories/statistics HTTP/1.1
-Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE2MzQ5MTAsImV4cCI6MTc2NTIzNDkxMH0.0qjKToczZOLQJ5cU2DPvf8XB72I4JnqN2gPjN4dhLew
+Authorization: Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE2OTIyOTMsImV4cCI6MTc2NTI5MjI5M30.Ze6cGAj8ivlUUmvls1nMK0SMgTpKULPJbEIExAsTaMs
 Host: localhost:8080
 
 ----

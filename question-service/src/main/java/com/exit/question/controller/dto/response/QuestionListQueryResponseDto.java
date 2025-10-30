@@ -33,7 +33,7 @@ public record QuestionListQueryResponseDto(
                 .setQuestionId(dto.questionId)
                 .setQuestionCategory(dto.questionCategoryId)
                 .setQuestionWriterName(userInfoMap.get(dto.questionWriterId).getUserName())
-                .setQuestionTitle(dto.questionTitle)
+                .setQuestionTitle(dto.questionTitle.substring(0, Math.min(dto.questionTitle.length(), 100)))
                 .setQuestionContent(dto.questionContent)
                 .setQuestionUrgency(dto.questionUrgency)
                 .setQuestionAnswerType(dto.questionAnswerType.name())
@@ -42,4 +42,5 @@ public record QuestionListQueryResponseDto(
                 .setCreatedAt(TimeStampUtil.toGrpcTimestamp(dto.createdAt))
                 .build();
     }
+
 }

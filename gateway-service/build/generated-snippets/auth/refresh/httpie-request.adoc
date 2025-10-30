@@ -2,5 +2,5 @@
 ----
 $ http POST 'http://localhost:8080/api/auth/refresh' \
     'Content-Type:application/json;charset=UTF-8' \
-    'Cookie:refreshToken=eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE2MzQ5MTIsImV4cCI6MTc2NTIzNDkxMn0.zhtcklrFCttIr2aN6ZCXwaymcjEVVirgpeEci0OoMbo'
+    'Cookie:refreshToken=eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOjEsImRldmljZUlkIjoidGVzdC1kZXZpY2UtaWQiLCJpYXQiOjE3NjE2OTIyOTUsImV4cCI6MTc2NTI5MjI5NX0.Dlz94xT3p69DzirSxKDyEhnHTagc-SmHWOGdb-dhHzc'
 ----

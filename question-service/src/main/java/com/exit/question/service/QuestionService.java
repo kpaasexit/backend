@@ -111,7 +111,7 @@ public class QuestionService {
             scheduleAiAnswerGeneration(savedQuestion, request.getImagesList());
             CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum = questionRepository.findCommentAndAdditionalQuestionNumByQuestionId(
                     question.getQuestionId());
-            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile, commentAndAdditionalQuestionNum);
+            return questionGrpcMapper.getQuestionCreateResponse(savedQuestion, imageObjects, userNameAndProfile, commentAndAdditionalQuestionNum, request.getQuestionWriterId());
         } catch (GrpcException e) {
             throw new GrpcException(GrpcQuestionErrorCode.CREATE_QUESTION_FAILED,
                     e.getGrpcErrorCode().getErrorDescription());
@@ -403,7 +403,7 @@ public class QuestionService {
         CommentAndAdditionalQuestionNum commentAndAdditionalQuestionNum = questionRepository.findCommentAndAdditionalQuestionNumByQuestionId(
                 question.getQuestionId());
 
-        return questionGrpcMapper.getQuestionCreateResponse(question, imageObjectDtos, userNameAndProfile, commentAndAdditionalQuestionNum);
+        return questionGrpcMapper.getQuestionCreateResponse(question, imageObjectDtos, userNameAndProfile, commentAndAdditionalQuestionNum, userId);
     }
 
     private Authority getAuthority(QuestionDetailRequest request) {
