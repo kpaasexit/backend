@@ -27,6 +27,7 @@ import com.exit.common.grpc.UpdateResponseRequest;
 import com.exit.common.util.file.FileUploadUtil;
 import com.exit.question.controller.dto.response.AiBestResponseDto;
 import com.exit.question.controller.dto.response.CommentAndAdditionalQuestionNum;
+import com.exit.question.controller.dto.response.ResponseLikeCount;
 import com.exit.question.domain.question.Question;
 import com.exit.question.domain.question.repository.FollowUpRoomRepository;
 import com.exit.question.domain.question.repository.QuestionRepository;
@@ -465,7 +466,9 @@ public class ResponseService {
                 .map(Response::getResponseId)
                 .toList();
 
-        return responseLikeRepository.countByResponseIdIn(responseIds);
+        return responseLikeRepository.countByResponseIdIn(responseIds)
+                .stream()
+                .collect(toMap(ResponseLikeCount::responseId, ResponseLikeCount::likeCount));
     }
 
     private Map<Long, UpdateAdditionalUserInfoResponse> getWriterNameAndProfileMap(List<Response> responses) {
