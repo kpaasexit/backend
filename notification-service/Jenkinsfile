@@ -43,8 +43,8 @@ spec:
         cpu: 100m
         memory: 256Mi
       limits:
-        cpu: 300m
-        memory: 1Gi
+        cpu: 700m
+        memory: 2Gi
     securityContext:
       privileged: true
 """
@@ -217,7 +217,7 @@ spec:
                             echo "Waiting for rollout to complete..."
                             kubectl rollout status deployment/notification-deployment \\
                                 -n default \\
-                                --timeout=5m
+                                --timeout=10m
                         """
 
                         echo "Deployment patched and rolled out successfully"

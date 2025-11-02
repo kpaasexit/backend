@@ -23,8 +23,8 @@ spec:
         cpu: 10m
         memory: 128Mi
       limits:
-        cpu: 200m
-        memory: 256Mi
+        cpu: 500m
+        memory: 512Mi
   - name: gradle
     image: gradle:8.14.3-jdk17
     command:
@@ -36,7 +36,7 @@ spec:
         cpu: 10m
         memory: 512Mi
       limits:
-        cpu: 500m
+        cpu: 700m
         memory: 2Gi
   - name: docker
     image: docker:24-dind
@@ -56,8 +56,8 @@ spec:
         cpu: 100m
         memory: 256Mi
       limits:
-        cpu: 300m
-        memory: 1Gi
+        cpu: 700m
+        memory: 2Gi
     securityContext:
       privileged: true
 """
